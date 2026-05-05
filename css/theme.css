@@ -1,9 +1,18 @@
+/* ═══════════════════════════════════════════════════════════════
+   THEME.CSS — BIOPUNK / GIGER TERMINAL
+   DA : phosphore vert organique, chitine noire, amber CRT
+   Seul mode dark. Mode light = fallback minimal.
+═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
 
 :root, [data-theme="dark"] {
-  --font-display: "Exo 2", "Segoe UI", sans-serif;
-  --font-mono:    "Share Tech Mono", "Courier New", monospace;
-  --font-body:    "Exo 2", "Segoe UI", sans-serif;
+  /* ── TYPO ─────────────────────────────────────────────────── */
+  --font-display: 'VT323', 'Courier New', monospace;
+  --font-mono:    'Share Tech Mono', 'Courier New', monospace;
+  --font-body:    'Share Tech Mono', 'Courier New', monospace;
 
+  /* ── TYPE SCALE ───────────────────────────────────────────── */
   --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
   --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
   --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
@@ -12,69 +21,87 @@
   --text-2xl:  clamp(2rem,     1.2rem  + 2.5vw,  3.5rem);
   --text-hero: clamp(3rem,     1rem    + 6vw,    7rem);
 
-  --space-1: 0.25rem; --space-2: 0.5rem;  --space-3: 0.75rem;
-  --space-4: 1rem;    --space-6: 1.5rem;  --space-8: 2rem;
-  --space-10: 2.5rem; --space-12: 3rem;   --space-16: 4rem;
-  --space-20: 5rem;   --space-24: 6rem;
+  /* ── SPACING ──────────────────────────────────────────────── */
+  --space-1: 0.25rem;  --space-2: 0.5rem;   --space-3: 0.75rem;
+  --space-4: 1rem;     --space-5: 1.25rem;  --space-6: 1.5rem;
+  --space-8: 2rem;     --space-10: 2.5rem;  --space-12: 3rem;
+  --space-16: 4rem;    --space-20: 5rem;    --space-24: 6rem;
 
-  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
-  --radius-xl: 16px; --radius-full: 9999px;
+  /* ── RADIUS ───────────────────────────────────────────────── */
+  --radius-sm: 2px;  --radius-md: 4px;  --radius-lg: 6px;
+  --radius-xl: 8px;  --radius-full: 9999px;
+  /* Radius très faibles intentionnellement : esthétique terminal anguleux */
 
-  /* Dark cyberpunk palette */
-  --c-bg:         #03050f;
-  --c-surface:    #080c1a;
-  --c-surface-2:  #0d1225;
-  --c-surface-3:  #111830;
-  --c-border:     rgba(123, 92, 240, 0.18);
-  --c-divider:    rgba(123, 92, 240, 0.08);
+  /* ── SURFACES — chitine organique ────────────────────────── */
+  --c-bg:        #020403;
+  --c-surface:   #050906;
+  --c-surface-2: #080e09;
+  --c-surface-3: #0c140d;
+  --c-border:    rgba(57, 255, 20, 0.10);
+  --c-divider:   rgba(57, 255, 20, 0.05);
 
-  --c-text:       #c8b8ff;
-  --c-text-muted: rgba(200, 184, 255, 0.55);
-  --c-text-faint: rgba(200, 184, 255, 0.25);
-  --c-text-inv:   #03050f;
+  /* ── TEXTE — phosphore ────────────────────────────────────── */
+  --c-text:       #b8ffc0;
+  --c-text-muted: rgba(184, 255, 192, 0.50);
+  --c-text-faint: rgba(184, 255, 192, 0.22);
+  --c-text-inv:   #020403;
 
-  --c-primary:    #7b5cf0;
-  --c-primary-h:  #9b7ef8;
-  --c-primary-hl: rgba(123, 92, 240, 0.12);
+  /* ── PRIMAIRE — vert phosphore Giger ─────────────────────── */
+  --c-primary:    #39ff14;
+  --c-primary-h:  #6aff45;
+  --c-primary-hl: rgba(57, 255, 20, 0.08);
 
-  --c-green:      #00ff88;
-  --c-green-d:    rgba(0, 255, 136, 0.6);
-  --c-cyan:       #00d4ff;
-  --c-cyan-d:     rgba(0, 212, 255, 0.5);
-  --c-amber:      #ffd700;
-  --c-red:        #ff4757;
+  /* ── ACCENTS ──────────────────────────────────────────────── */
+  --c-green:      #39ff14;
+  --c-green-d:    rgba(57, 255, 20, 0.55);
+  --c-acid:       #b8ff4a;
+  --c-cyan:       #00ffe7;
+  --c-cyan-d:     rgba(0, 255, 231, 0.45);
+  --c-amber:      #ffaa00;
+  --c-amber-d:    rgba(255, 170, 0, 0.55);
+  --c-red:        #ff2d55;
+  --c-red-d:      rgba(255, 45, 85, 0.45);
+  --c-purple:     #bf5fff;
+  --c-purple-d:   rgba(191, 95, 255, 0.45);
 
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,0.6);
-  --glow-primary: 0 0 20px rgba(123,92,240,0.3);
-  --glow-green:   0 0 16px rgba(0,255,136,0.25);
+  /* ── GLOWS ────────────────────────────────────────────────── */
+  --glow-primary: 0 0 12px rgba(57, 255, 20, 0.35), 0 0 30px rgba(57, 255, 20, 0.12);
+  --glow-green:   0 0 10px rgba(57, 255, 20, 0.30);
+  --glow-amber:   0 0 12px rgba(255, 170, 0, 0.35);
+  --glow-cyan:    0 0 12px rgba(0, 255, 231, 0.30);
+  --glow-red:     0 0 10px rgba(255, 45, 85, 0.35);
+  --glow-purple:  0 0 12px rgba(191, 95, 255, 0.30);
 
-  --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* ── OMBRES ───────────────────────────────────────────────── */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.6);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.7);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.8);
+
+  /* ── TRANSITIONS ──────────────────────────────────────────── */
+  --transition: 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* ── Light mode : fallback minimal (désactivé par défaut) ───── */
 [data-theme="light"] {
-  --c-bg:         #f0f2ff;
-  --c-surface:    #f8f8ff;
-  --c-surface-2:  #ffffff;
-  --c-surface-3:  #eeeeff;
-  --c-border:     rgba(123, 92, 240, 0.2);
-  --c-divider:    rgba(123, 92, 240, 0.08);
-  --c-text:       #1a1040;
-  --c-text-muted: rgba(26, 16, 64, 0.55);
-  --c-text-faint: rgba(26, 16, 64, 0.28);
-  --c-text-inv:   #ffffff;
-  --c-primary:    #5b3fd0;
-  --c-primary-h:  #7b5cf0;
-  --c-primary-hl: rgba(91, 63, 208, 0.1);
-  --c-green:      #00a855;
-  --c-green-d:    rgba(0, 168, 85, 0.7);
-  --c-cyan:       #0099cc;
-  --c-cyan-d:     rgba(0, 153, 204, 0.6);
-  --c-amber:      #cc8800;
-  --c-red:        #cc2233;
-  --shadow-sm: 0 2px 8px rgba(0,0,40,0.08);
-  --shadow-md: 0 4px 20px rgba(0,0,40,0.12);
-  --shadow-lg: 0 8px 40px rgba(0,0,40,0.15);
-  --glow-primary: 0 0 20px rgba(91,63,208,0.15);
-  --glow-green:   0 0 16px rgba(0,168,85,0.12);
+  --c-bg:        #e8f0e0;
+  --c-surface:   #dce8d4;
+  --c-surface-2: #f0f5ec;
+  --c-surface-3: #f8faf5;
+  --c-border:    rgba(20, 120, 20, 0.18);
+  --c-divider:   rgba(20, 120, 20, 0.08);
+  --c-text:       #0d2e0d;
+  --c-text-muted: rgba(13, 46, 13, 0.55);
+  --c-text-faint: rgba(13, 46, 13, 0.28);
+  --c-text-inv:   #e8f0e0;
+  --c-primary:    #1a7a00;
+  --c-primary-h:  #2aaa00;
+  --c-primary-hl: rgba(26, 122, 0, 0.10);
+  --c-green:      #1a7a00;
+  --c-green-d:    rgba(26, 122, 0, 0.6);
+  --c-amber:      #cc7700;
+  --c-red:        #cc0022;
+  --c-cyan:       #006655;
+  --glow-primary: 0 0 8px rgba(26, 122, 0, 0.20);
+  --glow-green:   0 0 6px rgba(26, 122, 0, 0.18);
+  --glow-amber:   0 0 8px rgba(204, 119, 0, 0.20);
 }
