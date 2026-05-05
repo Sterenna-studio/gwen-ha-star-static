@@ -1,0 +1,114 @@
+/* ── HEADER AUTH ZONE ────────────────────────────────────────────────────
+   Injecté dans #header-auth par auth.js
+   ────────────────────────────────────────────────────────────────────── */
+
+.header-auth {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+/* ── Boutons auth génériques ─────────────────────────────────────────── */
+.btn-auth {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 180ms ease;
+  white-space: nowrap;
+}
+
+/* Bouton CONNEXION (guest) */
+.btn-auth-login {
+  color: var(--c-primary);
+  border-color: var(--c-primary);
+  background: transparent;
+}
+.btn-auth-login:hover {
+  background: var(--c-primary);
+  color: var(--c-bg);
+  box-shadow: var(--glow-primary);
+}
+
+/* ── Zone connectée ─────────────────────────────────────────────────── */
+.auth-connected {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Badge CONNECTÉ */
+.auth-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background: rgba(0, 255, 136, 0.07);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--c-green);
+}
+.auth-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-green);
+  box-shadow: 0 0 6px var(--c-green);
+  animation: auth-pulse 2s ease-in-out infinite;
+}
+@keyframes auth-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* Bouton MON ESPACE / CIG */
+.btn-auth-cig {
+  color: var(--c-amber);
+  border-color: var(--c-amber);
+  background: transparent;
+}
+.btn-auth-cig:hover {
+  background: var(--c-amber);
+  color: var(--c-bg);
+  box-shadow: 0 0 12px var(--c-amber);
+}
+
+/* Bouton déconnexion */
+.btn-auth-signout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--c-text-faint);
+  border: 1px solid var(--c-border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+.btn-auth-signout:hover {
+  color: var(--c-red);
+  border-color: var(--c-red);
+  background: rgba(255, 71, 87, 0.08);
+}
+
+/* ── Mobile : masquer le label, garder les boutons ────────────────────── */
+@media (max-width: 600px) {
+  .auth-label { display: none; }
+  .auth-badge { padding: var(--space-1); }
+  .btn-auth-cig { font-size: 9px; padding: var(--space-1) var(--space-2); }
+}
