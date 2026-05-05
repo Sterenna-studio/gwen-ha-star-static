@@ -43,7 +43,7 @@ export const PROJECTS = [
     badge: "live",
     badgeLabel: "LIVE",
     color: "#ff6b35",
-    href: "https://pokegang.sterenna.fr",
+    href: "https://pokegang.nitro.sterenna.fr",
   },
   {
     id: "clicker",
