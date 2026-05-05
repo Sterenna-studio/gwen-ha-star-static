@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="fr">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -229,84 +229,98 @@
     <div class="bridge-title-row">
       <div>
         <h1 class="bridge-title cursor-blink">GWEN·HA·STAR</h1>
-        <p class="bridge-subtitle">// TERMINAL BRIDGE · v5.0 · BIOPUNK INTERFACE</p>
+        <p class="bridge-subtitle">// NITRO BRIDGE · TERMINAL BIOPUNK</p>
       </div>
-      <div class="bridge-time" id="bridge-clock" aria-live="polite">--:--:--</div>
+      <time class="bridge-time" id="bridge-clock" aria-live="off">--:--:--</time>
     </div>
 
     <!-- COL GAUCHE -->
-    <aside class="col-left">
-      <div class="agent-card" id="agent-card">
-        <p class="agent-label">// AGENT · CONNECTED</p>
-        <p class="agent-name" id="agent-name">---</p>
-        <p class="agent-title" id="agent-title">◆ RECRUE</p>
-      </div>
+    <aside class="col-left" aria-label="Panneau gauche">
 
-      <div class="panel">
-        <p class="panel-tag">// RADAR · SCAN</p>
-        <svg class="radar-svg" viewBox="0 0 200 200" aria-label="Radar de surveillance" role="img">
-          <defs>
-            <radialGradient id="sweep-grad" cx="0.5" cy="0" r="1">
-              <stop offset="0%"   stop-color="var(--c-primary)" stop-opacity="0.9"/>
-              <stop offset="100%" stop-color="var(--c-primary)" stop-opacity="0"/>
-            </radialGradient>
-          </defs>
-          <circle cx="100" cy="100" r="90" fill="none" stroke="var(--c-primary)" stroke-width="0.8" opacity="0.15"/>
-          <circle cx="100" cy="100" r="60" fill="none" stroke="var(--c-primary)" stroke-width="0.8" opacity="0.20"/>
-          <circle cx="100" cy="100" r="30" fill="none" stroke="var(--c-primary)" stroke-width="1" opacity="0.35"/>
-          <line x1="100" y1="10" x2="100" y2="190" stroke="var(--c-primary)" stroke-width="0.4" opacity="0.2"/>
-          <line x1="10"  y1="100" x2="190" y2="100" stroke="var(--c-primary)" stroke-width="0.4" opacity="0.2"/>
-          <g style="transform-origin:100px 100px;animation:sweep 4s linear infinite">
-            <path d="M100,100 L100,10 A90,90 0 0,1 163,55 Z" fill="url(#sweep-grad)" opacity="0.30"/>
+      <!-- RADAR -->
+      <div class="panel" aria-label="Radar réseau">
+        <p class="panel-tag">// RADAR · RÉSEAU</p>
+        <svg class="radar-svg" viewBox="0 0 160 160" aria-hidden="true">
+          <circle cx="80" cy="80" r="70" stroke="var(--c-border)" stroke-width="1" fill="none"/>
+          <circle cx="80" cy="80" r="50" stroke="var(--c-border)" stroke-width="1" fill="none"/>
+          <circle cx="80" cy="80" r="30" stroke="var(--c-border)" stroke-width="1" fill="none"/>
+          <line x1="80" y1="10" x2="80" y2="150" stroke="var(--c-border)" stroke-width="0.5"/>
+          <line x1="10" y1="80" x2="150" y2="80" stroke="var(--c-border)" stroke-width="0.5"/>
+          <line x1="30" y1="30" x2="130" y2="130" stroke="var(--c-border)" stroke-width="0.5"/>
+          <line x1="130" y1="30" x2="30" y2="130" stroke="var(--c-border)" stroke-width="0.5"/>
+          <g style="transform-origin:80px 80px; animation: radar-sweep 4s linear infinite;">
+            <path d="M80,80 L80,10 A70,70 0 0,1 136,45 Z"
+                  fill="var(--c-primary)" opacity="0.12"/>
+            <line x1="80" y1="80" x2="80" y2="10"
+                  stroke="var(--c-primary)" stroke-width="1.5"
+                  style="filter:drop-shadow(0 0 4px var(--c-primary))"/>
           </g>
-          <circle cx="68"  cy="72"  r="3" fill="var(--c-primary)"  style="animation:blip 2s ease-in-out infinite"/>
-          <circle cx="140" cy="130" r="2" fill="var(--c-red)"      style="animation:blip 3s ease-in-out infinite 0.8s"/>
-          <circle cx="115" cy="52"  r="2" fill="var(--c-amber)"    style="animation:blip 2.5s ease-in-out infinite 1.5s"/>
+          <circle cx="110" cy="55" r="3" fill="var(--c-cyan)" opacity="0.8"
+                  style="filter:drop-shadow(0 0 3px var(--c-cyan))"/>
+          <circle cx="55"  cy="100" r="2" fill="var(--c-amber)" opacity="0.7"
+                  style="filter:drop-shadow(0 0 3px var(--c-amber))"/>
+          <circle cx="95"  cy="110" r="2" fill="var(--c-primary)" opacity="0.9"
+                  style="filter:drop-shadow(0 0 3px var(--c-primary))"/>
         </svg>
       </div>
 
-      <div class="panel">
-        <p class="panel-tag">// SYSTEMS</p>
-        <ul class="sys-list" aria-label="État des systèmes">
-          <li class="sys-item"><span class="sys-dot sys-dot-green"></span>POWER</li>
-          <li class="sys-item"><span class="sys-dot sys-dot-green" style="animation-delay:0.3s"></span>NETWORK</li>
-          <li class="sys-item"><span class="sys-dot sys-dot-green" style="animation-delay:0.6s"></span>TUNNEL</li>
-          <li class="sys-item"><span class="sys-dot sys-dot-amber" style="animation-delay:0.9s"></span>AI CORE</li>
-          <li class="sys-item"><span class="sys-dot sys-dot-purple" style="animation-delay:1.2s"></span>MEDIA</li>
-          <li class="sys-item"><span class="sys-dot sys-dot-cyan" style="animation-delay:1.5s"></span>STREAM</li>
+      <!-- SYSTÈMES -->
+      <div class="panel" aria-label="Statut systèmes">
+        <p class="panel-tag">// SYSTÈMES · ACTIFS</p>
+        <ul class="sys-list" role="list">
+          <li class="sys-item"><span class="sys-dot sys-dot-green" aria-hidden="true"></span>NITRO · CORE</li>
+          <li class="sys-item"><span class="sys-dot sys-dot-cyan"  aria-hidden="true"></span>TUNNEL · CF</li>
+          <li class="sys-item"><span class="sys-dot sys-dot-amber" aria-hidden="true"></span>SUPABASE · AUTH</li>
+          <li class="sys-item"><span class="sys-dot sys-dot-purple"aria-hidden="true"></span>STYX · NODE</li>
+          <li class="sys-item"><span class="sys-dot sys-dot-green" aria-hidden="true"></span>SALOMON · HOST</li>
         </ul>
       </div>
+
     </aside>
 
-    <!-- COL CENTRALE -->
-    <main class="col-main" id="main-content">
-      <div class="guest-banner" id="guest-banner" aria-live="polite">
-        <p>⚠ ACCÈS RESTREINT · Authentification requise pour accéder aux modules.</p>
-        <a href="/login.html" class="btn btn-primary">⬡ SE CONNECTER</a>
+    <!-- COL PRINCIPALE -->
+    <main class="col-main" aria-label="Modules principaux">
+
+      <!-- GUEST BANNER -->
+      <div class="guest-banner" id="guest-banner" role="alert" aria-live="polite">
+        <p>⬡ ACCÈS INVITÉ · Connectez-vous pour débloquer les modules réservés aux agents enregistrés.</p>
+        <a href="/login.html" class="btn-auth btn-auth-login">⬡ CONNEXION</a>
       </div>
 
-      <div>
-        <p class="modules-tag" id="modules-tag">// MODULES · -- SYSTEMS ONLINE</p>
+      <!-- MODULES -->
+      <section aria-labelledby="modules-heading">
+        <p class="modules-tag" id="modules-tag" aria-live="polite">// MODULES · CHARGEMENT...</p>
         <div class="modules-grid" id="modules-grid" aria-label="Modules disponibles"></div>
-      </div>
+      </section>
+
     </main>
 
     <!-- COL DROITE -->
-    <aside class="col-right">
-      <div class="panel">
-        <p class="panel-tag">// STATUS FEED <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--c-green);box-shadow:var(--glow-green);animation:pulse-dot 1.5s infinite;vertical-align:middle;margin-left:4px"></span></p>
-        <div class="log-feed" id="log-feed" aria-live="polite" aria-label="Journal système"></div>
+    <aside class="col-right" aria-label="Panneau droite">
+
+      <!-- AGENT -->
+      <div class="agent-card" id="agent-card">
+        <p class="agent-label">// AGENT · ID</p>
+        <p class="agent-name" id="agent-name">GUEST</p>
+        <p class="agent-title" id="agent-title">◆ NON AUTHENTIFIÉ</p>
       </div>
 
-      <div class="panel">
-        <p class="panel-tag">// SIGNAL MONITOR</p>
-        <canvas class="signal-canvas" id="signal-canvas" width="240" height="70"
-                aria-label="Moniteur de signal" role="img"></canvas>
+      <!-- OSCILLOSCOPE -->
+      <div class="panel" aria-label="Signal oscilloscope">
+        <p class="panel-tag">// SIGNAL · LIVE</p>
+        <canvas class="signal-canvas" id="signal-canvas" width="240" height="70" aria-hidden="true"></canvas>
       </div>
+
+      <!-- LOG FEED -->
+      <div class="panel" aria-label="Journal système" aria-live="polite" aria-atomic="false">
+        <p class="panel-tag">// LOG · FEED</p>
+        <div class="log-feed" id="log-feed" role="log"></div>
+      </div>
+
     </aside>
+
   </div>
 
-  <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 STERENNA · PIERRE H · NITRO BRIDGE</span>
@@ -337,7 +351,6 @@
       { id:'jellyfin',  title:'JELLYFIN',        desc:'Films · Séries · Musique',   icon:'▶',  color:'#6c5ce7', href:'https://jellyfin.nitro.sterenna.fr',    role:'all',       external:true  },
       { id:'status',    title:'UPTIME KUMA',     desc:'Monitoring des services',     icon:'◈',  color:'#639922', href:'https://status.nitro.sterenna.fr',      role:'all',       external:true  },
       { id:'lab',       title:'LAB',             desc:'Sterenna Lab',                icon:'⬡',  color:'#00b894', href:'https://lab.sterenna.fr',               role:'all',       external:true  },
-      { id:'internal',  title:'INT 8081',         desc:'Accès local 100.64.0.2',     icon:'⊡',  color:'#e17055', href:'http://100.64.0.2:8081',               role:'all',       external:true  },
       { id:'dash',      title:'DASHDOT',         desc:'CPU · GPU · RAM live',        icon:'◫',  color:'#BA7517', href:'https://dash.nitro.sterenna.fr',        role:'superuser', external:true  },
       { id:'sunshine',  title:'SUNSHINE',        desc:'Config streaming admin',      icon:'☀',  color:'#D85A30', href:'https://sunshine.nitro.sterenna.fr',   role:'superuser', external:true  },
     ];
@@ -345,7 +358,7 @@
     const LOG_MESSAGES = [
       'CORE SYSTEMS NOMINAL', 'OLLAMA MODULE ONLINE', 'JELLYFIN STREAM SYNC',
       'POKEFORGE GANGS ACTIVE', 'TUNNEL CLOUD SECURE', 'DRAW MODULE STANDBY',
-      'CYBERCHEF READY', 'LAB STERENNA CONNECTED', 'INT 8081 ALIVE',
+      'CYBERCHEF READY', 'LAB STERENNA CONNECTED',
       'SIGNAL NOMINAL 99.8%', 'MOONLIGHT STANDBY', 'NEKO IDLE',
       'JUKEBOX STANDBY', 'DUNGEON RESET IDLE', 'BIOSCAN COMPLETE',
       'NEURAL LINK STABLE', 'CHITINE LAYER NOMINAL',
@@ -354,15 +367,26 @@
     /* ── THEME TOGGLE ──────────────────────────────────────── */
     const html  = document.documentElement;
     const tBtn  = document.getElementById('theme-toggle');
-    let currentTheme = 'dark';
+
+    // Détection système au chargement
+    let currentTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    html.setAttribute('data-theme', currentTheme);
+    tBtn.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+    tBtn.setAttribute('aria-label', currentTheme === 'dark' ? 'Passer en mode Lumière' : 'Passer en mode Obscur');
+
+    // Écoute les changements système
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      currentTheme = e.matches ? 'dark' : 'light';
+      html.setAttribute('data-theme', currentTheme);
+      tBtn.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+      tBtn.setAttribute('aria-label', currentTheme === 'dark' ? 'Passer en mode Lumière' : 'Passer en mode Obscur');
+    });
 
     tBtn.addEventListener('click', () => {
       currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
       html.setAttribute('data-theme', currentTheme);
       tBtn.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
-      tBtn.title = currentTheme === 'dark' ? 'Passer en mode Lumière' : 'Passer en mode Obscur';
-      // Redessine l'oscilloscope avec la bonne couleur
-      if (window._signalColor) window._signalColor = getComputedStyle(html).getPropertyValue('--signal-color').trim();
+      tBtn.setAttribute('aria-label', currentTheme === 'dark' ? 'Passer en mode Lumière' : 'Passer en mode Obscur');
     });
 
     /* ── ÉTOILES ─────────────────────────────────────────── */
@@ -481,30 +505,28 @@
 
         supabase.from('profiles').select('*').eq('id', user.id).single()
           .then(({ data: profile }) => {
-            const role        = profile?.role        ?? 'guest';
-            const activeTitle = profile?.active_title ?? 'Recrue';
-            const username    = profile?.username    ?? label;
-            if (agentName)  agentName.textContent  = username.toUpperCase();
-            if (agentTitle) agentTitle.textContent  = '◆ ' + activeTitle.toUpperCase();
+            const role     = profile?.role ?? 'user';
+            const isSU     = role === 'superuser';
+            const titleTxt = isSU ? '◆ SUPERUSER · NITRO CORE' : '◆ AGENT · ENREGISTRÉ';
+            if (agentName)  agentName.textContent  = label.toUpperCase();
+            if (agentTitle) agentTitle.textContent = titleTxt;
             renderModules(role);
-            if (headerAuth) {
-              headerAuth.innerHTML = `
-                <div class="auth-connected">
-                  <span class="auth-badge" title="${user.email}">
-                    <span class="auth-dot" aria-hidden="true"></span>
-                    <span class="auth-label">${username.toUpperCase()}</span>
-                  </span>
-                  <a href="/cig.html" class="btn-auth btn-auth-cig" aria-label="Mon espace CIG">⬡ MON ESPACE</a>
-                  <button class="btn-auth btn-auth-signout" id="btn-signout" aria-label="Se déconnecter">✕</button>
-                </div>`;
-              document.getElementById('btn-signout')?.addEventListener('click', () => signOut());
-            }
+            if (headerAuth) headerAuth.innerHTML = `
+              <span class="agent-badge">${label.toUpperCase()}</span>
+              <a href="/cig.html" class="btn-auth btn-auth-cig" aria-label="Mon espace">◈ MON ESPACE</a>
+              <button class="btn-auth btn-auth-logout" id="logout-btn" aria-label="Se déconnecter">⬡ LOGOUT</button>
+            `;
+            document.getElementById('logout-btn')?.addEventListener('click', async () => {
+              await signOut();
+              window.location.reload();
+            });
           });
       }
 
       applySession(session);
       onAuthChange(s => applySession(s));
     }
+
     init();
   </script>
 </body>
