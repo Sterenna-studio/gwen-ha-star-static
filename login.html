@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CONNEXION — Gwen Ha Star</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/theme.css"/>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      background: var(--c-bg);
+    }
+    .login-wrap {
+      width: 100%;
+      max-width: 420px;
+      padding: var(--space-4);
+    }
+    .login-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      justify-content: center;
+      margin-bottom: var(--space-8);
+      text-decoration: none;
+    }
+    .login-logo-text {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      letter-spacing: 0.12em;
+      color: var(--c-primary);
+    }
+    .login-card {
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+    }
+    .login-tag {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--c-green-d);
+      margin-bottom: var(--space-2);
+    }
+    .login-title {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 700;
+      color: var(--c-text);
+      margin-bottom: var(--space-8);
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+    label {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: 0.1em;
+      color: var(--c-text-muted);
+    }
+    input[type="email"],
+    input[type="password"] {
+      background: var(--c-surface-2);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: var(--c-text);
+      width: 100%;
+      transition: border-color 180ms ease;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--c-primary);
+      box-shadow: 0 0 0 3px var(--c-primary-hl);
+    }
+    .btn-login {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: var(--space-3) var(--space-6);
+      margin-top: var(--space-6);
+      background: var(--c-primary);
+      color: var(--c-text-inv);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 180ms ease;
+    }
+    .btn-login:hover {
+      background: var(--c-primary-h);
+      box-shadow: var(--glow-primary);
+      transform: translateY(-1px);
+    }
+    .btn-login:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .login-error {
+      display: none;
+      margin-top: var(--space-4);
+      padding: var(--space-3) var(--space-4);
+      background: rgba(255, 71, 87, 0.1);
+      border: 1px solid rgba(255, 71, 87, 0.3);
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--c-red);
+      letter-spacing: 0.05em;
+    }
+    .login-error.visible { display: block; }
+    .login-footer {
+      margin-top: var(--space-6);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--c-text-faint);
+      letter-spacing: 0.08em;
+    }
+    .login-footer a {
+      color: var(--c-text-muted);
+      text-decoration: none;
+    }
+    .login-footer a:hover { color: var(--c-primary); }
+  </style>
+</head>
+<body>
+  <div class="login-wrap">
+    <a href="/" class="login-logo">
+      <svg width="28" height="28" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+        <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" stroke="var(--c-primary)" stroke-width="1.5" fill="none"/>
+        <polygon points="18,8 28,13 28,23 18,28 8,23 8,13" stroke="var(--c-primary)" stroke-width="0.8" fill="none" opacity="0.4"/>
+        <circle cx="18" cy="18" r="3" fill="var(--c-primary)"/>
+      </svg>
+      <span class="login-logo-text">GWEN·HA·STAR</span>
+    </a>
+
+    <div class="login-card">
+      <p class="login-tag">// ACCÈS · AGENT</p>
+      <h1 class="login-title">CONNEXION</h1>
+
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="email">IDENTIFIANT · EMAIL</label>
+          <input type="email" id="email" name="email"
+            placeholder="agent@sterenna.fr"
+            autocomplete="email" required />
+        </div>
+        <div class="form-group">
+          <label for="password">MOT DE PASSE</label>
+          <input type="password" id="password" name="password"
+            placeholder="••••••••"
+            autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="btn-login" id="submit-btn">
+          → CONNEXION
+        </button>
+        <div class="login-error" id="login-error" role="alert"></div>
+      </form>
+
+      <p class="login-footer">
+        <a href="/reset.html">Mot de passe oublié ?</a>
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { signIn, getSession } from './js/supabase.js';
+
+    // Si déjà connecté → rediriger vers accueil
+    getSession().then(session => {
+      if (session) window.location.href = '/';
+    });
+
+    const form   = document.getElementById('login-form');
+    const btn    = document.getElementById('submit-btn');
+    const errBox = document.getElementById('login-error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      btn.disabled    = true;
+      btn.textContent = '...';
+      errBox.classList.remove('visible');
+
+      const { error } = await signIn(email, password);
+
+      if (error) {
+        errBox.textContent = '⚠ ' + (error.message || 'Identifiants incorrects');
+        errBox.classList.add('visible');
+        btn.disabled    = false;
+        btn.textContent = '→ CONNEXION';
+      } else {
+        window.location.href = '/';
+      }
+    });
+  </script>
+</body>
+</html>
