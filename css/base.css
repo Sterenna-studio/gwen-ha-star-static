@@ -7,11 +7,9 @@
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Désactiver le lissage pour un rendu pixel net */
   text-rendering: optimizeSpeed;
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
-  /* Curseur personnalisé terminal */
   cursor: crosshair;
 }
 
@@ -23,9 +21,8 @@ body {
   color: var(--c-text);
   background-color: var(--c-bg);
   overflow-x: hidden;
-  /* Phosphore subtil sur tout le fond */
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(57,255,20,0.04) 0%, transparent 70%);
+  background-image: var(--bg-radial);
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 img, picture, video, canvas, svg { display: block; max-width: 100%; height: auto; }
@@ -36,13 +33,15 @@ p, li { text-wrap: pretty; max-width: 72ch; }
 button { cursor: pointer; background: none; border: none; }
 table { border-collapse: collapse; width: 100%; }
 
-/* Sélection phosphore */
 ::selection {
+  background: rgba(168, 85, 247, 0.18);
+  color: var(--c-primary);
+}
+[data-theme="dark"] ::selection {
   background: rgba(57, 255, 20, 0.20);
   color: var(--c-primary);
 }
 
-/* Focus visible : outline phosphore */
 :focus-visible {
   outline: 1px solid var(--c-primary);
   outline-offset: 3px;

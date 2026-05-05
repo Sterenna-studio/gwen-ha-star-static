@@ -2,19 +2,21 @@
    COMPONENTS.CSS — composants UI biopunk terminal
 ═══════════════════════════════════════════════════════════════ */
 
-/* ── SCANLINES CRT ──────────────────────────────────────────── */
+/* ── SCANLINES CRT ─────────────────────────────────────────────── */
 .scanlines {
   pointer-events: none;
   position: fixed; inset: 0; z-index: 9998;
   background: repeating-linear-gradient(
     to bottom,
     transparent 0px, transparent 2px,
-    rgba(0, 0, 0, 0.08) 2px, rgba(0, 0, 0, 0.08) 4px
+    rgba(0, 0, 0, var(--scanlines-op, 0.08)) 2px,
+    rgba(0, 0, 0, var(--scanlines-op, 0.08)) 4px
   );
   mix-blend-mode: multiply;
+  transition: opacity 0.4s;
 }
 
-/* ── PHOSPHORE VIGNETTE ─────────────────────────────────────── */
+/* ── PHOSPHORE VIGNETTE ─────────────────────────────────────────── */
 .phosphor-vignette {
   pointer-events: none;
   position: fixed; inset: 0; z-index: 9997;
@@ -25,7 +27,7 @@
   );
 }
 
-/* ── GRAIN ORGANIQUE ────────────────────────────────────────── */
+/* ── GRAIN ORGANIQUE ──────────────────────────────────────────── */
 .bio-grain {
   pointer-events: none;
   position: fixed; inset: 0; z-index: 9996;
@@ -34,7 +36,7 @@
   background-size: 256px;
 }
 
-/* ── ANIMATIONS GLOBALES ────────────────────────────────────── */
+/* ── ANIMATIONS GLOBALES ─────────────────────────────────────── */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.35; transform: scale(0.75); }
@@ -71,15 +73,16 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── HEADER ─────────────────────────────────────────────────── */
+/* ── HEADER ──────────────────────────────────────────────────── */
 .header {
   position: sticky; top: 0; z-index: 100;
   background: rgba(2, 4, 3, 0.90);
   backdrop-filter: blur(12px) saturate(1.2);
   border-bottom: 1px solid var(--c-border);
+  transition: background 0.4s, border-color 0.4s;
 }
 [data-theme="light"] .header {
-  background: rgba(232, 240, 224, 0.92);
+  background: rgba(13, 14, 26, 0.92);
 }
 .header-inner {
   max-width: 1280px; margin-inline: auto;
@@ -87,7 +90,6 @@
   display: flex; align-items: center; gap: var(--space-4);
 }
 
-/* LOGO */
 .logo {
   display: flex; align-items: center; gap: var(--space-2);
   text-decoration: none; color: var(--c-text); flex-shrink: 0;
@@ -103,7 +105,6 @@
   animation: flicker 8s ease-in-out infinite;
 }
 
-/* Status pill */
 .status-pill {
   display: flex; align-items: center; gap: var(--space-2);
   padding: var(--space-1) var(--space-3);
@@ -137,7 +138,24 @@
 }
 .header-auth { display: flex; align-items: center; }
 
-/* ── BOUTONS ────────────────────────────────────────────────── */
+/* ── BOUTON THEME TOGGLE ─────────────────────────────────────── */
+.theme-toggle {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  color: var(--c-text-muted);
+  font-size: 14px;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  color: var(--c-primary);
+  border-color: var(--c-primary);
+  box-shadow: var(--glow-green);
+}
+
+/* ── BOUTONS ──────────────────────────────────────────────────── */
 .btn {
   display: inline-flex; align-items: center; gap: var(--space-2);
   padding: var(--space-2) var(--space-5);
@@ -182,7 +200,7 @@
   transform: translateY(-1px);
 }
 
-/* ── HUD CARD (coins anguleux style Giger) ──────────────────── */
+/* ── HUD CARD ──────────────────────────────────────────────────── */
 .hud-card {
   position: relative;
   background: var(--c-surface);
@@ -190,30 +208,22 @@
   padding: var(--space-5) var(--space-6);
   transition: border-color var(--transition), box-shadow var(--transition);
 }
-/* Coins HUD pixel-art */
-.hud-card::before,
-.hud-card::after {
-  content: '';
-  position: absolute;
+.hud-card::before, .hud-card::after {
+  content: ''; position: absolute;
   width: 8px; height: 8px;
-  border-color: var(--c-primary);
-  border-style: solid;
-  opacity: 0.6;
+  border-color: var(--c-primary); border-style: solid; opacity: 0.6;
 }
-.hud-card::before {
-  top: -1px; left: -1px;
-  border-width: 2px 0 0 2px;
-}
-.hud-card::after {
-  bottom: -1px; right: -1px;
-  border-width: 0 2px 2px 0;
-}
+.hud-card::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.hud-card::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
 .hud-card:hover {
-  border-color: rgba(57, 255, 20, 0.35);
+  border-color: rgba(168, 85, 247, 0.35);
   box-shadow: var(--glow-primary);
 }
+[data-theme="dark"] .hud-card:hover {
+  border-color: rgba(57, 255, 20, 0.35);
+}
 
-/* ── SERVICE CARD ───────────────────────────────────────────── */
+/* ── SERVICE CARD ──────────────────────────────────────────────── */
 .svc-card {
   position: relative;
   background: var(--c-surface);
@@ -223,17 +233,13 @@
   transition: all var(--transition);
   overflow: hidden;
 }
-/* Coin TL */
 .svc-card::before {
-  content: '◤';
-  position: absolute; top: 3px; left: 4px;
+  content: '◤'; position: absolute; top: 3px; left: 4px;
   font-size: 8px; color: var(--svc-color, var(--c-primary));
   opacity: 0.4; line-height: 1;
 }
-/* Coin BR */
 .svc-card::after {
-  content: '◢';
-  position: absolute; bottom: 3px; right: 4px;
+  content: '◢'; position: absolute; bottom: 3px; right: 4px;
   font-size: 8px; color: var(--svc-color, var(--c-primary));
   opacity: 0.4; line-height: 1;
 }
@@ -301,10 +307,7 @@
 /* ── SECTION ────────────────────────────────────────────────── */
 .section { padding: clamp(var(--space-12), 8vw, var(--space-24)) 0; }
 .section-alt { background: var(--c-surface); }
-.section-inner {
-  max-width: 1280px; margin-inline: auto;
-  padding-inline: var(--space-6);
-}
+.section-inner { max-width: 1280px; margin-inline: auto; padding-inline: var(--space-6); }
 .section-tag {
   font-family: var(--font-mono); font-size: var(--text-xs);
   color: var(--c-green-d); letter-spacing: 0.18em;
@@ -331,19 +334,6 @@
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
-/* ── RADAR SVG ──────────────────────────────────────────────── */
-.radar-wrap {
-  background: var(--c-surface);
-  border: 1px solid var(--c-border);
-  padding: var(--space-4);
-  text-align: center;
-}
-.radar-tag {
-  font-family: var(--font-mono); font-size: 9px;
-  letter-spacing: 0.22em; color: var(--c-green-d);
-  margin-bottom: var(--space-3);
-}
-
 /* ── LOG FEED ───────────────────────────────────────────────── */
 .log-feed {
   background: var(--c-surface);
@@ -352,11 +342,7 @@
   font-family: var(--font-mono); font-size: var(--text-xs);
   min-height: 120px;
 }
-.log-line {
-  display: flex; gap: var(--space-3);
-  margin-bottom: var(--space-1);
-  transition: opacity 0.3s;
-}
+.log-line { display: flex; gap: var(--space-3); margin-bottom: var(--space-1); transition: opacity 0.3s; }
 .log-time { color: var(--c-text-faint); flex-shrink: 0; }
 .log-msg  { color: var(--c-green-d); }
 

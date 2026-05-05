@@ -12,20 +12,16 @@
   <link rel="stylesheet" href="css/components.css"/>
   <link rel="stylesheet" href="css/auth.css"/>
   <style>
-    /* ── PAGE SPÉCIFIQUE ────────────────────────────────────── */
-
-    /* Étoiles pixel */
+    /* ── PAGE SPÉCIFIQUE ──────────────────────────────────────── */
     .stars-layer {
       position: fixed; inset: 0; z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
+      pointer-events: none; overflow: hidden;
     }
     .star {
-      position: absolute;
-      background: #fff;
-      border-radius: 50%;
+      position: absolute; background: #fff; border-radius: 50%;
       animation: star-twinkle var(--dur) var(--delay) ease-in-out infinite;
     }
+    [data-theme="light"] .star { background: #c4b5fd; }
     @keyframes star-twinkle {
       0%,100% { opacity: var(--op); }
       50%      { opacity: calc(var(--op) * 0.15); }
@@ -44,26 +40,17 @@
       margin-inline: auto;
     }
     @media (max-width: 1100px) {
-      .bridge-layout {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto;
-      }
-      .col-left  { grid-column: 1; }
-      .col-main  { grid-column: 1 / -1; }
-      .col-right { grid-column: 2; }
+      .bridge-layout { grid-template-columns: 1fr 1fr; }
+      .col-main { grid-column: 1 / -1; }
     }
     @media (max-width: 640px) {
       .bridge-layout { grid-template-columns: 1fr; padding: var(--space-3); }
       .col-left, .col-right { display: none; }
     }
-
-    /* Colonnes */
-    .col-left, .col-right {
-      display: flex; flex-direction: column; gap: var(--space-3);
-    }
+    .col-left, .col-right { display: flex; flex-direction: column; gap: var(--space-3); }
     .col-main { display: flex; flex-direction: column; gap: var(--space-4); }
 
-    /* BRIDGE TITLE */
+    /* Bridge title row */
     .bridge-title-row {
       grid-column: 1 / -1;
       display: flex; align-items: baseline; gap: var(--space-4);
@@ -79,10 +66,8 @@
       animation: flicker 10s ease-in-out infinite;
     }
     .bridge-subtitle {
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      color: var(--c-text-muted);
-      letter-spacing: 0.15em;
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      color: var(--c-text-muted); letter-spacing: 0.15em;
     }
     .bridge-time {
       margin-left: auto;
@@ -94,7 +79,7 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* MODULES GRID */
+    /* Modules */
     .modules-tag {
       font-family: var(--font-mono); font-size: 9px;
       letter-spacing: 0.22em; color: var(--c-green-d);
@@ -106,7 +91,7 @@
       gap: var(--space-3);
     }
 
-    /* PANEL WIDGET */
+    /* Panel */
     .panel {
       background: var(--c-surface);
       border: 1px solid var(--c-border);
@@ -118,10 +103,8 @@
       margin-bottom: var(--space-3);
     }
 
-    /* RADAR SVG inline */
     .radar-svg { width: 100%; max-width: 180px; margin-inline: auto; display: block; }
 
-    /* SYSTEMS LIST */
     .sys-list { display: flex; flex-direction: column; gap: var(--space-2); }
     .sys-item {
       display: flex; align-items: center; gap: var(--space-2);
@@ -129,8 +112,7 @@
       letter-spacing: 0.08em; color: var(--c-text-muted);
     }
     .sys-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      flex-shrink: 0;
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
       animation: pulse-dot 2s ease-in-out infinite;
     }
     .sys-dot-green  { background: var(--c-green);  box-shadow: var(--glow-green); }
@@ -138,47 +120,27 @@
     .sys-dot-purple { background: var(--c-purple); box-shadow: var(--glow-purple); }
     .sys-dot-cyan   { background: var(--c-cyan);   box-shadow: var(--glow-cyan); }
 
-    /* AGENT CARD */
     .agent-card {
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
+      background: var(--c-surface); border: 1px solid var(--c-border);
       padding: var(--space-4) var(--space-5);
     }
-    .agent-label {
-      font-family: var(--font-mono); font-size: 9px;
-      letter-spacing: 0.22em; color: var(--c-green-d);
-      margin-bottom: var(--space-2);
-    }
-    .agent-name {
-      font-family: var(--font-display);
-      font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
-      letter-spacing: 0.15em;
-      color: var(--c-text);
-      margin-bottom: var(--space-1);
-    }
-    .agent-title {
-      font-family: var(--font-mono); font-size: var(--text-xs);
-      color: var(--c-amber);
-      letter-spacing: 0.1em;
-    }
+    .agent-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.22em; color: var(--c-green-d); margin-bottom: var(--space-2); }
+    .agent-name { font-family: var(--font-display); font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem); letter-spacing: 0.15em; color: var(--c-text); margin-bottom: var(--space-1); }
+    .agent-title { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--c-amber); letter-spacing: 0.1em; }
 
-    /* SIGNAL CANVAS */
     .signal-canvas {
-      width: 100%; height: 70px;
-      display: block;
+      width: 100%; height: 70px; display: block;
       border: 1px solid var(--c-border);
       background: rgba(0,0,0,0.5);
     }
 
-    /* GUEST banner */
     .guest-banner {
       grid-column: 1 / -1;
       display: flex; align-items: center; justify-content: space-between;
       padding: var(--space-4) var(--space-6);
       background: var(--c-surface);
-      border: 1px solid rgba(57, 255, 20, 0.18);
-      gap: var(--space-4);
-      flex-wrap: wrap;
+      border: 1px solid var(--c-primary-hl);
+      gap: var(--space-4); flex-wrap: wrap;
     }
     .guest-banner p {
       font-family: var(--font-mono); font-size: var(--text-xs);
@@ -188,12 +150,9 @@
   </style>
 </head>
 <body>
-  <!-- Effets d'ambiance -->>
   <div class="scanlines" aria-hidden="true"></div>
   <div class="phosphor-vignette" aria-hidden="true"></div>
   <div class="bio-grain" aria-hidden="true"></div>
-
-  <!-- Étoiles générées en JS -->
   <div class="stars-layer" id="stars-layer" aria-hidden="true"></div>
 
   <!-- HEADER -->
@@ -222,8 +181,12 @@
         <a href="/cig.html" class="nav-link">CIG</a>
       </nav>
 
+      <!-- Toggle thème -->
+      <button class="theme-toggle" id="theme-toggle" aria-label="Changer de thème" title="Basculer Dark/Light">
+        🌙
+      </button>
+
       <div class="header-auth" id="header-auth">
-        <!-- Injecté par auth.js -->
         <a href="/login.html" class="btn-auth btn-auth-login" aria-label="Se connecter">⬡ CONNEXION</a>
       </div>
     </div>
@@ -236,19 +199,23 @@
       <span class="ticker-item">OLLAMA MODULE ONLINE<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">JELLYFIN STREAM SYNC<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">POKEFORGE GANGS ACTIVE<span class="ticker-sep">◆</span></span>
+      <span class="ticker-item">DUNGEON RESET IDLE<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">TUNNEL CLOUD SECURE<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">CYBERCHEF READY<span class="ticker-sep">◆</span></span>
+      <span class="ticker-item">JUKEBOX STANDBY<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">LAB STERENNA CONNECTED<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">MOONLIGHT STANDBY<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">UPTIME KUMA WATCHING<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">SIGNAL NOMINAL 99.8%<span class="ticker-sep">◆</span></span>
-      <!-- Duplicate for seamless loop -->
+      <!-- Duplicate -->
       <span class="ticker-item">CORE SYSTEMS NOMINAL<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">OLLAMA MODULE ONLINE<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">JELLYFIN STREAM SYNC<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">POKEFORGE GANGS ACTIVE<span class="ticker-sep">◆</span></span>
+      <span class="ticker-item">DUNGEON RESET IDLE<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">TUNNEL CLOUD SECURE<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">CYBERCHEF READY<span class="ticker-sep">◆</span></span>
+      <span class="ticker-item">JUKEBOX STANDBY<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">LAB STERENNA CONNECTED<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">MOONLIGHT STANDBY<span class="ticker-sep">◆</span></span>
       <span class="ticker-item">UPTIME KUMA WATCHING<span class="ticker-sep">◆</span></span>
@@ -256,29 +223,25 @@
     </div>
   </div>
 
-  <!-- COCKPIT LAYOUT -->
+  <!-- COCKPIT -->
   <div class="bridge-layout">
 
-    <!-- ── TITRE ROW ────────────────────────────────────────── -->
     <div class="bridge-title-row">
       <div>
-        <h1 class="bridge-title cursor-blink" id="bridge-title">GWEN·HA·STAR</h1>
+        <h1 class="bridge-title cursor-blink">GWEN·HA·STAR</h1>
         <p class="bridge-subtitle">// TERMINAL BRIDGE · v5.0 · BIOPUNK INTERFACE</p>
       </div>
-      <div class="bridge-time" id="bridge-clock" aria-live="polite" aria-label="Heure système">--:--:--</div>
+      <div class="bridge-time" id="bridge-clock" aria-live="polite">--:--:--</div>
     </div>
 
-    <!-- ── COLONNE GAUCHE ─────────────────────────────────── -->
+    <!-- COL GAUCHE -->
     <aside class="col-left">
-
-      <!-- Agent info -->
       <div class="agent-card" id="agent-card">
         <p class="agent-label">// AGENT · CONNECTED</p>
         <p class="agent-name" id="agent-name">---</p>
         <p class="agent-title" id="agent-title">◆ RECRUE</p>
       </div>
 
-      <!-- Radar -->
       <div class="panel">
         <p class="panel-tag">// RADAR · SCAN</p>
         <svg class="radar-svg" viewBox="0 0 200 200" aria-label="Radar de surveillance" role="img">
@@ -288,26 +251,20 @@
               <stop offset="100%" stop-color="var(--c-primary)" stop-opacity="0"/>
             </radialGradient>
           </defs>
-          <!-- Grilles circulaires -->
           <circle cx="100" cy="100" r="90" fill="none" stroke="var(--c-primary)" stroke-width="0.8" opacity="0.15"/>
           <circle cx="100" cy="100" r="60" fill="none" stroke="var(--c-primary)" stroke-width="0.8" opacity="0.20"/>
           <circle cx="100" cy="100" r="30" fill="none" stroke="var(--c-primary)" stroke-width="1" opacity="0.35"/>
-          <!-- Axes -->
           <line x1="100" y1="10" x2="100" y2="190" stroke="var(--c-primary)" stroke-width="0.4" opacity="0.2"/>
           <line x1="10"  y1="100" x2="190" y2="100" stroke="var(--c-primary)" stroke-width="0.4" opacity="0.2"/>
-          <!-- Balayage animé -->
           <g style="transform-origin:100px 100px;animation:sweep 4s linear infinite">
-            <path d="M100,100 L100,10 A90,90 0 0,1 163,55 Z"
-                  fill="url(#sweep-grad)" opacity="0.30"/>
+            <path d="M100,100 L100,10 A90,90 0 0,1 163,55 Z" fill="url(#sweep-grad)" opacity="0.30"/>
           </g>
-          <!-- Cibles -->
-          <circle cx="68"  cy="72"  r="3" fill="var(--c-primary)"   style="animation:blip 2s ease-in-out infinite"/>
-          <circle cx="140" cy="130" r="2" fill="var(--c-red)"       style="animation:blip 3s ease-in-out infinite 0.8s"/>
-          <circle cx="115" cy="52"  r="2" fill="var(--c-amber)"     style="animation:blip 2.5s ease-in-out infinite 1.5s"/>
+          <circle cx="68"  cy="72"  r="3" fill="var(--c-primary)"  style="animation:blip 2s ease-in-out infinite"/>
+          <circle cx="140" cy="130" r="2" fill="var(--c-red)"      style="animation:blip 3s ease-in-out infinite 0.8s"/>
+          <circle cx="115" cy="52"  r="2" fill="var(--c-amber)"    style="animation:blip 2.5s ease-in-out infinite 1.5s"/>
         </svg>
       </div>
 
-      <!-- Systems status -->
       <div class="panel">
         <p class="panel-tag">// SYSTEMS</p>
         <ul class="sys-list" aria-label="État des systèmes">
@@ -321,40 +278,31 @@
       </div>
     </aside>
 
-    <!-- ── COLONNE CENTRALE ───────────────────────────────── -->
+    <!-- COL CENTRALE -->
     <main class="col-main" id="main-content">
-
-      <!-- Guest banner (caché si connecté) -->
       <div class="guest-banner" id="guest-banner" aria-live="polite">
         <p>⚠ ACCÈS RESTREINT · Authentification requise pour accéder aux modules.</p>
         <a href="/login.html" class="btn btn-primary">⬡ SE CONNECTER</a>
       </div>
 
-      <!-- Modules grid -->
       <div>
         <p class="modules-tag" id="modules-tag">// MODULES · -- SYSTEMS ONLINE</p>
-        <div class="modules-grid" id="modules-grid" aria-label="Modules disponibles">
-          <!-- Injectés par JS -->
-        </div>
+        <div class="modules-grid" id="modules-grid" aria-label="Modules disponibles"></div>
       </div>
     </main>
 
-    <!-- ── COLONNE DROITE ─────────────────────────────────── -->
+    <!-- COL DROITE -->
     <aside class="col-right">
-
-      <!-- Log feed -->
       <div class="panel">
         <p class="panel-tag">// STATUS FEED <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--c-green);box-shadow:var(--glow-green);animation:pulse-dot 1.5s infinite;vertical-align:middle;margin-left:4px"></span></p>
         <div class="log-feed" id="log-feed" aria-live="polite" aria-label="Journal système"></div>
       </div>
 
-      <!-- Signal oscilloscope -->
       <div class="panel">
         <p class="panel-tag">// SIGNAL MONITOR</p>
         <canvas class="signal-canvas" id="signal-canvas" width="240" height="70"
                 aria-label="Moniteur de signal" role="img"></canvas>
       </div>
-
     </aside>
   </div>
 
@@ -369,21 +317,29 @@
   <script type="module">
     import { supabase, getSession, signOut, onAuthChange } from './js/supabase.js';
 
-    /* ── CONFIG SERVICES ───────────────────────────────────── */
+    /* ── SERVICES v4.2 ─────────────────────────────────────────
+       Liste canonique issue de la v4.2, avec :
+       - pokegang  : URL externe corrigée
+       - dungeon   : iframe http://100.64.0.2:8081
+       - jukebox   : navidrome / musique
+       - draw / chef / neko : sous-domaines nitro
+       - dash / sunshine    : superuser seulement
+    ────────────────────────────────────────────────────────── */
     const SERVICES = [
-      { id:'pokegang',  title:'POKEFORGE',      desc:'Rocket HQ Gang Wars',        icon:'◉',  color:'#ff6b6b', href:'https://pokegang.nitro.sterenna.fr',   role:'all',       external:true  },
-      { id:'dungeon',   title:'DUNGEON',         desc:'Tycoon D&D Lucifer',          icon:'⬡',  color:'#8b5cf6', href:'https://dungeon.nitro.sterenna.fr',     role:'all',       external:true  },
-      { id:'draw',      title:'EXCALIDRAW',      desc:'Whiteboard Collaboratif',     icon:'✦',  color:'#4ecdc4', href:'https://draw.nitro.sterenna.fr',        role:'all',       external:true  },
-      { id:'chef',      title:'CYBERCHEF',       desc:'Encodage · Crypto · Utils',   icon:'⚗',  color:'#34d399', href:'https://chef.nitro.sterenna.fr',        role:'all',       external:true  },
-      { id:'neko',      title:'BUREAU DISTANT',  desc:'Accès navigateur WebRTC',     icon:'◈',  color:'#7b5cf0', href:'https://neko.nitro.sterenna.fr',        role:'all',       external:true  },
-      { id:'streaming', title:'MOONLIGHT',       desc:'Streaming jeux · lancer',     icon:'◐',  color:'#3ecfcf', href:'https://moonlight.zyra-os',            role:'all',       external:true  },
-      { id:'ollama',    title:'OLLAMA',           desc:'IA Locale · Modèles LLM',    icon:'◎',  color:'#f9ca24', href:'https://ai.nitro.sterenna.fr',          role:'all',       external:true  },
-      { id:'jellyfin',  title:'JELLYFIN',         desc:'Films · Séries · Musique',   icon:'▶',  color:'#6c5ce7', href:'https://jellyfin.nitro.sterenna.fr',    role:'all',       external:true  },
-      { id:'status',    title:'UPTIME KUMA',      desc:'Monitoring des services',     icon:'◈',  color:'#639922', href:'https://status.nitro.sterenna.fr',      role:'all',       external:true  },
-      { id:'lab',       title:'LAB',              desc:'Sterenna Lab',                icon:'⬡',  color:'#00b894', href:'https://lab.sterenna.fr',               role:'all',       external:true  },
-      { id:'internal',  title:'INT 8081',          desc:'Accès local 100.64.0.2',     icon:'⊡',  color:'#e17055', href:'http://100.64.0.2:8081',               role:'all',       external:true  },
-      { id:'dash',      title:'DASHDOT',          desc:'CPU · GPU · RAM live',        icon:'◫',  color:'#BA7517', href:'https://dash.nitro.sterenna.fr',        role:'superuser', external:true  },
-      { id:'sunshine',  title:'SUNSHINE',         desc:'Config streaming admin',      icon:'☀',  color:'#D85A30', href:'https://sunshine.nitro.sterenna.fr',   role:'superuser', external:true  },
+      { id:'pokegang',  title:'POKEFORGE',     desc:'Rocket HQ Gang Wars',        icon:'⚙',  color:'#ff6b6b', href:'https://pokegang.nitro.sterenna.fr',  role:'all',       external:true  },
+      { id:'dungeon',   title:'DUNGEON',        desc:'Tycoon D&D Lucifer',          icon:'⬡',  color:'#8b5cf6', href:'http://100.64.0.2:8081',              role:'all',       external:true  },
+      { id:'draw',      title:'EXCALIDRAW',     desc:'Whiteboard Collaboratif',     icon:'✦',  color:'#4ecdc4', href:'https://draw.nitro.sterenna.fr',       role:'all',       external:true  },
+      { id:'chef',      title:'CYBERCHEF',      desc:'Encodage · Crypto · Utils',   icon:'⚗',  color:'#34d399', href:'https://chef.nitro.sterenna.fr',       role:'all',       external:true  },
+      { id:'neko',      title:'BUREAU DISTANT', desc:'Accès navigateur WebRTC',     icon:'◈',  color:'#7b5cf0', href:'https://neko.nitro.sterenna.fr',       role:'all',       external:true  },
+      { id:'jukebox',   title:'JUKEBOX',        desc:'Musique · Navidrome · Stream',icon:'▶',  color:'#f472b6', href:'https://music.nitro.sterenna.fr',      role:'all',       external:true  },
+      { id:'streaming', title:'MOONLIGHT',      desc:'Streaming jeux · lancer',     icon:'◐',  color:'#3ecfcf', href:'https://moonlight.zyra-os',            role:'all',       external:true  },
+      { id:'ollama',    title:'OLLAMA',          desc:'IA Locale · Modèles LLM',    icon:'◎',  color:'#f9ca24', href:'https://ai.nitro.sterenna.fr',          role:'all',       external:true  },
+      { id:'jellyfin',  title:'JELLYFIN',        desc:'Films · Séries · Musique',   icon:'▶',  color:'#6c5ce7', href:'https://jellyfin.nitro.sterenna.fr',    role:'all',       external:true  },
+      { id:'status',    title:'UPTIME KUMA',     desc:'Monitoring des services',     icon:'◈',  color:'#639922', href:'https://status.nitro.sterenna.fr',      role:'all',       external:true  },
+      { id:'lab',       title:'LAB',             desc:'Sterenna Lab',                icon:'⬡',  color:'#00b894', href:'https://lab.sterenna.fr',               role:'all',       external:true  },
+      { id:'internal',  title:'INT 8081',         desc:'Accès local 100.64.0.2',     icon:'⊡',  color:'#e17055', href:'http://100.64.0.2:8081',               role:'all',       external:true  },
+      { id:'dash',      title:'DASHDOT',         desc:'CPU · GPU · RAM live',        icon:'◫',  color:'#BA7517', href:'https://dash.nitro.sterenna.fr',        role:'superuser', external:true  },
+      { id:'sunshine',  title:'SUNSHINE',        desc:'Config streaming admin',      icon:'☀',  color:'#D85A30', href:'https://sunshine.nitro.sterenna.fr',   role:'superuser', external:true  },
     ];
 
     const LOG_MESSAGES = [
@@ -391,71 +347,72 @@
       'POKEFORGE GANGS ACTIVE', 'TUNNEL CLOUD SECURE', 'DRAW MODULE STANDBY',
       'CYBERCHEF READY', 'LAB STERENNA CONNECTED', 'INT 8081 ALIVE',
       'SIGNAL NOMINAL 99.8%', 'MOONLIGHT STANDBY', 'NEKO IDLE',
-      'BIOSCAN COMPLETE', 'NEURAL LINK STABLE', 'CHITINE LAYER NOMINAL',
+      'JUKEBOX STANDBY', 'DUNGEON RESET IDLE', 'BIOSCAN COMPLETE',
+      'NEURAL LINK STABLE', 'CHITINE LAYER NOMINAL',
     ];
 
-    /* ── ÉTOILES ───────────────────────────────────────────── */
-    function generateStars() {
+    /* ── THEME TOGGLE ──────────────────────────────────────── */
+    const html  = document.documentElement;
+    const tBtn  = document.getElementById('theme-toggle');
+    let currentTheme = 'dark';
+
+    tBtn.addEventListener('click', () => {
+      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', currentTheme);
+      tBtn.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+      tBtn.title = currentTheme === 'dark' ? 'Passer en mode Lumière' : 'Passer en mode Obscur';
+      // Redessine l'oscilloscope avec la bonne couleur
+      if (window._signalColor) window._signalColor = getComputedStyle(html).getPropertyValue('--signal-color').trim();
+    });
+
+    /* ── ÉTOILES ─────────────────────────────────────────── */
+    (function generateStars() {
       const layer = document.getElementById('stars-layer');
       for (let i = 0; i < 90; i++) {
-        const s = document.createElement('div');
+        const s    = document.createElement('div');
         s.className = 'star';
         const size = Math.random() > 0.85 ? 2 : 1;
         const op   = (Math.random() * 0.7 + 0.1).toFixed(2);
-        const dur  = (Math.random() * 4 + 2).toFixed(1);
-        const del  = (Math.random() * 6).toFixed(1);
-        s.style.cssText = `
-          width:${size}px;height:${size}px;
-          top:${Math.random()*100}%;left:${Math.random()*100}%;
-          --op:${op};--dur:${dur}s;--delay:${del}s;
-          image-rendering:pixelated;
-        `;
+        s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--op:${op};--dur:${(Math.random()*4+2).toFixed(1)}s;--delay:${(Math.random()*6).toFixed(1)}s;`;
         layer.appendChild(s);
       }
-    }
-    generateStars();
+    })();
 
-    /* ── HORLOGE ───────────────────────────────────────────── */
-    function startClock() {
+    /* ── HORLOGE ─────────────────────────────────────────── */
+    (() => {
       const el = document.getElementById('bridge-clock');
-      const tick = () => { el.textContent = new Date().toLocaleTimeString('fr-FR', {hour12:false}); };
-      tick(); setInterval(tick, 1000);
-    }
-    startClock();
+      const t  = () => { el.textContent = new Date().toLocaleTimeString('fr-FR', {hour12:false}); };
+      t(); setInterval(t, 1000);
+    })();
 
-    /* ── LOG FEED ──────────────────────────────────────────── */
+    /* ── LOG FEED ────────────────────────────────────────── */
     const logFeed = document.getElementById('log-feed');
     function pushLog(msg) {
-      const t = new Date().toLocaleTimeString('fr-FR', {hour12:false});
+      const t    = new Date().toLocaleTimeString('fr-FR', {hour12:false});
       const line = document.createElement('div');
       line.className = 'log-line';
       line.innerHTML = `<span class="log-time">${t}</span><span class="log-msg">${msg}</span>`;
       logFeed.appendChild(line);
-      // Garder max 8 lignes
       while (logFeed.children.length > 8) logFeed.removeChild(logFeed.firstChild);
-      // Fade-in progressif
       [...logFeed.children].forEach((el, i, arr) => {
         el.style.opacity = (0.35 + (i / arr.length) * 0.65).toFixed(2);
       });
     }
-    // Boot sequence
-    ['BOOT SEQUENCE INITIATED', 'BIOSCAN RUNNING...', 'CHITINE LAYER OK'].forEach((m, i) => {
-      setTimeout(() => pushLog(m), i * 600);
-    });
-    // Logs périodiques
+    ['BOOT SEQUENCE INITIATED', 'BIOSCAN RUNNING...', 'CHITINE LAYER OK'].forEach((m, i) => setTimeout(() => pushLog(m), i * 600));
     setInterval(() => pushLog(LOG_MESSAGES[Math.floor(Math.random() * LOG_MESSAGES.length)]), 3500);
 
-    /* ── OSCILLOSCOPE ──────────────────────────────────────── */
-    function startSignal() {
+    /* ── OSCILLOSCOPE ────────────────────────────────────── */
+    (() => {
       const canvas = document.getElementById('signal-canvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       let phase = 0;
       function draw() {
+        const color = getComputedStyle(html).getPropertyValue('--signal-color').trim() || '#39ff14';
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = '#39ff14';
+        ctx.strokeStyle = color;
         ctx.lineWidth   = 1.5;
-        ctx.shadowColor = '#39ff14';
+        ctx.shadowColor = color;
         ctx.shadowBlur  = 6;
         ctx.beginPath();
         for (let x = 0; x < canvas.width; x += 2) {
@@ -470,16 +427,15 @@
         requestAnimationFrame(draw);
       }
       draw();
-    }
-    startSignal();
+    })();
 
-    /* ── MODULES GRID ──────────────────────────────────────── */
+    /* ── MODULES GRID ────────────────────────────────────── */
     function renderModules(role) {
-      const grid = document.getElementById('modules-grid');
-      const tag  = document.getElementById('modules-tag');
+      const grid    = document.getElementById('modules-grid');
+      const tag     = document.getElementById('modules-tag');
       const visible = SERVICES.filter(s => s.role === 'all' || role === 'superuser');
       tag.textContent = `// MODULES · ${visible.length} SYSTEMS ONLINE`;
-      grid.innerHTML = '';
+      grid.innerHTML  = '';
       visible.forEach(svc => {
         const card = document.createElement('div');
         card.className = 'svc-card';
@@ -494,19 +450,17 @@
           <div class="svc-desc">${svc.desc}</div>
           ${svc.role === 'superuser' ? '<span class="svc-admin">ADMIN</span>' : ''}
         `;
-        const open = () => window.open(svc.href, svc.external ? '_blank' : '_self');
+        const open = () => window.open(svc.href, '_blank', 'noopener,noreferrer');
         card.addEventListener('click', open);
         card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
         grid.appendChild(card);
       });
     }
 
-    /* ── AUTH ──────────────────────────────────────────────── */
+    /* ── AUTH ────────────────────────────────────────────── */
     async function init() {
-      const session = await getSession();
-
+      const session     = await getSession();
       const guestBanner = document.getElementById('guest-banner');
-      const agentCard   = document.getElementById('agent-card');
       const agentName   = document.getElementById('agent-name');
       const agentTitle  = document.getElementById('agent-title');
       const headerAuth  = document.getElementById('header-auth');
@@ -517,29 +471,22 @@
           if (agentName)   agentName.textContent    = 'GUEST';
           if (agentTitle)  agentTitle.textContent   = '◆ NON AUTHENTIFIÉ';
           renderModules('all');
-          // Header : bouton connexion
           if (headerAuth) headerAuth.innerHTML = `<a href="/login.html" class="btn-auth btn-auth-login" aria-label="Se connecter">⬡ CONNEXION</a>`;
           return;
         }
-
         const user  = sess.user;
         const meta  = user.user_metadata ?? {};
         const label = meta.username ?? meta.name ?? user.email?.split('@')[0] ?? 'AGENT';
-
         if (guestBanner) guestBanner.style.display = 'none';
 
-        // Charger profil Supabase
         supabase.from('profiles').select('*').eq('id', user.id).single()
           .then(({ data: profile }) => {
             const role        = profile?.role        ?? 'guest';
             const activeTitle = profile?.active_title ?? 'Recrue';
             const username    = profile?.username    ?? label;
-
             if (agentName)  agentName.textContent  = username.toUpperCase();
             if (agentTitle) agentTitle.textContent  = '◆ ' + activeTitle.toUpperCase();
             renderModules(role);
-
-            // Header injection
             if (headerAuth) {
               headerAuth.innerHTML = `
                 <div class="auth-connected">
@@ -556,9 +503,8 @@
       }
 
       applySession(session);
-      onAuthChange(newSess => applySession(newSess));
+      onAuthChange(s => applySession(s));
     }
-
     init();
   </script>
 </body>
