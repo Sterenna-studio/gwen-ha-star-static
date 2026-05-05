@@ -1,7 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════
-   THEME.CSS — BIOPUNK / GIGER TERMINAL
-   Mode DARK  : phosphore vert organique, chitine noire
-   Mode LIGHT : bleu-violet cristal sur surfaces claires (day mode)
+   THEME.CSS — GWEN·HA·STAR
+   DARK    : phosphore vert organique, chitine noire (défaut)
+   VIOLET  : terminal violet nuit, surfaces sombres indigo
+   LIGHT   : bleu-violet cristal sur surfaces claires (day mode)
 ═══════════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
@@ -28,7 +29,6 @@
   --radius-sm: 2px;  --radius-md: 4px;  --radius-lg: 6px;
   --radius-xl: 8px;  --radius-full: 9999px;
 
-  /* Surfaces */
   --c-bg:        #020403;
   --c-surface:   #050906;
   --c-surface-2: #080e09;
@@ -36,18 +36,15 @@
   --c-border:    rgba(57, 255, 20, 0.10);
   --c-divider:   rgba(57, 255, 20, 0.05);
 
-  /* Texte */
   --c-text:       #b8ffc0;
   --c-text-muted: rgba(184, 255, 192, 0.50);
   --c-text-faint: rgba(184, 255, 192, 0.22);
   --c-text-inv:   #020403;
 
-  /* Primaire */
   --c-primary:    #39ff14;
   --c-primary-h:  #6aff45;
   --c-primary-hl: rgba(57, 255, 20, 0.08);
 
-  /* Accents */
   --c-green:      #39ff14;
   --c-green-d:    rgba(57, 255, 20, 0.55);
   --c-acid:       #b8ff4a;
@@ -60,7 +57,6 @@
   --c-purple:     #bf5fff;
   --c-purple-d:   rgba(191, 95, 255, 0.45);
 
-  /* Glows */
   --glow-primary: 0 0 12px rgba(57, 255, 20, 0.35), 0 0 30px rgba(57, 255, 20, 0.12);
   --glow-green:   0 0 10px rgba(57, 255, 20, 0.30);
   --glow-amber:   0 0 12px rgba(255, 170, 0, 0.35);
@@ -78,7 +74,77 @@
   --scanlines-op: 0.08;
 }
 
-/* ══ LIGHT MODE — Bleu-Violet cristal, surfaces CLAIRES ═══════ */
+/* ══ VIOLET MODE — terminal violet nuit ═══════════════════════ */
+[data-theme="violet"] {
+  --font-display: 'VT323', 'Courier New', monospace;
+  --font-mono:    'Share Tech Mono', 'Courier New', monospace;
+  --font-body:    'Share Tech Mono', 'Courier New', monospace;
+
+  --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
+  --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
+  --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+  --text-lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
+  --text-xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);
+  --text-2xl:  clamp(2rem,     1.2rem  + 2.5vw,  3.5rem);
+  --text-hero: clamp(3rem,     1rem    + 6vw,    7rem);
+
+  --space-1: 0.25rem;  --space-2: 0.5rem;   --space-3: 0.75rem;
+  --space-4: 1rem;     --space-5: 1.25rem;  --space-6: 1.5rem;
+  --space-8: 2rem;     --space-10: 2.5rem;  --space-12: 3rem;
+  --space-16: 4rem;    --space-20: 5rem;    --space-24: 6rem;
+
+  --radius-sm: 2px;  --radius-md: 4px;  --radius-lg: 6px;
+  --radius-xl: 8px;  --radius-full: 9999px;
+
+  /* Surfaces — nuit violette profonde */
+  --c-bg:        #07040f;
+  --c-surface:   #0d0818;
+  --c-surface-2: #120d20;
+  --c-surface-3: #1a1230;
+  --c-border:    rgba(191, 95, 255, 0.14);
+  --c-divider:   rgba(191, 95, 255, 0.06);
+
+  /* Texte — lavande phosphorescente */
+  --c-text:       #e8d5ff;
+  --c-text-muted: rgba(232, 213, 255, 0.50);
+  --c-text-faint: rgba(232, 213, 255, 0.22);
+  --c-text-inv:   #07040f;
+
+  /* Primaire — violet électrique */
+  --c-primary:    #bf5fff;
+  --c-primary-h:  #d480ff;
+  --c-primary-hl: rgba(191, 95, 255, 0.10);
+
+  --c-green:      #bf5fff;
+  --c-green-d:    rgba(191, 95, 255, 0.55);
+  --c-acid:       #a855f7;
+  --c-cyan:       #818cf8;
+  --c-cyan-d:     rgba(129, 140, 248, 0.45);
+  --c-amber:      #f59e0b;
+  --c-amber-d:    rgba(245, 158, 11, 0.50);
+  --c-red:        #f43f5e;
+  --c-red-d:      rgba(244, 63, 94, 0.45);
+  --c-purple:     #bf5fff;
+  --c-purple-d:   rgba(191, 95, 255, 0.45);
+
+  --glow-primary: 0 0 14px rgba(191, 95, 255, 0.45), 0 0 35px rgba(191, 95, 255, 0.15);
+  --glow-green:   0 0 12px rgba(191, 95, 255, 0.38);
+  --glow-amber:   0 0 12px rgba(245, 158, 11, 0.35);
+  --glow-cyan:    0 0 12px rgba(129, 140, 248, 0.35);
+  --glow-red:     0 0 10px rgba(244, 63, 94, 0.35);
+  --glow-purple:  0 0 14px rgba(191, 95, 255, 0.45);
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.7);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.75);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.85);
+  --transition: 160ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  --signal-color: #bf5fff;
+  --bg-radial: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(191,95,255,0.06) 0%, transparent 70%);
+  --scanlines-op: 0.07;
+}
+
+/* ══ LIGHT MODE — Bleu-Violet cristal, surfaces CLAIRES ══════ */
 [data-theme="light"] {
   --font-display: 'VT323', 'Courier New', monospace;
   --font-mono:    'Share Tech Mono', 'Courier New', monospace;
@@ -100,7 +166,6 @@
   --radius-sm: 2px;  --radius-md: 4px;  --radius-lg: 6px;
   --radius-xl: 8px;  --radius-full: 9999px;
 
-  /* Surfaces — blanc cassé lavande */
   --c-bg:        #f4f3ff;
   --c-surface:   #edeaff;
   --c-surface-2: #e5e1ff;
@@ -108,31 +173,27 @@
   --c-border:    rgba(109, 40, 217, 0.16);
   --c-divider:   rgba(109, 40, 217, 0.07);
 
-  /* Texte — indigo profond lisible sur fond clair */
   --c-text:       #1e1145;
   --c-text-muted: rgba(30, 17, 69, 0.55);
   --c-text-faint: rgba(30, 17, 69, 0.30);
   --c-text-inv:   #f4f3ff;
 
-  /* Primaire — violet électrique */
   --c-primary:    #7c3aed;
   --c-primary-h:  #6d28d9;
   --c-primary-hl: rgba(124, 58, 237, 0.10);
 
-  /* Accents */
-  --c-green:      #7c3aed;   /* violet = rôle "primary" en light */
+  --c-green:      #7c3aed;
   --c-green-d:    rgba(124, 58, 237, 0.55);
-  --c-acid:       #4f46e5;   /* indigo vif */
-  --c-cyan:       #0284c7;   /* bleu ciel soutenu */
+  --c-acid:       #4f46e5;
+  --c-cyan:       #0284c7;
   --c-cyan-d:     rgba(2, 132, 199, 0.45);
-  --c-amber:      #b45309;   /* ambre foncé (lisible sur fond clair) */
+  --c-amber:      #b45309;
   --c-amber-d:    rgba(180, 83, 9, 0.50);
-  --c-red:        #be185d;   /* rose foncé lisible */
+  --c-red:        #be185d;
   --c-red-d:      rgba(190, 24, 93, 0.40);
-  --c-purple:     #9333ea;   /* purple vif */
+  --c-purple:     #9333ea;
   --c-purple-d:   rgba(147, 51, 234, 0.45);
 
-  /* Glows — plus doux sur fond clair */
   --glow-primary: 0 0 12px rgba(124, 58, 237, 0.25), 0 0 28px rgba(124, 58, 237, 0.10);
   --glow-green:   0 0 10px rgba(124, 58, 237, 0.22);
   --glow-amber:   0 0 10px rgba(180, 83, 9, 0.22);
