@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GWEN·HA·STAR — Sterenna Network</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/theme.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/hub.css"/>
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo" aria-label="Gwen Ha Star Accueil">
+        <svg width="32" height="32" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+          <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" stroke="var(--c-primary)" stroke-width="1.5" fill="none"/>
+          <polygon points="18,8 28,13 28,23 18,28 8,23 8,13" stroke="var(--c-primary)" stroke-width="0.8" fill="none" opacity="0.4"/>
+          <circle cx="18" cy="18" r="3" fill="var(--c-primary)"/>
+          <line x1="18" y1="2" x2="18" y2="8" stroke="var(--c-primary)" stroke-width="1"/>
+          <line x1="18" y1="28" x2="18" y2="34" stroke="var(--c-primary)" stroke-width="1"/>
+          <line x1="2" y1="10" x2="8" y2="13" stroke="var(--c-primary)" stroke-width="1"/>
+          <line x1="28" y1="23" x2="34" y2="26" stroke="var(--c-primary)" stroke-width="1"/>
+          <line x1="34" y1="10" x2="28" y2="13" stroke="var(--c-primary)" stroke-width="1"/>
+          <line x1="8" y1="23" x2="2" y2="26" stroke="var(--c-primary)" stroke-width="1"/>
+        </svg>
+        <span class="logo-text">GWEN·HA·STAR</span>
+      </a>
+      <div class="status-pill">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>STERENNA · ONLINE</span>
+      </div>
+      <nav class="header-nav" aria-label="Navigation principale">
+        <a href="#projets" class="nav-link">PROJETS</a>
+        <a href="#outils" class="nav-link">OUTILS</a>
+        <a href="#contact" class="nav-link">CONTACT</a>
+      </nav>
+    </div>
+  </header>
+
+  <a href="#main-content" class="sr-only">Aller au contenu</a>
+
+  <main id="main-content">
+
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-bg" aria-hidden="true">
+        <canvas id="radar-canvas"></canvas>
+      </div>
+      <div class="hero-content">
+        <p class="hero-eyebrow">STERENNA NETWORK · BRIDGE v4.2</p>
+        <h1 id="hero-title" class="hero-title">GWEN<br/><em class="hero-accent">HA STAR</em></h1>
+        <p class="hero-desc">Portail de projets · Créations numériques · Fabrication digitale</p>
+        <div class="hero-actions">
+          <a href="#projets" class="btn btn-primary">EXPLORER</a>
+          <a href="https://sterenna.fr" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">STERENNA.FR ↗</a>
+        </div>
+      </div>
+      <div class="scroll-indicator" aria-hidden="true">
+        <span class="scroll-label">SCROLL</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <div class="ticker-wrap" role="marquee" aria-label="Messages système">
+      <div class="ticker-track" id="ticker-track"></div>
+    </div>
+
+    <section class="section" id="projets" aria-labelledby="projets-title">
+      <div class="section-inner">
+        <header class="section-header fade-in">
+          <p class="section-tag">// 01 · PROJETS</p>
+          <h2 id="projets-title" class="section-title">Créations</h2>
+        </header>
+        <div class="hub-grid fade-in" id="hub-grid"></div>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="outils" aria-labelledby="outils-title">
+      <div class="section-inner">
+        <header class="section-header fade-in">
+          <p class="section-tag">// 02 · OUTILS</p>
+          <h2 id="outils-title" class="section-title">Ressources</h2>
+        </header>
+        <div class="hub-grid fade-in" id="tools-grid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="contact" aria-labelledby="contact-title">
+      <div class="section-inner section-narrow">
+        <header class="section-header fade-in">
+          <p class="section-tag">// 03 · CONTACT</p>
+          <h2 id="contact-title" class="section-title">Connexion</h2>
+        </header>
+        <div class="contact-grid fade-in" id="contact-grid"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
+      <span class="footer-version">GWEN·HA·STAR · BUILD 2026.05</span>
+    </div>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
