@@ -41,6 +41,9 @@
         <a href="#outils" class="nav-link">OUTILS</a>
         <a href="#contact" class="nav-link">CONTACT</a>
       </nav>
+      <button class="theme-cycle-btn" id="theme-cycle" aria-label="Changer le thème" title="Cycle thème : DARK → VIOLET → LIGHT">
+        <span id="theme-icon">◈</span>
+      </button>
     </div>
   </header>
 
@@ -103,6 +106,28 @@
 
   </main>
 
+  <!-- ══ PORTAIL CHRONICLES — BAS DE PAGE ══════════════════════════ -->
+  <div class="chronicles-gateway" aria-label="Portail Chronicles">
+    <div class="gateway-inner">
+      <div class="gateway-signal" aria-hidden="true">
+        <span class="gsig-line"></span>
+        <span class="gsig-dot"></span>
+        <span class="gsig-line"></span>
+      </div>
+      <p class="gateway-label">// ACCÈS RÉSEAU PRIVÉ</p>
+      <a href="https://nitro.sterenna.fr/star" class="gateway-btn" target="_blank" rel="noopener noreferrer" aria-label="Pénètre dans les Chronicles — accès hub agents connectés">
+        <span class="gateway-btn-glyph" aria-hidden="true">▶</span>
+        <span class="gateway-btn-text">PÉNÈTRE DANS LES CHRONICLES</span>
+        <span class="gateway-btn-arrow" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M3 9h12M10 4l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+          </svg>
+        </span>
+      </a>
+      <p class="gateway-sub">NITRO.STERENNA.FR/STAR · HUB AGENTS · ACCÈS RESTREINT</p>
+    </div>
+  </div>
+
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
@@ -111,5 +136,34 @@
   </footer>
 
   <script type="module" src="js/main.js"></script>
+  <script>
+    // ── THEME CYCLE : dark → violet → light → dark ────────────
+    (function() {
+      const THEMES = ['dark', 'violet', 'light'];
+      const ICONS  = { dark: '◈', violet: '◉', light: '◎' };
+      const LABELS = { dark: 'DARK', violet: 'VIOLET', light: 'LIGHT' };
+
+      const html = document.documentElement;
+      const btn  = document.getElementById('theme-cycle');
+      const icon = document.getElementById('theme-icon');
+
+      let current = 'dark';
+      html.setAttribute('data-theme', current);
+
+      function updateBtn() {
+        icon.textContent = ICONS[current];
+        btn.setAttribute('title', 'Thème : ' + LABELS[current] + ' — clic pour changer');
+      }
+
+      btn.addEventListener('click', function() {
+        const idx = THEMES.indexOf(current);
+        current   = THEMES[(idx + 1) % THEMES.length];
+        html.setAttribute('data-theme', current);
+        updateBtn();
+      });
+
+      updateBtn();
+    })();
+  </script>
 </body>
 </html>
