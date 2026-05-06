@@ -1,10 +1,9 @@
 // ── SUPABASE CONFIG ─────────────────────────────────────────────────────────
-// Remplace les valeurs ci-dessous par tes clés Supabase
 // Dashboard → Settings → API
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const SUPABASE_URL  = 'REMPLACE_PAR_TON_URL';   // ex: https://xxxx.supabase.co
-const SUPABASE_ANON = 'REMPLACE_PAR_TON_ANON_KEY';
+const SUPABASE_URL  = 'https://nmdjrcswlnydglrxaivx.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_dE0SfyUd-Xw4JhuAVy4x1A_NZfB7lcH';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
