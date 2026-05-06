@@ -1,0 +1,390 @@
+:root{
+  --bg:#0e0b08;
+  --panel:#17120f;
+  --chrome:#3a2a1b;
+  --accent:#b67c3d;
+  --accent2:#7a5939;
+  --text:#efe7d8;
+  --muted:#b9aa96;
+  --glow:0 0 35px rgba(182,124,61,.35);
+  --ticker-bg:rgba(16,12,9,.7);
+  --ticker-border:rgba(182,124,61,.4);
+  --crank-fill:#d7a154;
+}
+body.theme-cyber{
+  --bg:#081019;
+  --panel:#0c1520;
+  --chrome:#14212d;
+  --accent:#00ffa1;
+  --accent2:#00bbff;
+  --text:#dff9ff;
+  --muted:#9ad1e6;
+  --glow:0 0 45px rgba(0,255,161,.45);
+  --ticker-bg:rgba(6,10,14,.35);
+  --ticker-border:rgba(0,255,161,.4);
+  --crank-fill:#00ffa1;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  transition:background .6s,color .6s;
+}
+.wrap{
+  max-width:1100px;
+  max-height: 720px;
+  margin:5 auto;
+  padding:40px;
+  display:grid;
+  gap:18px;
+  grid-template-columns:1.1fr .9fr;
+}
+@media(max-width:980px){.wrap{grid-template-columns:1fr}}
+
+.theme-toggle{
+  position:fixed;
+  top:14px;
+  left:14px;
+  display:flex;
+  gap:6px;
+  z-index:30;
+}
+.toggle-btn{
+  background:var(--panel);
+  border:1px solid var(--chrome);
+  color:var(--text);
+  padding:6px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.morph{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.05) 0 30%,rgba(0,0,0,.9) 90%);
+  pointer-events:none;
+  opacity:0;
+  z-index:25;
+}
+.morph.run{animation:morph 1.4s ease forwards}
+.morph.hidden{display:none}
+@keyframes morph{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+
+/* MACHINE */
+.machine{
+  background:linear-gradient(180deg,var(--panel),rgba(0,0,0,.2));
+  border:1px solid var(--chrome);
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.header{display:flex;align-items:center;justify-content:space-between}
+.badge{text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--muted)}
+.now{font-size:.9rem}
+.turntable{display:grid;grid-template-columns:1fr 190px;gap:14px}
+@media(max-width:980px){.turntable{grid-template-columns:1fr}}
+
+/* PLATTER */
+.platter{
+  position:relative;
+  aspect-ratio:1;
+  border-radius:50%;
+  background:radial-gradient(circle at 50% 50%, #0b0c0f 0 46%, #10141a 47% 54%, #050608 55%);
+  box-shadow:inset 0 0 80px rgba(0,0,0,.45),0 0 20px rgba(0,0,0,.45);
+  border:4px solid #000;
+  overflow:hidden;
+}
+.platter.dragging{outline:3px dashed var(--accent);outline-offset:6px}
+
+/* VINYLE SUR PLATEAU */
+.vinyl.on-deck{
+  --disc1:#14161a;
+  --disc2:#050608;
+  position:absolute;
+  inset:0;
+  margin:auto;
+  width:88%;
+  height:88%;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+}
+.vinyl.spin{animation:spin 2.3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.vinyl-art{
+  width:32%;
+  height:32%;
+  border-radius:50%;
+  background:#fff0;
+  background-size:cover;
+  background-position:center;
+  box-shadow:0 0 0 5px rgba(0,0,0,.2),inset 0 0 10px rgba(0,0,0,.5);
+}
+
+/* EFFETS LIES AU CHOIX ADMIN (lisent --disc1/--disc2) */
+.effect-none{background:radial-gradient(circle,var(--disc1) 0 35%, var(--disc2) 70% 100%)}
+.effect-calc{
+  background:
+    radial-gradient(circle at 50% 50%,rgba(0,0,0,.05) 0 34%, transparent 35%),
+    repeating-conic-gradient(from 0deg, var(--disc1) 0deg 6deg, var(--disc2) 6deg 12deg);
+}
+.effect-bicolor{background:conic-gradient(from 90deg, var(--disc1) 0 180deg, var(--disc2) 180deg 360deg)}
+.effect-radial{
+  background:
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.08) 0 20%, transparent 24% 100%),
+    repeating-radial-gradient(circle at 50% 50%, rgba(0,255,200,.18) 0 10%, rgba(0,0,0,0) 10% 20%),
+    var(--disc1);
+  animation:water 6s linear infinite;
+}
+@keyframes water{to{background-position:80px 80px,120px 60px,0 0}}
+.effect-grid{
+  background:
+    radial-gradient(circle at 50% 50%,rgba(0,0,0,.2) 0 32%, transparent 33% 100%),
+    linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px),
+    linear-gradient(0deg,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-color:var(--disc1);
+  background-size:100% 100%,12px 12px,12px 12px;
+}
+.effect-metal{
+  background:
+    repeating-linear-gradient(110deg, rgba(255,255,255,.15) 0 2px, rgba(0,0,0,0) 2px 5px),
+    linear-gradient(120deg, var(--disc1), var(--disc2));
+  box-shadow:inset 0 0 30px rgba(0,0,0,.6);
+}
+.effect-neon{
+  background:
+    radial-gradient(circle, rgba(0,255,161,.4) 0 35%, rgba(0,0,0,0) 40% 100%),
+    conic-gradient(from 0deg, var(--disc1) 0 25%, var(--disc2) 25% 50%, rgba(0,0,0,.6) 50% 75%, var(--disc2) 75% 100%);
+  box-shadow:0 0 30px rgba(0,255,161,.5);
+}
+.effect-logo{
+  background:radial-gradient(circle, var(--disc1) 0 40%, var(--disc2) 68% 100%);
+  position:relative;
+  overflow:hidden;
+}
+.effect-logo::after{
+  content:"";
+  position:absolute;
+  inset:18% 18%;
+  border-radius:50%;
+  background:url('bzh_logo.png') center/contain no-repeat, radial-gradient(circle,rgba(0,0,0,.1),rgba(0,0,0,0));
+  pointer-events:none;
+}
+
+/* PATTERN VARIANTS (par-dessus) */
+.pv-default{}
+.pv-split{
+  mask:radial-gradient(circle at 50% 50%,#000 0 40%,transparent 41% 100%), linear-gradient(90deg,#000 50%,transparent 50%);
+  mask-composite:intersect;
+}
+.pv-spiral{
+  background-image:repeating-conic-gradient(from 0deg, rgba(255,255,255,.08) 0 2deg, rgba(0,0,0,0) 2deg 6deg);
+  mix-blend-mode:soft-light;
+}
+.pv-marbled{
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,.11) 0 12%, transparent 13% 100%),
+    radial-gradient(circle at 80% 60%, rgba(0,0,0,.25) 0 18%, transparent 19% 100%);
+  background-blend-mode:overlay;
+}
+.pv-holo{
+  background-image:linear-gradient(120deg, rgba(255,0,255,.25), rgba(0,255,255,.25));
+  mix-blend-mode:screen;
+}
+
+/* MANIVELLE */
+.crank-area{
+  background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,0));
+  border:1px solid rgba(0,0,0,.35);
+  border-radius:14px;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  align-items:center;
+}
+.crank-label{font-size:.75rem;opacity:.6}
+.crank{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  border:3px solid var(--accent);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  position:relative;
+  transition:transform .2s;
+}
+.crank-handle{
+  width:48px;
+  height:10px;
+  background:var(--accent);
+  border-radius:999px;
+  transform-origin:10% 50%;
+  transform:rotate(30deg) translateX(8px);
+  box-shadow:0 0 8px rgba(0,0,0,.35);
+}
+.crank:active{transform:rotate(12deg)}
+.crank-gauge{
+  width:100%;
+  height:10px;
+  background:rgba(255,255,255,.03);
+  border-radius:99px;
+  overflow:hidden;
+}
+.crank-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--crank-fill),rgba(255,255,255,.0));
+  transition:width .2s;
+}
+.crank-hint{font-size:.7rem;opacity:.65}
+
+/* CONTROLES */
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+.btn{
+  border:1px solid rgba(0,0,0,.4);
+  background:rgba(0,0,0,.15);
+  color:var(--text);
+  border-radius:10px;
+  padding:7px 12px;
+  cursor:pointer;
+}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.btn.primary{background:var(--accent);color:#121214}
+
+/* TIMEBAR */
+.timebar{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:8px;
+  align-items:center;
+}
+.timebar input[type=range]{
+  width:100%;
+}
+
+/* ÉTAGÈRE ISO + slot extrait */
+.shelf-wrap{position:relative;min-height:360px;display:flex;flex-direction:column;gap:18px;margin: 10px;padding: 10px;}
+.shelf-iso{
+  position:relative;
+  height:360px;
+  perspective:900px;
+  transform-style:preserve-3d;
+}
+.vinyl-card{
+  position:absolute;
+  top:40px;
+  left:0;
+  width:140px;
+  height:140px;
+  background:linear-gradient(135deg,#1c1f23,#0a0c0d);
+  border:1px solid rgba(0,0,0,.4);
+  border-radius:10px;
+  box-shadow:0 16px 24px rgba(0,0,0,.35);
+  transform-origin:50% 50%;
+  transform:rotateY(-30deg) translateZ(0) translateX(0);
+  transition:transform .15s, z-index .15s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  cursor:pointer;
+}
+.vinyl-card img{
+  width:120%;
+  height:120%;
+  object-fit:cover;
+}
+.vinyl-card:hover{
+  transform:rotateY(-10deg) translateZ(50px) translateX(12px);
+}
+.vinyl-card.active{
+
+}
+
+
+/* EXTRACTED SLOT (nouvelle version) */
+.extracted-slot{
+  min-height:160px;
+  border:1px dashed rgba(255,255,255,.05);
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  position:center;
+}
+.extracted-vinyl{
+  position:absolute;
+  /* taille calculée en JS aussi */
+  border-radius:50%;
+  border:3px solid rgba(0,0,0,.3);
+  display:grid;
+  place-items:center;
+  cursor:grab;
+  /* on la met derrière, décalée à gauche de la pochette */
+  z-index:0;
+}
+.extracted-cover{
+  position:relative;
+  background:#111;
+  background-size:cover;
+  background-position:center;
+  border-radius:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+  z-index:1;
+  /* taille calculée en JS pour matcher le plateau */
+}
+
+.extracted-vinyl:active{cursor:grabbing}
+.extracted-vinyl .ex-art{
+  width:32%;
+  height:32%;
+  border-radius:50%;
+  background-size:cover;
+  background-position:center;
+  box-shadow:0 0 0 4px rgba(0,0,0,.2);
+}
+
+/* drag qui suit la souris (même taille que la platine) */
+.drag-follow{
+  position:fixed;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:2000;
+  box-shadow:0 16px 40px rgba(0,0,0,.4);
+  display:grid;
+}
+.drag-follow .ex-art{
+  width:32%;
+  height:32%;
+  border-radius:50%;
+  background-size:cover;
+  background-position:center;
+  box-shadow:0 0 0 4px rgba(0,0,0,.2);
+}
+
+
+/* TITLE TICKER : glitch seulement au début (JS gère, mais on garde la classe) */
+.title-ticker{
+  min-height:46px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 12px;
+  border:1px solid var(--ticker-border);
+  background:var(--ticker-bg);
+  border-radius:10px;
+  font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,"Liberation Mono","Courier New",monospace;
+  font-size:.85rem;
+  overflow:hidden;
+}
+body.theme-steam .title-ticker{
+  font-family:"Cinzel","Times New Roman",serif;
+  letter-spacing:.03em;
+  background:linear-gradient(120deg, rgba(120,80,45,.4), rgba(15,10,7,.4));
+  border:1px solid rgba(250,235,210,.12);
+}

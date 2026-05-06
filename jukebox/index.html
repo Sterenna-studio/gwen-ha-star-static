@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Sterenna – Jukebox v6.2.1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="theme-steam">
+  <!-- Toggle thème -->
+  <div class="theme-toggle">
+    <button id="toSteam" class="toggle-btn">☕ Steampunk</button>
+    <button id="toCyber" class="toggle-btn">⚡ Cyber</button>
+  </div>
+  <div id="themeMorph" class="morph hidden" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <!-- Machine -->
+    <section class="machine">
+      <header class="header">
+        <div class="badge">Jukebox</div>
+        <div id="nowPlaying" class="now">— Aucun disque</div>
+      </header>
+
+      <div class="turntable">
+        <!-- Plateau -->
+        <div id="dropZone" class="platter dropzone">
+          <div class="spindle"></div>
+          <div class="vinyl on-deck effect-none" id="deckVinyl">
+            <div class="vinyl-art" id="deckArt"></div>
+          </div>
+        </div>
+
+        <!-- Manivelle -->
+        <div class="crank-area">
+          <div class="crank-label">Remonte le jukebox</div>
+          <div class="crank" id="crank" title="Tourne 5 fois pour lancer">
+            <div class="crank-handle"></div>
+          </div>
+          <div class="crank-gauge">
+            <div class="crank-fill" id="crankFill"></div>
+          </div>
+          <div class="crank-hint" id="crankHint">0/5</div>
+        </div>
+      </div>
+
+      <!-- Contrôles -->
+      <div class="controls">
+        <button id="playPause" class="btn primary" disabled>▶️ Lire</button>
+        <button id="prevBtn" class="btn ghost">⏮️</button>
+        <button id="nextBtn" class="btn ghost">⏭️</button>
+        <button id="shuffleBtn" class="btn ghost">🔀</button>
+        <label class="btn ghost volwrap">🔊
+          <input type="range" id="vol" min="0" max="1" step="0.01" value="0.9" />
+        </label>
+      </div>
+
+      <!-- Lecteur de temps -->
+      <div class="timebar">
+        <span id="curTime">0:00</span>
+        <input type="range" id="seek" min="0" max="100" value="0" />
+        <span id="durTime">0:00</span>
+      </div>
+
+      <audio id="player" preload="metadata" crossorigin="anonymous"></audio>
+    </section>
+
+    <!-- Étagère isométrique -->
+    <aside class="shelf-wrap">
+      <div class="shelf-iso" id="shelf" aria-label="Sélection de vinyles"></div>
+      <div id="titleTicker" class="title-ticker steam">—</div>
+
+      <!-- zone d’affichage du vinyle sélectionné -->
+      <div id="extractedSlot" class="extracted-slot">
+        <!-- rempli en JS -->
+      </div>
+    </aside>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
