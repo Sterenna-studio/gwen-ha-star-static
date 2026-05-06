@@ -71,13 +71,8 @@
     .tool-card.featured .tool-card-name { font-size:var(--text-xl); }
 
     /* CARD CHRONICLES ─ glitch */
-    .card-chronicles {
-      --card-accent: var(--c-primary);
-      position:relative; overflow:hidden;
-    }
-    .card-chronicles .tool-card-name {
-      position:relative; display:inline-block;
-    }
+    .card-chronicles { --card-accent: var(--c-primary); position:relative; overflow:hidden; }
+    .card-chronicles .tool-card-name { position:relative; display:inline-block; }
     @keyframes glitch-clip-1 {
       0%,90%,100%{ clip-path:inset(0 0 100% 0); transform:translate(0); }
       92%         { clip-path:inset(20% 0 60% 0); transform:translate(-4px,1px); }
@@ -115,9 +110,20 @@
     .twitch-wrap { position:relative; width:100%; padding-top:56.25%; border-radius:var(--radius-lg); overflow:hidden; background:var(--c-surface-2); border:1px solid var(--c-border); margin-top:var(--space-4); }
     .twitch-wrap iframe { position:absolute; inset:0; width:100%; height:100%; border:none; }
 
-    /* YOUTUBE EMBED */
+    /* YOUTUBE SECTION */
+    .yt-layout { display:grid; grid-template-columns:1fr 280px; gap:var(--space-6); align-items:start; max-width:1000px; }
+    @media(max-width:768px){ .yt-layout { grid-template-columns:1fr; } }
     .yt-wrap { position:relative; width:100%; padding-top:56.25%; border-radius:var(--radius-lg); overflow:hidden; background:var(--c-surface-2); border:1px solid var(--c-border); }
     .yt-wrap iframe { position:absolute; inset:0; width:100%; height:100%; border:none; }
+    .yt-channel-card { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-lg); padding:var(--space-5); display:flex; flex-direction:column; align-items:center; gap:var(--space-4); text-align:center; }
+    .yt-channel-avatar { width:80px; height:80px; border-radius:50%; border:2px solid var(--c-border); overflow:hidden; background:var(--c-surface-2); }
+    .yt-channel-avatar img { width:100%; height:100%; object-fit:cover; }
+    .yt-channel-name { font-family:var(--font-display); font-weight:700; font-size:var(--text-lg); color:var(--c-text); }
+    .yt-channel-handle { font-family:var(--font-mono); font-size:10px; color:var(--c-text-muted); letter-spacing:.08em; }
+    .yt-channel-desc { font-family:var(--font-mono); font-size:10px; color:var(--c-text-muted); line-height:1.6; letter-spacing:.04em; }
+    .yt-channel-btn { display:inline-flex; align-items:center; gap:var(--space-2); padding:var(--space-2) var(--space-4); background:#ff0000; color:#fff; border-radius:var(--radius-md); font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; text-decoration:none; transition:all 180ms; }
+    .yt-channel-btn:hover { background:#cc0000; transform:translateY(-1px); }
+    .yt-playlist-label { font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); letter-spacing:.1em; margin-top:var(--space-2); }
 
     /* JUKEBOX */
     .jukebox-card { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-xl); padding:var(--space-6); max-width:640px; }
@@ -150,9 +156,30 @@
     .jk-track-num { font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); width:16px; text-align:right; flex-shrink:0; }
     .jk-track.active .jk-track-num { color:var(--c-primary); }
     .jk-hint { font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); letter-spacing:.06em; margin-top:var(--space-4); line-height:1.5; }
+
+    /* ── VAISSEAU PARTICULES ── */
+    #ship-canvas {
+      position:fixed; inset:0; pointer-events:none;
+      z-index:9999; opacity:0;
+      transition:opacity .1s;
+    }
+    @keyframes screen-shake {
+      0%  { transform:translate(0,0) rotate(0deg); }
+      15% { transform:translate(-3px,2px) rotate(-.3deg); }
+      30% { transform:translate(3px,-2px) rotate(.2deg); }
+      45% { transform:translate(-2px,3px) rotate(-.2deg); }
+      60% { transform:translate(2px,-1px) rotate(.1deg); }
+      75% { transform:translate(-1px,2px) rotate(0deg); }
+      90% { transform:translate(1px,-1px) rotate(0deg); }
+      100%{ transform:translate(0,0) rotate(0deg); }
+    }
+    body.shaking { animation:screen-shake .45s ease-in-out; }
   </style>
 </head>
 <body>
+  <!-- Canvas particules vaisseau -->
+  <canvas id="ship-canvas" aria-hidden="true"></canvas>
+
   <div class="scanlines" aria-hidden="true"></div>
 
   <header class="header">
@@ -287,7 +314,6 @@
           </div>
           <input type="range" class="jk-vol" id="jk-vol" min="0" max="1" step="0.05" value="0.7" aria-label="Volume"/>
         </div>
-        <!-- TRACKLIST -->
         <div class="jk-tracks" id="jk-tracks"></div>
         <p class="jk-hint">⬡ Musiques originales de la communauté — par Dr.Spig. <a href="https://nitro.sterenna.fr/jukebox/" target="_blank" rel="noopener noreferrer" style="color:var(--c-primary)">Voir le jukebox complet →</a></p>
       </div>
@@ -299,18 +325,40 @@
     <section class="hub-section">
       <p class="hub-section-label">// 04 · CHAÎNE</p>
       <h2 class="hub-section-title">YouTube <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">@mutenrock</span></h2>
-      <a href="https://www.youtube.com/@mutenrock" target="_blank" rel="noopener noreferrer"
-         class="btn btn-outline" style="margin-bottom:var(--space-6);display:inline-flex;align-items:center;gap:var(--space-2);font-family:var(--font-mono);font-size:10px;letter-spacing:.12em">
-        ▶ VOIR LA CHAÎNE
-      </a>
-      <div style="max-width:800px">
-        <div class="yt-wrap">
-          <iframe
-            src="https://www.youtube.com/embed?listType=user_uploads&list=mutenrock&rel=0&modestbranding=1"
-            title="Dernières vidéos MutenRock"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen loading="lazy">
-          </iframe>
+      <div class="yt-layout">
+        <!-- Playlist embed -->
+        <div>
+          <div class="yt-wrap">
+            <iframe
+              src="https://www.youtube.com/embed/videoseries?list=PLO9dEY6ZTilz4v4_sMq4iu53GtgPPfKOw&rel=0&modestbranding=1"
+              title="Playlist MutenRock — BZH Chronicles"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen loading="lazy">
+            </iframe>
+          </div>
+          <p class="yt-playlist-label" style="margin-top:var(--space-2)">⬡ PLAYLIST · BZH CHRONICLES</p>
+        </div>
+        <!-- Channel card -->
+        <div class="yt-channel-card">
+          <div class="yt-channel-avatar">
+            <img
+              src="https://yt3.googleusercontent.com/ytc/AIdro_mCgJGGP3r9NZfvtl4wJMb9Xv6S6jKQnD0kQcXK=s176-c-k-c0x00ffffff-no-rj"
+              alt="Avatar MutenRock"
+              width="80" height="80"
+              loading="lazy"
+              onerror="this.src='https://yt3.googleusercontent.com/default-user/176x176.jpg'"
+            />
+          </div>
+          <div class="yt-channel-name">MutenRock</div>
+          <div class="yt-channel-handle">@mutenrock</div>
+          <div class="yt-channel-desc">Gaming · Streams · BZH Chronicles<br>Communauté Gwen Ha Star</div>
+          <a href="https://www.youtube.com/@mutenrock?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="yt-channel-btn">
+            ▶ S'ABONNER
+          </a>
+          <a href="https://youtube.com/playlist?list=PLO9dEY6ZTilz4v4_sMq4iu53GtgPPfKOw" target="_blank" rel="noopener noreferrer"
+             style="font-family:var(--font-mono);font-size:9px;color:var(--c-text-muted);letter-spacing:.08em;text-decoration:none;margin-top:var(--space-1)">
+            ↗ Voir la playlist complète
+          </a>
         </div>
       </div>
     </section>
@@ -319,7 +367,7 @@
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
-      <span class="footer-version">HUB · v2.2</span>
+      <span class="footer-version">HUB · v2.3</span>
     </div>
   </footer>
 
@@ -329,7 +377,6 @@
 
     initAuth();
 
-    // Mise à jour de la card Chronicles selon l'état de connexion
     getSession().then(s => {
       const desc = document.getElementById('chronicles-desc');
       const tag  = document.getElementById('chronicles-tag');
@@ -348,10 +395,10 @@
     // ── JUKEBOX ─────────────────────────────────────────────────────────────
     const BASE = 'https://nitro.sterenna.fr/jukebox/';
     const TRACKS = [
-      { title:'BZH SUMMER - BIG BANGER',          artist:'Dr.Spig', src:'audio/bzh-summer-big-banger-vers-501a.wav',        cover:'img/bzh_summer-df65d.png' },
-      { title:'Credits Song To BZH Empire Rising', artist:'Dr.Spig', src:'audio/Credits Song To BZH Empire Rising.mp3',       cover:'img/credits-song-to-bzh-empire-rising-0b953.png' },
-      { title:"Jacques_L'Agent Explorateur",       artist:'Dr.Spig', src:"audio/Jacques_L'Agent Explorateur.mp3",             cover:'img/jacques-l-agent-explorateur-6f0d9.webp' },
-      { title:'Rising GODs - BZH CHRONICLES',      artist:'Dr.Spig', src:'audio/Rising GODs - BZH CHRONICLES.mp3',            cover:'img/rising-gods-bzh-chronicles-8f982.webp' },
+      { title:'BZH SUMMER - BIG BANGER',          artist:'Dr.Spig', src:'audio/bzh-summer-big-banger-vers-501a.wav',      cover:'img/bzh_summer-df65d.png' },
+      { title:'Credits Song To BZH Empire Rising', artist:'Dr.Spig', src:'audio/Credits Song To BZH Empire Rising.mp3',     cover:'img/credits-song-to-bzh-empire-rising-0b953.png' },
+      { title:"Jacques_L'Agent Explorateur",       artist:'Dr.Spig', src:"audio/Jacques_L'Agent Explorateur.mp3",           cover:'img/jacques-l-agent-explorateur-6f0d9.webp' },
+      { title:'Rising GODs - BZH CHRONICLES',      artist:'Dr.Spig', src:'audio/Rising GODs - BZH CHRONICLES.mp3',          cover:'img/rising-gods-bzh-chronicles-8f982.webp' },
     ];
 
     const audio = new Audio();
@@ -378,7 +425,6 @@
       if (autoplay) audio.play().catch(()=>{});
     }
 
-    // Build tracklist
     const list = document.getElementById('jk-tracks');
     TRACKS.forEach((t,i) => {
       const el = document.createElement('div');
@@ -394,10 +440,8 @@
       list.appendChild(el);
     });
 
-    // Init cover
     document.getElementById('jk-cover').src = BASE + TRACKS[0].cover;
 
-    // Play/pause
     document.getElementById('jk-play').addEventListener('click', () => {
       const btn = document.getElementById('jk-play');
       if (!playing) {
@@ -408,10 +452,8 @@
       }
     });
 
-    // Volume
     document.getElementById('jk-vol').addEventListener('input', e => { audio.volume = +e.target.value; });
 
-    // Progress
     audio.addEventListener('timeupdate', () => {
       if (!audio.duration) return;
       const pct = (audio.currentTime / audio.duration) * 100;
@@ -420,21 +462,185 @@
       document.getElementById('jk-dur').textContent  = fmt(audio.duration);
     });
 
-    // Seek
     document.getElementById('jk-bar-bg').addEventListener('click', e => {
       if (!audio.duration) return;
       const r = e.currentTarget.getBoundingClientRect();
       audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
     });
 
-    // Autoplay next
     audio.addEventListener('ended', () => {
       const next = (current + 1) % TRACKS.length;
       loadTrack(next, true);
     });
 
-    // Init
     loadTrack(0, false);
+  </script>
+
+  <!-- ── VAISSEAU + PARTICULES ─────────────────────────────────────────── -->
+  <script>
+  (function(){
+    const canvas = document.getElementById('ship-canvas');
+    const ctx    = canvas.getContext('2d');
+    let W, H;
+
+    function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    /* ── Particule ── */
+    class Particle {
+      constructor(x,y,color){
+        this.x = x; this.y = y;
+        this.vx = (Math.random()-0.5)*4;
+        this.vy = (Math.random()-0.5)*4 - 1;
+        this.life = 1;
+        this.decay = 0.025 + Math.random()*0.03;
+        this.r = 2 + Math.random()*3;
+        this.color = color;
+      }
+      update(){ this.x+=this.vx; this.y+=this.vy; this.vy+=0.08; this.life-=this.decay; }
+      draw(){
+        ctx.save();
+        ctx.globalAlpha = Math.max(0,this.life);
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    /* ── Vaisseau ── */
+    function drawShip(x, y, dir, scale){
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(dir, 1); // dir = 1 (gauche→droite) ou -1 (droite→gauche)
+      ctx.scale(scale, scale);
+
+      // Corps
+      ctx.strokeStyle = '#00ffcc';
+      ctx.shadowColor = '#00ffcc';
+      ctx.shadowBlur  = 18;
+      ctx.lineWidth   = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-30, -10);
+      ctx.lineTo(-36, 0);
+      ctx.lineTo(-30, 10);
+      ctx.closePath();
+      ctx.stroke();
+
+      // Aile sup
+      ctx.beginPath();
+      ctx.moveTo(-12, -6);
+      ctx.lineTo(-20, -22);
+      ctx.lineTo(-30, -10);
+      ctx.stroke();
+
+      // Aile inf
+      ctx.beginPath();
+      ctx.moveTo(-12, 6);
+      ctx.lineTo(-20, 22);
+      ctx.lineTo(-30, 10);
+      ctx.stroke();
+
+      // Moteur glow
+      ctx.shadowBlur  = 24;
+      ctx.shadowColor = '#ff6600';
+      ctx.strokeStyle = '#ff9933';
+      ctx.beginPath();
+      ctx.moveTo(-36, -5);
+      ctx.lineTo(-48 - Math.random()*12, 0);
+      ctx.lineTo(-36, 5);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    let particles = [];
+    let shipActive = false;
+    let shipX, shipY, shipVX, shipDir;
+    let shipScale = 1;
+    let trail = [];
+    let animId = null;
+
+    function spawnShip(){
+      if(shipActive) return;
+      shipActive = true;
+      canvas.style.opacity = '1';
+
+      // Choisir direction aléatoire
+      shipDir = Math.random() > 0.5 ? 1 : -1;
+      shipX   = shipDir === 1 ? -60 : W + 60;
+      shipY   = 80 + Math.random() * (H * 0.5);
+      shipVX  = shipDir === 1 ? 7 + Math.random()*5 : -(7 + Math.random()*5);
+      shipScale = 0.8 + Math.random()*0.6;
+      trail = [];
+
+      // Screen shake
+      document.body.classList.add('shaking');
+      setTimeout(() => document.body.classList.remove('shaking'), 500);
+
+      function loop(){
+        ctx.clearRect(0,0,W,H);
+
+        // Avance
+        shipX += shipVX;
+
+        // Particules exhaust
+        for(let i=0;i<3;i++){
+          const ex = shipX + (shipDir === 1 ? -36 : 36) * shipScale;
+          const ey = shipY + (Math.random()-0.5)*10;
+          particles.push(new Particle(ex, ey, Math.random()>0.5?'#ff6600':'#ffaa00'));
+        }
+        // Particules wake
+        if(Math.random()<0.4){
+          particles.push(new Particle(shipX, shipY + (Math.random()-0.5)*20, '#00ffcc'));
+        }
+
+        // Update + draw particles
+        particles = particles.filter(p => p.life > 0);
+        particles.forEach(p => { p.update(); p.draw(); });
+
+        // Draw ship
+        drawShip(shipX, shipY, shipDir, shipScale);
+
+        // Sorti de l'écran ?
+        const gone = shipDir === 1 ? shipX > W + 80 : shipX < -80;
+        if(!gone){
+          animId = requestAnimationFrame(loop);
+        } else {
+          // Fade out + laisser les particules finir
+          let fade = 60;
+          function fadeOut(){
+            ctx.clearRect(0,0,W,H);
+            particles = particles.filter(p=>p.life>0);
+            particles.forEach(p=>{ p.update(); p.draw(); });
+            fade--;
+            if(particles.length > 0 && fade > 0){
+              requestAnimationFrame(fadeOut);
+            } else {
+              ctx.clearRect(0,0,W,H);
+              canvas.style.opacity = '0';
+              shipActive = false;
+            }
+          }
+          fadeOut();
+        }
+      }
+      loop();
+    }
+
+    // Lancement aléatoire toutes les 18-45 secondes
+    function scheduleNext(){
+      const delay = 18000 + Math.random() * 27000;
+      setTimeout(() => { spawnShip(); scheduleNext(); }, delay);
+    }
+    // Premier passage après 4s
+    setTimeout(() => { spawnShip(); scheduleNext(); }, 4000);
+  })();
   </script>
 </body>
 </html>
