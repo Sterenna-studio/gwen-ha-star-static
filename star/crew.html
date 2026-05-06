@@ -3,77 +3,206 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CREW · Star — Sterenna Network</title>
+  <title>CREW — Gwen Ha Star</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/base.css"/>
   <link rel="stylesheet" href="../css/theme.css"/>
   <link rel="stylesheet" href="../css/components.css"/>
+  <link rel="stylesheet" href="../css/auth.css"/>
   <link rel="stylesheet" href="../css/star.css"/>
+  <style>
+    .crew-page { min-height:100dvh; display:flex; flex-direction:column; }
+    .crew-main { flex:1; max-width:1100px; width:100%; margin:0 auto; padding:var(--space-8) var(--space-4) var(--space-16); }
 
-  <script>
-    (function(){
-      const t = document.cookie.match(/star-theme=([\w]+)/);
-      if (t) document.documentElement.setAttribute('data-theme', t[1]);
-    })();
-  </script>
+    /* BREADCRUMB */
+    .breadcrumb { display:flex; align-items:center; gap:var(--space-2); font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; color:var(--c-text-faint); margin-bottom:var(--space-6); }
+    .breadcrumb a { color:var(--c-text-faint); text-decoration:none; transition:color 180ms; }
+    .breadcrumb a:hover { color:var(--c-primary); }
+    .breadcrumb-sep { opacity:.4; }
+    .breadcrumb-current { color:var(--c-primary); }
+
+    /* CONTROLS */
+    .crew-controls { display:flex; align-items:center; gap:var(--space-3); flex-wrap:wrap; margin-bottom:var(--space-6); }
+    .crew-search { flex:1; min-width:200px; background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-md); padding:var(--space-2) var(--space-4); font-family:var(--font-mono); font-size:var(--text-xs); color:var(--c-text); transition:border-color 180ms; }
+    .crew-search:focus { outline:none; border-color:var(--c-primary); }
+    .crew-search::placeholder { color:var(--c-text-faint); }
+    .filter-btn { padding:var(--space-2) var(--space-4); background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-md); font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--c-text-muted); cursor:pointer; transition:all 180ms; white-space:nowrap; }
+    .filter-btn.active { border-color:var(--c-primary); color:var(--c-primary); background:rgba(0,200,180,.06); }
+    .crew-count { font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; color:var(--c-text-faint); margin-left:auto; white-space:nowrap; }
+
+    /* GRID */
+    .crew-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr)); gap:var(--space-4); }
+
+    /* MEMBER CARD */
+    .member-card { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-xl); padding:var(--space-5); text-decoration:none; color:inherit; display:flex; flex-direction:column; align-items:center; gap:var(--space-3); transition:all 200ms; position:relative; overflow:hidden; text-align:center; }
+    .member-card::after { content:""; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--c-primary),var(--c-amber)); opacity:0; transition:opacity 200ms; }
+    .member-card:hover { border-color:var(--c-primary); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.3); }
+    .member-card:hover::after { opacity:1; }
+    .member-avatar { width:64px; height:64px; border-radius:50%; border:2px solid var(--c-border); background:var(--c-surface-2); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:var(--text-xl); font-weight:700; color:var(--c-primary); overflow:hidden; flex-shrink:0; transition:border-color 200ms; }
+    .member-card:hover .member-avatar { border-color:var(--c-primary); }
+    .member-avatar img { width:100%; height:100%; object-fit:cover; }
+    .member-name { font-family:var(--font-display); font-size:var(--text-base); font-weight:700; color:var(--c-text); }
+    .member-title { font-family:var(--font-mono); font-size:9px; letter-spacing:.12em; color:var(--c-amber); }
+    .member-specialty { font-family:var(--font-mono); font-size:10px; color:var(--c-text-muted); letter-spacing:.06em; }
+    .member-role-badge { font-family:var(--font-mono); font-size:9px; letter-spacing:.12em; padding:2px var(--space-2); border-radius:var(--radius-full); border:1px solid currentColor; }
+    .member-role-badge.superuser { color:var(--c-amber); }
+    .member-role-badge.member    { color:var(--c-primary); }
+    .member-role-badge.guest     { color:var(--c-text-faint); }
+
+    /* EMPTY / SKEL */
+    .crew-empty { text-align:center; padding:var(--space-16) var(--space-4); font-family:var(--font-mono); font-size:var(--text-sm); color:var(--c-text-muted); letter-spacing:.08em; }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    .skel { border-radius:var(--radius-xl); background:linear-gradient(90deg,var(--c-surface-2) 25%,var(--c-surface) 50%,var(--c-surface-2) 75%); background-size:200% 100%; animation:shimmer 1.5s ease-in-out infinite; height:200px; }
+  </style>
 </head>
-<body class="star-page">
+<body class="crew-page">
   <div class="scanlines" aria-hidden="true"></div>
-  <div class="noise"     aria-hidden="true"></div>
 
-  <a href="#crew-main" class="sr-only">Aller au contenu</a>
-
-  <header class="star-header" role="banner">
-    <div class="star-header-inner">
-      <a href="/star/index.html" class="star-logo" aria-label="Retour au hub">
-        <svg width="22" height="22" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-          <polygon points="18,2 34,10 34,26 18,34 2,26 2,10"
-            stroke="var(--c-primary)" stroke-width="1.5" fill="none"/>
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo" aria-label="Retour hub">
+        <svg width="28" height="28" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+          <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" stroke="var(--c-primary)" stroke-width="1.5" fill="none"/>
+          <polygon points="18,8 28,13 28,23 18,28 8,23 8,13" stroke="var(--c-primary)" stroke-width="0.8" fill="none" opacity="0.4"/>
           <circle cx="18" cy="18" r="3" fill="var(--c-primary)"/>
         </svg>
-        <span>STAR</span>
-        <span class="star-logo-badge">CREW</span>
+        <span class="logo-text">GWEN·HA·STAR</span>
       </a>
-      <div id="star-header-user" class="star-header-user" aria-label="Infos utilisateur"></div>
+      <div class="header-auth" id="header-auth"></div>
     </div>
   </header>
 
-  <main id="crew-main" class="star-main">
+  <main class="crew-main">
+    <nav class="breadcrumb">
+      <a href="/">ACCUEIL</a>
+      <span class="breadcrumb-sep">/</span>
+      <a href="/star/index.html">MON ESPACE</a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">CREW</span>
+    </nav>
 
-    <header style="margin-bottom: var(--space-6)">
-      <p class="widget-title">// 01 · MEMBRES DU RÉSEAU</p>
-      <h1 style="font-family: var(--font-display); font-size: var(--text-xl); letter-spacing: 0.08em; color: var(--c-text); text-shadow: var(--glow-green);">LE CREW</h1>
-    </header>
-
-    <!-- FILTRES -->
-    <div class="crew-filters" role="search">
-      <input
-        type="search"
-        id="crew-search"
-        class="crew-search"
-        placeholder="RECHERCHER UN MEMBRE..."
-        aria-label="Rechercher par pseudo"
-      />
-      <select id="crew-filter-rang" class="crew-filter-rang" aria-label="Filtrer par rang">
-        <option value="">TOUS LES RANGS</option>
-      </select>
+    <div style="margin-bottom:var(--space-6)">
+      <p style="font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;color:var(--c-primary);opacity:.7;margin-bottom:var(--space-2)">// MEMBRES · RÉSEAU</p>
+      <h1 style="font-family:var(--font-display);font-size:var(--text-2xl);font-weight:700;color:var(--c-text);margin-bottom:var(--space-1)">CREW</h1>
+      <p style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--c-text-muted)">Tous les agents du réseau Gwen Ha Star.</p>
     </div>
 
-    <!-- GRILLE MEMBRES -->
-    <div id="crew-grid" class="crew-grid" role="list" aria-label="Liste des membres"></div>
+    <div class="crew-controls">
+      <input class="crew-search" id="crew-search" type="search" placeholder="Rechercher un agent..." aria-label="Rechercher"/>
+      <button class="filter-btn active" data-filter="all">TOUS</button>
+      <button class="filter-btn" data-filter="superuser">SUPERUSER</button>
+      <button class="filter-btn" data-filter="member">MEMBRE</button>
+      <button class="filter-btn" data-filter="guest">GUEST</button>
+      <span class="crew-count" id="crew-count"></span>
+    </div>
 
+    <!-- Skeleton -->
+    <div id="crew-skeleton" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--space-4)">
+      <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+      <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+    </div>
+
+    <div class="crew-grid" id="crew-grid" style="display:none"></div>
+    <div class="crew-empty" id="crew-empty" style="display:none">⚠ Aucun agent trouvé.</div>
   </main>
 
-  <footer class="star-footer" role="contentinfo">
-    <span>STERENNA NETWORK · STAR v1.0</span>
-    <a href="/star/index.html" style="color: var(--c-text-faint); text-decoration: none;">← HUB</a>
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
+      <span class="footer-version">CREW · v2.0</span>
+    </div>
   </footer>
 
   <script type="module">
-    import { initCrew } from '../js/star/crew.js';
-    initCrew();
+    import { supabase } from '../js/supabase.js';
+    import { requireAuth } from '../js/star/guard.js';
+    import { initAuth } from '../js/auth.js';
+
+    let allMembers = [];
+    let activeFilter = 'all';
+
+    function renderMembers(list) {
+      const grid  = document.getElementById('crew-grid');
+      const empty = document.getElementById('crew-empty');
+      const count = document.getElementById('crew-count');
+      count.textContent = list.length + ' AGENT' + (list.length !== 1 ? 'S' : '');
+      if (!list.length) { grid.style.display='none'; empty.style.display=''; return; }
+      empty.style.display = 'none';
+      grid.style.display  = '';
+      grid.innerHTML = list.map(m => {
+        const name      = m.username ?? 'AGENT';
+        const role      = m.role ?? 'guest';
+        const title     = m.active_title ?? 'Recrue';
+        const specialty = m.specialty ?? '';
+        const av = m.avatar_url
+          ? `<img src="${m.avatar_url}" alt="${name}" width="64" height="64" loading="lazy"/>`
+          : `<span>${name.charAt(0).toUpperCase()}</span>`;
+        return `
+          <a href="/cig.html?id=${m.id}" class="member-card">
+            <div class="member-avatar">${av}</div>
+            <div class="member-name">${name.toUpperCase()}</div>
+            <div class="member-title">◆ ${title.toUpperCase()}</div>
+            ${specialty ? `<div class="member-specialty">${specialty}</div>` : ''}
+            <span class="member-role-badge ${role}">${role.toUpperCase()}</span>
+          </a>`;
+      }).join('');
+    }
+
+    function applyFilters() {
+      const q = document.getElementById('crew-search').value.toLowerCase().trim();
+      let list = allMembers;
+      if (activeFilter !== 'all') list = list.filter(m => (m.role ?? 'guest') === activeFilter);
+      if (q) list = list.filter(m => (m.username ?? '').toLowerCase().includes(q) || (m.specialty ?? '').toLowerCase().includes(q));
+      renderMembers(list);
+    }
+
+    async function init() {
+      const auth = await requireAuth();
+      if (!auth) return;
+
+      // Header
+      const authZone = document.getElementById('header-auth');
+      const username = auth.profile?.username ?? auth.user.email?.split('@')[0] ?? 'AGENT';
+      authZone.innerHTML = `
+        <div class="auth-connected">
+          <span class="auth-badge"><span class="auth-dot"></span><span class="auth-label">${username.toUpperCase()}</span></span>
+          <a href="/cig.html" class="btn-auth btn-auth-cig">⬡ MON ESPACE</a>
+          <button class="btn-auth btn-auth-signout" id="hdr-logout" aria-label="Déconnexion">✕</button>
+        </div>`;
+      document.getElementById('hdr-logout')?.addEventListener('click', async () => {
+        const { signOut } = await import('../js/supabase.js');
+        signOut();
+      });
+
+      // Load members
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id,username,avatar_url,role,active_title,specialty')
+        .order('created_at', { ascending: true });
+
+      document.getElementById('crew-skeleton').style.display = 'none';
+
+      if (error) { console.error(error); return; }
+      allMembers = data ?? [];
+      renderMembers(allMembers);
+
+      // Search
+      document.getElementById('crew-search').addEventListener('input', applyFilters);
+
+      // Filters
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFilter = btn.dataset.filter;
+          applyFilters();
+        });
+      });
+    }
+
+    init();
   </script>
 </body>
 </html>
