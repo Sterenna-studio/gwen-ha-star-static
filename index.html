@@ -13,14 +13,13 @@
   <link rel="stylesheet" href="css/auth.css"/>
   <link rel="stylesheet" href="css/hub.css"/>
   <style>
-    /* ── HUB PUBLIC OVERRIDES ── */
+    /* ── HUB PUBLIC ── */
     .hub-hero { text-align:center; padding:var(--space-16) var(--space-4) var(--space-10); position:relative; }
     .hub-hero-eyebrow { font-family:var(--font-mono); font-size:9px; letter-spacing:.25em; color:var(--c-primary); margin-bottom:var(--space-4); }
     .hub-hero-title { font-family:var(--font-display); font-size:clamp(2.5rem,6vw,5rem); font-weight:700; color:var(--c-text); line-height:1; margin-bottom:var(--space-3); }
     .hub-hero-title span { color:var(--c-primary); text-shadow:var(--glow-primary); }
     .hub-hero-sub { font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.1em; color:var(--c-text-muted); max-width:50ch; margin:0 auto var(--space-8); }
 
-    /* SECTION */
     .hub-section { max-width:1100px; margin:0 auto; padding:0 var(--space-4) var(--space-12); }
     .hub-section-label { font-family:var(--font-mono); font-size:9px; letter-spacing:.2em; color:var(--c-primary); opacity:.7; margin-bottom:var(--space-2); }
     .hub-section-title { font-family:var(--font-display); font-size:var(--text-xl); font-weight:700; color:var(--c-text); margin-bottom:var(--space-6); }
@@ -28,19 +27,20 @@
 
     /* TOOLS GRID */
     .tools-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr)); gap:var(--space-4); }
-    .tool-card { position:relative; background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-lg); padding:var(--space-5) var(--space-5) var(--space-6); text-decoration:none; color:inherit; transition:border-color 200ms, transform 200ms, box-shadow 200ms; display:flex; flex-direction:column; gap:var(--space-3); overflow:hidden; }
-    .tool-card::before { content:""; position:absolute; top:0; left:0; right:0; height:2px; background:var(--card-accent, var(--c-primary)); opacity:0; transition:opacity 200ms; }
-    .tool-card:hover { border-color:var(--card-accent, var(--c-primary)); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+    .tool-card { position:relative; background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-lg); padding:var(--space-5) var(--space-5) var(--space-6); text-decoration:none; color:inherit; transition:border-color 200ms,transform 200ms,box-shadow 200ms; display:flex; flex-direction:column; gap:var(--space-3); overflow:hidden; }
+    .tool-card::before { content:""; position:absolute; top:0; left:0; right:0; height:2px; background:var(--card-accent,var(--c-primary)); opacity:0; transition:opacity 200ms; }
+    .tool-card:hover { border-color:var(--card-accent,var(--c-primary)); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.35); }
     .tool-card:hover::before { opacity:1; }
     .tool-card-icon { font-size:1.6rem; line-height:1; }
     .tool-card-name { font-family:var(--font-display); font-size:var(--text-lg); font-weight:700; color:var(--c-text); }
     .tool-card-desc { font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; color:var(--c-text-muted); line-height:1.6; flex:1; }
     .tool-card-tag { font-family:var(--font-mono); font-size:9px; letter-spacing:.12em; padding:2px var(--space-2); border-radius:var(--radius-full); border:1px solid currentColor; align-self:flex-start; }
-    .tool-card-tag.ext { color:var(--c-amber); }
-    .tool-card-tag.int { color:var(--c-primary); }
+    .tool-card-tag.ext    { color:var(--c-amber); }
+    .tool-card-tag.int    { color:var(--c-primary); }
     .tool-card-tag.stream { color:var(--c-red); }
+    .tool-card-tag.nitro  { color:#a78bfa; }
 
-    /* FEATURED CARD (grande) */
+    /* FEATURED */
     .tool-card.featured { grid-column:span 2; flex-direction:row; align-items:center; gap:var(--space-6); padding:var(--space-6) var(--space-8); }
     @media(max-width:640px){ .tool-card.featured { grid-column:span 1; flex-direction:column; } }
     .tool-card.featured .tool-card-icon { font-size:2.8rem; flex-shrink:0; }
@@ -54,13 +54,31 @@
     /* TWITCH EMBED */
     .twitch-wrap { position:relative; width:100%; padding-top:56.25%; border-radius:var(--radius-lg); overflow:hidden; background:var(--c-surface-2); border:1px solid var(--c-border); margin-top:var(--space-4); }
     .twitch-wrap iframe { position:absolute; inset:0; width:100%; height:100%; border:none; }
-    .twitch-placeholder { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--space-3); }
-    .twitch-placeholder p { font-family:var(--font-mono); font-size:10px; color:var(--c-text-faint); letter-spacing:.08em; }
 
-    /* STATS */
-    .stats-row { display:flex; flex-wrap:wrap; gap:var(--space-4); margin-top:var(--space-2); }
-    .stat-item { font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; color:var(--c-text-faint); }
-    .stat-item strong { color:var(--c-primary); font-size:var(--text-sm); display:block; margin-bottom:2px; }
+    /* YOUTUBE EMBED */
+    .yt-wrap { position:relative; width:100%; padding-top:56.25%; border-radius:var(--radius-lg); overflow:hidden; background:var(--c-surface-2); border:1px solid var(--c-border); }
+    .yt-wrap iframe { position:absolute; inset:0; width:100%; height:100%; border:none; }
+
+    /* JUKEBOX */
+    .jukebox-card { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-xl); padding:var(--space-6); max-width:640px; }
+    .jukebox-top { display:flex; align-items:center; gap:var(--space-4); margin-bottom:var(--space-5); }
+    .jukebox-art { width:64px; height:64px; border-radius:var(--radius-md); background:var(--c-surface-2); display:flex; align-items:center; justify-content:center; font-size:1.8rem; flex-shrink:0; }
+    .jukebox-meta { flex:1; min-width:0; }
+    .jukebox-station { font-family:var(--font-display); font-weight:700; color:var(--c-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .jukebox-sub { font-family:var(--font-mono); font-size:10px; color:var(--c-text-muted); letter-spacing:.08em; margin-top:2px; }
+    .jukebox-live { font-family:var(--font-mono); font-size:9px; letter-spacing:.12em; color:var(--c-green); display:flex; align-items:center; gap:4px; }
+    .jukebox-live-dot { width:6px; height:6px; border-radius:50%; background:var(--c-green); animation:pulse-dot 1.4s ease-in-out infinite; }
+    .jukebox-controls { display:flex; align-items:center; gap:var(--space-3); margin-bottom:var(--space-4); }
+    .jk-play-btn { width:44px; height:44px; border-radius:50%; background:var(--c-primary); border:none; color:var(--c-bg); font-size:1.1rem; cursor:pointer; flex-shrink:0; transition:all 180ms; }
+    .jk-play-btn:hover { background:var(--c-primary-h); box-shadow:var(--glow-primary); }
+    .jk-progress { flex:1; }
+    .jk-bar-bg { height:4px; background:var(--c-surface-2); border-radius:var(--radius-full); overflow:hidden; margin-bottom:4px; }
+    .jk-bar-fill { height:100%; width:0%; background:var(--c-primary); transition:width .4s linear; border-radius:var(--radius-full); }
+    .jk-labels { display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); letter-spacing:.06em; }
+    .jk-vol { width:70px; accent-color:var(--c-primary); cursor:pointer; }
+    .jk-station-select { width:100%; background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-md); padding:var(--space-2) var(--space-3); font-family:var(--font-mono); font-size:10px; color:var(--c-text-muted); letter-spacing:.06em; cursor:pointer; margin-top:var(--space-3); }
+    .jk-station-select:focus { outline:none; border-color:var(--c-primary); }
+    .jk-hint { font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); letter-spacing:.06em; margin-top:var(--space-4); line-height:1.5; }
   </style>
 </head>
 <body>
@@ -86,14 +104,12 @@
       <p class="hub-hero-eyebrow">// RÉSEAU · COMMUNAUTÉ · STERENNA</p>
       <h1 class="hub-hero-title">GWEN <span>HA</span> STAR</h1>
       <p class="hub-hero-sub">Hub central de la communauté. Streams, jeux, crew, archives — tout est ici.</p>
-      <div id="hero-auth-cta"></div>
     </section>
 
-    <!-- TOOLS PUBLICS -->
+    <!-- 01 · OUTILS & UNIVERS -->
     <section class="hub-section">
       <p class="hub-section-label">// 01 · ACCÈS DIRECT</p>
       <h2 class="hub-section-title">Outils &amp; Univers</h2>
-
       <div class="tools-grid">
 
         <!-- POKEGANG FEATURED -->
@@ -102,8 +118,8 @@
           <div class="tool-card-icon">⚡</div>
           <div>
             <div class="tool-card-name">POKEGANG</div>
-            <div class="tool-card-desc">L'univers Pokémon de la communauté — collection, gang, lore et plus encore.</div>
-            <span class="tool-card-tag ext">↗ EXTERNE</span>
+            <div class="tool-card-desc">L'univers Pokémon de la communauté — collection, gang, lore et plus encore. Explore le monde de PokeGang sur pokegang.sterenna.fr.</div>
+            <span class="tool-card-tag ext">↗ POKEGANG.STERENNA.FR</span>
           </div>
         </a>
 
@@ -113,7 +129,7 @@
           <div class="tool-card-icon">🃏</div>
           <div class="tool-card-name">TCG</div>
           <div class="tool-card-desc">Trading Card Game de la communauté. Construis ton deck, affronte le crew.</div>
-          <span class="tool-card-tag ext">↗ NITRO</span>
+          <span class="tool-card-tag nitro">↗ NITRO</span>
         </a>
 
         <!-- TWITCH -->
@@ -136,15 +152,14 @@
         </a>
 
         <!-- JUKEBOX -->
-        <a href="#jukebox"
-           class="tool-card" style="--card-accent:var(--c-green)">
+        <a href="#jukebox" class="tool-card" style="--card-accent:var(--c-green)">
           <div class="tool-card-icon">🎵</div>
           <div class="tool-card-name">JUKEBOX</div>
-          <div class="tool-card-desc">Radio communautaire — playlist curatée par le crew, stream continu.</div>
+          <div class="tool-card-desc">Radio communautaire — flux SomaFM curatés, stream continu, visualiseur.</div>
           <span class="tool-card-tag int">⬡ INTÉGRÉ</span>
         </a>
 
-        <!-- MON ESPACE (si connecté) -->
+        <!-- MON ESPACE (connecté) -->
         <a href="/star/index.html" id="card-mon-espace" class="tool-card" style="--card-accent:var(--c-primary);display:none">
           <div class="tool-card-icon">⬡</div>
           <div class="tool-card-name">MON ESPACE</div>
@@ -152,7 +167,7 @@
           <span class="tool-card-tag int">⬡ MEMBRE</span>
         </a>
 
-        <!-- CONNEXION (si déconnecté) -->
+        <!-- CONNEXION (déconnecté) -->
         <a href="/login.html" id="card-login" class="tool-card" style="--card-accent:var(--c-primary)">
           <div class="tool-card-icon">🔐</div>
           <div class="tool-card-name">CONNEXION</div>
@@ -165,42 +180,62 @@
 
     <div class="hub-divider"></div>
 
-    <!-- TWITCH EMBED -->
+    <!-- 02 · STREAM LIVE -->
     <section class="hub-section">
       <p class="hub-section-label">// 02 · STREAM LIVE</p>
       <h2 class="hub-section-title">Twitch <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">@mutenrock</span></h2>
-      <div class="twitch-wrap" id="twitch-wrap">
-        <div class="twitch-placeholder">
-          <span style="font-size:2rem">📡</span>
-          <p>Chargement du stream...</p>
+      <div class="twitch-wrap" id="twitch-wrap"></div>
+      <p style="font-family:var(--font-mono);font-size:10px;color:var(--c-text-faint);letter-spacing:.08em;margin-top:var(--space-3)">⬤ Embed live — rejoins le chat sur <a href="https://twitch.tv/mutenrock" target="_blank" rel="noopener noreferrer" style="color:var(--c-text-muted);text-decoration:underline;text-underline-offset:3px">twitch.tv/mutenrock</a></p>
+    </section>
+
+    <div class="hub-divider"></div>
+
+    <!-- 03 · JUKEBOX -->
+    <section class="hub-section" id="jukebox">
+      <p class="hub-section-label">// 03 · JUKEBOX</p>
+      <h2 class="hub-section-title">Radio Communautaire</h2>
+      <div class="jukebox-card">
+        <div class="jukebox-top">
+          <div class="jukebox-art" id="jk-art">🎵</div>
+          <div class="jukebox-meta">
+            <div class="jukebox-station" id="jk-station">Groove Salad</div>
+            <div class="jukebox-sub">SomaFM · GWEN HA STAR</div>
+          </div>
+          <div class="jukebox-live"><span class="jukebox-live-dot"></span>LIVE</div>
         </div>
+        <div class="jukebox-controls">
+          <button class="jk-play-btn" id="jk-play" aria-label="Play / Pause">▶</button>
+          <div class="jk-progress">
+            <div class="jk-bar-bg"><div class="jk-bar-fill" id="jk-bar"></div></div>
+            <div class="jk-labels"><span>STREAM</span><span id="jk-vol-lbl">70%</span></div>
+          </div>
+          <input type="range" class="jk-vol" id="jk-vol" min="0" max="1" step="0.05" value="0.7" aria-label="Volume"/>
+        </div>
+        <select class="jk-station-select" id="jk-select" aria-label="Choisir la station">
+          <option value="0">🌿 Groove Salad — Ambient / Trip-hop</option>
+          <option value="1">🌑 Drone Zone — Dark Ambient</option>
+          <option value="2">🚀 Space Station — Space Music</option>
+          <option value="3">☕ Café del Mar — Chillout</option>
+        </select>
+        <p class="jk-hint">⬡ Flux SomaFM — Sélectionne une station et appuie sur play. Volume configurable.</p>
       </div>
     </section>
 
     <div class="hub-divider"></div>
 
-    <!-- JUKEBOX -->
-    <section class="hub-section" id="jukebox">
-      <p class="hub-section-label">// 03 · JUKEBOX</p>
-      <h2 class="hub-section-title">Radio Communautaire</h2>
-      <div id="jukebox-widget"></div>
-    </section>
-
-    <div class="hub-divider"></div>
-
-    <!-- YOUTUBE LATEST -->
+    <!-- 04 · YOUTUBE -->
     <section class="hub-section">
       <p class="hub-section-label">// 04 · CHAÎNE</p>
       <h2 class="hub-section-title">YouTube <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">@mutenrock</span></h2>
       <a href="https://www.youtube.com/@mutenrock" target="_blank" rel="noopener noreferrer"
-         style="display:inline-flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-5);background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-md);text-decoration:none;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--c-text-muted);transition:all 200ms;margin-bottom:var(--space-6)" 
-         onmouseover="this.style.borderColor='#ff0000';this.style.color='#ff0000'" 
-         onmouseout="this.style.borderColor='';this.style.color=''">▶ VOIR LA CHAÎNE</a>
-      <div id="yt-embed-wrap" style="max-width:800px">
-        <div style="position:relative;width:100%;padding-top:56.25%;border-radius:var(--radius-lg);overflow:hidden;background:var(--c-surface-2);border:1px solid var(--c-border)">
-          <iframe id="yt-iframe"
-            style="position:absolute;inset:0;width:100%;height:100%;border:none"
+         class="btn btn-outline" style="margin-bottom:var(--space-6);display:inline-flex;align-items:center;gap:var(--space-2);font-family:var(--font-mono);font-size:10px;letter-spacing:.12em">
+        ▶ VOIR LA CHAÎNE
+      </a>
+      <div style="max-width:800px">
+        <div class="yt-wrap">
+          <iframe
             src="https://www.youtube.com/embed?listType=user_uploads&list=mutenrock&rel=0&modestbranding=1"
+            title="Dernières vidéos MutenRock"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen loading="lazy">
           </iframe>
@@ -212,7 +247,7 @@
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
-      <span class="footer-version">HUB · v2.0</span>
+      <span class="footer-version">HUB · v2.1</span>
     </div>
   </footer>
 
@@ -220,80 +255,70 @@
     import { initAuth } from './js/auth.js';
     import { getSession } from './js/supabase.js';
 
-    // Auth header
     initAuth('header-auth');
 
-    // Twitch embed (parent = hostname actuel)
-    const twitchWrap = document.getElementById('twitch-wrap');
+    // Twitch embed
     const parent = window.location.hostname || 'localhost';
-    twitchWrap.innerHTML = `<iframe
-      src="https://player.twitch.tv/?channel=mutenrock&parent=${parent}&muted=false"
-      allowfullscreen
-      title="Stream Twitch MutenRock">
-    </iframe>`;
+    document.getElementById('twitch-wrap').innerHTML =
+      `<iframe src="https://player.twitch.tv/?channel=mutenrock&parent=${parent}&muted=false"
+        allowfullscreen title="Stream Twitch MutenRock"></iframe>`;
 
-    // Jukebox widget
-    const jukebox = document.getElementById('jukebox-widget');
-    jukebox.innerHTML = `
-      <div style="background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-xl);padding:var(--space-6);max-width:600px">
-        <div style="display:flex;align-items:center;gap:var(--space-4);margin-bottom:var(--space-5)">
-          <div id="jk-art" style="width:64px;height:64px;border-radius:var(--radius-md);background:var(--c-surface-2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0">🎵</div>
-          <div style="flex:1;min-width:0">
-            <div id="jk-title" style="font-family:var(--font-display);font-weight:700;color:var(--c-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Radio Crew</div>
-            <div id="jk-artist" style="font-family:var(--font-mono);font-size:10px;color:var(--c-text-muted);letter-spacing:.08em;margin-top:2px">GWEN HA STAR · COMMUNITY</div>
-          </div>
-          <div id="jk-live" style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;color:var(--c-green);display:flex;align-items:center;gap:4px">
-            <span style="width:6px;height:6px;border-radius:50%;background:var(--c-green);animation:pulse-dot 1.4s ease-in-out infinite"></span>LIVE
-          </div>
-        </div>
-        <audio id="jk-audio" preload="none" style="display:none"></audio>
-        <div style="display:flex;align-items:center;gap:var(--space-3)">
-          <button id="jk-play" onclick="toggleJukebox()" style="width:44px;height:44px;border-radius:50%;background:var(--c-primary);border:none;color:var(--c-bg);font-size:1.2rem;cursor:pointer;flex-shrink:0;transition:all 180ms" aria-label="Play/Pause">▶</button>
-          <div style="flex:1">
-            <div style="height:4px;background:var(--c-surface-2);border-radius:var(--radius-full);overflow:hidden">
-              <div id="jk-bar" style="height:100%;width:0%;background:var(--c-primary);transition:width .5s linear;border-radius:var(--radius-full)"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:var(--space-1);font-family:var(--font-mono);font-size:9px;color:var(--c-text-faint);letter-spacing:.06em">
-              <span>STREAM</span><span>∞</span>
-            </div>
-          </div>
-          <input type="range" id="jk-vol" min="0" max="1" step="0.05" value="0.7"
-            oninput="document.getElementById('jk-audio').volume=this.value"
-            style="width:70px;accent-color:var(--c-primary);cursor:pointer" aria-label="Volume"/>
-        </div>
-        <p style="font-family:var(--font-mono);font-size:9px;color:var(--c-text-faint);letter-spacing:.06em;margin-top:var(--space-4);line-height:1.5">⬡ Flux communautaire — musiques sélectionnées par le crew. Configurez un stream dans le dashboard admin.</p>
-      </div>`;
-
-    let jukeboxPlaying = false;
-    window.toggleJukebox = function() {
-      const audio = document.getElementById('jk-audio');
-      const btn   = document.getElementById('jk-play');
-      const bar   = document.getElementById('jk-bar');
-      if (!jukeboxPlaying) {
-        // Placeholder stream — à remplacer par un vrai flux
-        audio.src = '';
-        jukeboxPlaying = true;
-        btn.textContent = '⏸';
-        btn.style.background = 'var(--c-amber)';
-        let w = 0;
-        const interval = setInterval(() => {
-          w = (w + 0.5) % 100;
-          bar.style.width = w + '%';
-          if (!jukeboxPlaying) clearInterval(interval);
-        }, 100);
-      } else {
-        audio.pause();
-        jukeboxPlaying = false;
-        btn.textContent = '▶';
-        btn.style.background = 'var(--c-primary)';
-      }
-    };
-
-    // Afficher/masquer card Mon Espace selon session
-    getSession().then(session => {
-      if (session) {
+    // Card Mon Espace vs Connexion
+    getSession().then(s => {
+      if (s) {
         document.getElementById('card-mon-espace').style.display = '';
         document.getElementById('card-login').style.display = 'none';
+      }
+    });
+
+    // Jukebox
+    const STREAMS = [
+      { label:'Groove Salad',   url:'https://ice6.somafm.com/groovesalad-128-mp3',   art:'🌿' },
+      { label:'Drone Zone',     url:'https://ice6.somafm.com/dronezone-128-mp3',     art:'🌑' },
+      { label:'Space Station',  url:'https://ice6.somafm.com/spacestation-128-mp3',  art:'🚀' },
+      { label:'Café del Mar',   url:'https://ice6.somafm.com/cafedelmar-128-mp3',    art:'☕' },
+    ];
+    const audio = new Audio();
+    audio.crossOrigin = 'anonymous';
+    audio.volume = 0.7;
+    let playing = false;
+    let barInterval = null;
+    let currentStream = 0;
+
+    function updateStation(idx) {
+      currentStream = idx;
+      document.getElementById('jk-station').textContent = STREAMS[idx].label;
+      document.getElementById('jk-art').textContent = STREAMS[idx].art;
+      if (playing) { audio.src = STREAMS[idx].url; audio.play().catch(()=>{}); }
+    }
+
+    document.getElementById('jk-select').addEventListener('change', e => updateStation(+e.target.value));
+    document.getElementById('jk-vol').addEventListener('input', e => {
+      audio.volume = +e.target.value;
+      document.getElementById('jk-vol-lbl').textContent = Math.round(+e.target.value * 100) + '%';
+    });
+
+    document.getElementById('jk-play').addEventListener('click', () => {
+      const btn = document.getElementById('jk-play');
+      const bar = document.getElementById('jk-bar');
+      if (!playing) {
+        audio.src = STREAMS[currentStream].url;
+        audio.play().then(() => {
+          playing = true;
+          btn.textContent = '⏸';
+          btn.style.background = 'var(--c-amber)';
+          let w = 0;
+          barInterval = setInterval(() => { w=(w+0.3)%100; bar.style.width=w+'%'; }, 120);
+        }).catch(() => {
+          btn.textContent = '▶';
+        });
+      } else {
+        audio.pause();
+        playing = false;
+        btn.textContent = '▶';
+        btn.style.background = 'var(--c-primary)';
+        clearInterval(barInterval);
+        bar.style.width = '0%';
       }
     });
   </script>
