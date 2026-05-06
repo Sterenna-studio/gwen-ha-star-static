@@ -183,9 +183,12 @@
   <script type="module">
     import { signIn, getSession } from './js/supabase.js';
 
-    // Si déjà connecté → rediriger vers accueil
+    // Lire le param ?next= pour redirection post-login
+    const nextUrl = new URLSearchParams(window.location.search).get('next') || '/';
+
+    // Si déjà connecté → rediriger vers next ou accueil
     getSession().then(session => {
-      if (session) window.location.href = '/';
+      if (session) window.location.href = nextUrl;
     });
 
     const form   = document.getElementById('login-form');
@@ -209,7 +212,7 @@
         btn.disabled    = false;
         btn.textContent = '→ CONNEXION';
       } else {
-        window.location.href = '/';
+        window.location.href = nextUrl;
       }
     });
   </script>

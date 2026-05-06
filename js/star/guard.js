@@ -1,32 +1,34 @@
 /**
- * guard.js — Protège toutes les pages star/
- * À importer en PREMIER dans chaque page star/*.html
- * Redirige vers /login.html?next=<url> si pas de session active.
+ * guard.js — Vérifie la session Supabase.
+ * Redirige vers /login.html?next=<url_actuelle> si non connecté.
+ * Usage : import { requireAuth } from './guard.js';
+ *         const { session, profile } = await requireAuth();
  */
-import { supabase } from '../supabase.js';
+import { supabase, getSession } from '../supabase.js';
 
-export async function guardStar() {
-  const { data: { session } } = await supabase.auth.getSession();
+export async function requireAuth() {
+  const session = await getSession();
   if (!session) {
-    const next = encodeURIComponent(location.pathname + location.search);
-    window.location.replace('/login.html?next=' + next);
-    // Stoppe l'exécution pendant la redirection
-    await new Promise(() => {});
+    const next = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.href = `/login.html?next=${next}`;
+    return null;
   }
-  return session;
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', session.user.id)
+    .single();
+
+  return { session, user: session.user, profile: profile ?? {} };
 }
 
-/**
- * Retourne les métadonnées du profil (username, avatar_url, rang)
- * depuis user_metadata Supabase ou la table profiles si elle existe.
- */
-export function getProfileMeta(session) {
-  const meta = session.user.user_metadata ?? {};
+export function getProfileMeta(profile, user) {
   return {
-    id:         session.user.id,
-    email:      session.user.email ?? '',
-    username:   meta.username ?? meta.name ?? session.user.email.split('@')[0],
-    avatar_url: meta.avatar_url ?? null,
-    rang:       meta.rang ?? 'MEMBRE',
+    username:    profile.username    ?? user.email?.split('@')[0] ?? 'AGENT',
+    role:        profile.role        ?? 'guest',
+    activeTitle: profile.active_title ?? 'Recrue',
+    titles:      profile.titles      ?? ['Recrue'],
+    avatarUrl:   profile.avatar_url  ?? null,
   };
 }
