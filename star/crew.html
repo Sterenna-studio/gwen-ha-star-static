@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CREW · Star — Sterenna Network</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css"/>
+  <link rel="stylesheet" href="../css/theme.css"/>
+  <link rel="stylesheet" href="../css/components.css"/>
+  <link rel="stylesheet" href="../css/star.css"/>
+
+  <script>
+    (function(){
+      const t = document.cookie.match(/star-theme=([\w]+)/);
+      if (t) document.documentElement.setAttribute('data-theme', t[1]);
+    })();
+  </script>
+</head>
+<body class="star-page">
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="noise"     aria-hidden="true"></div>
+
+  <a href="#crew-main" class="sr-only">Aller au contenu</a>
+
+  <header class="star-header" role="banner">
+    <div class="star-header-inner">
+      <a href="/star/index.html" class="star-logo" aria-label="Retour au hub">
+        <svg width="22" height="22" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+          <polygon points="18,2 34,10 34,26 18,34 2,26 2,10"
+            stroke="var(--c-primary)" stroke-width="1.5" fill="none"/>
+          <circle cx="18" cy="18" r="3" fill="var(--c-primary)"/>
+        </svg>
+        <span>STAR</span>
+        <span class="star-logo-badge">CREW</span>
+      </a>
+      <div id="star-header-user" class="star-header-user" aria-label="Infos utilisateur"></div>
+    </div>
+  </header>
+
+  <main id="crew-main" class="star-main">
+
+    <header style="margin-bottom: var(--space-6)">
+      <p class="widget-title">// 01 · MEMBRES DU RÉSEAU</p>
+      <h1 style="font-family: var(--font-display); font-size: var(--text-xl); letter-spacing: 0.08em; color: var(--c-text); text-shadow: var(--glow-green);">LE CREW</h1>
+    </header>
+
+    <!-- FILTRES -->
+    <div class="crew-filters" role="search">
+      <input
+        type="search"
+        id="crew-search"
+        class="crew-search"
+        placeholder="RECHERCHER UN MEMBRE..."
+        aria-label="Rechercher par pseudo"
+      />
+      <select id="crew-filter-rang" class="crew-filter-rang" aria-label="Filtrer par rang">
+        <option value="">TOUS LES RANGS</option>
+      </select>
+    </div>
+
+    <!-- GRILLE MEMBRES -->
+    <div id="crew-grid" class="crew-grid" role="list" aria-label="Liste des membres"></div>
+
+  </main>
+
+  <footer class="star-footer" role="contentinfo">
+    <span>STERENNA NETWORK · STAR v1.0</span>
+    <a href="/star/index.html" style="color: var(--c-text-faint); text-decoration: none;">← HUB</a>
+  </footer>
+
+  <script type="module">
+    import { initCrew } from '../js/star/crew.js';
+    initCrew();
+  </script>
+</body>
+</html>

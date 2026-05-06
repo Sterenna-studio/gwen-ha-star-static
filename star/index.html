@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>STAR · Hub — Sterenna Network</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css"/>
+  <link rel="stylesheet" href="../css/theme.css"/>
+  <link rel="stylesheet" href="../css/components.css"/>
+  <link rel="stylesheet" href="../css/star.css"/>
+
+  <!-- Anti-FOUC thème : appliqué avant tout rendu -->
+  <script>
+    (function(){
+      const t = document.cookie.match(/star-theme=([\w]+)/);
+      if (t) document.documentElement.setAttribute('data-theme', t[1]);
+    })();
+  </script>
+</head>
+<body class="star-page">
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="noise"     aria-hidden="true"></div>
+
+  <a href="#star-main" class="sr-only">Aller au contenu</a>
+
+  <!-- HEADER -->
+  <header class="star-header" role="banner">
+    <div class="star-header-inner">
+      <a href="/" class="star-logo" aria-label="Retour au hub public">
+        <svg width="22" height="22" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+          <polygon points="18,2 34,10 34,26 18,34 2,26 2,10"
+            stroke="var(--c-primary)" stroke-width="1.5" fill="none"/>
+          <circle cx="18" cy="18" r="3" fill="var(--c-primary)"/>
+        </svg>
+        <span>STAR</span>
+        <span class="star-logo-badge">PRIVÉ</span>
+      </a>
+      <!-- Rempli par dashboard.js -->
+      <div id="star-header-user" class="star-header-user" aria-label="Infos utilisateur"></div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main id="star-main" class="star-main">
+
+    <!-- ACCÈS RAPIDE -->
+    <section aria-labelledby="qa-title" style="margin-bottom: var(--space-8)">
+      <p class="widget-title" id="qa-title">// ACCÈS RAPIDE</p>
+      <div id="quick-access-grid" class="quick-access-grid"></div>
+    </section>
+
+    <!-- DASHBOARD GRID -->
+    <div class="star-dashboard-grid">
+
+      <!-- Vidéo du jour — pleine largeur -->
+      <div class="star-widget star-widget-full">
+        <p class="widget-title">// VIDÉO DU JOUR</p>
+        <div id="widget-video"></div>
+      </div>
+
+      <!-- Web Radio -->
+      <div class="star-widget star-widget-left">
+        <p class="widget-title">// WEB RADIO</p>
+        <div id="widget-radio"></div>
+      </div>
+
+      <!-- Flux d'activité -->
+      <div class="star-widget star-widget-right">
+        <p class="widget-title">// ACTIVITÉ RÉSEAU</p>
+        <div id="widget-activity"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="star-footer" role="contentinfo">
+    <span>STERENNA NETWORK · STAR v1.0</span>
+    <span>ZONE PRIVÉE · ACCÈS MEMBRES</span>
+  </footer>
+
+  <script type="module">
+    import { initDashboard } from '../js/star/dashboard.js';
+    initDashboard();
+  </script>
+</body>
+</html>
