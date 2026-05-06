@@ -70,6 +70,42 @@
     .tool-card.featured .tool-card-icon { font-size:2.8rem; flex-shrink:0; }
     .tool-card.featured .tool-card-name { font-size:var(--text-xl); }
 
+    /* CARD CHRONICLES ─ glitch */
+    .card-chronicles {
+      --card-accent: var(--c-primary);
+      position:relative; overflow:hidden;
+    }
+    .card-chronicles .tool-card-name {
+      position:relative; display:inline-block;
+    }
+    @keyframes glitch-clip-1 {
+      0%,90%,100%{ clip-path:inset(0 0 100% 0); transform:translate(0); }
+      92%         { clip-path:inset(20% 0 60% 0); transform:translate(-4px,1px); }
+      94%         { clip-path:inset(50% 0 30% 0); transform:translate(4px,-1px); }
+      96%         { clip-path:inset(10% 0 80% 0); transform:translate(-2px,2px); }
+      98%         { clip-path:inset(70% 0 5%  0); transform:translate(3px,0); }
+    }
+    @keyframes glitch-clip-2 {
+      0%,88%,100%{ clip-path:inset(0 0 100% 0); transform:translate(0); }
+      90%         { clip-path:inset(30% 0 50% 0); transform:translate(5px,-2px); color:#ff0055; }
+      93%         { clip-path:inset(60% 0 20% 0); transform:translate(-5px,1px); color:#00ffcc; }
+      96%         { clip-path:inset(5%  0 85% 0); transform:translate(2px,3px); }
+      99%         { clip-path:inset(80% 0 10% 0); transform:translate(-3px,0); }
+    }
+    .card-chronicles:hover .glitch-layer-1,
+    .card-chronicles:hover .glitch-layer-2 { animation-play-state:running; }
+    .glitch-layer-1, .glitch-layer-2 {
+      content:attr(data-text);
+      position:absolute; inset:0;
+      font-family:var(--font-display); font-size:var(--text-lg); font-weight:700;
+      color:var(--c-primary);
+      animation-play-state:paused;
+      animation-iteration-count:infinite;
+      animation-timing-function:steps(1);
+    }
+    .glitch-layer-1 { animation-name:glitch-clip-1; animation-duration:2.2s; color:#ff0055; }
+    .glitch-layer-2 { animation-name:glitch-clip-2; animation-duration:2.8s; color:#00ffcc; }
+
     /* LIVE BADGE */
     .live-badge { display:inline-flex; align-items:center; gap:var(--space-1); font-family:var(--font-mono); font-size:9px; letter-spacing:.12em; color:var(--c-red); }
     .live-dot { width:7px; height:7px; border-radius:50%; background:var(--c-red); animation:pulse-dot 1.4s ease-in-out infinite; }
@@ -86,9 +122,11 @@
     /* JUKEBOX */
     .jukebox-card { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-xl); padding:var(--space-6); max-width:640px; }
     .jukebox-top { display:flex; align-items:center; gap:var(--space-4); margin-bottom:var(--space-5); }
-    .jukebox-art { width:64px; height:64px; border-radius:var(--radius-md); background:var(--c-surface-2); display:flex; align-items:center; justify-content:center; font-size:1.8rem; flex-shrink:0; }
+    .jukebox-art { width:64px; height:64px; border-radius:var(--radius-md); background:var(--c-surface-2); display:flex; align-items:center; justify-content:center; font-size:1.8rem; flex-shrink:0; overflow:hidden; }
+    .jukebox-art img { width:100%; height:100%; object-fit:cover; border-radius:var(--radius-md); }
     .jukebox-meta { flex:1; min-width:0; }
     .jukebox-station { font-family:var(--font-display); font-weight:700; color:var(--c-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .jukebox-artist { font-family:var(--font-mono); font-size:10px; color:var(--c-primary); letter-spacing:.08em; margin-top:1px; }
     .jukebox-sub { font-family:var(--font-mono); font-size:10px; color:var(--c-text-muted); letter-spacing:.08em; margin-top:2px; }
     .jukebox-live { font-family:var(--font-mono); font-size:9px; letter-spacing:.12em; color:var(--c-green); display:flex; align-items:center; gap:4px; }
     .jukebox-live-dot { width:6px; height:6px; border-radius:50%; background:var(--c-green); animation:pulse-dot 1.4s ease-in-out infinite; }
@@ -96,12 +134,21 @@
     .jk-play-btn { width:44px; height:44px; border-radius:50%; background:var(--c-primary); border:none; color:var(--c-bg); font-size:1.1rem; cursor:pointer; flex-shrink:0; transition:all 180ms; }
     .jk-play-btn:hover { background:var(--c-primary-h); box-shadow:var(--glow-primary); }
     .jk-progress { flex:1; }
-    .jk-bar-bg { height:4px; background:var(--c-surface-2); border-radius:var(--radius-full); overflow:hidden; margin-bottom:4px; }
-    .jk-bar-fill { height:100%; width:0%; background:var(--c-primary); transition:width .4s linear; border-radius:var(--radius-full); }
+    .jk-bar-bg { height:4px; background:var(--c-surface-2); border-radius:var(--radius-full); overflow:hidden; margin-bottom:4px; cursor:pointer; }
+    .jk-bar-fill { height:100%; width:0%; background:var(--c-primary); transition:width .2s linear; border-radius:var(--radius-full); }
     .jk-labels { display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); letter-spacing:.06em; }
     .jk-vol { width:70px; accent-color:var(--c-primary); cursor:pointer; }
-    .jk-station-select { width:100%; background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-md); padding:var(--space-2) var(--space-3); font-family:var(--font-mono); font-size:10px; color:var(--c-text-muted); letter-spacing:.06em; cursor:pointer; margin-top:var(--space-3); }
-    .jk-station-select:focus { outline:none; border-color:var(--c-primary); }
+    .jk-tracks { display:flex; flex-direction:column; gap:var(--space-2); margin-top:var(--space-3); }
+    .jk-track { display:flex; align-items:center; gap:var(--space-3); padding:var(--space-2) var(--space-3); border-radius:var(--radius-md); border:1px solid transparent; cursor:pointer; transition:all 150ms; }
+    .jk-track:hover { background:var(--c-surface-2); border-color:var(--c-border); }
+    .jk-track.active { background:var(--c-surface-2); border-color:var(--c-primary); }
+    .jk-track-thumb { width:36px; height:36px; border-radius:var(--radius-sm); background:var(--c-surface-2); flex-shrink:0; overflow:hidden; }
+    .jk-track-thumb img { width:100%; height:100%; object-fit:cover; }
+    .jk-track-info { flex:1; min-width:0; }
+    .jk-track-title { font-family:var(--font-mono); font-size:10px; color:var(--c-text); letter-spacing:.06em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .jk-track-artist { font-family:var(--font-mono); font-size:9px; color:var(--c-text-muted); letter-spacing:.06em; }
+    .jk-track-num { font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); width:16px; text-align:right; flex-shrink:0; }
+    .jk-track.active .jk-track-num { color:var(--c-primary); }
     .jk-hint { font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); letter-spacing:.06em; margin-top:var(--space-4); line-height:1.5; }
   </style>
 </head>
@@ -146,7 +193,7 @@
           <div class="tool-card-icon">⚡</div>
           <div>
             <div class="tool-card-name">POKEGANG</div>
-            <div class="tool-card-desc">L'univers Pokémon de la communauté — collection, gang, lore et plus encore. Explore le monde de PokeGang sur pokegang.sterenna.fr.</div>
+            <div class="tool-card-desc">L'univers Pokémon de la communauté — collection, gang, lore et plus encore.</div>
             <span class="tool-card-tag ext">↗ POKEGANG.STERENNA.FR</span>
           </div>
         </a>
@@ -183,24 +230,22 @@
         <a href="#jukebox" class="tool-card" style="--card-accent:var(--c-green)">
           <div class="tool-card-icon">🎵</div>
           <div class="tool-card-name">JUKEBOX</div>
-          <div class="tool-card-desc">Radio communautaire — flux SomaFM curatés, stream continu, visualiseur.</div>
+          <div class="tool-card-desc">Musiques de la communauté par Dr.Spig — écoute directement depuis le hub.</div>
           <span class="tool-card-tag int">⬡ INTÉGRÉ</span>
         </a>
 
-        <!-- MON ESPACE (connecté) -->
-        <a href="/star/index.html" id="card-mon-espace" class="tool-card" style="--card-accent:var(--c-primary);display:none">
+        <!-- CHRONICLES (toujours visible, effet glitch) -->
+        <a href="/star/index.html" class="tool-card card-chronicles">
           <div class="tool-card-icon">⬡</div>
-          <div class="tool-card-name">MON ESPACE</div>
-          <div class="tool-card-desc">Tableau de bord membre — CIG, crew, vidéo du jour, activité réseau.</div>
-          <span class="tool-card-tag int">⬡ MEMBRE</span>
-        </a>
-
-        <!-- CONNEXION (déconnecté) -->
-        <a href="/login.html" id="card-login" class="tool-card" style="--card-accent:var(--c-primary)">
-          <div class="tool-card-icon">🔐</div>
-          <div class="tool-card-name">CONNEXION</div>
-          <div class="tool-card-desc">Accède à ton espace membre, ta CIG et au dashboard crew.</div>
-          <span class="tool-card-tag int">⬡ AUTH</span>
+          <div style="position:relative">
+            <div class="tool-card-name" id="glitch-name" style="position:relative">
+              CHRONICLES
+              <span class="glitch-layer-1" aria-hidden="true">CHRONICLES</span>
+              <span class="glitch-layer-2" aria-hidden="true">CHRONICLES</span>
+            </div>
+          </div>
+          <div class="tool-card-desc" id="chronicles-desc">Portail membres &amp; connexion — tableau de bord, CIG, crew, activité réseau.</div>
+          <span class="tool-card-tag int" id="chronicles-tag">⬡ PORTAIL</span>
         </a>
 
       </div>
@@ -221,31 +266,30 @@
     <!-- 03 · JUKEBOX -->
     <section class="hub-section" id="jukebox">
       <p class="hub-section-label">// 03 · JUKEBOX</p>
-      <h2 class="hub-section-title">Radio Communautaire</h2>
+      <h2 class="hub-section-title">Musiques <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">Dr.Spig</span></h2>
       <div class="jukebox-card">
         <div class="jukebox-top">
-          <div class="jukebox-art" id="jk-art">🎵</div>
-          <div class="jukebox-meta">
-            <div class="jukebox-station" id="jk-station">Groove Salad</div>
-            <div class="jukebox-sub">SomaFM · GWEN HA STAR</div>
+          <div class="jukebox-art" id="jk-art">
+            <img id="jk-cover" src="" alt="cover" loading="lazy"/>
           </div>
-          <div class="jukebox-live"><span class="jukebox-live-dot"></span>LIVE</div>
+          <div class="jukebox-meta">
+            <div class="jukebox-station" id="jk-station">BZH SUMMER - BIG BANGER</div>
+            <div class="jukebox-artist">Dr.Spig</div>
+            <div class="jukebox-sub">GWEN HA STAR · JUKEBOX</div>
+          </div>
+          <div class="jukebox-live"><span class="jukebox-live-dot"></span>NOW PLAYING</div>
         </div>
         <div class="jukebox-controls">
           <button class="jk-play-btn" id="jk-play" aria-label="Play / Pause">▶</button>
           <div class="jk-progress">
-            <div class="jk-bar-bg"><div class="jk-bar-fill" id="jk-bar"></div></div>
-            <div class="jk-labels"><span>STREAM</span><span id="jk-vol-lbl">70%</span></div>
+            <div class="jk-bar-bg" id="jk-bar-bg"><div class="jk-bar-fill" id="jk-bar"></div></div>
+            <div class="jk-labels"><span id="jk-time">0:00</span><span id="jk-dur">—</span></div>
           </div>
           <input type="range" class="jk-vol" id="jk-vol" min="0" max="1" step="0.05" value="0.7" aria-label="Volume"/>
         </div>
-        <select class="jk-station-select" id="jk-select" aria-label="Choisir la station">
-          <option value="0">🌿 Groove Salad — Ambient / Trip-hop</option>
-          <option value="1">🌑 Drone Zone — Dark Ambient</option>
-          <option value="2">🚀 Space Station — Space Music</option>
-          <option value="3">☕ Café del Mar — Chillout</option>
-        </select>
-        <p class="jk-hint">⬡ Flux SomaFM — Sélectionne une station et appuie sur play. Volume configurable.</p>
+        <!-- TRACKLIST -->
+        <div class="jk-tracks" id="jk-tracks"></div>
+        <p class="jk-hint">⬡ Musiques originales de la communauté — par Dr.Spig. <a href="https://nitro.sterenna.fr/jukebox/" target="_blank" rel="noopener noreferrer" style="color:var(--c-primary)">Voir le jukebox complet →</a></p>
       </div>
     </section>
 
@@ -275,7 +319,7 @@
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
-      <span class="footer-version">HUB · v2.1</span>
+      <span class="footer-version">HUB · v2.2</span>
     </div>
   </footer>
 
@@ -285,70 +329,112 @@
 
     initAuth();
 
+    // Mise à jour de la card Chronicles selon l'état de connexion
+    getSession().then(s => {
+      const desc = document.getElementById('chronicles-desc');
+      const tag  = document.getElementById('chronicles-tag');
+      if (s) {
+        desc.textContent = 'Tableau de bord membre — CIG, crew, vidéo du jour, activité réseau.';
+        tag.textContent  = '⬡ MON ESPACE';
+      }
+    });
+
     // Twitch embed
     const parent = window.location.hostname || 'localhost';
     document.getElementById('twitch-wrap').innerHTML =
       `<iframe src="https://player.twitch.tv/?channel=mutenrock&parent=${parent}&muted=false"
         allowfullscreen title="Stream Twitch MutenRock"></iframe>`;
 
-    // Card Mon Espace vs Connexion
-    getSession().then(s => {
-      if (s) {
-        document.getElementById('card-mon-espace').style.display = '';
-        document.getElementById('card-login').style.display = 'none';
-      }
-    });
-
-    // Jukebox
-    const STREAMS = [
-      { label:'Groove Salad',   url:'https://ice6.somafm.com/groovesalad-128-mp3',   art:'🌿' },
-      { label:'Drone Zone',     url:'https://ice6.somafm.com/dronezone-128-mp3',     art:'🌑' },
-      { label:'Space Station',  url:'https://ice6.somafm.com/spacestation-128-mp3',  art:'🚀' },
-      { label:'Café del Mar',   url:'https://ice6.somafm.com/cafedelmar-128-mp3',    art:'☕' },
+    // ── JUKEBOX ─────────────────────────────────────────────────────────────
+    const BASE = 'https://nitro.sterenna.fr/jukebox/';
+    const TRACKS = [
+      { title:'BZH SUMMER - BIG BANGER',          artist:'Dr.Spig', src:'audio/bzh-summer-big-banger-vers-501a.wav',        cover:'img/bzh_summer-df65d.png' },
+      { title:'Credits Song To BZH Empire Rising', artist:'Dr.Spig', src:'audio/Credits Song To BZH Empire Rising.mp3',       cover:'img/credits-song-to-bzh-empire-rising-0b953.png' },
+      { title:"Jacques_L'Agent Explorateur",       artist:'Dr.Spig', src:"audio/Jacques_L'Agent Explorateur.mp3",             cover:'img/jacques-l-agent-explorateur-6f0d9.webp' },
+      { title:'Rising GODs - BZH CHRONICLES',      artist:'Dr.Spig', src:'audio/Rising GODs - BZH CHRONICLES.mp3',            cover:'img/rising-gods-bzh-chronicles-8f982.webp' },
     ];
+
     const audio = new Audio();
-    audio.crossOrigin = 'anonymous';
     audio.volume = 0.7;
     let playing = false;
-    let barInterval = null;
-    let currentStream = 0;
+    let current = 0;
 
-    function updateStation(idx) {
-      currentStream = idx;
-      document.getElementById('jk-station').textContent = STREAMS[idx].label;
-      document.getElementById('jk-art').textContent = STREAMS[idx].art;
-      if (playing) { audio.src = STREAMS[idx].url; audio.play().catch(()=>{}); }
+    function fmt(s) {
+      if (isNaN(s)) return '--:--';
+      const m = Math.floor(s/60), sec = Math.floor(s%60);
+      return m+':'+(sec<10?'0':'')+sec;
     }
 
-    document.getElementById('jk-select').addEventListener('change', e => updateStation(+e.target.value));
-    document.getElementById('jk-vol').addEventListener('input', e => {
-      audio.volume = +e.target.value;
-      document.getElementById('jk-vol-lbl').textContent = Math.round(+e.target.value * 100) + '%';
+    function loadTrack(idx, autoplay) {
+      current = idx;
+      const t = TRACKS[idx];
+      audio.src = BASE + t.src;
+      document.getElementById('jk-station').textContent = t.title;
+      document.getElementById('jk-cover').src = BASE + t.cover;
+      document.getElementById('jk-bar').style.width = '0%';
+      document.getElementById('jk-time').textContent = '0:00';
+      document.getElementById('jk-dur').textContent  = '—';
+      document.querySelectorAll('.jk-track').forEach((el,i) => el.classList.toggle('active', i===idx));
+      if (autoplay) audio.play().catch(()=>{});
+    }
+
+    // Build tracklist
+    const list = document.getElementById('jk-tracks');
+    TRACKS.forEach((t,i) => {
+      const el = document.createElement('div');
+      el.className = 'jk-track' + (i===0?' active':'');
+      el.innerHTML = `
+        <div class="jk-track-thumb"><img src="${BASE+t.cover}" alt="" loading="lazy"/></div>
+        <div class="jk-track-info">
+          <div class="jk-track-title">${t.title}</div>
+          <div class="jk-track-artist">${t.artist}</div>
+        </div>
+        <div class="jk-track-num">${i+1}</div>`;
+      el.addEventListener('click', () => { loadTrack(i, true); playing=true; document.getElementById('jk-play').textContent='⏸'; });
+      list.appendChild(el);
     });
 
+    // Init cover
+    document.getElementById('jk-cover').src = BASE + TRACKS[0].cover;
+
+    // Play/pause
     document.getElementById('jk-play').addEventListener('click', () => {
       const btn = document.getElementById('jk-play');
-      const bar = document.getElementById('jk-bar');
       if (!playing) {
-        audio.src = STREAMS[currentStream].url;
-        audio.play().then(() => {
-          playing = true;
-          btn.textContent = '⏸';
-          btn.style.background = 'var(--c-amber)';
-          let w = 0;
-          barInterval = setInterval(() => { w=(w+0.3)%100; bar.style.width=w+'%'; }, 120);
-        }).catch(() => {
-          btn.textContent = '▶';
-        });
+        if (!audio.src) loadTrack(0, false);
+        audio.play().then(() => { playing=true; btn.textContent='⏸'; }).catch(()=>{});
       } else {
-        audio.pause();
-        playing = false;
-        btn.textContent = '▶';
-        btn.style.background = 'var(--c-primary)';
-        clearInterval(barInterval);
-        bar.style.width = '0%';
+        audio.pause(); playing=false; btn.textContent='▶';
       }
     });
+
+    // Volume
+    document.getElementById('jk-vol').addEventListener('input', e => { audio.volume = +e.target.value; });
+
+    // Progress
+    audio.addEventListener('timeupdate', () => {
+      if (!audio.duration) return;
+      const pct = (audio.currentTime / audio.duration) * 100;
+      document.getElementById('jk-bar').style.width = pct + '%';
+      document.getElementById('jk-time').textContent = fmt(audio.currentTime);
+      document.getElementById('jk-dur').textContent  = fmt(audio.duration);
+    });
+
+    // Seek
+    document.getElementById('jk-bar-bg').addEventListener('click', e => {
+      if (!audio.duration) return;
+      const r = e.currentTarget.getBoundingClientRect();
+      audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+    });
+
+    // Autoplay next
+    audio.addEventListener('ended', () => {
+      const next = (current + 1) % TRACKS.length;
+      loadTrack(next, true);
+    });
+
+    // Init
+    loadTrack(0, false);
   </script>
 </body>
 </html>
