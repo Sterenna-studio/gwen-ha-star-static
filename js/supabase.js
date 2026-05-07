@@ -1,6 +1,7 @@
 // ── SUPABASE CONFIG ─────────────────────────────────────────────────────────
 // Dashboard → Settings → API
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+// SDK v2.50+ requis pour les clés au format sb_publishable_*
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0';
 
 const SUPABASE_URL  = 'https://nmdjrcswlnydglrxaivx.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_dE0SfyUd-Xw4JhuAVy4x1A_NZfB7lcH';
