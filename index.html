@@ -4,6 +4,15 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GWEN HA STAR</title>
+
+  <!-- ANTI-FOUT : applique le thème AVANT le premier paint -->
+  <script>
+    (function(){
+      var t = sessionStorage.getItem('ghs-theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
@@ -20,7 +29,6 @@
     .hub-hero-title span { color:var(--c-primary); text-shadow:var(--glow-primary); }
     .hub-hero-sub { font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.1em; color:var(--c-text-muted); max-width:50ch; margin:0 auto var(--space-8); }
 
-    /* BOUTON HERO CHRONICLES */
     .btn-chronicles {
       display:inline-flex; align-items:center; gap:var(--space-3);
       padding:var(--space-3) var(--space-8);
@@ -49,7 +57,6 @@
     .hub-section-title { font-family:var(--font-display); font-size:var(--text-xl); font-weight:700; color:var(--c-text); margin-bottom:var(--space-6); }
     .hub-divider { max-width:1100px; margin:0 auto var(--space-10); height:1px; background:var(--c-border); }
 
-    /* TOOLS GRID */
     .tools-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr)); gap:var(--space-4); }
     .tool-card { position:relative; background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-lg); padding:var(--space-5) var(--space-5) var(--space-6); text-decoration:none; color:inherit; transition:border-color 200ms,transform 200ms,box-shadow 200ms; display:flex; flex-direction:column; gap:var(--space-3); overflow:hidden; }
     .tool-card::before { content:""; position:absolute; top:0; left:0; right:0; height:2px; background:var(--card-accent,var(--c-primary)); opacity:0; transition:opacity 200ms; }
@@ -64,33 +71,30 @@
     .tool-card-tag.stream { color:var(--c-red); }
     .tool-card-tag.nitro  { color:#a78bfa; }
 
-    /* FEATURED */
     .tool-card.featured { grid-column:span 2; flex-direction:row; align-items:center; gap:var(--space-6); padding:var(--space-6) var(--space-8); }
     @media(max-width:640px){ .tool-card.featured { grid-column:span 1; flex-direction:column; } }
     .tool-card.featured .tool-card-icon { font-size:2.8rem; flex-shrink:0; }
     .tool-card.featured .tool-card-name { font-size:var(--text-xl); }
 
-    /* CARD CHRONICLES ─ glitch */
     .card-chronicles { --card-accent: var(--c-primary); position:relative; overflow:hidden; }
     .card-chronicles .tool-card-name { position:relative; display:inline-block; }
     @keyframes glitch-clip-1 {
       0%,90%,100%{ clip-path:inset(0 0 100% 0); transform:translate(0); }
-      92%         { clip-path:inset(20% 0 60% 0); transform:translate(-4px,1px); }
-      94%         { clip-path:inset(50% 0 30% 0); transform:translate(4px,-1px); }
-      96%         { clip-path:inset(10% 0 80% 0); transform:translate(-2px,2px); }
-      98%         { clip-path:inset(70% 0 5%  0); transform:translate(3px,0); }
+      92%{ clip-path:inset(20% 0 60% 0); transform:translate(-4px,1px); }
+      94%{ clip-path:inset(50% 0 30% 0); transform:translate(4px,-1px); }
+      96%{ clip-path:inset(10% 0 80% 0); transform:translate(-2px,2px); }
+      98%{ clip-path:inset(70% 0 5% 0);  transform:translate(3px,0); }
     }
     @keyframes glitch-clip-2 {
       0%,88%,100%{ clip-path:inset(0 0 100% 0); transform:translate(0); }
-      90%         { clip-path:inset(30% 0 50% 0); transform:translate(5px,-2px); color:#ff0055; }
-      93%         { clip-path:inset(60% 0 20% 0); transform:translate(-5px,1px); color:#00ffcc; }
-      96%         { clip-path:inset(5%  0 85% 0); transform:translate(2px,3px); }
-      99%         { clip-path:inset(80% 0 10% 0); transform:translate(-3px,0); }
+      90%{ clip-path:inset(30% 0 50% 0); transform:translate(5px,-2px); color:#ff0055; }
+      93%{ clip-path:inset(60% 0 20% 0); transform:translate(-5px,1px); color:#00ffcc; }
+      96%{ clip-path:inset(5% 0 85% 0);  transform:translate(2px,3px); }
+      99%{ clip-path:inset(80% 0 10% 0); transform:translate(-3px,0); }
     }
     .card-chronicles:hover .glitch-layer-1,
     .card-chronicles:hover .glitch-layer-2 { animation-play-state:running; }
     .glitch-layer-1, .glitch-layer-2 {
-      content:attr(data-text);
       position:absolute; inset:0;
       font-family:var(--font-display); font-size:var(--text-lg); font-weight:700;
       color:var(--c-primary);
@@ -101,16 +105,13 @@
     .glitch-layer-1 { animation-name:glitch-clip-1; animation-duration:2.2s; color:#ff0055; }
     .glitch-layer-2 { animation-name:glitch-clip-2; animation-duration:2.8s; color:#00ffcc; }
 
-    /* LIVE BADGE */
     .live-badge { display:inline-flex; align-items:center; gap:var(--space-1); font-family:var(--font-mono); font-size:9px; letter-spacing:.12em; color:var(--c-red); }
     .live-dot { width:7px; height:7px; border-radius:50%; background:var(--c-red); animation:pulse-dot 1.4s ease-in-out infinite; }
     @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.7)} }
 
-    /* TWITCH EMBED */
     .twitch-wrap { position:relative; width:100%; padding-top:56.25%; border-radius:var(--radius-lg); overflow:hidden; background:var(--c-surface-2); border:1px solid var(--c-border); margin-top:var(--space-4); }
     .twitch-wrap iframe { position:absolute; inset:0; width:100%; height:100%; border:none; }
 
-    /* YOUTUBE SECTION */
     .yt-layout { display:grid; grid-template-columns:1fr 280px; gap:var(--space-6); align-items:start; max-width:1000px; }
     @media(max-width:768px){ .yt-layout { grid-template-columns:1fr; } }
     .yt-wrap { position:relative; width:100%; padding-top:56.25%; border-radius:var(--radius-lg); overflow:hidden; background:var(--c-surface-2); border:1px solid var(--c-border); }
@@ -125,7 +126,6 @@
     .yt-channel-btn:hover { background:#cc0000; transform:translateY(-1px); }
     .yt-playlist-label { font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); letter-spacing:.1em; margin-top:var(--space-2); }
 
-    /* JUKEBOX */
     .jukebox-card { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-xl); padding:var(--space-6); max-width:640px; }
     .jukebox-top { display:flex; align-items:center; gap:var(--space-4); margin-bottom:var(--space-5); }
     .jukebox-art { width:64px; height:64px; border-radius:var(--radius-md); background:var(--c-surface-2); display:flex; align-items:center; justify-content:center; font-size:1.8rem; flex-shrink:0; overflow:hidden; }
@@ -157,12 +157,7 @@
     .jk-track.active .jk-track-num { color:var(--c-primary); }
     .jk-hint { font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); letter-spacing:.06em; margin-top:var(--space-4); line-height:1.5; }
 
-    /* ── VAISSEAU PARTICULES ── */
-    #ship-canvas {
-      position:fixed; inset:0; pointer-events:none;
-      z-index:9999; opacity:0;
-      transition:opacity .1s;
-    }
+    #ship-canvas { position:fixed; inset:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .1s; }
     @keyframes screen-shake {
       0%  { transform:translate(0,0) rotate(0deg); }
       15% { transform:translate(-3px,2px) rotate(-.3deg); }
@@ -177,9 +172,7 @@
   </style>
 </head>
 <body>
-  <!-- Canvas particules vaisseau -->
   <canvas id="ship-canvas" aria-hidden="true"></canvas>
-
   <div class="scanlines" aria-hidden="true"></div>
 
   <header class="header">
@@ -192,12 +185,12 @@
         </svg>
         <span class="logo-text">GWEN·HA·STAR</span>
       </a>
+      <button class="theme-cycle-btn" aria-label="Changer de thème">◐</button>
       <div class="header-auth" id="header-auth"></div>
     </div>
   </header>
 
   <main>
-    <!-- HERO -->
     <section class="hub-hero">
       <p class="hub-hero-eyebrow">// RÉSEAU · COMMUNAUTÉ · STERENNA</p>
       <h1 class="hub-hero-title">GWEN <span>HA</span> STAR</h1>
@@ -208,13 +201,11 @@
       </a>
     </section>
 
-    <!-- 01 · OUTILS & UNIVERS -->
     <section class="hub-section">
       <p class="hub-section-label">// 01 · ACCÈS DIRECT</p>
       <h2 class="hub-section-title">Outils &amp; Univers</h2>
       <div class="tools-grid">
 
-        <!-- POKEGANG FEATURED -->
         <a href="https://pokegang.sterenna.fr" target="_blank" rel="noopener noreferrer"
            class="tool-card featured" style="--card-accent:var(--c-amber)">
           <div class="tool-card-icon">⚡</div>
@@ -225,7 +216,6 @@
           </div>
         </a>
 
-        <!-- TCG -->
         <a href="https://nitro.sterenna.fr/TCG" target="_blank" rel="noopener noreferrer"
            class="tool-card" style="--card-accent:#a78bfa">
           <div class="tool-card-icon">🃏</div>
@@ -234,7 +224,6 @@
           <span class="tool-card-tag nitro">↗ NITRO</span>
         </a>
 
-        <!-- TWITCH -->
         <a href="https://twitch.tv/mutenrock" target="_blank" rel="noopener noreferrer"
            class="tool-card" style="--card-accent:#9146ff">
           <div class="tool-card-icon">📡</div>
@@ -244,7 +233,6 @@
           <span class="tool-card-tag stream">⬤ STREAM</span>
         </a>
 
-        <!-- YOUTUBE -->
         <a href="https://www.youtube.com/@mutenrock" target="_blank" rel="noopener noreferrer"
            class="tool-card" style="--card-accent:#ff0000">
           <div class="tool-card-icon">▶</div>
@@ -253,7 +241,6 @@
           <span class="tool-card-tag ext">↗ YT</span>
         </a>
 
-        <!-- JUKEBOX -->
         <a href="#jukebox" class="tool-card" style="--card-accent:var(--c-green)">
           <div class="tool-card-icon">🎵</div>
           <div class="tool-card-name">JUKEBOX</div>
@@ -261,7 +248,6 @@
           <span class="tool-card-tag int">⬡ INTÉGRÉ</span>
         </a>
 
-        <!-- CHRONICLES (toujours visible, effet glitch) -->
         <a href="/star/index.html" class="tool-card card-chronicles">
           <div class="tool-card-icon">⬡</div>
           <div style="position:relative">
@@ -280,7 +266,6 @@
 
     <div class="hub-divider"></div>
 
-    <!-- 02 · STREAM LIVE -->
     <section class="hub-section">
       <p class="hub-section-label">// 02 · STREAM LIVE</p>
       <h2 class="hub-section-title">Twitch <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">@mutenrock</span></h2>
@@ -290,7 +275,6 @@
 
     <div class="hub-divider"></div>
 
-    <!-- 03 · JUKEBOX -->
     <section class="hub-section" id="jukebox">
       <p class="hub-section-label">// 03 · JUKEBOX</p>
       <h2 class="hub-section-title">Musiques <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">Dr.Spig</span></h2>
@@ -321,12 +305,10 @@
 
     <div class="hub-divider"></div>
 
-    <!-- 04 · YOUTUBE -->
     <section class="hub-section">
       <p class="hub-section-label">// 04 · CHAÎNE</p>
       <h2 class="hub-section-title">YouTube <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">@mutenrock</span></h2>
       <div class="yt-layout">
-        <!-- Playlist embed -->
         <div>
           <div class="yt-wrap">
             <iframe
@@ -338,23 +320,16 @@
           </div>
           <p class="yt-playlist-label" style="margin-top:var(--space-2)">⬡ PLAYLIST · BZH CHRONICLES</p>
         </div>
-        <!-- Channel card -->
         <div class="yt-channel-card">
           <div class="yt-channel-avatar">
-            <img
-              src="https://yt3.googleusercontent.com/ytc/AIdro_mCgJGGP3r9NZfvtl4wJMb9Xv6S6jKQnD0kQcXK=s176-c-k-c0x00ffffff-no-rj"
-              alt="Avatar MutenRock"
-              width="80" height="80"
-              loading="lazy"
-              onerror="this.src='https://yt3.googleusercontent.com/default-user/176x176.jpg'"
-            />
+            <img src="https://yt3.googleusercontent.com/ytc/AIdro_mCgJGGP3r9NZfvtl4wJMb9Xv6S6jKQnD0kQcXK=s176-c-k-c0x00ffffff-no-rj"
+              alt="Avatar MutenRock" width="80" height="80" loading="lazy"
+              onerror="this.src='https://yt3.googleusercontent.com/default-user/176x176.jpg'"/>
           </div>
           <div class="yt-channel-name">MutenRock</div>
           <div class="yt-channel-handle">@mutenrock</div>
           <div class="yt-channel-desc">Gaming · Streams · BZH Chronicles<br>Communauté Gwen Ha Star</div>
-          <a href="https://www.youtube.com/@mutenrock?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="yt-channel-btn">
-            ▶ S'ABONNER
-          </a>
+          <a href="https://www.youtube.com/@mutenrock?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="yt-channel-btn">▶ S'ABONNER</a>
           <a href="https://youtube.com/playlist?list=PLO9dEY6ZTilz4v4_sMq4iu53GtgPPfKOw" target="_blank" rel="noopener noreferrer"
              style="font-family:var(--font-mono);font-size:9px;color:var(--c-text-muted);letter-spacing:.08em;text-decoration:none;margin-top:var(--space-1)">
             ↗ Voir la playlist complète
@@ -367,14 +342,16 @@
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
-      <span class="footer-version">HUB · v2.3</span>
+      <span class="footer-version">HUB · v2.4</span>
     </div>
   </footer>
 
   <script type="module">
-    import { initAuth } from './js/auth.js';
+    import { initAuth }  from './js/auth.js';
+    import { initTheme } from './js/theme.js';
     import { getSession } from './js/supabase.js';
 
+    initTheme();
     initAuth();
 
     getSession().then(s => {
@@ -386,260 +363,73 @@
       }
     });
 
-    // Twitch embed
     const parent = window.location.hostname || 'localhost';
     document.getElementById('twitch-wrap').innerHTML =
       `<iframe src="https://player.twitch.tv/?channel=mutenrock&parent=${parent}&muted=false"
         allowfullscreen title="Stream Twitch MutenRock"></iframe>`;
 
-    // ── JUKEBOX ─────────────────────────────────────────────────────────────
+    // ── JUKEBOX ──────────────────────────────────────────────────────────
     const BASE = 'https://nitro.sterenna.fr/jukebox/';
     const TRACKS = [
-      { title:'BZH SUMMER - BIG BANGER',          artist:'Dr.Spig', src:'audio/bzh-summer-big-banger-vers-501a.wav',      cover:'img/bzh_summer-df65d.png' },
-      { title:'Credits Song To BZH Empire Rising', artist:'Dr.Spig', src:'audio/Credits Song To BZH Empire Rising.mp3',     cover:'img/credits-song-to-bzh-empire-rising-0b953.png' },
-      { title:"Jacques_L'Agent Explorateur",       artist:'Dr.Spig', src:"audio/Jacques_L'Agent Explorateur.mp3",           cover:'img/jacques-l-agent-explorateur-6f0d9.webp' },
-      { title:'Rising GODs - BZH CHRONICLES',      artist:'Dr.Spig', src:'audio/Rising GODs - BZH CHRONICLES.mp3',          cover:'img/rising-gods-bzh-chronicles-8f982.webp' },
+      { title:'BZH SUMMER - BIG BANGER',          artist:'Dr.Spig', src:'audio/bzh-summer-big-banger-vers-501a.wav',    cover:'img/bzh_summer-df65d.png' },
+      { title:'Credits Song To BZH Empire Rising', artist:'Dr.Spig', src:'audio/Credits Song To BZH Empire Rising.mp3',  cover:'img/credits-song-to-bzh-empire-rising-0b953.png' },
+      { title:"Jacques_L'Agent Explorateur",       artist:'Dr.Spig', src:"audio/Jacques_L'Agent Explorateur.mp3",         cover:'img/jacques-l-agent-explorateur-6f0d9.webp' },
+      { title:'Rising GODs - BZH CHRONICLES',      artist:'Dr.Spig', src:'audio/Rising GODs - BZH CHRONICLES.mp3',        cover:'img/rising-gods-bzh-chronicles-8f982.webp' },
     ];
-
-    const audio = new Audio();
-    audio.volume = 0.7;
-    let playing = false;
-    let current = 0;
-
-    function fmt(s) {
-      if (isNaN(s)) return '--:--';
-      const m = Math.floor(s/60), sec = Math.floor(s%60);
-      return m+':'+(sec<10?'0':'')+sec;
+    const audio = new Audio(); audio.volume = 0.7;
+    let playing = false, current = 0;
+    function fmt(s){ if(isNaN(s))return'--:--'; const m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+(sec<10?'0':'')+sec; }
+    function loadTrack(idx,autoplay){
+      current=idx; const t=TRACKS[idx];
+      audio.src=BASE+t.src;
+      document.getElementById('jk-station').textContent=t.title;
+      document.getElementById('jk-cover').src=BASE+t.cover;
+      document.getElementById('jk-bar').style.width='0%';
+      document.getElementById('jk-time').textContent='0:00';
+      document.getElementById('jk-dur').textContent='—';
+      document.querySelectorAll('.jk-track').forEach((el,i)=>el.classList.toggle('active',i===idx));
+      if(autoplay) audio.play().catch(()=>{});
     }
-
-    function loadTrack(idx, autoplay) {
-      current = idx;
-      const t = TRACKS[idx];
-      audio.src = BASE + t.src;
-      document.getElementById('jk-station').textContent = t.title;
-      document.getElementById('jk-cover').src = BASE + t.cover;
-      document.getElementById('jk-bar').style.width = '0%';
-      document.getElementById('jk-time').textContent = '0:00';
-      document.getElementById('jk-dur').textContent  = '—';
-      document.querySelectorAll('.jk-track').forEach((el,i) => el.classList.toggle('active', i===idx));
-      if (autoplay) audio.play().catch(()=>{});
-    }
-
-    const list = document.getElementById('jk-tracks');
-    TRACKS.forEach((t,i) => {
-      const el = document.createElement('div');
-      el.className = 'jk-track' + (i===0?' active':'');
-      el.innerHTML = `
-        <div class="jk-track-thumb"><img src="${BASE+t.cover}" alt="" loading="lazy"/></div>
-        <div class="jk-track-info">
-          <div class="jk-track-title">${t.title}</div>
-          <div class="jk-track-artist">${t.artist}</div>
-        </div>
-        <div class="jk-track-num">${i+1}</div>`;
-      el.addEventListener('click', () => { loadTrack(i, true); playing=true; document.getElementById('jk-play').textContent='⏸'; });
+    const list=document.getElementById('jk-tracks');
+    TRACKS.forEach((t,i)=>{
+      const el=document.createElement('div'); el.className='jk-track'+(i===0?' active':'');
+      el.innerHTML=`<div class="jk-track-thumb"><img src="${BASE+t.cover}" alt="" loading="lazy"/></div><div class="jk-track-info"><div class="jk-track-title">${t.title}</div><div class="jk-track-artist">${t.artist}</div></div><div class="jk-track-num">${i+1}</div>`;
+      el.addEventListener('click',()=>{ loadTrack(i,true); playing=true; document.getElementById('jk-play').textContent='⏸'; });
       list.appendChild(el);
     });
-
-    document.getElementById('jk-cover').src = BASE + TRACKS[0].cover;
-
-    document.getElementById('jk-play').addEventListener('click', () => {
-      const btn = document.getElementById('jk-play');
-      if (!playing) {
-        if (!audio.src) loadTrack(0, false);
-        audio.play().then(() => { playing=true; btn.textContent='⏸'; }).catch(()=>{});
-      } else {
-        audio.pause(); playing=false; btn.textContent='▶';
-      }
+    document.getElementById('jk-cover').src=BASE+TRACKS[0].cover;
+    document.getElementById('jk-play').addEventListener('click',()=>{
+      const btn=document.getElementById('jk-play');
+      if(!playing){ if(!audio.src)loadTrack(0,false); audio.play().then(()=>{ playing=true; btn.textContent='⏸'; }).catch(()=>{}); }
+      else{ audio.pause(); playing=false; btn.textContent='▶'; }
     });
-
-    document.getElementById('jk-vol').addEventListener('input', e => { audio.volume = +e.target.value; });
-
-    audio.addEventListener('timeupdate', () => {
-      if (!audio.duration) return;
-      const pct = (audio.currentTime / audio.duration) * 100;
-      document.getElementById('jk-bar').style.width = pct + '%';
-      document.getElementById('jk-time').textContent = fmt(audio.currentTime);
-      document.getElementById('jk-dur').textContent  = fmt(audio.duration);
+    document.getElementById('jk-vol').addEventListener('input',e=>{ audio.volume=+e.target.value; });
+    audio.addEventListener('timeupdate',()=>{
+      if(!audio.duration)return;
+      document.getElementById('jk-bar').style.width=(audio.currentTime/audio.duration*100)+'%';
+      document.getElementById('jk-time').textContent=fmt(audio.currentTime);
+      document.getElementById('jk-dur').textContent=fmt(audio.duration);
     });
-
-    document.getElementById('jk-bar-bg').addEventListener('click', e => {
-      if (!audio.duration) return;
-      const r = e.currentTarget.getBoundingClientRect();
-      audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+    document.getElementById('jk-bar-bg').addEventListener('click',e=>{
+      if(!audio.duration)return;
+      const r=e.currentTarget.getBoundingClientRect();
+      audio.currentTime=((e.clientX-r.left)/r.width)*audio.duration;
     });
-
-    audio.addEventListener('ended', () => {
-      const next = (current + 1) % TRACKS.length;
-      loadTrack(next, true);
-    });
-
-    loadTrack(0, false);
+    audio.addEventListener('ended',()=>{ loadTrack((current+1)%TRACKS.length,true); });
+    loadTrack(0,false);
   </script>
 
-  <!-- ── VAISSEAU + PARTICULES ─────────────────────────────────────────── -->
   <script>
   (function(){
-    const canvas = document.getElementById('ship-canvas');
-    const ctx    = canvas.getContext('2d');
-    let W, H;
-
-    function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-    resize();
-    window.addEventListener('resize', resize);
-
-    /* ── Particule ── */
-    class Particle {
-      constructor(x,y,color){
-        this.x = x; this.y = y;
-        this.vx = (Math.random()-0.5)*4;
-        this.vy = (Math.random()-0.5)*4 - 1;
-        this.life = 1;
-        this.decay = 0.025 + Math.random()*0.03;
-        this.r = 2 + Math.random()*3;
-        this.color = color;
-      }
-      update(){ this.x+=this.vx; this.y+=this.vy; this.vy+=0.08; this.life-=this.decay; }
-      draw(){
-        ctx.save();
-        ctx.globalAlpha = Math.max(0,this.life);
-        ctx.fillStyle = this.color;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
-        ctx.fill();
-        ctx.restore();
-      }
-    }
-
-    /* ── Vaisseau ── */
-    function drawShip(x, y, dir, scale){
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.scale(dir, 1); // dir = 1 (gauche→droite) ou -1 (droite→gauche)
-      ctx.scale(scale, scale);
-
-      // Corps
-      ctx.strokeStyle = '#00ffcc';
-      ctx.shadowColor = '#00ffcc';
-      ctx.shadowBlur  = 18;
-      ctx.lineWidth   = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(-30, -10);
-      ctx.lineTo(-36, 0);
-      ctx.lineTo(-30, 10);
-      ctx.closePath();
-      ctx.stroke();
-
-      // Aile sup
-      ctx.beginPath();
-      ctx.moveTo(-12, -6);
-      ctx.lineTo(-20, -22);
-      ctx.lineTo(-30, -10);
-      ctx.stroke();
-
-      // Aile inf
-      ctx.beginPath();
-      ctx.moveTo(-12, 6);
-      ctx.lineTo(-20, 22);
-      ctx.lineTo(-30, 10);
-      ctx.stroke();
-
-      // Moteur glow
-      ctx.shadowBlur  = 24;
-      ctx.shadowColor = '#ff6600';
-      ctx.strokeStyle = '#ff9933';
-      ctx.beginPath();
-      ctx.moveTo(-36, -5);
-      ctx.lineTo(-48 - Math.random()*12, 0);
-      ctx.lineTo(-36, 5);
-      ctx.stroke();
-
-      ctx.restore();
-    }
-
-    let particles = [];
-    let shipActive = false;
-    let shipX, shipY, shipVX, shipDir;
-    let shipScale = 1;
-    let trail = [];
-    let animId = null;
-
-    function spawnShip(){
-      if(shipActive) return;
-      shipActive = true;
-      canvas.style.opacity = '1';
-
-      // Choisir direction aléatoire
-      shipDir = Math.random() > 0.5 ? 1 : -1;
-      shipX   = shipDir === 1 ? -60 : W + 60;
-      shipY   = 80 + Math.random() * (H * 0.5);
-      shipVX  = shipDir === 1 ? 7 + Math.random()*5 : -(7 + Math.random()*5);
-      shipScale = 0.8 + Math.random()*0.6;
-      trail = [];
-
-      // Screen shake
-      document.body.classList.add('shaking');
-      setTimeout(() => document.body.classList.remove('shaking'), 500);
-
-      function loop(){
-        ctx.clearRect(0,0,W,H);
-
-        // Avance
-        shipX += shipVX;
-
-        // Particules exhaust
-        for(let i=0;i<3;i++){
-          const ex = shipX + (shipDir === 1 ? -36 : 36) * shipScale;
-          const ey = shipY + (Math.random()-0.5)*10;
-          particles.push(new Particle(ex, ey, Math.random()>0.5?'#ff6600':'#ffaa00'));
-        }
-        // Particules wake
-        if(Math.random()<0.4){
-          particles.push(new Particle(shipX, shipY + (Math.random()-0.5)*20, '#00ffcc'));
-        }
-
-        // Update + draw particles
-        particles = particles.filter(p => p.life > 0);
-        particles.forEach(p => { p.update(); p.draw(); });
-
-        // Draw ship
-        drawShip(shipX, shipY, shipDir, shipScale);
-
-        // Sorti de l'écran ?
-        const gone = shipDir === 1 ? shipX > W + 80 : shipX < -80;
-        if(!gone){
-          animId = requestAnimationFrame(loop);
-        } else {
-          // Fade out + laisser les particules finir
-          let fade = 60;
-          function fadeOut(){
-            ctx.clearRect(0,0,W,H);
-            particles = particles.filter(p=>p.life>0);
-            particles.forEach(p=>{ p.update(); p.draw(); });
-            fade--;
-            if(particles.length > 0 && fade > 0){
-              requestAnimationFrame(fadeOut);
-            } else {
-              ctx.clearRect(0,0,W,H);
-              canvas.style.opacity = '0';
-              shipActive = false;
-            }
-          }
-          fadeOut();
-        }
-      }
-      loop();
-    }
-
-    // Lancement aléatoire toutes les 18-45 secondes
-    function scheduleNext(){
-      const delay = 18000 + Math.random() * 27000;
-      setTimeout(() => { spawnShip(); scheduleNext(); }, delay);
-    }
-    // Premier passage après 4s
-    setTimeout(() => { spawnShip(); scheduleNext(); }, 4000);
+    const canvas=document.getElementById('ship-canvas'), ctx=canvas.getContext('2d'); let W,H;
+    function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+    resize(); window.addEventListener('resize',resize);
+    class Particle{ constructor(x,y,c){ this.x=x;this.y=y;this.vx=(Math.random()-.5)*4;this.vy=(Math.random()-.5)*4-1;this.life=1;this.decay=.025+Math.random()*.03;this.r=2+Math.random()*3;this.color=c; } update(){ this.x+=this.vx;this.y+=this.vy;this.vy+=.08;this.life-=this.decay; } draw(){ ctx.save();ctx.globalAlpha=Math.max(0,this.life);ctx.fillStyle=this.color;ctx.shadowBlur=8;ctx.shadowColor=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();ctx.restore(); } }
+    function drawShip(x,y,dir,scale){ ctx.save();ctx.translate(x,y);ctx.scale(dir,1);ctx.scale(scale,scale);ctx.strokeStyle='#00ffcc';ctx.shadowColor='#00ffcc';ctx.shadowBlur=18;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-30,-10);ctx.lineTo(-36,0);ctx.lineTo(-30,10);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(-12,-6);ctx.lineTo(-20,-22);ctx.lineTo(-30,-10);ctx.stroke();ctx.beginPath();ctx.moveTo(-12,6);ctx.lineTo(-20,22);ctx.lineTo(-30,10);ctx.stroke();ctx.shadowBlur=24;ctx.shadowColor='#ff6600';ctx.strokeStyle='#ff9933';ctx.beginPath();ctx.moveTo(-36,-5);ctx.lineTo(-48-Math.random()*12,0);ctx.lineTo(-36,5);ctx.stroke();ctx.restore(); }
+    let particles=[],shipActive=false,shipX,shipY,shipVX,shipDir,shipScale=1;
+    function spawnShip(){ if(shipActive)return; shipActive=true; canvas.style.opacity='1'; shipDir=Math.random()>.5?1:-1; shipX=shipDir===1?-60:W+60; shipY=80+Math.random()*(H*.5); shipVX=shipDir===1?7+Math.random()*5:-(7+Math.random()*5); shipScale=.8+Math.random()*.6; document.body.classList.add('shaking'); setTimeout(()=>document.body.classList.remove('shaking'),500); function loop(){ ctx.clearRect(0,0,W,H); shipX+=shipVX; for(let i=0;i<3;i++){ const ex=shipX+(shipDir===1?-36:36)*shipScale,ey=shipY+(Math.random()-.5)*10; particles.push(new Particle(ex,ey,Math.random()>.5?'#ff6600':'#ffaa00')); } if(Math.random()<.4) particles.push(new Particle(shipX,shipY+(Math.random()-.5)*20,'#00ffcc')); particles=particles.filter(p=>p.life>0); particles.forEach(p=>{p.update();p.draw();}); drawShip(shipX,shipY,shipDir,shipScale); const gone=shipDir===1?shipX>W+80:shipX<-80; if(!gone){ requestAnimationFrame(loop); }else{ let fade=60; function fadeOut(){ ctx.clearRect(0,0,W,H); particles=particles.filter(p=>p.life>0); particles.forEach(p=>{p.update();p.draw();}); fade--; if(particles.length>0&&fade>0){ requestAnimationFrame(fadeOut); }else{ ctx.clearRect(0,0,W,H); canvas.style.opacity='0'; shipActive=false; } } fadeOut(); } } loop(); }
+    function scheduleNext(){ setTimeout(()=>{ spawnShip(); scheduleNext(); },18000+Math.random()*27000); }
+    setTimeout(()=>{ spawnShip(); scheduleNext(); },4000);
   })();
   </script>
 </body>
