@@ -367,7 +367,7 @@
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
-      <span class="footer-version">HUB · v2.3</span>
+      <span class="footer-version">HUB · v2.4</span>
     </div>
   </footer>
 
@@ -516,10 +516,9 @@
     function drawShip(x, y, dir, scale){
       ctx.save();
       ctx.translate(x, y);
-      ctx.scale(dir, 1); // dir = 1 (gauche→droite) ou -1 (droite→gauche)
+      ctx.scale(dir, 1);
       ctx.scale(scale, scale);
 
-      // Corps
       ctx.strokeStyle = '#00ffcc';
       ctx.shadowColor = '#00ffcc';
       ctx.shadowBlur  = 18;
@@ -532,21 +531,18 @@
       ctx.closePath();
       ctx.stroke();
 
-      // Aile sup
       ctx.beginPath();
       ctx.moveTo(-12, -6);
       ctx.lineTo(-20, -22);
       ctx.lineTo(-30, -10);
       ctx.stroke();
 
-      // Aile inf
       ctx.beginPath();
       ctx.moveTo(-12, 6);
       ctx.lineTo(-20, 22);
       ctx.lineTo(-30, 10);
       ctx.stroke();
 
-      // Moteur glow
       ctx.shadowBlur  = 24;
       ctx.shadowColor = '#ff6600';
       ctx.strokeStyle = '#ff9933';
@@ -563,7 +559,6 @@
     let shipActive = false;
     let shipX, shipY, shipVX, shipDir;
     let shipScale = 1;
-    let trail = [];
     let animId = null;
 
     function spawnShip(){
@@ -571,48 +566,36 @@
       shipActive = true;
       canvas.style.opacity = '1';
 
-      // Choisir direction aléatoire
       shipDir = Math.random() > 0.5 ? 1 : -1;
       shipX   = shipDir === 1 ? -60 : W + 60;
       shipY   = 80 + Math.random() * (H * 0.5);
       shipVX  = shipDir === 1 ? 7 + Math.random()*5 : -(7 + Math.random()*5);
       shipScale = 0.8 + Math.random()*0.6;
-      trail = [];
 
-      // Screen shake
       document.body.classList.add('shaking');
       setTimeout(() => document.body.classList.remove('shaking'), 500);
 
       function loop(){
         ctx.clearRect(0,0,W,H);
-
-        // Avance
         shipX += shipVX;
 
-        // Particules exhaust
         for(let i=0;i<3;i++){
           const ex = shipX + (shipDir === 1 ? -36 : 36) * shipScale;
           const ey = shipY + (Math.random()-0.5)*10;
           particles.push(new Particle(ex, ey, Math.random()>0.5?'#ff6600':'#ffaa00'));
         }
-        // Particules wake
         if(Math.random()<0.4){
           particles.push(new Particle(shipX, shipY + (Math.random()-0.5)*20, '#00ffcc'));
         }
 
-        // Update + draw particles
         particles = particles.filter(p => p.life > 0);
         particles.forEach(p => { p.update(); p.draw(); });
-
-        // Draw ship
         drawShip(shipX, shipY, shipDir, shipScale);
 
-        // Sorti de l'écran ?
         const gone = shipDir === 1 ? shipX > W + 80 : shipX < -80;
         if(!gone){
           animId = requestAnimationFrame(loop);
         } else {
-          // Fade out + laisser les particules finir
           let fade = 60;
           function fadeOut(){
             ctx.clearRect(0,0,W,H);
@@ -633,12 +616,10 @@
       loop();
     }
 
-    // Lancement aléatoire toutes les 18-45 secondes
     function scheduleNext(){
       const delay = 18000 + Math.random() * 27000;
       setTimeout(() => { spawnShip(); scheduleNext(); }, delay);
     }
-    // Premier passage après 4s
     setTimeout(() => { spawnShip(); scheduleNext(); }, 4000);
   })();
   </script>
