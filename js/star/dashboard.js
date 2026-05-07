@@ -1,17 +1,19 @@
 /**
  * dashboard.js — Logique star/index.html
  */
-import { guardStar, getProfileMeta } from './guard.js';
-import { supabase }                  from '../supabase.js';
-import { signOut }                   from '../supabase.js';
-import { VideoDay, RadioPlayer }     from './widgets.js';
+import { requireAuth, getProfileMeta } from './guard.js';
+import { supabase }                    from '../supabase.js';
+import { signOut }                     from '../supabase.js';
+import { VideoDay, RadioPlayer }       from './widgets.js';
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 export async function initDashboard() {
-  const session = await guardStar();
-  const profile = getProfileMeta(session);
+  const auth = await requireAuth();
+  if (!auth) return; // guard a redirigé vers login
+  const { session, user, profile } = auth;
+  const meta = getProfileMeta(profile, user);
 
-  _renderHeader(profile);
+  _renderHeader(meta);
   _renderQuickAccess();
   await Promise.all([
     _loadVideo(),
@@ -28,14 +30,14 @@ function _renderHeader(profile) {
   el.innerHTML = `
     <div class="star-user-info">
       <div class="star-avatar" aria-hidden="true">
-        ${ profile.avatar_url
-          ? `<img src="${profile.avatar_url}" alt="Avatar ${profile.username}" width="36" height="36" loading="lazy">`
+        ${ profile.avatarUrl
+          ? `<img src="${profile.avatarUrl}" alt="Avatar ${profile.username}" width="36" height="36" loading="lazy">`
           : `<span class="star-avatar-initials">${initials}</span>`
         }
       </div>
       <div class="star-user-meta">
         <span class="star-username">${profile.username}</span>
-        <span class="star-rang">${profile.rang}</span>
+        <span class="star-rang">${profile.activeTitle}</span>
       </div>
     </div>
     <nav class="star-header-nav" aria-label="Navigation hub">
@@ -68,7 +70,6 @@ async function _loadActivity() {
   const el = document.getElementById('widget-activity');
   if (!el) return;
 
-  // Tente de charger les événements depuis Supabase (table activity_log)
   try {
     const { data, error } = await supabase
       .from('activity_log')
@@ -82,7 +83,6 @@ async function _loadActivity() {
     }
     _renderActivityFeed(el, data);
 
-    // Temps réel via channel Supabase
     supabase.channel('activity_log_changes')
       .on('postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'activity_log' },
@@ -123,7 +123,7 @@ function _prependActivity(el, item) {
   const feed = el.querySelector('.activity-feed');
   if (!feed) return;
   const li = document.createElement('li');
-  li.className  = 'activity-item activity-item--new';
+  li.className    = 'activity-item activity-item--new';
   li.dataset.type = item.type;
   li.innerHTML = `
     <span class="activity-icon" aria-hidden="true">${_activityIcon(item.type)}</span>
@@ -131,7 +131,6 @@ function _prependActivity(el, item) {
     <time class="activity-time" datetime="${item.created_at}">${_timeAgo(item.created_at)}</time>
   `;
   feed.prepend(li);
-  // Limite à 12 items
   while (feed.children.length > 12) feed.lastElementChild.remove();
 }
 
