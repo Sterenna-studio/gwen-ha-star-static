@@ -111,10 +111,7 @@
     .bc-activity { grid-column: span 4;  }
     .bc-radio    { grid-column: span 8;  }
     @media(max-width:1100px) {
-      .bc-pg       { grid-column: span 12; }
-      .bc-video    { grid-column: span 12; }
-      .bc-activity { grid-column: span 12; }
-      .bc-radio    { grid-column: span 12; }
+      .bc-pg, .bc-video, .bc-activity, .bc-radio { grid-column: span 12; }
     }
 
     /* ── QUICK ACCESS ────────────────────────────────────────────── */
@@ -152,20 +149,44 @@
     .widget-empty-sub  { font-family:var(--font-mono); font-size:9px; letter-spacing:.15em; margin-top:var(--space-2); opacity:.4; }
 
     /* ── POKEGANG WIDGET ─────────────────────────────────────────── */
-    .pg-widget  { display:flex; flex-direction:column; height:100%; gap:var(--space-4); }
+    .pg-widget  { display:flex; flex-direction:column; gap:var(--space-4); }
     .pg-top     { display:flex; gap:var(--space-4); align-items:flex-start; }
-    .pg-frame-wrap {
-      flex:1; aspect-ratio:16/9; min-height:170px; max-height:300px;
-      border-radius:var(--radius-lg); overflow:hidden;
-      border:1px solid var(--c-border); background:var(--c-surface-2);
-      position:relative;
+
+    /*
+     * ZOOM 200% — technique scale
+     * ─────────────────────────────
+     * L'outer clip à la taille visible (280px).
+     * L'inner fait 200% × 200% pour simuler un viewport 2× plus grand,
+     * puis scale(0.5) le ramène à la taille de l'outer.
+     * L'iframe voit donc un espace 2× plus grand → effet zoom 200%.
+     */
+    .pg-frame-outer {
+      flex: 1;
+      height: 280px;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--c-border);
+      background: var(--c-surface-2);
+      position: relative;
     }
-    .pg-frame-wrap iframe { width:100%; height:100%; border:none; filter:brightness(.96); display:block; }
+    .pg-frame-inner {
+      width: 200%;
+      height: 200%;
+      transform: scale(0.5);
+      transform-origin: top left;
+    }
+    .pg-frame-inner iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
     .pg-overlay {
-      position:absolute; inset:0; background:rgba(2,4,3,.82);
+      position:absolute; inset:0; background:rgba(2,4,3,.85);
       display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap:var(--space-3); cursor:pointer; z-index:2;
-      transition:opacity .2s;
+      gap:var(--space-3); z-index:10;
+      transition:opacity .25s;
     }
     .pg-overlay.hidden { opacity:0; pointer-events:none; }
     .pg-overlay-logo {
@@ -185,7 +206,7 @@
     /* Stats sidebar PokeGang */
     .pg-stats {
       display:flex; flex-direction:column; gap:var(--space-2);
-      flex-shrink:0; width:155px;
+      flex-shrink:0; width:162px;
     }
     .pg-stat {
       background:var(--c-surface-2); border:1px solid var(--c-border);
@@ -194,7 +215,16 @@
     }
     .pg-stat-lbl { font-family:var(--font-mono); font-size:8px; letter-spacing:.16em; color:var(--c-text-faint); }
     .pg-stat-val { font-family:var(--font-display); font-size:var(--text-lg); line-height:1.1; color:var(--c-amber); }
-    .pg-stat-sub { font-family:var(--font-mono); font-size:8px; color:var(--c-text-muted); }
+    .pg-stat-sub { font-family:var(--font-mono); font-size:8px; color:var(--c-text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    /* Boss row dans la stat Gang */
+    .pg-boss-row { display:flex; align-items:center; gap:var(--space-2); }
+    .pg-boss-sprite {
+      width:48px; height:48px; object-fit:contain;
+      image-rendering:pixelated; flex-shrink:0;
+    }
+    .pg-boss-info { display:flex; flex-direction:column; gap:2px; min-width:0; }
+
     .pg-ext {
       font-family:var(--font-mono); font-size:9px; letter-spacing:.1em;
       color:var(--c-cyan); text-decoration:none; display:inline-flex;
@@ -246,18 +276,9 @@
   <!-- STATUS BAR -->
   <div class="status-bar" role="status" aria-live="polite">
     <div class="sb-left">
-      <div class="sb-item">
-        <span class="sb-dot"></span>
-        <span>GWEN·HA·STAR</span>
-      </div>
-      <div class="sb-item" id="sb-supa">
-        <span class="sb-dot amber"></span>
-        <span>SUPABASE · LINK</span>
-      </div>
-      <div class="sb-item" id="sb-pg">
-        <span class="sb-dot off"></span>
-        <span>POKEGANG · …</span>
-      </div>
+      <div class="sb-item"><span class="sb-dot"></span><span>GWEN·HA·STAR</span></div>
+      <div class="sb-item" id="sb-supa"><span class="sb-dot amber"></span><span>SUPABASE · LINK</span></div>
+      <div class="sb-item" id="sb-pg"><span class="sb-dot off"></span><span>POKEGANG · …</span></div>
     </div>
     <div class="sb-right">
       <span class="sb-user" id="sb-username">···</span>
@@ -299,7 +320,7 @@
       <div class="kpi" style="--kpi-c:var(--c-cyan)">
         <span class="kpi-lbl">RÉPUTATION PG</span>
         <span class="kpi-val" id="kpi-pg-rep">·</span>
-        <span class="kpi-sub">GANG · RÉPUTATION</span>
+        <span class="kpi-sub">GANG · LEADERBOARD</span>
       </div>
       <div class="kpi" style="--kpi-c:var(--c-purple)">
         <span class="kpi-lbl">SESSION</span>
@@ -322,42 +343,76 @@
         <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>POKEGANG · TERMINAL</div>
         <div class="pg-widget">
           <div class="pg-top">
-            <div class="pg-frame-wrap">
-              <iframe
-                id="pg-iframe"
-                src="about:blank"
-                title="PokeGang"
-                loading="lazy"
-                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-              ></iframe>
+
+            <!--
+              ZOOM 200% :
+              outer (280px) clips le contenu visible.
+              inner (200%×200%) est réduit à scale(0.5) → transform-origin top left.
+              L'iframe reçoit un espace 2× plus grand = zoom 200% visuel garanti.
+            -->
+            <div class="pg-frame-outer">
+              <div class="pg-frame-inner">
+                <iframe
+                  id="pg-iframe"
+                  src="about:blank"
+                  title="PokeGang"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                ></iframe>
+              </div>
               <div class="pg-overlay" id="pg-overlay">
                 <div class="pg-overlay-logo">POKEGANG</div>
                 <button class="pg-launch" id="pg-launch">▶ LANCER LE JEU</button>
               </div>
             </div>
+
+            <!-- Stats depuis table leaderboard -->
             <div class="pg-stats">
+
               <div class="pg-stat">
                 <span class="pg-stat-lbl">GANG</span>
-                <span class="pg-stat-val" id="pg-gang-name">·</span>
-                <span class="pg-stat-sub" id="pg-title">TITRE : ·</span>
+                <div class="pg-boss-row">
+                  <img
+                    id="pg-boss-sprite"
+                    class="pg-boss-sprite"
+                    src="" alt="" width="48" height="48"
+                    loading="lazy"
+                    style="display:none"
+                    onerror="this.style.display='none'"
+                  >
+                  <div class="pg-boss-info">
+                    <span class="pg-stat-val" id="pg-gang-name">·</span>
+                    <span class="pg-stat-sub" id="pg-boss-name">BOSS : ·</span>
+                  </div>
+                </div>
               </div>
+
               <div class="pg-stat">
                 <span class="pg-stat-lbl">RÉPUTATION</span>
                 <span class="pg-stat-val" id="pg-rep">·</span>
                 <span class="pg-stat-sub">POINTS</span>
               </div>
+
               <div class="pg-stat">
-                <span class="pg-stat-lbl">ARGENT</span>
-                <span class="pg-stat-val" id="pg-money">·</span>
-                <span class="pg-stat-sub">PIÈCES IN-GAME</span>
+                <span class="pg-stat-lbl">POKÉDEX</span>
+                <span class="pg-stat-val" id="pg-dex">·</span>
+                <span class="pg-stat-sub" id="pg-dex-nat">NATIONAL : ·</span>
               </div>
+
               <div class="pg-stat">
-                <span class="pg-stat-lbl">POKÉMONS</span>
-                <span class="pg-stat-val" id="pg-pokemons">·</span>
+                <span class="pg-stat-lbl">POKÉMONS ATTRAPÉS</span>
+                <span class="pg-stat-val" id="pg-caught">·</span>
                 <span class="pg-stat-sub" id="pg-shinies">✦ SHINIES : ·</span>
               </div>
+
+              <div class="pg-stat">
+                <span class="pg-stat-lbl">AGENTS</span>
+                <span class="pg-stat-val" id="pg-agents">·</span>
+                <span class="pg-stat-sub">RECRUTEMENT</span>
+              </div>
+
               <a class="pg-ext" href="https://pokegang.sterenna.fr" target="_blank" rel="noopener noreferrer">↗ OUVRIR EN GRAND</a>
             </div>
+
           </div>
         </div>
       </div>
@@ -384,21 +439,20 @@
   </main>
 
   <script type="module">
-    import { initDashboard }         from '../js/star/dashboard.js';
-    import { supabase, signOut }     from '../js/supabase.js';
-    import { requireAuth }           from '../js/star/guard.js';
+    import { initDashboard }     from '../js/star/dashboard.js';
+    import { supabase, signOut } from '../js/supabase.js';
+    import { requireAuth }       from '../js/star/guard.js';
 
-    // ── HORLOGE ────────────────────────────────────────────────
-    (function startClock() {
+    // ── HORLOGE
+    (function() {
       const el = document.getElementById('sb-clock');
       const tick = () => { if (el) el.textContent = new Date().toLocaleTimeString('fr-FR'); };
       tick(); setInterval(tick, 1000);
     })();
 
-    // ── UPTIME SESSION ─────────────────────────────────────────
-    (function startUptime() {
-      const t0 = Date.now();
-      const el = document.getElementById('kpi-uptime');
+    // ── UPTIME SESSION
+    (function() {
+      const t0 = Date.now(), el = document.getElementById('kpi-uptime');
       setInterval(() => {
         if (!el) return;
         const s  = Math.floor((Date.now() - t0) / 1000);
@@ -409,10 +463,10 @@
       }, 1000);
     })();
 
-    // ── DÉCO strip ─────────────────────────────────────────────
+    // ── DÉCO
     document.getElementById('btn-signout-strip')?.addEventListener('click', () => signOut());
 
-    // ── POKEGANG : iframe lazy ─────────────────────────────────
+    // ── IFRAME POKEGANG — launch lazy
     document.getElementById('pg-launch')?.addEventListener('click', () => {
       const iframe  = document.getElementById('pg-iframe');
       const overlay = document.getElementById('pg-overlay');
@@ -420,25 +474,22 @@
       if (overlay) overlay.classList.add('hidden');
     });
 
-    // ── POKEGANG : load save depuis gang_snapshots ─────────────
-    // La table gang_snapshots est créée par le cloud-save de pokegang-game.
-    // Colonnes attendues (sélection légère) :
-    //   gang_name TEXT, reputation INT, money INT,
-    //   title_a TEXT, pokemon_count INT, shiny_count INT,
-    //   updated_at TIMESTAMPTZ
-    async function loadPGSave(userId) {
+    // ── POKEGANG STATS depuis table leaderboard
+    // Colonnes lues : gang_name, boss_name, boss_sprite, reputation,
+    //   total_caught, shiny_count, dex_kanto_count, dex_national_count, agents_count
+    // Filtre : user_id = utilisateur connecté + is_anonymous = false
+    async function loadPGStats(userId) {
       const sbPg = document.getElementById('sb-pg');
       try {
         const { data, error } = await supabase
-          .from('gang_snapshots')
-          .select('gang_name, reputation, money, title_a, pokemon_count, shiny_count')
+          .from('leaderboard')
+          .select('gang_name,boss_name,boss_sprite,reputation,total_caught,shiny_count,dex_kanto_count,dex_national_count,agents_count')
           .eq('user_id', userId)
-          .order('updated_at', { ascending: false })
-          .limit(1)
+          .eq('is_anonymous', false)
           .maybeSingle();
 
         if (error || !data) {
-          _setPGStatus(sbPg, 'off', 'NO SAVE');
+          _setPGStatus(sbPg, 'off', 'NO DATA');
           _fillPG(null);
           return;
         }
@@ -450,31 +501,47 @@
       }
     }
 
-    function _setPGStatus(el, color, label) {
+    function _setPGStatus(el, state, label) {
       if (!el) return;
-      const cls = color === 'green' ? '' : color;
+      const cls = state === 'green' ? '' : state === 'red' ? 'red' : 'off';
       el.innerHTML = `<span class="sb-dot ${cls}"></span><span>POKEGANG · ${label}</span>`;
     }
 
     function _fillPG(d) {
       const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+      const SHOWDOWN = 'https://play.pokemonshowdown.com/sprites/trainers/';
+
       if (!d) {
-        s('pg-gang-name', '—'); s('pg-title',   'TITRE : —');
-        s('pg-rep',       '—'); s('pg-money',   '—');
-        s('pg-pokemons',  '—'); s('pg-shinies', '✦ SHINIES : —');
-        s('kpi-pg-rep',   '—');
+        s('pg-gang-name', '—'); s('pg-boss-name',  'BOSS : —');
+        s('pg-rep',       '—'); s('pg-dex',        '—');
+        s('pg-dex-nat',   'NATIONAL : —');
+        s('pg-caught',    '—'); s('pg-shinies',    '✦ SHINIES : —');
+        s('pg-agents',    '—'); s('kpi-pg-rep',    '—');
         return;
       }
+
       s('pg-gang-name', d.gang_name  ?? '???');
-      s('pg-title',    `TITRE : ${d.title_a ?? '—'}`);
-      s('pg-rep',      (d.reputation ?? 0).toLocaleString('fr-FR'));
-      s('pg-money',    (d.money      ?? 0).toLocaleString('fr-FR'));
-      s('pg-pokemons', d.pokemon_count ?? '?');
-      s('pg-shinies',  `✦ SHINIES : ${d.shiny_count ?? 0}`);
-      s('kpi-pg-rep',  (d.reputation ?? 0).toLocaleString('fr-FR'));
+      s('pg-boss-name', `BOSS : ${d.boss_name ?? '—'}`);
+      s('pg-rep',       (d.reputation     ?? 0).toLocaleString('fr-FR'));
+      s('pg-dex',       `${d.dex_kanto_count    ?? 0} / 151`);
+      s('pg-dex-nat',   `NATIONAL : ${d.dex_national_count ?? 0}`);
+      s('pg-caught',    (d.total_caught   ?? 0).toLocaleString('fr-FR'));
+      s('pg-shinies',   `✦ SHINIES : ${d.shiny_count ?? 0}`);
+      s('pg-agents',    d.agents_count ?? 0);
+      s('kpi-pg-rep',   (d.reputation     ?? 0).toLocaleString('fr-FR'));
+
+      // Sprite boss Showdown
+      if (d.boss_sprite) {
+        const img = document.getElementById('pg-boss-sprite');
+        if (img) {
+          img.src = `${SHOWDOWN}${d.boss_sprite}.png`;
+          img.style.display = 'block';
+          img.alt = d.boss_name ?? '';
+        }
+      }
     }
 
-    // ── MEMBRES KPI ────────────────────────────────────────────
+    // ── MEMBRES KPI
     async function loadMembers() {
       const el = document.getElementById('kpi-members');
       try {
@@ -485,12 +552,12 @@
       } catch { if (el) el.textContent = '?'; }
     }
 
-    // ── WELCOME STRIP (données auth) ───────────────────────────
+    // ── WELCOME STRIP
     function populateWelcome(user, profile) {
       const username = profile?.username ?? user.email?.split('@')[0] ?? 'AGENT';
       const role     = profile?.active_title ?? 'Agent';
-      document.getElementById('w-name').textContent  = username.toUpperCase();
-      document.getElementById('w-role').textContent  = '◆ ' + role.toUpperCase();
+      document.getElementById('w-name').textContent      = username.toUpperCase();
+      document.getElementById('w-role').textContent      = '◆ ' + role.toUpperCase();
       document.getElementById('sb-username').textContent = username.toUpperCase();
       const av = document.getElementById('w-avatar');
       if (av) {
@@ -502,16 +569,15 @@
       }
     }
 
-    // ── BOOT ───────────────────────────────────────────────────
+    // ── BOOT
     const auth = await requireAuth();
     if (auth) {
       const { user, profile } = auth;
       populateWelcome(user, profile);
       loadMembers();
-      loadPGSave(user.id);
+      loadPGStats(user.id);  // ← filtre sur user_id connecté
     }
 
-    // dashboard.js gère : header nav, quick-access, vidéo, activité, radio
     initDashboard();
   </script>
 
