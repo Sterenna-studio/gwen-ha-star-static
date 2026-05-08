@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>Sterenna – Jukebox v7</title>
+  <title>Sterenna – Jukebox</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,9 +10,11 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-
-  <!-- Fond de salle -->  
+  <!-- Fond de salle -->
   <div class="room-bg" aria-hidden="true"></div>
+
+  <!-- Transition morphique -->
+  <div id="themeMorph" class="morph hidden" aria-hidden="true"></div>
 
   <!-- Toggle thème -->
   <div class="theme-toggle">
@@ -20,45 +22,42 @@
     <button id="toCyber" class="toggle-btn">⚡ Cyber</button>
   </div>
 
-  <!-- Overlay morph transition -->
-  <div id="themeMorph" class="morph hidden" aria-hidden="true"></div>
-
-  <!-- CORPS DU JUKEBOX -->
+  <!-- Corps principal du jukebox -->
   <div class="jukebox-body">
 
-    <!-- TÊTIERE -->
-    <header class="juke-head">
-      <!-- Arche néon SVG -->
+    <!-- ── TÊTE ── -->
+    <div class="juke-head">
+      <!-- Arche néon déco -->
       <div class="neon-arch" aria-hidden="true">
-        <svg viewBox="0 0 800 80" preserveAspectRatio="none">
+        <svg viewBox="0 0 1060 80" preserveAspectRatio="none">
           <defs>
             <filter id="glow">
               <feGaussianBlur stdDeviation="3" result="blur"/>
               <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
           </defs>
-          <path d="M0,80 Q400,-20 800,80" fill="none" stroke="#c8a96e" stroke-width="2" opacity="0.6" filter="url(#glow)"/>
-          <path d="M40,80 Q400,-5 760,80" fill="none" stroke="#ff4fa3" stroke-width="1" opacity="0.4" filter="url(#glow)"/>
+          <path d="M0,80 Q530,0 1060,80" fill="none" stroke="#c8a96e" stroke-width="2" opacity="0.5" filter="url(#glow)"/>
+          <path d="M40,80 Q530,10 1020,80" fill="none" stroke="#ff4fa3" stroke-width="1" opacity="0.3" filter="url(#glow)"/>
         </svg>
       </div>
 
       <!-- Titre -->
       <div class="juke-title">
-        <span class="juke-title-main">STERENNA</span>
-        <span class="juke-title-sub">JUKEBOX</span>
+        <div class="juke-title-main">STERENNA</div>
+        <div class="juke-title-sub">JUKEBOX</div>
       </div>
 
-      <!-- Affichage néon now playing -->
-      <div class="neon-display" role="status" aria-live="polite">
+      <!-- Affichage 7-seg -->
+      <div class="neon-display">
         <div class="seg-label">NOW PLAYING</div>
-        <div class="seg-text" id="nowPlaying">— Aucun disque</div>
+        <div class="seg-text" id="nowPlaying">— Aucun disque chargé —</div>
       </div>
-    </header>
+    </div>
 
-    <!-- CENTRE : 3 colonnes -->
+    <!-- ── CENTRE : PLATINE | DÉCO | SÉLECTEUR ── -->
     <div class="juke-center">
 
-      <!-- PANNEAU GAUCHE : platine + commandes -->
+      <!-- PANNEAU GAUCHE — Platine + contrôles -->
       <div class="juke-panel">
         <div class="panel-chrome-border">
 
@@ -72,7 +71,7 @@
                   <div class="vinyl-art" id="deckArt"></div>
                 </div>
                 <!-- Bras de lecture -->
-                <div class="tonearm" id="tonearm" aria-hidden="true">
+                <div class="tonearm" id="tonearm">
                   <div class="tonearm-pivot"></div>
                   <div class="tonearm-bar"></div>
                   <div class="tonearm-head"></div>
@@ -83,35 +82,27 @@
 
           <!-- Slot à monnaie (manivelle) -->
           <div class="coin-section">
-            <div class="coin-slot-label">INSERT COIN</div>
+            <div class="coin-slot-label">INSÉRER PIÈCE</div>
             <div class="coin-machine">
-              <div class="coin-slot-housing" id="crank" title="Cliquez 5 fois pour lancer" role="button" tabindex="0" aria-label="Insérer une pièce">
+              <div class="coin-slot-housing" id="crank" title="Cliquer 5 fois pour lancer">
                 <div class="coin-slot-opening"></div>
                 <div class="coin-slot-shine"></div>
               </div>
               <div class="coin-gauge">
                 <div class="coin-fill" id="crankFill"></div>
               </div>
-              <div class="coin-hint" id="crankHint">0/5</div>
+              <div class="coin-hint" id="crankHint">0 / 5</div>
             </div>
           </div>
 
           <!-- Transport -->
           <div class="transport">
-            <button id="prevBtn" class="transport-btn" title="Précédent" aria-label="Piste précédente">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
-            </button>
-            <button id="playPause" class="transport-btn play-main" disabled title="Lecture / Pause" aria-label="Lecture ou pause">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-            <button id="nextBtn" class="transport-btn" title="Suivant" aria-label="Piste suivante">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2.5-6 5.5 3.9V8.1L8.5 12zM16 6h2v12h-2z"/></svg>
-            </button>
-            <button id="shuffleBtn" class="transport-btn" title="Aléatoire" aria-label="Lecture aléatoire">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17zm4.76-.06 3.65 3.65-3.65 3.65 1.06 1.06 4.95-4.71L16.41 8zm-.82 5.06-1.41-1.41-2.35 2.35-1.77-1.77L7.41 15l3.18 3.18 2.35-2.35 1.77 1.77 1.82-1.77zm-7.94-7.94L4.17 8.65 5.58 10.06 7.35 8.29z"/></svg>
-            </button>
-            <label class="transport-btn volwrap" title="Volume" aria-label="Volume">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+            <button id="prevBtn" class="transport-btn" aria-label="Précédent">⏮</button>
+            <button id="playPause" class="transport-btn play-main" disabled aria-label="Lecture">▶</button>
+            <button id="nextBtn" class="transport-btn" aria-label="Suivant">⏭</button>
+            <button id="shuffleBtn" class="transport-btn" aria-label="Aléatoire">🔀</button>
+            <label class="transport-btn volwrap" aria-label="Volume">
+              🔊
               <input type="range" id="vol" min="0" max="1" step="0.01" value="0.9" />
             </label>
           </div>
@@ -119,9 +110,9 @@
           <!-- Barre de temps -->
           <div class="timebar">
             <span class="time-display" id="curTime">0:00</span>
-            <div class="seek-wrap">
+            <div class="seek-wrap" style="flex:1">
               <div class="seek-groove"></div>
-              <input type="range" id="seek" min="0" max="100" value="0" aria-label="Position de lecture" />
+              <input type="range" id="seek" min="0" max="100" value="0" />
             </div>
             <span class="time-display" id="durTime">0:00</span>
           </div>
@@ -130,7 +121,7 @@
         </div>
       </div>
 
-      <!-- COLONNE CENTRALE DÉCO -->
+      <!-- COLONNE CENTRALE — Déco fenêtre -->
       <div class="juke-window" aria-hidden="true">
         <div class="window-glass">
           <div class="window-spin-disc" id="windowDisc"></div>
@@ -140,29 +131,23 @@
             <div class="grill-line"></div>
             <div class="grill-line"></div>
           </div>
-          <div class="window-label">STERENNA</div>
+          <div class="window-label">STEREO</div>
         </div>
       </div>
 
-      <!-- PANNEAU DROIT : sélection vinyles -->
+      <!-- PANNEAU DROIT — Sélecteur de vinyles -->
       <div class="juke-panel">
         <div class="panel-chrome-border">
           <div class="selector-wrap">
             <div class="selector-header">
               <span class="selector-label">SÉLECTION</span>
-              <div class="selector-arrows" aria-label="Navigation étagère">
-                <button class="sel-arrow" id="shelfUp" aria-label="Précédent">▲</button>
-                <button class="sel-arrow" id="shelfDown" aria-label="Suivant">▼</button>
+              <div class="selector-arrows">
+                <button class="sel-arrow" id="shelfPrev" aria-label="Précédent">‹</button>
+                <button class="sel-arrow" id="shelfNext" aria-label="Suivant">›</button>
               </div>
             </div>
-
-            <!-- Étagère isométrique -->
             <div class="shelf-iso" id="shelf" aria-label="Sélection de vinyles"></div>
-
-            <!-- Ticker titre -->
-            <div id="titleTicker" class="title-ticker">—</div>
-
-            <!-- Zone vinyle extrait -->
+            <div class="title-ticker" id="titleTicker">—</div>
             <div id="extractedSlot" class="extracted-slot"></div>
           </div>
         </div>
@@ -170,7 +155,7 @@
 
     </div><!-- /.juke-center -->
 
-    <!-- PIEDS -->
+    <!-- Pieds décoratifs -->
     <div class="juke-feet" aria-hidden="true">
       <div class="juke-foot"></div>
       <div class="juke-foot"></div>
@@ -179,35 +164,5 @@
   </div><!-- /.jukebox-body -->
 
   <script src="js/app.js"></script>
-  <script>
-    // Sync tonearm avec lecture
-    const _player = document.getElementById('player');
-    const _tonearm = document.getElementById('tonearm');
-    const _windowDisc = document.getElementById('windowDisc');
-    _player.addEventListener('play', () => {
-      _tonearm && _tonearm.classList.add('playing');
-      _windowDisc && _windowDisc.classList.add('spinning');
-    });
-    _player.addEventListener('pause', () => {
-      _tonearm && _tonearm.classList.remove('playing');
-      _windowDisc && _windowDisc.classList.remove('spinning');
-    });
-    _player.addEventListener('ended', () => {
-      _tonearm && _tonearm.classList.remove('playing');
-      _windowDisc && _windowDisc.classList.remove('spinning');
-    });
-    // Active state toggle buttons
-    document.getElementById('toSteam').addEventListener('click', () => {
-      document.getElementById('toSteam').classList.add('active');
-      document.getElementById('toCyber').classList.remove('active');
-    });
-    document.getElementById('toCyber').addEventListener('click', () => {
-      document.getElementById('toCyber').classList.add('active');
-      document.getElementById('toSteam').classList.remove('active');
-    });
-    // Shelf arrows → délèguent à prev/next
-    document.getElementById('shelfUp').addEventListener('click', () => document.getElementById('prevBtn').click());
-    document.getElementById('shelfDown').addEventListener('click', () => document.getElementById('nextBtn').click());
-  </script>
 </body>
 </html>

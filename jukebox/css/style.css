@@ -29,7 +29,6 @@
   --radius-panel: 14px;
   --transition:   200ms cubic-bezier(.16,1,.3,1);
 
-  /* hérité par app.js */
   --bg: var(--juke-bg);
   --panel: var(--juke-panel);
   --chrome: var(--juke-chrome3);
@@ -479,7 +478,7 @@ body.theme-cyber .juke-title-main {
   letter-spacing: .15em;
 }
 
-/* ── TRANSPORT (contrôles) ── */
+/* ── TRANSPORT ── */
 .transport {
   display: flex;
   align-items: center;
@@ -809,6 +808,6 @@ body.theme-cyber .title-ticker {
 .glitch { animation: glitch .4s steps(1) forwards; }
 
 /* Compat app.js: .btn */
-.btn { transition: all var(--transition); cursor: pointer; border: 1.5px solid var(--juke-chrome3); border-radius: 99px; padding: 6px 14px; font-family: 'Share Tech Mono', monospace; font-size: .75rem; letter-spacing: .1em; background: linear-gradient(180deg, #2a1c0a, #150e04); color: var(--juke-chrome); }
-.btn.ghost {}
-.btn.primary { background: radial-gradient(circle at 40% 35%, var(--juke-red2), var(--juke-red)); color: #fff; border-color: var(--juke-chrome); }
+.btn { transition: all var(--transition); cursor: pointer; border: none; background: none; }
+.btn.ghost { color: var(--juke-chrome); }
+.btn.primary { background: radial-gradient(circle at 40% 35%, var(--juke-red2), var(--juke-red)); color: #fff; border: 2px solid var(--juke-chrome); border-radius: 50%; width: 52px; height: 52px; font-size: 1.1rem; box-shadow: var(--glow-red); }
