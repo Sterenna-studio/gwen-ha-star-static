@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MON ESPACE — Gwen Ha Star</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css"/>
+  <link rel="stylesheet" href="../css/theme.css"/>
+  <link rel="stylesheet" href="../css/components.css"/>
+  <link rel="stylesheet" href="../css/star.css"/>
+  <style>
+    .star-page { min-height:100dvh; display:flex; flex-direction:column; background:var(--c-bg); }
+    .star-main { flex:1; max-width:1300px; width:100%; margin:0 auto; padding:var(--space-4) var(--space-4) var(--space-4); padding-bottom: calc(var(--space-16) + 56px); }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:var(--space-4); padding:var(--space-2) var(--space-5);
+      background:var(--c-surface); border-bottom:1px solid var(--c-border);
+      font-family:var(--font-mono); font-size:9px; letter-spacing:.16em;
+      color:var(--c-text-muted); position:sticky; top:0; z-index:200;
+      backdrop-filter:blur(8px);
+    }
+    .sb-left  { display:flex; align-items:center; gap:var(--space-5); }
+    .sb-right { display:flex; align-items:center; gap:var(--space-4); }
+    .sb-item  { display:flex; align-items:center; gap:5px; }
+    .sb-dot   { width:6px; height:6px; border-radius:50%; background:var(--c-primary); box-shadow:var(--glow-green); animation:blink 2s ease-in-out infinite; flex-shrink:0; }
+    .sb-dot.amber { background:var(--c-amber); box-shadow:var(--glow-amber); }
+    .sb-dot.red   { background:var(--c-red);   box-shadow:var(--glow-red); animation-duration:1s; }
+    .sb-dot.off   { background:var(--c-text-faint); box-shadow:none; animation:none; }
+    .sb-clock { color:var(--c-primary); font-size:10px; font-variant-numeric:tabular-nums; }
+    .sb-user  { color:var(--c-cyan); }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+    /* ── BOTTOM NAV ── */
+    #star-header-user {
+      position:fixed; bottom:0; left:0; right:0; z-index:300;
+      background:var(--c-surface); border-top:1px solid var(--c-border);
+      backdrop-filter:blur(12px); padding:0 var(--space-5); height:56px;
+      display:flex; align-items:center;
+    }
+    #star-header-user .star-user-info { display:flex; align-items:center; gap:var(--space-3); flex-shrink:0; }
+    #star-header-user .star-avatar { width:32px; height:32px; border-radius:50%; background:var(--c-surface-2); border:1px solid var(--c-primary); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; }
+    #star-header-user .star-avatar img { width:100%; height:100%; object-fit:cover; }
+    #star-header-user .star-avatar-initials { font-family:var(--font-display); font-size:var(--text-sm); color:var(--c-primary); font-weight:700; }
+    #star-header-user .star-user-meta { display:flex; flex-direction:column; gap:1px; }
+    #star-header-user .star-username { font-family:var(--font-display); font-size:var(--text-sm); font-weight:700; color:var(--c-text); line-height:1.1; }
+    #star-header-user .star-rang { font-family:var(--font-mono); font-size:8px; letter-spacing:.14em; color:var(--c-amber); }
+    #star-header-user .star-header-nav { display:flex; align-items:center; gap:var(--space-1); margin-left:var(--space-5); flex:1; }
+    #star-header-user .star-nav-link { font-family:var(--font-mono); font-size:9px; letter-spacing:.14em; color:var(--c-text-muted); text-decoration:none; padding:var(--space-2) var(--space-3); border:1px solid transparent; border-radius:var(--radius-sm); transition:all .18s; white-space:nowrap; }
+    #star-header-user .star-nav-link:hover { color:var(--c-text); border-color:var(--c-border); }
+    #star-header-user .star-nav-ext { color:var(--c-cyan); }
+    #star-header-user .star-signout-btn { margin-left:auto; flex-shrink:0; font-family:var(--font-mono); font-size:9px; letter-spacing:.14em; color:var(--c-red); border:1px solid transparent; border-radius:var(--radius-sm); padding:var(--space-2) var(--space-3); transition:all .18s; }
+    #star-header-user .star-signout-btn:hover { border-color:var(--c-red); background:color-mix(in oklch,var(--c-red) 10%,transparent); }
+    @media(max-width:600px) { #star-header-user .star-header-nav .star-nav-ext { display:none; } #star-header-user .star-header-nav .star-nav-link { padding:var(--space-2); font-size:8px; } }
+
+    /* ── WELCOME STRIP ── */
+    .welcome-strip { display:flex; align-items:center; gap:var(--space-4); padding:var(--space-5) var(--space-6); background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-xl); margin:var(--space-4) 0 var(--space-5); position:relative; overflow:hidden; }
+    .welcome-strip::after { content:""; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--c-primary),var(--c-cyan),var(--c-amber),var(--c-purple)); background-size:300% 100%; animation:slide-bar 6s linear infinite; }
+    @keyframes slide-bar { 0%{background-position:300% 0} 100%{background-position:-300% 0} }
+    .w-avatar { width:50px; height:50px; border-radius:50%; border:2px solid var(--c-primary); background:var(--c-surface-2); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:var(--text-xl); font-weight:700; color:var(--c-primary); flex-shrink:0; overflow:hidden; box-shadow:var(--glow-primary); }
+    .w-avatar img { width:100%; height:100%; object-fit:cover; }
+    .w-info { flex:1; min-width:0; }
+    .w-tag  { font-family:var(--font-mono); font-size:9px; letter-spacing:.2em; color:var(--c-primary); opacity:.7; }
+    .w-name { font-family:var(--font-display); font-size:var(--text-xl); font-weight:700; color:var(--c-text); line-height:1.1; }
+    .w-role { font-family:var(--font-mono); font-size:9px; letter-spacing:.15em; color:var(--c-amber); margin-top:2px; }
+    .w-actions { display:flex; gap:var(--space-2); flex-shrink:0; }
+    @media(max-width:600px){ .w-actions { display:none } }
+
+    /* ── KPI ── */
+    .kpi-strip { display:grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap:var(--space-3); margin-bottom:var(--space-5); }
+    .kpi { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-lg); padding:var(--space-4) var(--space-5); display:flex; flex-direction:column; gap:2px; position:relative; overflow:hidden; }
+    .kpi::after { content:""; position:absolute; bottom:0; left:0; right:0; height:1px; background:var(--kpi-c, var(--c-primary)); opacity:.6; }
+    .kpi-lbl { font-family:var(--font-mono); font-size:9px; letter-spacing:.18em; color:var(--c-text-muted); }
+    .kpi-val { font-family:var(--font-display); font-size:var(--text-xl); line-height:1; color:var(--kpi-c, var(--c-primary)); text-shadow:0 0 18px var(--kpi-c, var(--c-primary)); }
+    .kpi-sub { font-family:var(--font-mono); font-size:8px; letter-spacing:.1em; color:var(--c-text-faint); }
+
+    /* ── BENTO ── */
+    .bento { display:grid; grid-template-columns: repeat(12, 1fr); gap:var(--space-4); }
+    .bc { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-xl); padding:var(--space-5); overflow:hidden; position:relative; }
+    .bc-label { display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:9px; letter-spacing:.2em; color:var(--c-primary); opacity:.65; margin-bottom:var(--space-3); }
+    .bc-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+    .bc-qa       { grid-column: span 12; }
+    .bc-pg       { grid-column: span 5;  }
+    .bc-gaming   { grid-column: span 7;  }
+    .bc-activity { grid-column: span 4;  }
+    .bc-radio    { grid-column: span 8;  }
+    @media(max-width:1100px) { .bc-pg, .bc-gaming, .bc-activity, .bc-radio { grid-column: span 12; } }
+
+    /* ── QUICK ACCESS ── */
+    #quick-access-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(175px,1fr)); gap:var(--space-3); }
+    .qa-card { display:flex; flex-direction:column; gap:var(--space-1); padding:var(--space-4); background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-lg); text-decoration:none; color:var(--c-text); transition:border-color .18s, box-shadow .18s, background .18s; position:relative; overflow:hidden; }
+    .qa-card::before { content:""; position:absolute; top:0; left:0; right:0; height:2px; background:var(--qa-color,var(--c-primary)); }
+    .qa-card:hover { border-color:var(--qa-color,var(--c-primary)); box-shadow:0 0 18px color-mix(in oklch,var(--qa-color,var(--c-primary)) 25%,transparent); background:var(--c-surface); }
+    .qa-icon  { font-size:1.3rem; color:var(--qa-color,var(--c-primary)); }
+    .qa-label { font-family:var(--font-display); font-weight:700; font-size:var(--text-base); }
+    .qa-desc  { font-family:var(--font-mono); font-size:9px; letter-spacing:.06em; color:var(--c-text-muted); }
+    .qa-ext   { position:absolute; top:var(--space-3); right:var(--space-3); font-size:9px; color:var(--c-text-faint); }
+    .widget-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:var(--space-10) var(--space-4); text-align:center; color:var(--c-text-muted); }
+    .widget-empty-icon { font-size:1.8rem; margin-bottom:var(--space-3); opacity:.3; }
+    .widget-empty p    { font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; }
+
+    /* ── POKEGANG GANG CARD ── */
+    .pg-card {
+      display:flex; flex-direction:column; gap:var(--space-4); height:100%;
+    }
+    .pg-card-header {
+      display:flex; align-items:center; gap:var(--space-4);
+      padding:var(--space-4) var(--space-5);
+      background:var(--c-surface-2); border:1px solid var(--c-border);
+      border-radius:var(--radius-lg); position:relative; overflow:hidden;
+    }
+    .pg-card-header::before {
+      content:""; position:absolute; inset:0;
+      background:radial-gradient(ellipse at top left, color-mix(in oklch,var(--c-amber) 8%,transparent) 0%, transparent 65%);
+      pointer-events:none;
+    }
+    .pg-logo {
+      width:52px; height:52px; border-radius:var(--radius-md);
+      border:1px solid var(--c-border); overflow:hidden;
+      background:var(--c-surface); flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    }
+    .pg-logo img { width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
+    .pg-logo-svg { width:36px; height:36px; }
+    .pg-header-info { flex:1; min-width:0; }
+    .pg-title { font-family:var(--font-display); font-size:var(--text-lg); font-weight:700; color:var(--c-amber); line-height:1.1; letter-spacing:.04em; }
+    .pg-subtitle { font-family:var(--font-mono); font-size:8px; letter-spacing:.2em; color:var(--c-text-muted); margin-top:2px; }
+    .pg-online-badge { display:flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:8px; letter-spacing:.14em; color:var(--c-primary); margin-top:var(--space-2); }
+    .pg-online-dot { width:5px; height:5px; border-radius:50%; background:var(--c-primary); box-shadow:var(--glow-green); animation:blink 2s ease-in-out infinite; }
+
+    .pg-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2); flex:1;
+    }
+    .pg-stat-card {
+      background:var(--c-surface-2); border:1px solid var(--c-border);
+      border-radius:var(--radius-md); padding:var(--space-3) var(--space-4);
+      display:flex; flex-direction:column; gap:2px;
+    }
+    .pg-stat-card.full { grid-column: span 2; }
+    .pg-stat-lbl { font-family:var(--font-mono); font-size:8px; letter-spacing:.16em; color:var(--c-text-faint); }
+    .pg-stat-val { font-family:var(--font-display); font-size:var(--text-lg); line-height:1.1; color:var(--c-amber); }
+    .pg-stat-sub { font-family:var(--font-mono); font-size:8px; color:var(--c-text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    .pg-gang-row {
+      display:flex; align-items:center; gap:var(--space-3);
+      background:var(--c-surface-2); border:1px solid var(--c-border);
+      border-radius:var(--radius-md); padding:var(--space-3) var(--space-4);
+    }
+    .pg-boss-sprite { width:44px; height:44px; object-fit:contain; image-rendering:pixelated; flex-shrink:0; }
+    .pg-gang-info { flex:1; min-width:0; }
+    .pg-gang-name { font-family:var(--font-display); font-size:var(--text-base); font-weight:700; color:var(--c-amber); }
+    .pg-boss-name { font-family:var(--font-mono); font-size:8px; letter-spacing:.12em; color:var(--c-text-muted); }
+
+    .pg-cta {
+      display:flex; align-items:center; justify-content:center; gap:var(--space-3);
+      padding:var(--space-3) var(--space-5);
+      background:linear-gradient(135deg, color-mix(in oklch,var(--c-amber) 15%,var(--c-surface-2)), var(--c-surface-2));
+      border:1px solid color-mix(in oklch,var(--c-amber) 40%,var(--c-border));
+      border-radius:var(--radius-lg);
+      color:var(--c-amber); text-decoration:none;
+      font-family:var(--font-display); font-weight:700; font-size:var(--text-base);
+      letter-spacing:.06em; transition:all .2s;
+      box-shadow:0 0 0 transparent;
+      margin-top:auto;
+    }
+    .pg-cta:hover {
+      background:linear-gradient(135deg, color-mix(in oklch,var(--c-amber) 25%,var(--c-surface)), var(--c-surface));
+      border-color:var(--c-amber);
+      box-shadow:0 0 20px color-mix(in oklch,var(--c-amber) 25%,transparent);
+      transform:translateY(-1px);
+    }
+    .pg-cta:active { transform:translateY(0); }
+    .pg-cta-logo { width:22px; height:22px; object-fit:contain; image-rendering:pixelated; flex-shrink:0; }
+    .pg-cta-arrow { font-size:.9rem; opacity:.7; }
+    .pg-no-data { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:var(--space-2); text-align:center; padding:var(--space-6) 0; }
+    .pg-no-data-icon { font-size:1.5rem; opacity:.2; }
+    .pg-no-data-txt { font-family:var(--font-mono); font-size:9px; letter-spacing:.14em; color:var(--c-text-faint); }
+
+    /* ── GAMING PANEL ── */
+    .gaming-panel { display:flex; flex-direction:column; gap:var(--space-3); height:100%; }
+    .gaming-tabs  { display:flex; gap:var(--space-2); }
+    .g-tab { flex:1; padding:var(--space-2) var(--space-3); background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-md); cursor:pointer; font-family:var(--font-mono); font-size:9px; letter-spacing:.14em; color:var(--c-text-muted); transition:all .18s; text-align:center; }
+    .g-tab.active { background:var(--tab-c,var(--c-primary)); border-color:var(--tab-c,var(--c-primary)); color:var(--c-bg); box-shadow:0 0 14px color-mix(in oklch,var(--tab-c,var(--c-primary)) 35%,transparent); }
+    .g-tab:not(.active):hover { border-color:var(--tab-c,var(--c-border)); color:var(--c-text); }
+    .g-pane { display:none; flex-direction:column; gap:var(--space-3); flex:1; }
+    .g-pane.active { display:flex; }
+    .g-id-row { display:flex; gap:var(--space-2); align-items:center; }
+    .g-id-input { flex:1; background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-md); padding:var(--space-2) var(--space-3); font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; color:var(--c-text); outline:none; transition:border-color .18s; }
+    .g-id-input::placeholder { color:var(--c-text-faint); }
+    .g-id-input:focus { border-color:var(--c-primary); }
+    .g-id-save { padding:var(--space-2) var(--space-3); background:var(--c-primary); border:none; border-radius:var(--radius-md); color:var(--c-bg); font-family:var(--font-mono); font-size:9px; letter-spacing:.12em; cursor:pointer; white-space:nowrap; transition:background .18s; box-shadow:var(--glow-green); }
+    .g-id-save:hover { filter:brightness(1.1); }
+    .g-id-save:disabled { opacity:.5; cursor:not-allowed; }
+    .g-stats { display:flex; flex-direction:column; gap:var(--space-2); }
+    .g-stat-row { display:flex; align-items:center; justify-content:space-between; padding:var(--space-2) var(--space-3); background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-md); }
+    .g-stat-key { font-family:var(--font-mono); font-size:9px; letter-spacing:.12em; color:var(--c-text-muted); }
+    .g-stat-val { font-family:var(--font-display); font-size:var(--text-base); color:var(--g-c,var(--c-amber)); }
+    .g-rank-badge { display:flex; align-items:center; gap:var(--space-3); padding:var(--space-3) var(--space-4); background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-lg); }
+    .g-rank-emblem { width:44px; height:44px; object-fit:contain; flex-shrink:0; }
+    .g-rank-icon   { font-size:1.6rem; flex-shrink:0; }
+    .g-rank-info   { display:flex; flex-direction:column; gap:2px; flex:1; min-width:0; }
+    .g-rank-tier   { font-family:var(--font-display); font-size:var(--text-base); color:var(--g-c,var(--c-amber)); font-weight:700; }
+    .g-rank-lp     { font-family:var(--font-mono); font-size:8px; letter-spacing:.12em; color:var(--c-text-muted); }
+    .g-refresh-btn { margin-left:auto; padding:var(--space-1) var(--space-2); background:transparent; border:1px solid var(--c-border); border-radius:var(--radius-sm); color:var(--c-text-faint); font-family:var(--font-mono); font-size:8px; letter-spacing:.1em; cursor:pointer; transition:all .18s; flex-shrink:0; }
+    .g-refresh-btn:hover { border-color:var(--c-primary); color:var(--c-primary); }
+    .g-refresh-btn:disabled { opacity:.4; cursor:not-allowed; }
+    .g-refresh-btn.spin { animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .g-champs { display:flex; gap:var(--space-2); flex-wrap:wrap; }
+    .g-champ { display:flex; align-items:center; gap:5px; padding:3px var(--space-2); background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-sm); font-family:var(--font-mono); font-size:8px; letter-spacing:.08em; color:var(--c-text-muted); }
+    .g-champ img { width:20px; height:20px; border-radius:2px; }
+    .g-cache-info { font-family:var(--font-mono); font-size:8px; letter-spacing:.1em; color:var(--c-text-faint); margin-top:auto; padding-top:var(--space-1); display:flex; align-items:center; justify-content:space-between; }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    .g-skeleton { background:linear-gradient(90deg,var(--c-surface-2) 25%,var(--c-surface-offset,#1d1c1a) 50%,var(--c-surface-2) 75%); background-size:200% 100%; animation:shimmer 1.4s ease-in-out infinite; border-radius:var(--radius-sm); height:12px; }
+    .g-links { display:flex; gap:var(--space-2); flex-wrap:wrap; }
+    .g-link { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--c-cyan); text-decoration:none; display:inline-flex; align-items:center; gap:3px; padding:var(--space-1) var(--space-2); border:1px solid var(--c-border); border-radius:var(--radius-sm); transition:all .18s; }
+    .g-link:hover { border-color:var(--c-cyan); background:var(--c-surface-2); }
+    .g-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:var(--space-2); text-align:center; padding:var(--space-6) 0; }
+    .g-empty-icon { font-size:1.5rem; opacity:.25; }
+    .g-empty-txt  { font-family:var(--font-mono); font-size:9px; letter-spacing:.14em; color:var(--c-text-faint); }
+
+    /* ── ACTIVITY + RADIO ── */
+    .activity-feed { list-style:none; display:flex; flex-direction:column; }
+    .activity-item { display:grid; grid-template-columns:1.1rem 1fr auto; align-items:baseline; gap:var(--space-2); padding:var(--space-2) 0; border-bottom:1px solid var(--c-divider); font-size:var(--text-sm); }
+    .activity-item:last-child { border-bottom:none; }
+    .activity-icon { color:var(--c-primary); font-size:.85rem; }
+    .activity-text { color:var(--c-text); }
+    .activity-time { font-family:var(--font-mono); font-size:8px; color:var(--c-text-faint); white-space:nowrap; }
+    .radio-player  { display:flex; flex-direction:column; gap:var(--space-3); }
+    .radio-top     { display:flex; align-items:center; justify-content:space-between; gap:var(--space-3); flex-wrap:wrap; }
+    .radio-status  { display:flex; align-items:center; gap:var(--space-2); }
+    .radio-led     { width:8px; height:8px; border-radius:50%; background:var(--c-text-faint); transition:background .3s; }
+    .radio-led.active { background:var(--c-primary); box-shadow:var(--glow-green); animation:blink 1.5s ease-in-out infinite; }
+    .radio-station { font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; color:var(--c-text); }
+    .radio-select  { background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-sm); color:var(--c-text); font-family:var(--font-mono); font-size:10px; padding:var(--space-1) var(--space-2); cursor:pointer; }
+    .radio-controls{ display:flex; align-items:center; gap:var(--space-4); }
+    .radio-btn     { width:36px; height:36px; border-radius:50%; background:var(--c-primary); color:var(--c-bg); font-size:1rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:var(--glow-green); transition:box-shadow .18s; }
+    .radio-btn:hover { box-shadow:var(--glow-primary); }
+    .radio-vol-wrap { display:flex; align-items:center; gap:var(--space-2); flex:1; }
+    .radio-vol-icon { font-size:.7rem; color:var(--c-text-muted); }
+    .radio-vol { flex:1; accent-color:var(--c-primary); }
+  </style>
+</head>
+<body class="star-page">
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <div class="status-bar" role="status" aria-live="polite">
+    <div class="sb-left">
+      <div class="sb-item"><span class="sb-dot"></span><span>GWEN·HA·STAR</span></div>
+      <div class="sb-item" id="sb-supa"><span class="sb-dot amber"></span><span>SUPABASE · LINK</span></div>
+      <div class="sb-item" id="sb-pg"><span class="sb-dot off"></span><span>POKEGANG · …</span></div>
+    </div>
+    <div class="sb-right">
+      <span class="sb-user" id="sb-username">···</span>
+      <span class="sb-clock" id="sb-clock">--:--:--</span>
+    </div>
+  </div>
+
+  <main class="star-main" id="main-content">
+    <div class="welcome-strip">
+      <div class="w-avatar" id="w-avatar"></div>
+      <div class="w-info">
+        <div class="w-tag">// ESPACE MEMBRE · COCKPIT</div>
+        <div class="w-name" id="w-name">···</div>
+        <div class="w-role" id="w-role">◆ AGENT</div>
+      </div>
+      <div class="w-actions">
+        <a href="../cig.html" class="btn btn-ghost btn-sm" style="font-size:9px;letter-spacing:.12em">⬡ MA CIG</a>
+        <button id="btn-signout-strip" class="btn btn-ghost btn-sm" style="font-size:9px;letter-spacing:.12em;color:var(--c-red)">✕ DÉCO</button>
+      </div>
+    </div>
+
+    <div class="kpi-strip">
+      <div class="kpi" style="--kpi-c:var(--c-primary)"><span class="kpi-lbl">MEMBRES</span><span class="kpi-val" id="kpi-members">·</span><span class="kpi-sub">CREW · ACTIFS</span></div>
+      <div class="kpi" style="--kpi-c:var(--c-amber)"><span class="kpi-lbl">PROJETS LIVE</span><span class="kpi-val">02</span><span class="kpi-sub">STERENNA · POKEGANG</span></div>
+      <div class="kpi" style="--kpi-c:var(--c-cyan)"><span class="kpi-lbl">RÉPUTATION PG</span><span class="kpi-val" id="kpi-pg-rep">·</span><span class="kpi-sub">GANG · LEADERBOARD</span></div>
+      <div class="kpi" style="--kpi-c:var(--c-purple)"><span class="kpi-lbl">SESSION</span><span class="kpi-val" id="kpi-uptime">·</span><span class="kpi-sub">UPTIME · HUB</span></div>
+    </div>
+
+    <div class="bento">
+      <div class="bc bc-qa">
+        <div class="bc-label" style="color:var(--c-primary)"><span class="bc-dot"></span>ACCÈS RAPIDE</div>
+        <div id="quick-access-grid"></div>
+      </div>
+
+      <!-- POKEGANG GANG CARD -->
+      <div class="bc bc-pg" style="display:flex;flex-direction:column;">
+        <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>POKEGANG · GANG CARD</div>
+        <div class="pg-card">
+
+          <div class="pg-card-header">
+            <div class="pg-logo">
+              <img
+                id="pg-logo-img"
+                src="https://pokegang.sterenna.fr/favicon.ico"
+                alt="PokeGang"
+                width="52" height="52"
+                loading="lazy"
+                onerror="this.style.display='none';document.getElementById('pg-logo-fallback').style.display='flex'"
+              >
+              <svg id="pg-logo-fallback" class="pg-logo-svg" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none;" aria-label="PokeGang">
+                <circle cx="18" cy="18" r="17" stroke="currentColor" stroke-width="2" opacity=".4"/>
+                <path d="M1 18h34" stroke="currentColor" stroke-width="2" opacity=".4"/>
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" fill="var(--c-bg)"/>
+                <circle cx="18" cy="18" r="3" fill="var(--c-amber)"/>
+              </svg>
+            </div>
+            <div class="pg-header-info">
+              <div class="pg-title" id="pg-gang-name">GANG · …</div>
+              <div class="pg-subtitle">POKEGANG · STERENNA.FR</div>
+              <div class="pg-online-badge"><span class="pg-online-dot"></span><span id="pg-online-status">CHARGEMENT…</span></div>
+            </div>
+          </div>
+
+          <div class="pg-gang-row" id="pg-boss-row">
+            <img id="pg-boss-sprite" class="pg-boss-sprite" src="" alt="" width="44" height="44" loading="lazy" style="display:none" onerror="this.style.display='none'">
+            <div class="pg-gang-info">
+              <div class="pg-gang-name" id="pg-gang-name-big">—</div>
+              <div class="pg-boss-name" id="pg-boss-name">BOSS : —</div>
+            </div>
+          </div>
+
+          <div class="pg-grid">
+            <div class="pg-stat-card">
+              <span class="pg-stat-lbl">RÉPUTATION</span>
+              <span class="pg-stat-val" id="pg-rep">·</span>
+              <span class="pg-stat-sub">POINTS TOTAUX</span>
+            </div>
+            <div class="pg-stat-card">
+              <span class="pg-stat-lbl">AGENTS</span>
+              <span class="pg-stat-val" id="pg-agents">·</span>
+              <span class="pg-stat-sub">RECRUTEMENT</span>
+            </div>
+            <div class="pg-stat-card">
+              <span class="pg-stat-lbl">POKÉMONS</span>
+              <span class="pg-stat-val" id="pg-caught">·</span>
+              <span class="pg-stat-sub" id="pg-shinies">✦ SHINIES : ·</span>
+            </div>
+            <div class="pg-stat-card">
+              <span class="pg-stat-lbl">POKÉDEX</span>
+              <span class="pg-stat-val" id="pg-dex">·</span>
+              <span class="pg-stat-sub" id="pg-dex-nat">NATIONAL : ·</span>
+            </div>
+          </div>
+
+          <a
+            class="pg-cta"
+            href="https://pokegang.sterenna.fr"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Ouvrir PokeGang"
+          >
+            <img
+              class="pg-cta-logo"
+              src="https://pokegang.sterenna.fr/favicon.ico"
+              alt=""
+              width="22" height="22"
+              loading="lazy"
+              onerror="this.style.display='none'"
+            >
+            JOUER SUR POKEGANG
+            <span class="pg-cta-arrow">↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- GAMING PANEL -->
+      <div class="bc bc-gaming">
+        <div class="bc-label" style="color:var(--c-purple)"><span class="bc-dot"></span>GAMING · STATS</div>
+        <div class="gaming-panel">
+          <div class="gaming-tabs">
+            <button class="g-tab active" id="tab-lol" data-tab="lol" style="--tab-c:#c8a84b">◆ LEAGUE OF LEGENDS</button>
+            <button class="g-tab" id="tab-rl" data-tab="rl" style="--tab-c:var(--c-cyan)">◆ ROCKET LEAGUE</button>
+          </div>
+          <div class="g-pane active" id="pane-lol" style="--g-c:#c8a84b">
+            <div class="g-id-row">
+              <input class="g-id-input" id="lol-id-input" type="text" placeholder="Pseudo#EUW" autocomplete="off" spellcheck="false" aria-label="Riot ID">
+              <button class="g-id-save" id="lol-id-save">▶ OK</button>
+            </div>
+            <div id="lol-content"><div class="g-empty"><div class="g-empty-icon">⚔️</div><div class="g-empty-txt">ENTRE TON RIOT ID<br>POUR VOIR TES STATS</div></div></div>
+          </div>
+          <div class="g-pane" id="pane-rl" style="--g-c:var(--c-cyan)">
+            <div class="g-id-row">
+              <input class="g-id-input" id="rl-id-input" type="text" placeholder="Pseudo Epic Games" autocomplete="off" spellcheck="false" aria-label="Pseudo RL Epic">
+              <button class="g-id-save" id="rl-id-save">▶ OK</button>
+            </div>
+            <div id="rl-content"><div class="g-empty"><div class="g-empty-icon">🚗</div><div class="g-empty-txt">ENTRE TON PSEUDO EPIC<br>POUR VOIR TES STATS</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bc bc-activity">
+        <div class="bc-label" style="color:var(--c-cyan)"><span class="bc-dot"></span>ACTIVITÉ RÉSEAU</div>
+        <div id="widget-activity"></div>
+      </div>
+      <div class="bc bc-radio">
+        <div class="bc-label" style="color:var(--c-purple)"><span class="bc-dot"></span>WEB RADIO</div>
+        <div id="widget-radio"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="star-header-user" role="navigation" aria-label="Navigation principale"></footer>
+
+  <script type="module">
+    import { initDashboard }     from '../js/star/dashboard.js';
+    import { supabase, signOut } from '../js/supabase.js';
+    import { requireAuth }       from '../js/star/guard.js';
+
+    (() => { const el=document.getElementById('sb-clock'); const t=()=>{if(el)el.textContent=new Date().toLocaleTimeString('fr-FR');}; t(); setInterval(t,1000); })();
+    (() => { const t0=Date.now(),el=document.getElementById('kpi-uptime'); setInterval(()=>{if(!el)return;const s=Math.floor((Date.now()-t0)/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;el.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;},1000); })();
+    document.getElementById('btn-signout-strip')?.addEventListener('click',()=>signOut());
+
+    // ── PG STATS (Supabase direct, pas de CORS)
+    async function loadPGStats(userId){
+      const sbPg=document.getElementById('sb-pg');
+      try{
+        const {data,error}=await supabase
+          .from('leaderboard')
+          .select('gang_name,boss_name,boss_sprite,reputation,total_caught,shiny_count,dex_kanto_count,dex_national_count,agents_count')
+          .eq('user_id',userId).eq('is_anonymous',false).maybeSingle();
+        if(error||!data){_setPGStatus(sbPg,'off','NO DATA');_fillPG(null);return;}
+        _setPGStatus(sbPg,'green','SYNC');_fillPG(data);
+      }catch{_setPGStatus(sbPg,'red','ERROR');_fillPG(null);}
+    }
+    function _setPGStatus(el,s,l){
+      if(!el)return;
+      const c=s==='green'?'':s==='red'?'red':'off';
+      el.innerHTML=`<span class="sb-dot ${c}"></span><span>POKEGANG · ${l}</span>`;
+      const onlineEl=document.getElementById('pg-online-status');
+      if(onlineEl)onlineEl.textContent=s==='green'?'SYNCHRONISÉ':s==='red'?'ERREUR':'HORS LIGNE';
+    }
+    function _fillPG(d){
+      const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+      if(!d){
+        s('pg-gang-name','GANG · INCONNU');
+        s('pg-gang-name-big','—');
+        s('pg-boss-name','BOSS : —');
+        s('pg-rep','—');s('pg-agents','—');
+        s('pg-caught','—');s('pg-shinies','✦ SHINIES : —');
+        s('pg-dex','—');s('pg-dex-nat','NATIONAL : —');
+        s('kpi-pg-rep','—');
+        return;
+      }
+      const gname=d.gang_name??'???';
+      s('pg-gang-name',`GANG · ${gname}`);
+      s('pg-gang-name-big',gname);
+      s('pg-boss-name',`BOSS : ${d.boss_name??'—'}`);
+      s('pg-rep',(d.reputation??0).toLocaleString('fr-FR'));
+      s('pg-agents',d.agents_count??0);
+      s('pg-caught',(d.total_caught??0).toLocaleString('fr-FR'));
+      s('pg-shinies',`✦ SHINIES : ${d.shiny_count??0}`);
+      s('pg-dex',`${d.dex_kanto_count??0} / 151`);
+      s('pg-dex-nat',`NATIONAL : ${d.dex_national_count??0}`);
+      s('kpi-pg-rep',(d.reputation??0).toLocaleString('fr-FR'));
+      if(d.boss_sprite){
+        const img=document.getElementById('pg-boss-sprite');
+        if(img){img.src=`https://play.pokemonshowdown.com/sprites/trainers/${d.boss_sprite}.png`;img.style.display='block';img.alt=d.boss_name??'';}
+      }
+    }
+
+    async function loadMembers(){
+      const el=document.getElementById('kpi-members');
+      try{const{count}=await supabase.from('profiles').select('id',{count:'exact',head:true});if(el)el.textContent=count??'?';}catch{if(el)el.textContent='?';}
+    }
+
+    function populateWelcome(user,profile){
+      const username=profile?.username??user.email?.split('@')[0]??'AGENT';
+      const role=profile?.active_title??'Agent';
+      document.getElementById('w-name').textContent=username.toUpperCase();
+      document.getElementById('w-role').textContent='◆ '+role.toUpperCase();
+      document.getElementById('sb-username').textContent=username.toUpperCase();
+      const av=document.getElementById('w-avatar');
+      if(av){if(profile?.avatar_url)av.innerHTML=`<img src="${profile.avatar_url}" alt="Avatar" width="50" height="50" loading="lazy">`;else av.textContent=username.charAt(0).toUpperCase();}
+    }
+
+    // ── GAMING PANEL TABS
+    document.querySelectorAll('.g-tab').forEach(tab=>{
+      tab.addEventListener('click',()=>{
+        document.querySelectorAll('.g-tab').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.g-pane').forEach(p=>p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('pane-'+tab.dataset.tab)?.classList.add('active');
+      });
+    });
+
+    // ── API CONFIG
+    // LoL : API Riot officielle directe (CORS ouvert sur api.riotgames.com)
+    const RIOT_KEY    = 'RGAPI-256a3380-0990-4bc7-a726-1e7b7659d6a2';
+    const RIOT_ACCT   = 'https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id';
+    const RIOT_SUM    = 'https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid';
+    const RIOT_LEAGUE = 'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner';
+    const RIOT_MASTERY= 'https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid';
+    const DDV         = '15.9.1'; // version DataDragon actuelle
+
+    // RL : tracker.gg via worker Cloudflare (headers browser injectés côté worker)
+    const CORS_PROXY  = 'https://cors.sterenna.fr/?url=';
+
+    const RANK_ICONS = {
+      IRON:'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/iron.png',
+      BRONZE:'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/bronze.png',
+      SILVER:'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/silver.png',
+      GOLD:'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/gold.png',
+      PLATINUM:'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/platinum.png',
+      EMERALD:'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/emerald.png',
+      DIAMOND:'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/diamond.png',
+      MASTER:'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/master.png',
+      GRANDMASTER:'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/grandmaster.png',
+      CHALLENGER:'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/challenger.png',
+    };
+
+    // Fetch Riot direct (CORS ouvert sur api.riotgames.com)
+    async function riotFetch(url){
+      const res=await fetch(`${url}${url.includes('?')?'&':'?'}api_key=${RIOT_KEY}`);
+      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    // Fetch via proxy Cloudflare (tracker.gg, headers browser injectés dans le worker)
+    async function proxyFetch(url){
+      const res=await fetch(CORS_PROXY+encodeURIComponent(url));
+      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    // ── LOL : API Riot officielle
+    async function fetchLoLFromAPI(riotId){
+      const [name,tagRaw]=(riotId||'').split('#');
+      const tag=(tagRaw||'EUW').toUpperCase();
+      const enc=encodeURIComponent;
+
+      // 1. PUUID via account-v1 (routing europe)
+      const acct=await riotFetch(`${RIOT_ACCT}/${enc(name)}/${enc(tag)}`);
+      const puuid=acct.puuid;
+
+      // 2. Summoner ID via summoner-v4 (euw1)
+      const sum=await riotFetch(`${RIOT_SUM}/${puuid}`);
+
+      // 3. Ranked entries via league-v4
+      const leagues=await riotFetch(`${RIOT_LEAGUE}/${sum.id}`);
+      const solo=leagues.find(q=>q.queueType==='RANKED_SOLO_5x5');
+      const tier=solo?.tier??null,division=solo?.rank??'',lp=solo?.leaguePoints??0;
+      const wins=solo?.wins??0,losses=solo?.losses??0;
+      const winrate=wins+losses>0?Math.round((wins/(wins+losses))*100):null;
+
+      // 4. Top 3 champions via mastery-v4 + noms DataDragon
+      let topChamps=[];
+      try{
+        const mastery=await riotFetch(`${RIOT_MASTERY}/${puuid}/top?count=3`);
+        const ddRes=await fetch(`https://ddragon.leagueoflegends.com/cdn/${DDV}/data/fr_FR/champion.json`);
+        const ddData=await ddRes.json();
+        const champById={};
+        Object.values(ddData.data).forEach(c=>{champById[c.key]={name:c.name,img:`https://ddragon.leagueoflegends.com/cdn/${DDV}/img/champion/${c.image.full}`};});
+        topChamps=mastery.map(m=>{
+          const c=champById[m.championId]??{name:`#${m.championId}`,img:null};
+          return{name:c.name,img:c.img,level:m.championLevel,points:m.championPoints};
+        });
+      }catch(e){console.warn('Mastery fetch:',e);}
+
+      return{tier,division,lp,wins,losses,winrate,topChamps,name,tag,ts:Date.now()};
+    }
+
+    function renderLoLStats(s,el){
+      const tier=s.tier?`${s.tier} ${s.division}`.trim():'NON CLASSÉ';
+      const icon=s.tier?RANK_ICONS[s.tier.toUpperCase()]:null;
+      const iconHtml=icon?`<img class="g-rank-emblem" src="${icon}" alt="${s.tier}" width="44" height="44" loading="lazy">`:`<span class="g-rank-icon">⚔️</span>`;
+      const wr=s.winrate!==null?`${s.winrate}% WR`:'';
+      const champsHtml=s.topChamps.length?`<div class="g-champs">${s.topChamps.map(c=>`<div class="g-champ">${c.img?`<img src="${c.img}" alt="${c.name}" width="20" height="20" loading="lazy">`:'<span>🗡</span>'}<span>${c.name} · Niv.${c.level}</span></div>`).join('')}</div>` :'';
+      const ts=s.ts?new Date(s.ts).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+      const links=[
+        {label:'↗ OP.GG',href:`https://www.op.gg/summoners/euw/${encodeURIComponent(s.name)}-${encodeURIComponent(s.tag)}`},
+        {label:'↗ U.GG',href:`https://u.gg/lol/profile/euw1/${encodeURIComponent(s.name)}-${encodeURIComponent(s.tag)}/overview`}
+      ].map(l=>`<a class="g-link" href="${l.href}" target="_blank" rel="noopener noreferrer">${l.label}</a>`).join('');
+      el.innerHTML=`<div class="g-rank-badge">${iconHtml}<div class="g-rank-info"><div class="g-rank-tier">${tier}</div><div class="g-rank-lp">${s.lp} LP · ${s.wins}V ${s.losses}D ${wr?'· '+wr:''}</div></div><button class="g-refresh-btn" id="lol-refresh" aria-label="Rafraîchir">↺</button></div><div class="g-stats"><div class="g-stat-row"><span class="g-stat-key">WINRATE</span><span class="g-stat-val">${s.winrate!==null?s.winrate+'%':'—'}</span></div><div class="g-stat-row"><span class="g-stat-key">PARTIES</span><span class="g-stat-val">${s.wins+s.losses}</span></div></div>${champsHtml}<div class="g-links">${links}</div><div class="g-cache-info"><span>MAJ ${ts}</span></div>`;
+      document.getElementById('lol-refresh')?.addEventListener('click',()=>forceFetchLoL());
+    }
+    function renderLoLSkeleton(el){el.innerHTML=`<div class="g-rank-badge" style="gap:var(--space-3)"><div class="g-skeleton" style="width:44px;height:44px;border-radius:50%;flex-shrink:0"></div><div style="flex:1;display:flex;flex-direction:column;gap:6px"><div class="g-skeleton" style="width:60%;height:14px"></div><div class="g-skeleton" style="width:40%;height:10px"></div></div></div><div class="g-stats"><div class="g-skeleton" style="height:32px"></div><div class="g-skeleton" style="height:32px"></div></div>`;}
+
+    // ── RL : tracker.gg via proxy (platform epic)
+    async function fetchRLFromAPI(pseudo){
+      const enc=encodeURIComponent;
+      const json=await proxyFetch(`https://api.tracker.gg/api/v2/rocket-league/standard/profile/epic/${enc(pseudo)}`);
+      const segments=json?.data?.segments??[];
+      const ranked3v3=segments.find(s=>s.type==='playlist'&&s.attributes?.playlistId===13);
+      const rating=ranked3v3?.stats?.rating?.value??null;
+      const tier=ranked3v3?.stats?.tier?.metadata?.name??null;
+      const wins=ranked3v3?.stats?.matchesPlayed?.value??null;
+      const winPct=ranked3v3?.stats?.winPercentage?.value??null;
+      const overview=segments.find(s=>s.type==='overview');
+      const goals=overview?.stats?.goals?.displayValue??null;
+      const saves=overview?.stats?.saves?.displayValue??null;
+      const mvp=overview?.stats?.mVPs?.displayValue??null;
+      return{tier,rating,wins,winPct,goals,saves,mvp,pseudo,ts:Date.now()};
+    }
+    function renderRLStats(s,el){
+      const ts=s.ts?new Date(s.ts).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+      const links=[
+        {label:'↗ TRACKER.GG',href:`https://rocketleague.tracker.network/rocket-league/profile/epic/${encodeURIComponent(s.pseudo)}/overview`},
+        {label:'↗ BALLCHASING',href:`https://ballchasing.com/search#players=${encodeURIComponent(s.pseudo)}`}
+      ].map(l=>`<a class="g-link" href="${l.href}" target="_blank" rel="noopener noreferrer">${l.label}</a>`).join('');
+      el.innerHTML=`<div class="g-rank-badge"><span class="g-rank-icon">🚗</span><div class="g-rank-info"><div class="g-rank-tier">${s.tier??'NON CLASSÉ'}</div><div class="g-rank-lp">${s.rating!==null?s.rating+' MMR':''} ${s.winPct!==null?'· '+Math.round(s.winPct)+'% WR':''}</div></div><button class="g-refresh-btn" id="rl-refresh" aria-label="Rafraîchir">↺</button></div><div class="g-stats"><div class="g-stat-row"><span class="g-stat-key">WINRATE</span><span class="g-stat-val">${s.winPct!==null?Math.round(s.winPct)+'%':'—'}</span></div><div class="g-stat-row"><span class="g-stat-key">BUTS</span><span class="g-stat-val">${s.goals??'—'}</span></div><div class="g-stat-row"><span class="g-stat-key">ARRÊTS</span><span class="g-stat-val">${s.saves??'—'}</span></div><div class="g-stat-row"><span class="g-stat-key">MVP</span><span class="g-stat-val">${s.mvp??'—'}</span></div></div><div class="g-links">${links}</div><div class="g-cache-info"><span>MAJ ${ts}</span></div>`;
+      document.getElementById('rl-refresh')?.addEventListener('click',()=>forceFetchRL());
+    }
+    function renderRLSkeleton(el){el.innerHTML=`<div class="g-rank-badge" style="gap:var(--space-3)"><div class="g-skeleton" style="width:44px;height:44px;border-radius:50%;flex-shrink:0"></div><div style="flex:1;display:flex;flex-direction:column;gap:6px"><div class="g-skeleton" style="width:60%;height:14px"></div><div class="g-skeleton" style="width:40%;height:10px"></div></div></div><div class="g-stats"><div class="g-skeleton" style="height:32px"></div><div class="g-skeleton" style="height:32px"></div>`;}
+
+    let _userId=null,_lolId='',_rlId='',_lolStats=null,_rlStats=null;
+    const CACHE_TTL=5*60*1000;
+    async function saveGameId(game,value){if(!_userId)return;const col=game==='lol'?'lol_id':'rl_id';await supabase.from('profiles').update({[col]:value}).eq('id',_userId);}
+    async function saveCache(lol,rl){if(!_userId)return;const cache={};if(lol)cache.lol=lol;if(rl)cache.rl=rl;await supabase.from('profiles').update({gaming_cache:cache}).eq('id',_userId);}
+    async function readCache(){if(!_userId)return{};const{data}=await supabase.from('profiles').select('gaming_cache').eq('id',_userId).single();return data?.gaming_cache??{};}
+
+    async function forceFetchLoL(){const el=document.getElementById('lol-content');if(!el||!_lolId)return;const btn=document.getElementById('lol-refresh');if(btn){btn.disabled=true;btn.classList.add('spin');}renderLoLSkeleton(el);try{const stats=await fetchLoLFromAPI(_lolId);_lolStats=stats;renderLoLStats(stats,el);await saveCache(_lolStats,_rlStats);}catch(e){console.warn('LoL API:',e);if(_lolStats)renderLoLStats(_lolStats,el);else el.innerHTML=`<div class="g-empty"><div class="g-empty-icon">⚠️</div><div class="g-empty-txt">API INDISPONIBLE<br>ESSAIE PLUS TARD</div></div>`;}finally{if(btn){btn.disabled=false;btn.classList.remove('spin');}}}
+    async function forceFetchRL(){const el=document.getElementById('rl-content');if(!el||!_rlId)return;const btn=document.getElementById('rl-refresh');if(btn){btn.disabled=true;btn.classList.add('spin');}renderRLSkeleton(el);try{const stats=await fetchRLFromAPI(_rlId);_rlStats=stats;renderRLStats(stats,el);await saveCache(_lolStats,_rlStats);}catch(e){console.warn('RL API:',e);if(_rlStats)renderRLStats(_rlStats,el);else el.innerHTML=`<div class="g-empty"><div class="g-empty-icon">⚠️</div><div class="g-empty-txt">API INDISPONIBLE<br>ESSAIE PLUS TARD</div></div>`;}finally{if(btn){btn.disabled=false;btn.classList.remove('spin');}}}
+
+    async function initGamingPanel(profile){
+      _lolId=profile?.lol_id||'';_rlId=profile?.rl_id||'';
+      const lolInput=document.getElementById('lol-id-input'),rlInput=document.getElementById('rl-id-input');
+      if(lolInput)lolInput.value=_lolId;if(rlInput)rlInput.value=_rlId;
+      const cache=await readCache();
+      const lolEl=document.getElementById('lol-content'),rlEl=document.getElementById('rl-content');
+      if(_lolId){if(cache.lol){_lolStats=cache.lol;renderLoLStats(cache.lol,lolEl);}else renderLoLSkeleton(lolEl);}
+      if(_rlId){if(cache.rl){_rlStats=cache.rl;renderRLStats(cache.rl,rlEl);}else renderRLSkeleton(rlEl);}
+      const lolAge=cache.lol?.ts?Date.now()-cache.lol.ts:Infinity,rlAge=cache.rl?.ts?Date.now()-cache.rl.ts:Infinity;
+      if(_lolId&&lolAge>CACHE_TTL)forceFetchLoL();
+      if(_rlId&&rlAge>CACHE_TTL)forceFetchRL();
+      document.getElementById('lol-id-save')?.addEventListener('click',async()=>{const v=lolInput?.value?.trim();if(!v)return;_lolId=v;await saveGameId('lol',v);renderLoLSkeleton(lolEl);forceFetchLoL();});
+      document.getElementById('rl-id-save')?.addEventListener('click',async()=>{const v=rlInput?.value?.trim();if(!v)return;_rlId=v;await saveGameId('rl',v);renderRLSkeleton(rlEl);forceFetchRL();});
+      lolInput?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('lol-id-save')?.click();});
+      rlInput?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('rl-id-save')?.click();});
+    }
+
+    const auth = await requireAuth();
+    if (!auth) { return; }
+    const { user, profile } = auth;
+    _userId = user.id;
+    populateWelcome(user, profile);
+    loadMembers();
+    loadPGStats(user.id);
+    await initGamingPanel(profile);
+    // FIX: passer le contexte auth pour éviter un double requireAuth() dans dashboard.js
+    await initDashboard({ user, profile });
+  </script>
+</body>
+</html>
