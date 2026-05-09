@@ -1,7 +1,7 @@
 #!/bin/bash
 # ════════════════════════════════════════════════════
 #  generate-config.sh
-#  Génère TCG/config.js à partir des variables dans .env
+#  Génère config.js (racine) et TCG/config.js depuis .env
 #  Usage : bash generate-config.sh
 # ════════════════════════════════════════════════════
 
@@ -22,6 +22,21 @@ if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
   exit 1
 fi
 
+# ── 1. config.js (racine) — utilisé par js/supabase.js ──────────────────────
+cat > config.js << EOF
+// ════════════════════════════════════════════════════════════════
+//  Gwen Ha Star — Configuration Supabase
+//  ⚠️  Fichier généré automatiquement par generate-config.sh
+//  ⚠️  NE PAS COMMITER si ce fichier contient de vraies clés !
+// ════════════════════════════════════════════════════════════════
+
+export const SUPABASE_URL  = '${SUPABASE_URL}';
+export const SUPABASE_ANON = '${SUPABASE_ANON_KEY}';
+EOF
+
+echo "✅ config.js (racine) généré"
+
+# ── 2. TCG/config.js — utilisé par le TCG ───────────────────────────────────
 cat > TCG/config.js << EOF
 // ════════════════════════════════════════════════════════════════
 //  PokéForge — Configuration Supabase
@@ -33,6 +48,7 @@ const SUPABASE_URL      = '${SUPABASE_URL}';
 const SUPABASE_ANON_KEY = '${SUPABASE_ANON_KEY}';
 EOF
 
-echo "✅ TCG/config.js généré avec succès !"
+echo "✅ TCG/config.js généré"
+echo ""
 echo "   URL : ${SUPABASE_URL}"
 echo "   KEY : ${SUPABASE_ANON_KEY:0:20}..."
