@@ -1,14 +1,10 @@
 // ── SUPABASE CLIENT ──────────────────────────────────────────────────────────
-// SDK v2.50+ requis pour les clés au format sb_publishable_*
+// SDK v2.50+
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0';
 
-// config.js est toujours servi depuis gwenhastar.fr (source de vérité unique)
-// Fonctionne depuis n'importe quel domaine (nitro.sterenna.fr, localhost, etc.)
-const CONFIG_URL = window.location.hostname === 'localhost'
-  ? '/config.js'
-  : 'https://gwenhastar.fr/config.js';
-
-const { SUPABASE_URL, SUPABASE_ANON } = await import(CONFIG_URL);
+// Clé anon (publishable) — sécurité assurée par le RLS Supabase, pas par la clé
+const SUPABASE_URL  = 'https://nmdjrcswlnydglrxaivx.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_dE0SfyUd-Xw4JhuAVy4x1A_NZfB7lcH';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
