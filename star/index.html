@@ -109,9 +109,10 @@
     .bc-pg       { grid-column: span 5;  }
     .bc-video    { grid-column: span 7;  }
     .bc-activity { grid-column: span 4;  }
-    .bc-radio    { grid-column: span 8;  }
+    .bc-radio    { grid-column: span 5;  }
+    .bc-slots    { grid-column: span 3;  }
     @media(max-width:1100px) {
-      .bc-pg, .bc-video, .bc-activity, .bc-radio { grid-column: span 12; }
+      .bc-pg, .bc-video, .bc-activity, .bc-radio, .bc-slots { grid-column: span 12; }
     }
 
     /* ── QUICK ACCESS ────────────────────────────────────────────── */
@@ -151,7 +152,6 @@
     /* ── POKEGANG WIDGET ─────────────────────────────────────────── */
     .pg-widget  { display:flex; flex-direction:column; gap:var(--space-4); }
 
-    /* Bouton principal jouer */
     .pg-play-btn {
       display:flex; align-items:center; justify-content:center; gap:var(--space-3);
       padding:var(--space-4) var(--space-5);
@@ -182,11 +182,8 @@
     .pg-play-label-main { line-height:1; }
     .pg-play-label-sub  { font-family:var(--font-mono); font-size:8px; letter-spacing:.18em; color:var(--c-text-muted); margin-top:2px; }
 
-    /* Stats gang */
     .pg-stats-grid {
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:var(--space-2);
+      display:grid; grid-template-columns: 1fr 1fr; gap:var(--space-2);
     }
     .pg-stat {
       background:var(--c-surface-2); border:1px solid var(--c-border);
@@ -196,22 +193,12 @@
     .pg-stat-lbl { font-family:var(--font-mono); font-size:8px; letter-spacing:.16em; color:var(--c-text-faint); }
     .pg-stat-val { font-family:var(--font-display); font-size:var(--text-lg); line-height:1.1; color:var(--c-amber); }
     .pg-stat-sub { font-family:var(--font-mono); font-size:8px; color:var(--c-text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-    /* Stat gang (pleine largeur) */
-    .pg-stat-gang {
-      grid-column: span 2;
-      display:flex; align-items:center; gap:var(--space-3);
-    }
-    .pg-boss-sprite {
-      width:48px; height:48px; object-fit:contain;
-      image-rendering:pixelated; flex-shrink:0;
-    }
+    .pg-stat-gang { grid-column: span 2; display:flex; align-items:center; gap:var(--space-3); }
+    .pg-boss-sprite { width:48px; height:48px; object-fit:contain; image-rendering:pixelated; flex-shrink:0; }
     .pg-boss-info { display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; }
 
     /* ── JUKEBOX RADIO WIDGET ────────────────────────────────────── */
     .radio-player  { display:flex; flex-direction:column; gap:var(--space-3); }
-
-    /* Ligne cover + infos */
     .jk-track-row  { display:flex; align-items:center; gap:var(--space-3); }
     .jk-cover {
       width:48px; height:48px; border-radius:var(--radius-md);
@@ -225,16 +212,10 @@
     .jk-artist      { font-family:var(--font-mono); font-size:9px; letter-spacing:.14em; color:var(--c-text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .jk-title       { font-family:var(--font-display); font-size:var(--text-base); font-weight:700; color:var(--c-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .jk-badge       { font-family:var(--font-mono); font-size:8px; letter-spacing:.18em; color:var(--c-purple); opacity:.7; }
-
-    /* Progress */
     .jk-progress-wrap { display:flex; align-items:center; gap:var(--space-2); }
     .jk-time          { font-family:var(--font-mono); font-size:8px; color:var(--c-text-faint); min-width:28px; text-align:center; }
     .jk-seek          { flex:1; accent-color:var(--c-primary); }
-
-    /* Canvas viz */
     .radio-viz  { width:100%; height:36px; border-radius:var(--radius-sm); background:var(--c-surface-2); }
-
-    /* Controls */
     .radio-status  { display:flex; align-items:center; gap:var(--space-2); }
     .radio-led     { width:8px; height:8px; border-radius:50%; background:var(--c-text-faint); transition:background .3s; flex-shrink:0; }
     .radio-led.active { background:var(--c-primary); box-shadow:var(--glow-green); animation:blink 1.5s ease-in-out infinite; }
@@ -268,6 +249,138 @@
     .video-embed-wrap { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:var(--radius-lg); margin-top:var(--space-2); }
     .video-embed-wrap iframe { position:absolute; inset:0; width:100%; height:100%; border:none; }
     .widget-video-title { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--c-text-muted); margin-bottom:var(--space-2); }
+
+    /* ── SLOT MACHINE ────────────────────────────────────────────── */
+    .slot-machine { display:flex; flex-direction:column; gap:var(--space-3); }
+
+    .slot-header {
+      display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--space-2);
+      background:var(--c-surface-2); border:1px solid var(--c-border);
+      border-radius:var(--radius-lg); padding:var(--space-3);
+    }
+    .slot-credit-box { display:flex; flex-direction:column; gap:2px; }
+    .slot-lbl { font-family:var(--font-mono); font-size:8px; letter-spacing:.18em; color:var(--c-text-faint); }
+    .slot-credit-val {
+      font-family:var(--font-display); font-size:var(--text-xl); line-height:1.1;
+      color:var(--c-amber); text-shadow:0 0 14px var(--c-amber);
+      font-variant-numeric:tabular-nums;
+    }
+    .slot-gain { color:var(--c-primary); text-shadow:0 0 14px var(--c-primary); }
+    .slot-bet-row { display:flex; align-items:center; gap:var(--space-2); }
+    .slot-bet-btn {
+      width:22px; height:22px; border-radius:var(--radius-sm);
+      background:var(--c-surface); border:1px solid var(--c-border);
+      color:var(--c-text-muted); font-size:14px; font-weight:700;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:background .15s, color .15s;
+    }
+    .slot-bet-btn:hover { background:var(--c-surface-2); color:var(--c-text); }
+
+    /* Rouleaux */
+    .slot-reels {
+      display:flex; gap:var(--space-3); justify-content:center;
+      padding:var(--space-4) var(--space-2);
+      background: linear-gradient(180deg,
+        color-mix(in oklch, var(--c-amber) 6%, var(--c-surface-2)) 0%,
+        var(--c-surface-2) 100%);
+      border:1px solid color-mix(in oklch, var(--c-amber) 30%, var(--c-border));
+      border-radius:var(--radius-lg);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.4), 0 0 0 1px var(--c-border);
+    }
+    .slot-reel-wrap {
+      flex:1; display:flex; align-items:center; justify-content:center;
+      background:var(--c-bg); border:1px solid var(--c-border);
+      border-radius:var(--radius-md); overflow:hidden;
+      min-height:80px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,.5);
+      position:relative;
+    }
+    /* Lignes de gain (pseudo élément centré) */
+    .slot-reel-wrap::before, .slot-reel-wrap::after {
+      content:""; position:absolute; left:0; right:0; height:1px;
+      background:color-mix(in oklch, var(--c-amber) 20%, transparent);
+      pointer-events:none;
+    }
+    .slot-reel-wrap::before { top:25%; }
+    .slot-reel-wrap::after  { bottom:25%; }
+
+    .slot-reel {
+      width:100%; display:flex; align-items:center; justify-content:center;
+      padding:var(--space-3);
+    }
+    .slot-sym {
+      font-size:2.2rem; line-height:1;
+      display:block; text-align:center;
+      filter:drop-shadow(0 0 6px currentColor);
+      user-select:none;
+    }
+
+    /* Animations rouleaux */
+    @keyframes slot-spin-anim {
+      0%   { transform:translateY(0); }
+      25%  { transform:translateY(-6px); }
+      75%  { transform:translateY(6px); }
+      100% { transform:translateY(0); }
+    }
+    @keyframes slot-land-anim {
+      0%   { transform:scale(1.25); opacity:.6; }
+      60%  { transform:scale(0.95); }
+      100% { transform:scale(1); opacity:1; }
+    }
+    .slot-reel--spin .slot-sym { animation:slot-spin-anim .08s linear infinite; }
+    .slot-reel--land .slot-sym { animation:slot-land-anim .3s cubic-bezier(.22,1,.36,1); }
+
+    /* Message résultat */
+    .slot-msg {
+      font-family:var(--font-mono); font-size:10px; letter-spacing:.14em;
+      text-align:center; min-height:18px; color:var(--c-text-muted);
+      transition:color .2s;
+    }
+    .slot-msg--win     { color:var(--c-primary); text-shadow:0 0 12px var(--c-primary); }
+    .slot-msg--jackpot { color:var(--c-amber);   text-shadow:0 0 18px var(--c-amber); animation:blink .4s ease-in-out 4; }
+    .slot-msg--lose    { color:var(--c-text-faint); }
+    .slot-msg--red     { color:var(--c-red); }
+
+    /* Bouton SPIN */
+    .slot-spin-btn {
+      width:100%; padding:var(--space-3) var(--space-4);
+      background:linear-gradient(135deg,
+        color-mix(in oklch, var(--c-amber) 30%, var(--c-surface)) 0%,
+        color-mix(in oklch, var(--c-amber) 12%, var(--c-surface-2)) 100%);
+      border:1px solid var(--c-amber);
+      border-radius:var(--radius-lg);
+      color:var(--c-amber); font-family:var(--font-display); font-size:var(--text-base);
+      font-weight:700; letter-spacing:.2em;
+      box-shadow: 0 0 20px color-mix(in oklch, var(--c-amber) 25%, transparent);
+      cursor:pointer; transition:box-shadow .2s, transform .12s;
+    }
+    .slot-spin-btn:hover:not(:disabled) {
+      box-shadow: 0 0 36px color-mix(in oklch, var(--c-amber) 45%, transparent);
+      transform:translateY(-1px);
+    }
+    .slot-spin-btn:active:not(:disabled) { transform:translateY(0); }
+    .slot-spin-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+    /* Table des gains */
+    .slot-paytable { margin-top:var(--space-1); }
+    .slot-paytable-toggle {
+      font-family:var(--font-mono); font-size:8px; letter-spacing:.18em;
+      color:var(--c-text-faint); cursor:pointer; list-style:none;
+      text-align:center; padding:var(--space-1);
+    }
+    .slot-paytable-toggle::-webkit-details-marker { display:none; }
+    .slot-paytable-toggle:hover { color:var(--c-text-muted); }
+    .slot-paytable-body {
+      display:flex; flex-wrap:wrap; gap:var(--space-1); justify-content:center;
+      padding:var(--space-2) 0;
+    }
+    .slot-pay-row {
+      display:flex; align-items:center; gap:3px;
+      background:var(--c-surface-2); border:1px solid var(--c-border);
+      border-radius:var(--radius-sm); padding:2px var(--space-2);
+    }
+    .slot-pay-sym  { font-size:.95rem; }
+    .slot-pay-mult { font-family:var(--font-mono); font-size:9px; color:var(--c-amber); margin-left:4px; }
   </style>
 </head>
 <body class="star-page">
@@ -338,12 +451,10 @@
         <div id="quick-access-grid"></div>
       </div>
 
-      <!-- PokeGang — stats + bouton jouer (plus d'iframe) -->
+      <!-- PokeGang -->
       <div class="bc bc-pg">
         <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>POKEGANG · RÉSEAU</div>
         <div class="pg-widget">
-
-          <!-- Bouton principal jouer -->
           <a
             href="https://pokegang.sterenna.fr"
             target="_blank"
@@ -357,51 +468,35 @@
               <span class="pg-play-label-sub">POKEGANG.STERENNA.FR ↗</span>
             </span>
           </a>
-
-          <!-- Grille de stats -->
           <div class="pg-stats-grid">
-
-            <!-- Gang + boss (pleine largeur) -->
             <div class="pg-stat pg-stat-gang">
-              <img
-                id="pg-boss-sprite"
-                class="pg-boss-sprite"
-                src="" alt="" width="48" height="48"
-                loading="lazy"
-                style="display:none"
-                onerror="this.style.display='none'"
-              >
+              <img id="pg-boss-sprite" class="pg-boss-sprite" src="" alt="" width="48" height="48" loading="lazy" style="display:none" onerror="this.style.display='none'">
               <div class="pg-boss-info">
                 <span class="pg-stat-lbl">GANG</span>
                 <span class="pg-stat-val" id="pg-gang-name">·</span>
                 <span class="pg-stat-sub" id="pg-boss-name">BOSS : ·</span>
               </div>
             </div>
-
             <div class="pg-stat">
               <span class="pg-stat-lbl">RÉPUTATION</span>
               <span class="pg-stat-val" id="pg-rep">·</span>
               <span class="pg-stat-sub">POINTS</span>
             </div>
-
             <div class="pg-stat">
               <span class="pg-stat-lbl">POKÉMONS</span>
               <span class="pg-stat-val" id="pg-caught">·</span>
               <span class="pg-stat-sub" id="pg-shinies">✦ SHINIES : ·</span>
             </div>
-
             <div class="pg-stat">
               <span class="pg-stat-lbl">POKÉDEX</span>
               <span class="pg-stat-val" id="pg-dex">·</span>
               <span class="pg-stat-sub" id="pg-dex-nat">NATIONAL : ·</span>
             </div>
-
             <div class="pg-stat">
               <span class="pg-stat-lbl">AGENTS</span>
               <span class="pg-stat-val" id="pg-agents">·</span>
               <span class="pg-stat-sub">RECRUTEMENT</span>
             </div>
-
           </div>
         </div>
       </div>
@@ -424,6 +519,12 @@
         <div id="widget-radio"></div>
       </div>
 
+      <!-- Machine à sous Casino -->
+      <div class="bc bc-slots">
+        <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>CASINO · SLOT</div>
+        <div id="widget-slots"></div>
+      </div>
+
     </div>
   </main>
 
@@ -431,6 +532,7 @@
     import { initDashboard }     from '../js/star/dashboard.js';
     import { supabase, signOut } from '../js/supabase.js';
     import { requireAuth }       from '../js/star/guard.js';
+    import { SlotMachine }       from '../js/star/widgets.js';
 
     // ── HORLOGE
     (function() {
@@ -455,7 +557,11 @@
     // ── DÉCO
     document.getElementById('btn-signout-strip')?.addEventListener('click', () => signOut());
 
-    // ── POKEGANG STATS depuis table leaderboard
+    // ── MACHINE À SOUS
+    const slots = new SlotMachine('widget-slots');
+    slots.render();
+
+    // ── POKEGANG STATS
     async function loadPGStats(userId) {
       const sbPg = document.getElementById('sb-pg');
       try {
