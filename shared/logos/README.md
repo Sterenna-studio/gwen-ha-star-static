@@ -1,18 +1,31 @@
 # shared/logos/
 
-Logos et identité visuelle partagés entre toutes les pages du hub (index.html, star/, cig.html...).
+Logos et identité visuelle partagés entre toutes les pages du hub.
 Ne pas confondre avec `TCG/assets/` qui appartient exclusivement au TCG.
 
-## Fichiers à uploader ici
+## Fichiers uploadés
 
-| Fichier | Dimensions recommandées | Usage |
-|---|---|---|
-| `bzh-chronicles.png` | 400×120 px (logo horizontal) | Header star/ + page d'accueil |
-| `bzh-pw.png` | 400×120 px | Section PW / BZH PW |
-| `sterenna.png` | 400×120 px | Footer + section Sterenna |
-| `favicon.png` | 32×32 px | Favicon global |
+| Fichier | Usage |
+|---|---|
+| `bzh-chronicles.png` | Header star/ + page d'accueil |
+| `bzh-pw.png` | Section BZH PW |
+| `favicon.png` | Favicon global (32×32) |
+| *(autres logos gwen-ha-star)* | Hub général |
 
 ## Logos disponibles via URL externe (pas besoin d'uploader)
 
-- **Pokegang** : `https://lab.sterenna.fr/PG/pokegang_logo/pokegang_logo_little.png`
-  Usage dans index.html : `<img src="https://lab.sterenna.fr/PG/pokegang_logo/pokegang_logo_little.png" alt="Pokegang" loading="lazy">`
+### Pokegang
+```
+https://lab.sterenna.fr/PG/pokegang_logo/pokegang_logo_little.png
+```
+
+### Sterenna
+```
+https://sterenna.fr/assets/img/logo_symbol.png   ← symbole seul
+https://sterenna.fr/assets/img/                  ← autres assets dispo
+```
+Usage HTML :
+```html
+<img src="https://sterenna.fr/assets/img/logo_symbol.png"
+     alt="Sterenna" width="32" height="32" loading="lazy">
+```
