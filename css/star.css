@@ -309,6 +309,76 @@
   cursor: pointer;
 }
 
+/* ── JUKEBOX COVER ───────────────────────────────────────────── */
+.jk-track-row {
+  display: flex; align-items: center; gap: var(--space-3);
+}
+.jk-cover {
+  width: 48px; height: 48px; flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: radial-gradient(circle at 30% 30%, var(--jk-c1, #14161a), var(--jk-c2, #050608));
+  border: 1px solid var(--c-border);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+.jk-cover img { width: 100%; height: 100%; object-fit: cover; }
+.jk-cover-fallback {
+  font-size: 1.4rem;
+  opacity: 0.5;
+  color: var(--c-primary);
+}
+.jk-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.jk-artist {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--c-text-faint);
+  letter-spacing: 0.1em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.jk-title {
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 0.8rem + 0.2vw, 0.95rem);
+  color: var(--c-text);
+  letter-spacing: 0.08em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.jk-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--c-primary);
+  opacity: 0.6;
+}
+.jk-progress-wrap {
+  display: flex; align-items: center; gap: var(--space-2);
+}
+.jk-time {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--c-text-faint);
+  width: 2.8em; flex-shrink: 0;
+}
+.jk-seek {
+  flex: 1; height: 3px;
+  appearance: none; -webkit-appearance: none;
+  background: var(--c-border);
+  border-radius: var(--radius-full);
+  outline: none; cursor: pointer;
+}
+.jk-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  box-shadow: var(--glow-green);
+  cursor: pointer;
+}
+.radio-btn-sm {
+  width: 28px; height: 28px;
+  font-size: var(--text-xs);
+}
+
 /* ── ACTIVITY FEED ────────────────────────────────────────────── */
 .activity-feed {
   list-style: none;
@@ -529,3 +599,60 @@
   .star-main         { padding: var(--space-4) var(--space-3); }
   .quick-access-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SLOT MACHINE — animations & états visuels (lié à widgets.js)
+══════════════════════════════════════════════════════════════ */
+
+/* Shake du widget entier pendant le spin */
+@keyframes slot-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-3px) rotate(-0.3deg); }
+  40%       { transform: translateX(3px)  rotate(0.3deg); }
+  60%       { transform: translateX(-2px) rotate(-0.2deg); }
+  80%       { transform: translateX(2px)  rotate(0.2deg); }
+}
+.slot-spinning {
+  animation: slot-shake 0.25s ease-in-out 3;
+}
+
+/* Animation de défilement rapide des rouleaux */
+@keyframes reel-spin {
+  0%   { filter: blur(0px); opacity: 1; }
+  50%  { filter: blur(2px); opacity: 0.6; }
+  100% { filter: blur(0px); opacity: 1; }
+}
+.slot-reel--spin .slot-sym {
+  animation: reel-spin 0.06s linear infinite;
+}
+
+/* Rebond d'atterrissage quand le rouleau s'arrête */
+@keyframes reel-land {
+  0%   { transform: scaleY(1.2) translateY(-4px); }
+  50%  { transform: scaleY(0.9) translateY(2px); }
+  75%  { transform: scaleY(1.05) translateY(-1px); }
+  100% { transform: scaleY(1) translateY(0); }
+}
+.slot-reel--land {
+  animation: reel-land 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Flash du compteur de crédits */
+@keyframes credits-flash {
+  0%   { color: var(--c-text); }
+  30%  { color: var(--c-primary); text-shadow: var(--glow-green); }
+  100% { color: var(--c-text); text-shadow: none; }
+}
+.slot-credits--flash {
+  animation: credits-flash 0.5s ease both;
+}
+
+/* Message de résultat — variantes */
+.slot-msg--win     { color: var(--c-primary); text-shadow: var(--glow-green); }
+.slot-msg--jackpot {
+  color: #ffd700;
+  text-shadow: 0 0 12px #ffd700, 0 0 24px #ffd70088;
+  animation: credits-flash 0.4s ease 3;
+}
+.slot-msg--lose    { color: var(--c-text-faint); }
+.slot-msg--red     { color: var(--c-red); }
