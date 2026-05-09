@@ -1,11 +1,11 @@
 /**
  * crew.js — Logique star/crew.html
  * Charge la liste des membres depuis Supabase (table profiles)
- * Filtre par rang, recherche par pseudo
+ * Filtre par spécialité, recherche par pseudo
  */
-import { guardStar }  from './guard.js';
-import { supabase }   from '../supabase.js';
-import { signOut }    from '../supabase.js';
+import { guardStar }             from './guard.js';
+import { supabase, signOut }     from '../supabase.js';
+import { renderSpecialtyBadge }  from './specialties.js';
 
 export async function initCrew() {
   const session = await guardStar();
@@ -24,8 +24,8 @@ function _renderCrewHeader(session) {
       <span class="star-username">${username}</span>
     </div>
     <nav class="star-header-nav" aria-label="Navigation hub">
-      <a href="/star/index.html"  class="star-nav-link">HUB</a>
-      <a href="/cig.html"         class="star-nav-link">MA CIG</a>
+      <a href="/star/index.html" class="star-nav-link">HUB</a>
+      <a href="/cig.html"        class="star-nav-link">MA CIG</a>
     </nav>
     <button class="star-signout-btn" id="star-signout" aria-label="Déconnexion">✕ DÉCO</button>
   `;
@@ -43,11 +43,12 @@ async function _loadCrew() {
   </div>`;
 
   try {
-    // Essaie table `profiles` — colonnes attendues : id, username, rang, avatar_url, bio_short
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, username, rang, avatar_url, bio_short')
-      .order('rang', { ascending: true })
+      .select(`
+        id, username, avatar_url, bio, active_title,
+        specialty:specialty_id ( slug, label_fr, icon, color )
+      `)
       .order('username', { ascending: true });
 
     if (error || !data || data.length === 0) {
@@ -55,12 +56,11 @@ async function _loadCrew() {
       return;
     }
 
-    window._crewData = data; // cache pour les filtres
+    window._crewData = data;
     _renderCrewGrid(el, data);
-
-    // Popule le filtre de rang
-    const rangs = [...new Set(data.map(m => m.rang).filter(Boolean))];
-    _populateRangFilter(rangs);
+    _populateSpecialtyFilter([...new Set(
+      data.map(m => m.specialty?.slug).filter(Boolean)
+    )], data);
 
   } catch {
     _renderCrewPlaceholder(el);
@@ -68,14 +68,12 @@ async function _loadCrew() {
 }
 
 function _renderCrewGrid(el, members) {
-  if (!members.length) {
-    _renderCrewPlaceholder(el);
-    return;
-  }
+  if (!members.length) { _renderCrewPlaceholder(el); return; }
   el.innerHTML = members.map(m => {
     const initials = (m.username ?? '??').slice(0, 2).toUpperCase();
+    const specialtyHtml = m.specialty ? renderSpecialtyBadge(m.specialty) : '';
     return `
-      <a href="/cig.html?id=${m.id}" class="crew-card" aria-label="CIG de ${m.username}">
+      <a href="/cig.html?id=${m.id}" class="crew-card" aria-label="CIG de ${m.username ?? 'Anonyme'}">
         <div class="crew-avatar" aria-hidden="true">
           ${ m.avatar_url
             ? `<img src="${m.avatar_url}" alt="" width="48" height="48" loading="lazy">`
@@ -84,8 +82,9 @@ function _renderCrewGrid(el, members) {
         </div>
         <div class="crew-info">
           <span class="crew-username">${m.username ?? 'ANONYME'}</span>
-          ${ m.rang ? `<span class="crew-rang">${m.rang}</span>` : '' }
-          ${ m.bio_short ? `<span class="crew-bio">${m.bio_short}</span>` : '' }
+          ${ m.active_title ? `<span class="crew-active-title">${m.active_title}</span>` : '' }
+          ${ specialtyHtml }
+          ${ m.bio ? `<span class="crew-bio">${m.bio}</span>` : '' }
         </div>
         <span class="crew-arrow" aria-hidden="true">→</span>
       </a>
@@ -103,29 +102,35 @@ function _renderCrewPlaceholder(el) {
   `;
 }
 
-function _populateRangFilter(rangs) {
-  const sel = document.getElementById('crew-filter-rang');
+function _populateSpecialtyFilter(slugs, allData) {
+  const sel = document.getElementById('crew-filter-specialty');
   if (!sel) return;
-  rangs.forEach(r => {
+  // Récupère les labels depuis les data
+  const seen = new Map();
+  allData.forEach(m => {
+    if (m.specialty?.slug) seen.set(m.specialty.slug, m.specialty.label_fr);
+  });
+  slugs.forEach(slug => {
     const opt = document.createElement('option');
-    opt.value = r; opt.textContent = r;
+    opt.value = slug;
+    opt.textContent = seen.get(slug) ?? slug;
     sel.appendChild(opt);
   });
 }
 
 function _bindFilters() {
-  const search = document.getElementById('crew-search');
-  const rang   = document.getElementById('crew-filter-rang');
-  const apply  = () => {
+  const search    = document.getElementById('crew-search');
+  const specialty = document.getElementById('crew-filter-specialty');
+  const apply = () => {
     const q = (search?.value ?? '').toLowerCase();
-    const r = rang?.value ?? '';
+    const s = specialty?.value ?? '';
     const filtered = (window._crewData ?? []).filter(m => {
       const matchQ = !q || (m.username ?? '').toLowerCase().includes(q);
-      const matchR = !r || m.rang === r;
-      return matchQ && matchR;
+      const matchS = !s || m.specialty?.slug === s;
+      return matchQ && matchS;
     });
     _renderCrewGrid(document.getElementById('crew-grid'), filtered);
   };
   search?.addEventListener('input',  apply);
-  rang?.addEventListener('change', apply);
+  specialty?.addEventListener('change', apply);
 }
