@@ -1,0 +1,7 @@
+# Clés secrètes — NE JAMAIS commiter
+.env
+TCG/config.local.js
+
+# Config générée en local (contient les vraies clés)
+# Décommente si tu génères config.js via generate-config.sh
+# TCG/config.js
