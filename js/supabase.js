@@ -1,7 +1,14 @@
 // ── SUPABASE CLIENT ──────────────────────────────────────────────────────────
 // SDK v2.50+ requis pour les clés au format sb_publishable_*
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0';
-import { SUPABASE_URL, SUPABASE_ANON } from '../config.js';
+
+// config.js est toujours servi depuis gwenhastar.fr (source de vérité unique)
+// Fonctionne depuis n'importe quel domaine (nitro.sterenna.fr, localhost, etc.)
+const CONFIG_URL = window.location.hostname === 'localhost'
+  ? '/config.js'
+  : 'https://gwenhastar.fr/config.js';
+
+const { SUPABASE_URL, SUPABASE_ANON } = await import(CONFIG_URL);
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
