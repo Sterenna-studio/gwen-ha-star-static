@@ -40,11 +40,11 @@ gwen-ha-star-static/
 │   └── star/               # Scripts spécifiques à l'espace Star
 │
 ├── star/                   # Espace membres connectés — "le cockpit du Gwen Ha Star"
-│   └── ...                 # Hub joueurs : projets, jeux, infos, crew
+│   └── ...                 # Hub agents : projets, jeux, infos, crew
 │
-├── jukebox/                # Lecteur musical (JukeboxPlayer — composant autonome)
+├── jukebox/                # Lecteur musical (JukeboxPlayer — web component autonome)
 │
-└── TCG/                    # Sous-projet indépendant — Trading Card Game Sterenna
+└── TCG/                    # Projet interne — Trading Card Game Sterenna (accès via /star)
     └── ...                 # App TCG full-stack statique avec Supabase
 ```
 
@@ -57,17 +57,40 @@ gwen-ha-star-static/
 | `index.html` | Public | Vitrine des projets Sterenna, présentation du Gwen Ha Star |
 | `login.html` | Public | Connexion / inscription agent |
 | `cig.html` | Connecté | Carte d'Identification Galactique — profil de l'agent |
-| `/star` | Connecté | Cockpit — hub membres, projets, crew, jeux |
-| `/TCG` | Variable | Jeu de cartes à collectionner Sterenna |
+| `/star` | Connecté | Cockpit — hub membres, projets internes, crew, jeux |
+| `/TCG` | Connecté | Jeu de cartes à collectionner — projet interne au Star |
 
 ---
 
 ## 🛠️ Stack technique
 
-- **HTML / CSS / JS vanilla** — aucun framework, site 100% statique
-- **Supabase** — authentification + base de données (PostgreSQL)
-- **OVH Hébergement Web** — déploiement via webhook GitHub (auto-pull à chaque push)
-- **esm.sh** — import ESM du SDK Supabase côté client
+- **HTML + JS (modules ES natifs) + CSS** — stack vanilla solide, sans framework, sans bundler
+- **Architecture modulaire** — chaque fonctionnalité est un module JS importé explicitement (`import/export`)
+- **Supabase** — authentification + base de données (PostgreSQL), SDK chargé via `esm.sh`
+- **OVH Hébergement Web** — déploiement continu via webhook GitHub (auto-pull à chaque push sur `main`)
+
+---
+
+## 🌐 Écosystème des projets
+
+Les projets Sterenna s'articulent autour du Star selon deux modèles :
+
+### Projets internes — vivent dans le Star
+Hébergés directement dans ce repo, accessibles uniquement aux agents connectés.
+
+| Projet | Dossier | Description |
+|---|---|---|
+| TCG Sterenna | `/TCG` | Jeu de cartes à collectionner, collection et duels |
+| Jukebox | `/jukebox` | Lecteur musical ambiance (web component) |
+
+### Projets externes — vivent librement, enrichis par le Star
+Projets autonomes avec leur propre existence, mais dont la connexion au compte Star débloque des fonctionnalités supplémentaires.
+
+| Projet | Description |
+|---|---|
+| **PokeGang** | Jeu Pokemon indépendant — la connexion au Star offre bonus, synergies et profil partagé |
+
+> D'autres projets externes pourront rejoindre cet écosystème via l'API Supabase partagée.
 
 ---
 
@@ -98,16 +121,7 @@ bash generate-config.sh
 
 ## 👥 Crew
 
-Membres Sterenna EI — tous les agents connectés apparaissent dans l'espace `/star`.
-
----
-
-## 📁 Projets liés
-
-| Projet | Dossier | Description |
-|---|---|---|
-| TCG Sterenna | `/TCG` | Jeu de cartes à collectionner — app statique Supabase |
-| Jukebox | `/jukebox` | Lecteur musical autonome (web component) |
+Tous les agents connectés au Star font partie du Crew et sont visibles dans l'espace `/star`.
 
 ---
 
