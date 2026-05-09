@@ -43,6 +43,7 @@ function _renderHeader(profile) {
     <nav class="star-header-nav" aria-label="Navigation hub">
       <a href="/cig.html"        class="star-nav-link">MA CIG</a>
       <a href="/star/crew.html"  class="star-nav-link">CREW</a>
+      <a href="/TCG/"            class="star-nav-link">TCG</a>
       <a href="https://sterenna.fr"          target="_blank" rel="noopener" class="star-nav-link star-nav-ext">STERENNA ↗</a>
       <a href="https://pokegang.sterenna.fr" target="_blank" rel="noopener" class="star-nav-link star-nav-ext">POKEGANG ↗</a>
     </nav>
@@ -151,8 +152,9 @@ function _renderQuickAccess() {
   const links = [
     { label: 'MA CIG',     icon: '⬡', href: '/cig.html',                        color: '--c-primary', desc: 'Voir · éditer ma fiche' },
     { label: 'CREW',       icon: '◈', href: '/star/crew.html',                   color: '--c-cyan',    desc: 'Membres du réseau' },
+    { label: 'TCG',        icon: '🃏', href: '/TCG/',                             color: '--c-purple',  desc: 'Cartes · Collection · Duels' },
     { label: 'STERENNA',   icon: '▲', href: 'https://sterenna.fr',               color: '--c-amber',   desc: '3D · Gravure · Web', ext: true },
-    { label: 'POKEGANG',   icon: '◉', href: 'https://pokegang.sterenna.fr',      color: '--c-purple',  desc: 'Le jeu du crew', ext: true },
+    { label: 'POKEGANG',   icon: '◉', href: 'https://pokegang.sterenna.fr',      color: '--c-red',     desc: 'Le jeu du crew', ext: true },
   ];
   el.innerHTML = links.map(l => `
     <a href="${l.href}"
