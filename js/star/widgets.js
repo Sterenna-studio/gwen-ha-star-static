@@ -2,11 +2,11 @@
  * widgets.js — Widgets autonomes réutilisables pour le hub star/
  * VideoDay    : embed YouTube/PeerTube depuis Supabase table daily_content
  * RadioPlayer : lecteur des musiques du Jukebox (records.json) + visualiseur canvas
- * SlotMachine : machine à sous casino (cosmétique, sans enjeux réels)
+ * SlotMachine : machine à sous 3×3 avec lignes de gain, pixel art crew, Web Audio
  */
 import { supabase } from '../supabase.js';
 
-// ── SOUND ENGINE (Web Audio API, aucune dépendance) ───────────────────────────
+// ── SOUND ENGINE (Web Audio API, aucune dépendance) ─────────────────────────────────
 const _sfx = {
   _ctx: null,
   _get() {
@@ -16,51 +16,110 @@ const _sfx = {
     if (this._ctx.state === 'suspended') this._ctx.resume();
     return this._ctx;
   },
-  _tone(freq, type, vol, attack, decay) {
+  _tone(freq, type, vol, attack, decay, t0) {
     const ctx = this._get(); if (!ctx) return;
     const osc  = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
     osc.type = type;
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(vol,  ctx.currentTime + attack);
-    gain.gain.linearRampToValueAtTime(0,    ctx.currentTime + attack + decay);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + attack + decay + 0.01);
+    osc.frequency.setValueAtTime(freq, t0 ?? ctx.currentTime);
+    gain.gain.setValueAtTime(0, t0 ?? ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(vol,  (t0 ?? ctx.currentTime) + attack);
+    gain.gain.linearRampToValueAtTime(0,    (t0 ?? ctx.currentTime) + attack + decay);
+    osc.start(t0 ?? ctx.currentTime);
+    osc.stop((t0 ?? ctx.currentTime) + attack + decay + 0.01);
   },
-  click()   { this._tone(880,  'sine',     0.08, 0.005, 0.06); },
-  hover()   { this._tone(1200, 'sine',     0.04, 0.003, 0.04); },
-  nav()     { this._tone(660,  'triangle', 0.07, 0.005, 0.08); },
-  spin() {
+  _noise(vol, dur, t0) {
     const ctx = this._get(); if (!ctx) return;
-    const buf  = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate);
+    const buf  = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * dur), ctx.sampleRate);
     const data = buf.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.12;
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1);
     const src  = ctx.createBufferSource();
     const gain = ctx.createGain();
     src.buffer = buf; src.connect(gain); gain.connect(ctx.destination);
-    gain.gain.setValueAtTime(1, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.08);
-    src.start();
+    gain.gain.setValueAtTime(vol, t0 ?? ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0, (t0 ?? ctx.currentTime) + dur);
+    src.start(t0 ?? ctx.currentTime);
   },
+
+  click()  { this._tone(880,  'sine',     0.08, 0.005, 0.06); },
+  hover()  { this._tone(1200, 'sine',     0.04, 0.003, 0.04); },
+  nav()    { this._tone(660,  'triangle', 0.07, 0.005, 0.08); },
+
+  // Bruit mécanique de rouleau + tick régulier
+  tick()   { this._noise(0.06, 0.025); this._tone(1400, 'square', 0.03, 0.002, 0.018); },
+
+  // Son de résultat de rouleau arrêté
+  reel_stop(idx) {
+    const freqs = [440, 370, 294];
+    this._tone(freqs[idx] ?? 440, 'triangle', 0.10, 0.005, 0.15);
+    this._noise(0.04, 0.04);
+  },
+
+  // Lever de levier
+  lever() {
+    const ctx = this._get(); if (!ctx) return;
+    [200, 180, 160, 140].forEach((f, i) => {
+      const t = ctx.currentTime + i * 0.06;
+      this._tone(f, 'sawtooth', 0.06, 0.01, 0.05, t);
+    });
+    this._noise(0.05, 0.3);
+  },
+
+  // Victoire simple
   win() {
-    [523, 659, 784, 1047].forEach((f, i) =>
-      setTimeout(() => this._tone(f, 'triangle', 0.10, 0.01, 0.12), i * 80));
+    const ctx = this._get(); if (!ctx) return;
+    [523, 659, 784, 1047].forEach((f, i) => {
+      const t = ctx.currentTime + i * 0.09;
+      this._tone(f, 'triangle', 0.10, 0.01, 0.14, t);
+    });
   },
+
+  // Super win
+  super_win() {
+    const ctx = this._get(); if (!ctx) return;
+    [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => {
+      const t = ctx.currentTime + i * 0.07;
+      this._tone(f, 'square', 0.08, 0.01, 0.16, t);
+    });
+  },
+
+  // Jackpot absolu
   jackpot() {
-    [523, 659, 784, 1047, 1319].forEach((f, i) =>
-      setTimeout(() => this._tone(f, 'square', 0.08, 0.01, 0.18), i * 60));
+    const ctx = this._get(); if (!ctx) return;
+    // Mélodie victorieuse + bruit de célébration
+    const melody = [523, 659, 784, 1047, 784, 1047, 1319, 1047, 1319, 1568];
+    melody.forEach((f, i) => {
+      const t = ctx.currentTime + i * 0.06;
+      this._tone(f, i % 2 === 0 ? 'square' : 'triangle', 0.09, 0.005, 0.10, t);
+    });
+    this._noise(0.08, 0.6);
   },
-  lose()    { this._tone(220, 'sawtooth', 0.07, 0.01, 0.25); },
+
+  // Défaite
+  lose() {
+    const ctx = this._get(); if (!ctx) return;
+    [330, 280, 220].forEach((f, i) => {
+      const t = ctx.currentTime + i * 0.12;
+      this._tone(f, 'sawtooth', 0.07, 0.01, 0.18, t);
+    });
+  },
+
   boot() {
     [440, 550, 660].forEach((f, i) =>
       setTimeout(() => this._tone(f, 'sine', 0.06, 0.01, 0.10), i * 100));
   },
+
+  // Coin insert
+  coin() {
+    const ctx = this._get(); if (!ctx) return;
+    this._tone(1200, 'sine', 0.07, 0.003, 0.04);
+    this._tone(1600, 'sine', 0.05, 0.003, 0.04, ctx.currentTime + 0.05);
+  },
 };
 export const SFX = _sfx;
 
-// ── VIDEO DU JOUR ─────────────────────────────────────────────────────────────
+// ── VIDEO DU JOUR ───────────────────────────────────────────────────────────────────
 export class VideoDay {
   constructor(containerId) {
     this.el = document.getElementById(containerId);
@@ -116,8 +175,7 @@ export class VideoDay {
   }
 }
 
-// ── JUKEBOX RADIO ─────────────────────────────────────────────────────────────
-// Charge les tracks depuis /jukebox/records.json et les joue dans le widget radio
+// ── JUKEBOX RADIO ──────────────────────────────────────────────────────────────────
 export class RadioPlayer {
   constructor(containerId) {
     this.el        = document.getElementById(containerId);
@@ -142,19 +200,13 @@ export class RadioPlayer {
     try {
       const res  = await fetch('/jukebox/records.json?_=' + Date.now());
       const data = await res.json();
-      this.tracks = Array.isArray(data)
-        ? data.filter(r => r.display !== false)
-        : [];
-    } catch {
-      this.tracks = [];
-    }
+      this.tracks = Array.isArray(data) ? data.filter(r => r.display !== false) : [];
+    } catch { this.tracks = []; }
   }
 
-  // Encode correctement les chemins avec espaces / apostrophes / caractères spéciaux
   _srcFor(track) {
     const raw = track.src ?? '';
-    const encoded = raw.split('/').map(seg => encodeURIComponent(seg)).join('/');
-    return '/jukebox/' + encoded;
+    return '/jukebox/' + raw.split('/').map(seg => encodeURIComponent(seg)).join('/');
   }
 
   _buildUI() {
@@ -167,16 +219,12 @@ export class RadioPlayer {
         </div>`;
       return;
     }
-
     const t    = this.tracks[this.current];
     const opts = this.tracks.map((tr, i) =>
       `<option value="${i}" ${i === this.current ? 'selected' : ''}>${tr.artist ?? 'Dr.Spig'} — ${tr.title}</option>`
     ).join('');
-
     this.el.innerHTML = `
       <div class="radio-player">
-
-        <!-- Cover + infos piste -->
         <div class="jk-track-row">
           <div class="jk-cover" id="jk-cover" aria-hidden="true"
                style="--jk-c1:${t.coverColor ?? '#14161a'};--jk-c2:${t.labelColor ?? '#050608'}">
@@ -195,21 +243,13 @@ export class RadioPlayer {
             <span class="radio-station" id="radio-station">STOP</span>
           </div>
         </div>
-
-        <!-- Sélecteur de piste -->
         <select class="radio-select" id="radio-select" aria-label="Choisir une piste">${opts}</select>
-
-        <!-- Visualiseur canvas -->
         <canvas class="radio-viz" id="radio-viz" width="400" height="36" aria-hidden="true"></canvas>
-
-        <!-- Barre de progression -->
         <div class="jk-progress-wrap">
           <span class="jk-time" id="jk-cur">0:00</span>
           <input type="range" class="jk-seek" id="jk-seek" min="0" max="100" value="0" step="0.1" aria-label="Position">
           <span class="jk-time" id="jk-dur">-:--</span>
         </div>
-
-        <!-- Contrôles -->
         <div class="radio-controls">
           <button class="radio-btn radio-btn-sm" id="radio-prev" aria-label="Précédent">◁◁</button>
           <button class="radio-btn" id="radio-play" aria-label="Lecture / Pause">
@@ -218,8 +258,7 @@ export class RadioPlayer {
           <button class="radio-btn radio-btn-sm" id="radio-next" aria-label="Suivant">▷▷</button>
           <div class="radio-vol-wrap">
             <span class="radio-vol-icon" aria-hidden="true">◁</span>
-            <input type="range" class="radio-vol" id="radio-vol"
-              min="0" max="1" step="0.05" value="0.7" aria-label="Volume">
+            <input type="range" class="radio-vol" id="radio-vol" min="0" max="1" step="0.05" value="0.7" aria-label="Volume">
           </div>
         </div>
       </div>
@@ -230,18 +269,12 @@ export class RadioPlayer {
     document.getElementById('radio-play')?.addEventListener('click', () => { _sfx.click(); this._togglePlay(); });
     document.getElementById('radio-prev')?.addEventListener('click', () => { _sfx.nav(); this._skip(-1); });
     document.getElementById('radio-next')?.addEventListener('click', () => { _sfx.nav(); this._skip(+1); });
-    document.getElementById('radio-vol')?.addEventListener('input', e => {
-      this.audio.volume = parseFloat(e.target.value);
-    });
-    document.getElementById('radio-select')?.addEventListener('change', e => {
-      _sfx.nav();
-      this._loadTrack(parseInt(e.target.value, 10), this.playing);
-    });
+    document.getElementById('radio-vol')?.addEventListener('input', e => { this.audio.volume = parseFloat(e.target.value); });
+    document.getElementById('radio-select')?.addEventListener('change', e => { _sfx.nav(); this._loadTrack(parseInt(e.target.value, 10), this.playing); });
     document.getElementById('jk-seek')?.addEventListener('input', e => {
       if (this.audio.duration && !isNaN(this.audio.duration))
         this.audio.currentTime = (parseFloat(e.target.value) / 100) * this.audio.duration;
     });
-
     this.audio.addEventListener('timeupdate',     () => this._onTimeUpdate());
     this.audio.addEventListener('loadedmetadata', () => this._onMeta());
     this.audio.addEventListener('ended',          () => this._skip(+1));
@@ -250,23 +283,16 @@ export class RadioPlayer {
 
   _skip(dir) {
     if (!this.tracks.length) return;
-    const next = (this.current + dir + this.tracks.length) % this.tracks.length;
-    this._loadTrack(next, this.playing);
+    this._loadTrack((this.current + dir + this.tracks.length) % this.tracks.length, this.playing);
   }
 
   _loadTrack(idx, autoplay = false) {
     this.current = idx;
     const t = this.tracks[idx];
     this.audio.src = this._srcFor(t);
-
-    const cover   = document.getElementById('jk-cover');
-    const artist  = document.getElementById('jk-artist');
-    const title   = document.getElementById('jk-title');
-    const sel     = document.getElementById('radio-select');
-    const station = document.getElementById('radio-station');
-
-    if (artist) artist.textContent = t.artist ?? 'Dr.Spig';
-    if (title)  title.textContent  = t.title;
+    document.getElementById('jk-artist')?.textContent  != null && (document.getElementById('jk-artist').textContent = t.artist ?? 'Dr.Spig');
+    document.getElementById('jk-title')?.textContent   != null && (document.getElementById('jk-title').textContent  = t.title);
+    const cover = document.getElementById('jk-cover');
     if (cover) {
       cover.style.setProperty('--jk-c1', t.coverColor ?? '#14161a');
       cover.style.setProperty('--jk-c2', t.labelColor ?? '#050608');
@@ -274,21 +300,15 @@ export class RadioPlayer {
         ? `<img src="/jukebox/${t.coverImage}" alt="" width="48" height="48" loading="lazy">`
         : `<span class="jk-cover-fallback">♪</span>`;
     }
-    if (sel) sel.value = idx;
-    if (station) station.textContent = this.playing ? '▶ EN COURS' : 'CHARGÉ';
-
-    const curEl = document.getElementById('jk-cur');
-    const durEl = document.getElementById('jk-dur');
-    const seek  = document.getElementById('jk-seek');
-    if (curEl) curEl.textContent = '0:00';
-    if (durEl) durEl.textContent = '-:--';
-    if (seek)  seek.value = 0;
-
+    const sel = document.getElementById('radio-select'); if (sel) sel.value = idx;
+    const cur = document.getElementById('jk-cur'); if (cur) cur.textContent = '0:00';
+    const dur = document.getElementById('jk-dur'); if (dur) dur.textContent = '-:--';
+    const seek = document.getElementById('jk-seek'); if (seek) seek.value = 0;
     if (autoplay) {
       this.audio.play().catch(() => {});
       document.getElementById('radio-btn-icon').textContent = '■';
       document.getElementById('radio-led').classList.add('active');
-      if (station) station.textContent = '▶ EN COURS';
+      document.getElementById('radio-station').textContent = '▶ EN COURS';
     }
   }
 
@@ -302,29 +322,23 @@ export class RadioPlayer {
       document.getElementById('radio-station').textContent = 'PAUSE';
       if (this._animId) cancelAnimationFrame(this._animId);
     } else {
-      if (!this.audio.src || this.audio.src === window.location.href) {
+      if (!this.audio.src || this.audio.src === window.location.href)
         this.audio.src = this._srcFor(this.tracks[this.current]);
-      }
       this.audio.play().then(() => {
         this.playing = true;
         document.getElementById('radio-btn-icon').textContent = '■';
         document.getElementById('radio-led').classList.add('active');
         document.getElementById('radio-station').textContent = '▶ EN COURS';
         this._initViz();
-      }).catch(() => {
-        document.getElementById('radio-station').textContent = 'ERREUR LECTURE';
-      });
+      }).catch(() => { document.getElementById('radio-station').textContent = 'ERREUR LECTURE'; });
     }
   }
 
   _onTimeUpdate() {
-    const cur = this.audio.currentTime;
-    const dur = this.audio.duration;
+    const cur = this.audio.currentTime, dur = this.audio.duration;
     if (isNaN(dur)) return;
-    const seek  = document.getElementById('jk-seek');
-    const curEl = document.getElementById('jk-cur');
-    if (seek)  seek.value = (cur / dur) * 100;
-    if (curEl) curEl.textContent = this._fmt(cur);
+    const seek = document.getElementById('jk-seek'); if (seek) seek.value = (cur / dur) * 100;
+    const el   = document.getElementById('jk-cur');  if (el)   el.textContent = this._fmt(cur);
   }
 
   _onMeta() {
@@ -332,20 +346,16 @@ export class RadioPlayer {
     if (el) el.textContent = this._fmt(this.audio.duration || 0);
   }
 
-  _fmt(sec) {
-    sec = Math.floor(sec);
-    return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
-  }
+  _fmt(sec) { sec = Math.floor(sec); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
 
   _initViz() {
     if (this._ctx) { this._drawLoop(); return; }
     try {
-      const actx     = new (window.AudioContext || window.webkitAudioContext)();
-      const src      = actx.createMediaElementSource(this.audio);
+      const actx = new (window.AudioContext || window.webkitAudioContext)();
+      const src  = actx.createMediaElementSource(this.audio);
       this._analyser = actx.createAnalyser();
       this._analyser.fftSize = 64;
-      src.connect(this._analyser);
-      this._analyser.connect(actx.destination);
+      src.connect(this._analyser); this._analyser.connect(actx.destination);
       this._ctx = actx;
     } catch { return; }
     this._drawLoop();
@@ -361,7 +371,7 @@ export class RadioPlayer {
       this._animId = requestAnimationFrame(draw);
       this._analyser.getByteFrequencyData(buf);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const barW  = (canvas.width / buf.length) * 1.8;
+      const barW = (canvas.width / buf.length) * 1.8;
       let x = 0;
       const color = getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() || '#39ff14';
       ctx.fillStyle = color;
@@ -375,16 +385,22 @@ export class RadioPlayer {
   }
 }
 
-// ── MACHINE À SOUS CASINO ─────────────────────────────────────────────────────
-// Chemins des assets pixel art du repo (relatifs à la racine du site)
+// ── MACHINE À SOUS 3×3 ───────────────────────────────────────────────────────────────────
+// Grille 3 rouleaux × 3 lignes visibles
+// Lignes de gain actives : ligne du milieu (rang 1) uniquement par défaut
+// Les lignes haute (rang 0) et basse (rang 2) s'activent avec une mise élevée
+
 const PIXEL_BASE = '/shared/images';
 const LOGO_BASE  = '/shared/logos';
 
-// Helper pour rendre un symbole image pixel art dans le rouleau
-function _imgSym(src, alt, size = 36) {
-  return `<img src="${src}" alt="${alt}" width="${size}" height="${size}" loading="lazy" draggable="false"
-    style="image-rendering:pixelated;image-rendering:crisp-edges;object-fit:contain;display:block;margin:auto;">`;
-}
+// Lignes de gain : [rang_rouleau_0, rang_rouleau_1, rang_rouleau_2]
+const WIN_LINES = [
+  { id: 'mid',  rows: [1, 1, 1], minBet: 1,  label: 'LIGNE CENTRALE', color: '#ffd700' },
+  { id: 'top',  rows: [0, 0, 0], minBet: 10, label: 'LIGNE HAUTE',    color: '#00cfff' },
+  { id: 'bot',  rows: [2, 2, 2], minBet: 10, label: 'LIGNE BASSE',    color: '#ff69b4' },
+  { id: 'diag1',rows: [0, 1, 2], minBet: 20, label: 'DIAGONALE ↘',   color: '#c678ff' },
+  { id: 'diag2',rows: [2, 1, 0], minBet: 20, label: 'DIAGONALE ↗',   color: '#39ff14' },
+];
 
 export class SlotMachine {
   constructor(containerId) {
@@ -393,66 +409,47 @@ export class SlotMachine {
     this.bet      = 5;
     this.spinning = false;
 
-    // ── SYMBOLES ────────────────────────────────────────────────────────────
-    // Les 4 symboles rares utilisent les assets pixel art du repo.
-    // Les 5 symboles communs restent en glyphe Unicode (légers, pas de requête réseau).
+    // Chaque rouleau a 3 lignes visibles. On tire 3 symboles par rouleau.
+    // this._grid[col][row] = symbole
+    this._grid = [[null,null,null],[null,null,null],[null,null,null]];
+
     this.SYMBOLS = [
-      // ── RARES (images pixel art) ────────────────────────────────────────
-      {
-        // Jackpot absolu : logo BZH PW
-        img:    `${LOGO_BASE}/bzh_power.png`,
-        label:  'BZH PW',
-        weight: 1,
-        mult:   25,
-        color:  '#ffd700',
-        isImg:  true,
-      },
-      {
-        // Très rare : dos de carte TCG pixel art
-        img:    `${LOGO_BASE}/pixel_tcg_card.png`,
-        label:  'TCG',
-        weight: 2,
-        mult:   15,
-        color:  '#c678ff',
-        isImg:  true,
-      },
-      {
-        // Rare : OTK Nosame (Aphalone JDR)
-        img:    `${PIXEL_BASE}/OTK/OTK_pixel_cute_nosame.png`,
-        label:  'NOSAME',
-        weight: 3,
-        mult:   10,
-        color:  '#00cfff',
-        isImg:  true,
-      },
-      {
-        // Peu commun : Sniky pixel PP
-        img:    `${PIXEL_BASE}/pixel_pp/pixel_pp_sniky.png`,
-        label:  'SNIKY',
-        weight: 5,
-        mult:   6,
-        color:  '#ff69b4',
-        isImg:  true,
-      },
-      // ── COMMUNS (glyphes Unicode) ────────────────────────────────────────
-      { glyph: '★',  label: 'ÉTOILE',  weight: 8,  mult: 4,   color: '#ffd700' },
-      { glyph: '♦',  label: 'DIAMANT', weight: 10, mult: 3,   color: '#00cfff' },
-      { glyph: '♥',  label: 'CŒUR',    weight: 14, mult: 2,   color: '#ff69b4' },
-      { glyph: '🍒', label: 'CERISE',  weight: 18, mult: 1,   color: '#ff6666' },
-      { glyph: '🍀', label: 'TRÈFLE',  weight: 22, mult: 0,   color: '#39ff14' },
+      // — JACKPOT —
+      { img: `${LOGO_BASE}/bzh_power.png`,                      label: 'BZH PW',   weight: 1,  mult: 30, color: '#ffd700', rare: true },
+      // — LÉGENDAIRES —
+      { img: `${PIXEL_BASE}/pixel_pp/pixel_pp_spirit.png`,      label: 'SPIRIT',   weight: 2,  mult: 20, color: '#ff69b4', rare: true },
+      { img: `${LOGO_BASE}/pixel_tcg_card.png`,                 label: 'TCG',      weight: 2,  mult: 15, color: '#c678ff', rare: true },
+      // — ÉPIQUES —
+      { img: `${PIXEL_BASE}/OTK/OTK_pixel_cute_nosame.png`,     label: 'NOSAME',   weight: 3,  mult: 10, color: '#00cfff', rare: true },
+      { img: `${PIXEL_BASE}/pixel_pp/pixel_pp_cowboy.png`,      label: 'COWBOY',   weight: 4,  mult: 8,  color: '#fdcb6e', rare: true },
+      // — RARES —
+      { img: `${PIXEL_BASE}/pixel_pp/pixel_pp_sniky.png`,       label: 'SNIKY',    weight: 5,  mult: 6,  color: '#ff69b4', rare: true },
+      { img: `${PIXEL_BASE}/pixel_pp/pixel_pp_aligax.png`,      label: 'ALIGAX',   weight: 5,  mult: 5,  color: '#00b894', rare: true },
+      { img: `${PIXEL_BASE}/pixel_pp/pixel_pp_abad.png`,        label: 'ABAD',     weight: 6,  mult: 4,  color: '#e17055', rare: true },
+      // — COMMUNS —
+      { glyph: '★',  label: 'ÉTOILE',  weight: 10, mult: 3,  color: '#ffd700' },
+      { glyph: '♦',  label: 'DIAMANT', weight: 12, mult: 2,  color: '#00cfff' },
+      { glyph: '♥',  label: 'CŒUR',    weight: 16, mult: 1,  color: '#ff69b4' },
+      { glyph: '🍒', label: 'CERISE',  weight: 20, mult: 0,  color: '#ff6666' },
+      { glyph: '🍀', label: 'TRÈFLE',  weight: 24, mult: 0,  color: '#39ff14' },
     ];
 
+    // Pool pondéré (tiré aléatoirement)
     this._pool = [];
     for (const s of this.SYMBOLS)
       for (let i = 0; i < s.weight; i++) this._pool.push(s);
   }
 
-  // Rendu HTML d'un symbole (image ou glyphe)
-  _symHtml(sym, size = 36) {
-    if (sym.isImg) {
-      return `<span class="slot-sym" aria-label="${sym.label}" style="display:flex;align-items:center;justify-content:center;height:${size}px;">${_imgSym(sym.img, sym.label, size)}</span>`;
+  _rand() { return this._pool[Math.floor(Math.random() * this._pool.length)]; }
+
+  _symHtml(sym, size = 40) {
+    if (sym?.rare || sym?.img) {
+      return `<span class="slot-sym slot-sym--img" aria-label="${sym.label}">
+        <img src="${sym.img}" alt="${sym.label}" width="${size}" height="${size}" loading="lazy" draggable="false"
+          style="image-rendering:pixelated;image-rendering:crisp-edges;object-fit:contain;display:block;">
+      </span>`;
     }
-    return `<span class="slot-sym" style="color:${sym.color}" aria-label="${sym.label}">${sym.glyph}</span>`;
+    return `<span class="slot-sym" style="color:${sym.color};font-size:${size * 0.8}px" aria-label="${sym.label}">${sym.glyph}</span>`;
   }
 
   render() {
@@ -460,7 +457,7 @@ export class SlotMachine {
     this.el.innerHTML = `
       <div class="slot-machine" id="slot-root">
 
-        <!-- Bandeau crédits -->
+        <!-- En-tête crédits / mise / gain -->
         <div class="slot-header">
           <div class="slot-credit-box">
             <span class="slot-lbl">CRÉDITS</span>
@@ -480,11 +477,25 @@ export class SlotMachine {
           </div>
         </div>
 
-        <!-- Rouleaux -->
-        <div class="slot-reels" aria-live="polite" aria-atomic="true">
-          <div class="slot-reel-wrap"><div class="slot-reel" id="slot-reel-0"><span class="slot-sym">?</span></div></div>
-          <div class="slot-reel-wrap"><div class="slot-reel" id="slot-reel-1"><span class="slot-sym">?</span></div></div>
-          <div class="slot-reel-wrap"><div class="slot-reel" id="slot-reel-2"><span class="slot-sym">?</span></div></div>
+        <!-- Légende des lignes actives -->
+        <div class="slot-lines-legend" id="slot-lines-legend" aria-label="Lignes actives"></div>
+
+        <!-- Grille 3×3 -->
+        <div class="slot-grid" id="slot-grid" aria-live="polite" aria-atomic="true">
+          ${Array.from({length:3}, (_,col) => `
+            <div class="slot-col" id="slot-col-${col}">
+              ${Array.from({length:3}, (_,row) => `
+                <div class="slot-cell" id="slot-cell-${col}-${row}"
+                     data-row="${row}" data-col="${col}">
+                  <span class="slot-sym" aria-hidden="true">❓</span>
+                </div>
+              `).join('')}
+            </div>
+          `).join('')}
+          <!-- Overlay SVG des lignes de gain -->
+          <svg class="slot-lines-svg" id="slot-lines-svg" aria-hidden="true"
+               viewBox="0 0 3 3" preserveAspectRatio="none">
+          </svg>
         </div>
 
         <!-- Message résultat -->
@@ -499,17 +510,27 @@ export class SlotMachine {
         <details class="slot-paytable">
           <summary class="slot-paytable-toggle">TABLE DES GAINS ▾</summary>
           <div class="slot-paytable-body">
+            <div class="slot-pay-lines">
+              <p class="slot-pay-hint">Mise ≥ 1 : ligne centrale</p>
+              <p class="slot-pay-hint">Mise ≥ 10 : + lignes haute & basse</p>
+              <p class="slot-pay-hint">Mise ≥ 20 : + diagonales</p>
+            </div>
             ${this.SYMBOLS.filter(s => s.mult > 0).map(s => {
-              const sym3 = s.isImg
-                ? `<span style="display:inline-flex;align-items:center;">${_imgSym(s.img, s.label, 20)}</span>`.repeat(3)
+              const cell = s.rare
+                ? `<span style="display:inline-flex;align-items:center;">
+                    <img src="${s.img}" alt="${s.label}" width="22" height="22"
+                      style="image-rendering:pixelated;object-fit:contain;vertical-align:middle;">
+                   </span>`.repeat(3)
                 : `<span class="slot-pay-sym" style="color:${s.color}">${s.glyph}</span>`.repeat(3);
-              return `<div class="slot-pay-row">${sym3}<span class="slot-pay-mult">× ${s.mult}</span></div>`;
+              return `<div class="slot-pay-row">${cell}
+                <span class="slot-pay-mult">× ${s.mult}</span>
+              </div>`;
             }).join('')}
             <div class="slot-pay-row">
               <span class="slot-pay-sym">🍒</span>
               <span class="slot-pay-sym">🍒</span>
               <span class="slot-pay-sym" style="opacity:.3">—</span>
-              <span class="slot-pay-mult">× 0.5</span>
+              <span class="slot-pay-mult">× 0.5 (2 cerises)</span>
             </div>
           </div>
         </details>
@@ -517,38 +538,49 @@ export class SlotMachine {
       </div>
     `;
     this._bind();
-    this._initReels();
+    this._initGrid();
+    this._updateLinesLegend();
   }
 
-  _rand() {
-    return this._pool[Math.floor(Math.random() * this._pool.length)];
+  _initGrid() {
+    for (let col = 0; col < 3; col++) {
+      this._grid[col] = [this._rand(), this._rand(), this._rand()];
+      for (let row = 0; row < 3; row++) this._setCellSym(col, row, this._grid[col][row], false);
+    }
   }
 
-  _initReels() {
-    const syms = [this._rand(), this._rand(), this._rand()];
-    for (let i = 0; i < 3; i++) this._setReel(i, syms[i], false);
-  }
-
-  _setReel(idx, sym, animate = true) {
-    const el = document.getElementById(`slot-reel-${idx}`);
-    if (!el) return;
-    el.innerHTML = this._symHtml(sym);
+  _setCellSym(col, row, sym, animate = true) {
+    const cell = document.getElementById(`slot-cell-${col}-${row}`);
+    if (!cell) return;
+    cell.innerHTML = this._symHtml(sym);
     if (animate) {
-      el.classList.add('slot-reel--land');
-      el.addEventListener('animationend', () => el.classList.remove('slot-reel--land'), { once: true });
+      cell.classList.remove('slot-cell--land');
+      void cell.offsetWidth;
+      cell.classList.add('slot-cell--land');
+      cell.addEventListener('animationend', () => cell.classList.remove('slot-cell--land'), { once: true });
     }
   }
 
   _bind() {
-    document.getElementById('slot-spin')?.addEventListener('click',    () => { _sfx.click(); this._spin(); });
-    document.getElementById('slot-bet-down')?.addEventListener('click',() => { _sfx.click(); this._changeBet(-5); });
-    document.getElementById('slot-bet-up')?.addEventListener('click',  () => { _sfx.click(); this._changeBet(+5); });
+    document.getElementById('slot-spin')?.addEventListener('click', () => { _sfx.lever(); this._spin(); });
+    document.getElementById('slot-bet-down')?.addEventListener('click', () => { _sfx.coin(); this._changeBet(-5); });
+    document.getElementById('slot-bet-up')?.addEventListener('click',   () => { _sfx.coin(); this._changeBet(+5); });
   }
 
   _changeBet(delta) {
     this.bet = Math.max(1, Math.min(this.credits, this.bet + delta));
     const el = document.getElementById('slot-bet');
     if (el) el.textContent = this.bet;
+    this._updateLinesLegend();
+  }
+
+  _updateLinesLegend() {
+    const el = document.getElementById('slot-lines-legend');
+    if (!el) return;
+    const active = WIN_LINES.filter(l => this.bet >= l.minBet);
+    el.innerHTML = active.map(l =>
+      `<span class="slot-line-tag" style="--line-color:${l.color}">${l.label}</span>`
+    ).join('');
   }
 
   _updateCredits(v) {
@@ -559,17 +591,15 @@ export class SlotMachine {
       el.classList.remove('slot-credits--flash');
       requestAnimationFrame(() => el.classList.add('slot-credits--flash'));
     }
-    this.bet = Math.min(this.bet, this.credits);
+    this.bet = Math.min(this.bet, Math.max(1, this.credits));
     const betEl = document.getElementById('slot-bet');
     if (betEl) betEl.textContent = this.bet;
+    this._updateLinesLegend();
   }
 
   async _spin() {
     if (this.spinning) return;
-    if (this.credits < 1) {
-      this._showMsg('PLUS DE CRÉDITS · RELOAD LA PAGE', 'red');
-      return;
-    }
+    if (this.credits < 1) { this._showMsg('PLUS DE CRÉDITS · RELOAD LA PAGE', 'red'); return; }
     if (this.bet < 1) this.bet = 1;
 
     this.spinning = true;
@@ -578,44 +608,59 @@ export class SlotMachine {
     if (spinBtn) spinBtn.disabled = true;
     if (spinLbl) spinLbl.textContent = '···';
 
-    _sfx.spin();
     this._updateCredits(this.credits - this.bet);
     this._showMsg('', '');
-    document.getElementById('slot-gain').textContent = '·';
+    const gainEl = document.getElementById('slot-gain');
+    if (gainEl) gainEl.textContent = '·';
+    this._clearWinLines();
 
-    const root = document.getElementById('slot-root');
-    root?.classList.add('slot-spinning');
+    // Tirer 3 symboles par rouleau (3 lignes)
+    const results = Array.from({length:3}, () => [this._rand(), this._rand(), this._rand()]);
 
-    const results = [this._rand(), this._rand(), this._rand()];
-    for (let i = 0; i < 3; i++) {
-      await this._spinReel(i, results[i], 400 + i * 250);
+    // Animer les 3 colonnes en cascade
+    for (let col = 0; col < 3; col++) {
+      await this._spinCol(col, results[col], 500 + col * 300);
+      _sfx.reel_stop(col);
     }
 
-    root?.classList.remove('slot-spinning');
+    // Mettre à jour la grille interne
+    this._grid = results;
 
-    const gain   = this._evalGain(results);
-    const gainEl = document.getElementById('slot-gain');
+    // Évaluer les gains sur toutes les lignes actives
+    const activeLines = WIN_LINES.filter(l => this.bet >= l.minBet);
+    let totalMult = 0;
+    const wonLines = [];
 
-    if (gain > 0) {
-      const winAmount = Math.round(this.bet * gain);
+    for (const line of activeLines) {
+      const syms = line.rows.map((row, col) => results[col][row]);
+      const mult = this._evalLine(syms);
+      if (mult > 0) {
+        totalMult += mult;
+        wonLines.push({ line, mult, syms });
+      }
+    }
+
+    if (totalMult > 0) {
+      const winAmount = Math.round(this.bet * totalMult);
       this._updateCredits(this.credits + winAmount);
       if (gainEl) { gainEl.textContent = `+${winAmount}`; gainEl.style.color = 'var(--c-primary)'; }
+      this._drawWinLines(wonLines);
 
-      if (gain >= 15) {
+      if (totalMult >= 25) {
         _sfx.jackpot();
-        this._showMsg(`🎰 JACKPOT × ${gain} ! +${winAmount} CRÉDITS`, 'jackpot');
-        this._flashReels('#ffd700');
-      } else if (gain >= 6) {
-        _sfx.jackpot();
-        this._showMsg(`★ SUPER WIN × ${gain} ! +${winAmount} CRÉDITS`, 'jackpot');
-        this._flashReels('#c678ff');
-      } else if (gain >= 3) {
+        this._showMsg(`🎰 JACKPOT ×${totalMult} ! +${winAmount} CRÉDITS`, 'jackpot');
+        this._flashGrid('#ffd700');
+      } else if (totalMult >= 10) {
+        _sfx.super_win();
+        this._showMsg(`★ SUPER WIN ×${totalMult} ! +${winAmount} CRÉDITS`, 'jackpot');
+        this._flashGrid('#c678ff');
+      } else if (totalMult >= 4) {
         _sfx.win();
-        this._showMsg(`✦ WIN × ${gain} — +${winAmount} CRÉDITS`, 'win');
-        this._flashReels('#00cfff');
+        this._showMsg(`❖ WIN ×${totalMult} — +${winAmount} CRÉDITS`, 'win');
+        this._flashGrid('#00cfff');
       } else {
         _sfx.win();
-        this._showMsg(`✦ WIN × ${gain} — +${winAmount} CRÉDITS`, 'win');
+        this._showMsg(`❖ WIN ×${totalMult} — +${winAmount} CRÉDITS`, 'win');
       }
     } else {
       _sfx.lose();
@@ -623,55 +668,71 @@ export class SlotMachine {
       this._showMsg('PERDU · BONNE CHANCE', 'lose');
     }
 
-    if (this.credits <= 0) {
-      this._showMsg('GAME OVER · RELOAD POUR REJOUER', 'red');
-    }
+    if (this.credits <= 0) this._showMsg('GAME OVER · RELOAD POUR REJOUER', 'red');
 
     this.spinning = false;
     if (spinBtn) spinBtn.disabled = false;
     if (spinLbl) spinLbl.textContent = 'SPIN ⚡';
   }
 
-  _flashReels(color) {
-    for (let i = 0; i < 3; i++) {
-      const el = document.getElementById(`slot-reel-${i}`);
-      if (!el) continue;
-      el.style.transition = 'box-shadow 0.1s';
-      el.style.boxShadow  = `0 0 18px ${color}`;
-      setTimeout(() => { el.style.boxShadow = ''; }, 500);
-    }
-  }
-
-  _spinReel(idx, finalSym, duration) {
+  _spinCol(col, finalSyms, duration) {
     return new Promise(resolve => {
-      const el = document.getElementById(`slot-reel-${idx}`);
-      if (!el) { resolve(); return; }
-      el.classList.add('slot-reel--spin');
+      const cells = [0, 1, 2].map(row => document.getElementById(`slot-cell-${col}-${row}`));
+      cells.forEach(c => c?.classList.add('slot-cell--spin'));
       let ticks = 0;
-      const total = Math.floor(duration / 60);
+      const total = Math.floor(duration / 55);
       const iv = setInterval(() => {
-        const s = ticks < total ? this._rand() : finalSym;
-        el.innerHTML = this._symHtml(s);
-        ticks++;
-        if (ticks > total) {
+        // Pendant le spin : symboles aléatoires dans les 3 lignes
+        if (ticks < total) {
+          cells.forEach(c => { if (c) c.innerHTML = this._symHtml(this._rand()); });
+          if (ticks % 4 === 0) _sfx.tick();
+        } else {
+          // Résultat final
+          cells.forEach((c, row) => { if (c) { c.innerHTML = this._symHtml(finalSyms[row]); c.classList.remove('slot-cell--spin'); } });
           clearInterval(iv);
-          el.classList.remove('slot-reel--spin');
-          el.classList.add('slot-reel--land');
-          el.addEventListener('animationend', () => el.classList.remove('slot-reel--land'), { once: true });
           resolve();
         }
-      }, 60);
+        ticks++;
+      }, 55);
     });
   }
 
-  _evalGain(results) {
-    const [a, b, c] = results;
-    // Triple identique (compare label pour gérer img vs glyphe)
+  _evalLine(syms) {
+    const [a, b, c] = syms;
+    // Triple
     if (a.label === b.label && b.label === c.label) return a.mult;
     // Deux cerises
-    const cherries = results.filter(s => s.label === 'CERISE').length;
+    const cherries = syms.filter(s => s.label === 'CERISE').length;
     if (cherries >= 2) return 0.5;
     return 0;
+  }
+
+  _drawWinLines(wonLines) {
+    const svg = document.getElementById('slot-lines-svg');
+    if (!svg) return;
+    svg.innerHTML = wonLines.map(({ line, mult }) => {
+      const pts = line.rows.map((row, col) => {
+        const x = col + 0.5;
+        const y = row + 0.5;
+        return `${x},${y}`;
+      }).join(' ');
+      return `<polyline points="${pts}" stroke="${line.color}" stroke-width="0.08"
+        stroke-linecap="round" fill="none" opacity="0.85"
+        style="filter:drop-shadow(0 0 0.15px ${line.color})"/>`;
+    }).join('');
+  }
+
+  _clearWinLines() {
+    const svg = document.getElementById('slot-lines-svg');
+    if (svg) svg.innerHTML = '';
+  }
+
+  _flashGrid(color) {
+    const grid = document.getElementById('slot-grid');
+    if (!grid) return;
+    grid.style.transition = 'box-shadow 0.1s';
+    grid.style.boxShadow  = `0 0 24px ${color}, inset 0 0 12px ${color}33`;
+    setTimeout(() => { grid.style.boxShadow = ''; }, 600);
   }
 
   _showMsg(text, type) {
