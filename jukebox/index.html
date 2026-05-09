@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jukebox ✦ Gwen Ha Star</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Special+Elite&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- HEADER -->
+  <header class="jk-header">
+    <div class="jk-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="16" cy="16" r="5"  stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="16" cy="16" r="2"  fill="currentColor"/>
+        <line x1="16" y1="2" x2="16" y2="11" stroke="currentColor" stroke-width="1"/>
+      </svg>
+      <span>JUKEBOX <em>BZH</em></span>
+    </div>
+    <nav class="jk-nav">
+      <button class="jk-tab active" data-tab="player">⬤ PLATINE</button>
+      <button class="jk-tab" data-tab="library">▤ DISCOTHÈQUE</button>
+      <button class="jk-tab jk-tab--admin" data-tab="admin" id="admin-tab" style="display:none">⚙ ADMIN</button>
+    </nav>
+    <a href="../" class="jk-back">← RETOUR</a>
+  </header>
+
+  <!-- ══ PLAYER TAB ══ -->
+  <section class="tab-panel active" id="tab-player">
+    <div class="player-wrap">
+
+      <!-- VINYL STAGE -->
+      <div class="vinyl-stage">
+        <div class="arm-wrapper">
+          <div class="tonearm" id="tonearm"></div>
+        </div>
+        <div class="platter-shadow"></div>
+        <div class="platter" id="platter">
+          <div class="vinyl" id="vinyl-disc">
+            <canvas class="vinyl-canvas" id="vinyl-canvas" width="320" height="320"></canvas>
+            <div class="vinyl-label" id="vinyl-label">
+              <div class="label-inner">
+                <div class="label-title" id="label-title">—</div>
+                <div class="label-artist" id="label-artist">—</div>
+                <div class="label-hole"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- LOFI OVERLAY -->
+        <canvas class="lofi-overlay" id="lofi-canvas" width="320" height="320" aria-hidden="true"></canvas>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="controls-panel">
+        <!-- TRACK INFO -->
+        <div class="track-info">
+          <div class="track-tag">// EN LECTURE</div>
+          <div class="track-title" id="ctrl-title">Sélectionne un vinyle</div>
+          <div class="track-artist" id="ctrl-artist">—</div>
+        </div>
+
+        <!-- TIMEBAR -->
+        <div class="timebar">
+          <span class="time-cur" id="curTime">0:00</span>
+          <input type="range" id="seek" min="0" max="100" value="0" aria-label="Position lecture" />
+          <span class="time-dur" id="durTime">0:00</span>
+        </div>
+
+        <!-- TRANSPORT -->
+        <div class="transport">
+          <button class="btn-transport" id="btn-prev" aria-label="Précédent" title="Précédent">⏮</button>
+          <button class="btn-transport btn-play" id="btn-play" aria-label="Lecture/Pause">▶</button>
+          <button class="btn-transport" id="btn-next" aria-label="Suivant" title="Suivant">⏭</button>
+          <button class="btn-transport btn-shuffle" id="btn-shuffle" aria-label="Aléatoire" title="Aléatoire">⇌</button>
+          <button class="btn-transport btn-repeat" id="btn-repeat" aria-label="Répéter" title="Répéter">↺</button>
+        </div>
+
+        <!-- VOLUME -->
+        <div class="slider-row">
+          <span class="sl-icon">🔈</span>
+          <input type="range" id="vol" min="0" max="1" step="0.01" value="0.8" aria-label="Volume" />
+          <span class="sl-icon">🔊</span>
+        </div>
+
+        <!-- LOFI EFFECT -->
+        <div class="effect-panel">
+          <div class="effect-label">
+            <span class="effect-icon">📻</span>
+            <span>EFFET LOFI / VINTAGE</span>
+            <span class="effect-value" id="lofi-value">0%</span>
+          </div>
+          <div class="slider-row">
+            <span class="sl-label">PROPRE</span>
+            <input type="range" id="lofi-slider" min="0" max="100" value="0" aria-label="Intensité effet lofi" />
+            <span class="sl-label">LOFI</span>
+          </div>
+          <div class="effect-presets">
+            <button class="preset-btn" data-val="0">DIGITAL</button>
+            <button class="preset-btn" data-val="35">TAPE</button>
+            <button class="preset-btn" data-val="65">VINYL</button>
+            <button class="preset-btn" data-val="100">CASSETTE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRAIN / SCRATCH CANVAS (audio effect visual) -->
+    <audio id="audio-el" preload="auto"></audio>
+  </section>
+
+  <!-- ══ LIBRARY TAB ══ -->
+  <section class="tab-panel" id="tab-library">
+    <div class="library-wrap">
+      <div class="library-header">
+        <h2>DISCOTHÈQUE <span id="lib-count"></span></h2>
+        <input type="search" id="lib-search" placeholder="Rechercher…" aria-label="Rechercher dans la discothèque" />
+      </div>
+      <div class="shelf" id="shelf" role="list" aria-label="Vinyles disponibles"></div>
+    </div>
+  </section>
+
+  <!-- ══ ADMIN TAB ══ -->
+  <section class="tab-panel" id="tab-admin">
+    <div class="admin-wrap">
+      <h2>⚙ PANNEAU ADMIN <span class="admin-badge">SUPER USER</span></h2>
+
+      <!-- ADD TRACK FORM -->
+      <div class="admin-card">
+        <h3>+ Ajouter un morceau</h3>
+        <form id="add-track-form" class="admin-form" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="f-title">Titre *</label>
+              <input type="text" id="f-title" required placeholder="BZH Summer" />
+            </div>
+            <div class="form-group">
+              <label for="f-artist">Artiste *</label>
+              <input type="text" id="f-artist" required placeholder="Dr.Spig" />
+            </div>
+            <div class="form-group">
+              <label for="f-src">Fichier audio (chemin relatif) *</label>
+              <input type="text" id="f-src" required placeholder="audio/ma-musique.mp3" />
+            </div>
+            <div class="form-group">
+              <label for="f-cover">Image pochette (chemin relatif)</label>
+              <input type="text" id="f-cover" placeholder="img/ma-pochette.jpg" />
+            </div>
+            <div class="form-group">
+              <label for="f-cover-color">Couleur vinyle (outer)</label>
+              <input type="color" id="f-cover-color" value="#1a1a2e" />
+            </div>
+            <div class="form-group">
+              <label for="f-label-color">Couleur label (inner)</label>
+              <input type="color" id="f-label-color" value="#e94560" />
+            </div>
+            <div class="form-group">
+              <label for="f-vinyl-style">Style de vinyle</label>
+              <select id="f-vinyl-style"></select>
+            </div>
+            <div class="form-group">
+              <label for="f-tags">Tags (séparés par des virgules)</label>
+              <input type="text" id="f-tags" placeholder="bzh, électro, ambient" />
+            </div>
+            <div class="form-group">
+              <label for="f-bpm">BPM</label>
+              <input type="number" id="f-bpm" min="0" max="300" value="0" placeholder="120" />
+            </div>
+            <div class="form-group form-group--preview">
+              <label>Aperçu pochette</label>
+              <div class="cover-preview" id="cover-preview">
+                <canvas id="preview-canvas" width="120" height="120"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-admin-submit">✦ AJOUTER AU JUKEBOX</button>
+            <button type="reset" class="btn-admin-reset">✕ ANNULER</button>
+          </div>
+          <div class="form-feedback" id="form-feedback"></div>
+        </form>
+      </div>
+
+      <!-- TRACK LIST -->
+      <div class="admin-card">
+        <h3>Morceaux enregistrés <span id="admin-track-count"></span></h3>
+        <div class="admin-track-list" id="admin-track-list"></div>
+      </div>
+
+      <!-- JSON EXPORT -->
+      <div class="admin-card">
+        <h3>Export JSON</h3>
+        <p class="admin-hint">Copie ce JSON et remplace le contenu de <code>records.json</code> sur le serveur.</p>
+        <textarea class="json-export" id="json-export" readonly rows="12"></textarea>
+        <button class="btn-admin-copy" id="btn-copy-json">⎘ COPIER</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="js/app.js" defer></script>
+</body>
+</html>
