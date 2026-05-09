@@ -11,8 +11,11 @@ if [ ! -f .env ]; then
   exit 1
 fi
 
-# Charge les variables du .env
-export $(grep -v '^#' .env | xargs)
+# Charge les variables du .env (ignore les commentaires et lignes vides)
+set -a
+# shellcheck disable=SC1091
+source <(grep -v '^#' .env | grep -v '^[[:space:]]*$')
+set +a
 
 if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
   echo "❌ SUPABASE_URL ou SUPABASE_ANON_KEY manquant dans .env"
