@@ -6,7 +6,7 @@
  */
 import { supabase } from '../supabase.js';
 
-// ── SOUND ENGINE (léger, Web Audio API) ───────────────────────────────────────
+// ── SOUND ENGINE (Web Audio API, aucune dépendance) ───────────────────────────
 const _sfx = {
   _ctx: null,
   _get() {
@@ -18,44 +18,44 @@ const _sfx = {
   },
   _tone(freq, type, vol, attack, decay) {
     const ctx = this._get(); if (!ctx) return;
-    const osc = ctx.createOscillator();
+    const osc  = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
     gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + attack);
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + attack + decay);
+    gain.gain.linearRampToValueAtTime(vol,  ctx.currentTime + attack);
+    gain.gain.linearRampToValueAtTime(0,    ctx.currentTime + attack + decay);
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + attack + decay + 0.01);
   },
   click()   { this._tone(880,  'sine',     0.08, 0.005, 0.06); },
   hover()   { this._tone(1200, 'sine',     0.04, 0.003, 0.04); },
   nav()     { this._tone(660,  'triangle', 0.07, 0.005, 0.08); },
-  spin()    {
+  spin() {
     const ctx = this._get(); if (!ctx) return;
-    // bruit blanc court
-    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate);
-    const d = buf.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * 0.12;
-    const src = ctx.createBufferSource();
+    const buf  = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.12;
+    const src  = ctx.createBufferSource();
     const gain = ctx.createGain();
     src.buffer = buf; src.connect(gain); gain.connect(ctx.destination);
     gain.gain.setValueAtTime(1, ctx.currentTime);
     gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.08);
     src.start();
   },
-  win()     {
+  win() {
     [523, 659, 784, 1047].forEach((f, i) =>
-      setTimeout(() => this._tone(f, 'triangle', 0.1, 0.01, 0.12), i * 80));
+      setTimeout(() => this._tone(f, 'triangle', 0.10, 0.01, 0.12), i * 80));
   },
   jackpot() {
     [523, 659, 784, 1047, 1319].forEach((f, i) =>
       setTimeout(() => this._tone(f, 'square', 0.08, 0.01, 0.18), i * 60));
   },
   lose()    { this._tone(220, 'sawtooth', 0.07, 0.01, 0.25); },
-  boot()    {
+  boot() {
     [440, 550, 660].forEach((f, i) =>
-      setTimeout(() => this._tone(f, 'sine', 0.06, 0.01, 0.1), i * 100));
+      setTimeout(() => this._tone(f, 'sine', 0.06, 0.01, 0.10), i * 100));
   },
 };
 export const SFX = _sfx;
@@ -117,17 +117,18 @@ export class VideoDay {
 }
 
 // ── JUKEBOX RADIO ─────────────────────────────────────────────────────────────
+// Charge les tracks depuis /jukebox/records.json et les joue dans le widget radio
 export class RadioPlayer {
   constructor(containerId) {
-    this.el       = document.getElementById(containerId);
-    this.tracks   = [];
-    this.current  = 0;
-    this.audio    = new Audio();
+    this.el        = document.getElementById(containerId);
+    this.tracks    = [];
+    this.current   = 0;
+    this.audio     = new Audio();
     this.audio.crossOrigin = 'anonymous';
-    this.playing  = false;
-    this._ctx     = null;
+    this.playing   = false;
+    this._ctx      = null;
     this._analyser = null;
-    this._animId  = null;
+    this._animId   = null;
   }
 
   async render() {
@@ -149,16 +150,11 @@ export class RadioPlayer {
     }
   }
 
-  // Encode correctement les chemins avec espaces / apostrophes
+  // Encode correctement les chemins avec espaces / apostrophes / caractères spéciaux
   _srcFor(track) {
     const raw = track.src ?? '';
-    // Encode chaque segment séparément pour ne pas encoder les /
     const encoded = raw.split('/').map(seg => encodeURIComponent(seg)).join('/');
     return '/jukebox/' + encoded;
-  }
-
-  _label(track) {
-    return `${track.artist ?? 'Dr.Spig'} — ${track.title ?? '(sans titre)'}`;
   }
 
   _buildUI() {
@@ -172,13 +168,15 @@ export class RadioPlayer {
       return;
     }
 
-    const t = this.tracks[this.current];
+    const t    = this.tracks[this.current];
     const opts = this.tracks.map((tr, i) =>
       `<option value="${i}" ${i === this.current ? 'selected' : ''}>${tr.artist ?? 'Dr.Spig'} — ${tr.title}</option>`
     ).join('');
 
     this.el.innerHTML = `
       <div class="radio-player">
+
+        <!-- Cover + infos piste -->
         <div class="jk-track-row">
           <div class="jk-cover" id="jk-cover" aria-hidden="true"
                style="--jk-c1:${t.coverColor ?? '#14161a'};--jk-c2:${t.labelColor ?? '#050608'}">
@@ -198,16 +196,20 @@ export class RadioPlayer {
           </div>
         </div>
 
+        <!-- Sélecteur de piste -->
         <select class="radio-select" id="radio-select" aria-label="Choisir une piste">${opts}</select>
 
+        <!-- Visualiseur canvas -->
         <canvas class="radio-viz" id="radio-viz" width="400" height="36" aria-hidden="true"></canvas>
 
+        <!-- Barre de progression -->
         <div class="jk-progress-wrap">
           <span class="jk-time" id="jk-cur">0:00</span>
           <input type="range" class="jk-seek" id="jk-seek" min="0" max="100" value="0" step="0.1" aria-label="Position">
           <span class="jk-time" id="jk-dur">-:--</span>
         </div>
 
+        <!-- Contrôles -->
         <div class="radio-controls">
           <button class="radio-btn radio-btn-sm" id="radio-prev" aria-label="Précédent">◁◁</button>
           <button class="radio-btn" id="radio-play" aria-label="Lecture / Pause">
@@ -240,9 +242,9 @@ export class RadioPlayer {
         this.audio.currentTime = (parseFloat(e.target.value) / 100) * this.audio.duration;
     });
 
-    this.audio.addEventListener('timeupdate',    () => this._onTimeUpdate());
-    this.audio.addEventListener('loadedmetadata',() => this._onMeta());
-    this.audio.addEventListener('ended',         () => this._skip(+1));
+    this.audio.addEventListener('timeupdate',     () => this._onTimeUpdate());
+    this.audio.addEventListener('loadedmetadata', () => this._onMeta());
+    this.audio.addEventListener('ended',          () => this._skip(+1));
     this.audio.volume = 0.7;
   }
 
@@ -275,9 +277,12 @@ export class RadioPlayer {
     if (sel) sel.value = idx;
     if (station) station.textContent = this.playing ? '▶ EN COURS' : 'CHARGÉ';
 
-    document.getElementById('jk-cur').textContent = '0:00';
-    document.getElementById('jk-dur').textContent = '-:--';
-    document.getElementById('jk-seek').value = 0;
+    const curEl = document.getElementById('jk-cur');
+    const durEl = document.getElementById('jk-dur');
+    const seek  = document.getElementById('jk-seek');
+    if (curEl) curEl.textContent = '0:00';
+    if (durEl) durEl.textContent = '-:--';
+    if (seek)  seek.value = 0;
 
     if (autoplay) {
       this.audio.play().catch(() => {});
@@ -335,9 +340,9 @@ export class RadioPlayer {
   _initViz() {
     if (this._ctx) { this._drawLoop(); return; }
     try {
-      const actx      = new (window.AudioContext || window.webkitAudioContext)();
-      const src       = actx.createMediaElementSource(this.audio);
-      this._analyser  = actx.createAnalyser();
+      const actx     = new (window.AudioContext || window.webkitAudioContext)();
+      const src      = actx.createMediaElementSource(this.audio);
+      this._analyser = actx.createAnalyser();
       this._analyser.fftSize = 64;
       src.connect(this._analyser);
       this._analyser.connect(actx.destination);
@@ -373,9 +378,9 @@ export class RadioPlayer {
 // ── MACHINE À SOUS CASINO ─────────────────────────────────────────────────────
 export class SlotMachine {
   constructor(containerId) {
-    this.el      = document.getElementById(containerId);
-    this.credits = 100;
-    this.bet     = 5;
+    this.el       = document.getElementById(containerId);
+    this.credits  = 100;
+    this.bet      = 5;
     this.spinning = false;
 
     this.SYMBOLS = [
@@ -399,6 +404,8 @@ export class SlotMachine {
     if (!this.el) return;
     this.el.innerHTML = `
       <div class="slot-machine" id="slot-root">
+
+        <!-- Bandeau crédits -->
         <div class="slot-header">
           <div class="slot-credit-box">
             <span class="slot-lbl">CRÉDITS</span>
@@ -418,21 +425,204 @@ export class SlotMachine {
           </div>
         </div>
 
+        <!-- Rouleaux -->
         <div class="slot-reels" aria-live="polite" aria-atomic="true">
           <div class="slot-reel-wrap"><div class="slot-reel" id="slot-reel-0"><span class="slot-sym">?</span></div></div>
           <div class="slot-reel-wrap"><div class="slot-reel" id="slot-reel-1"><span class="slot-sym">?</span></div></div>
           <div class="slot-reel-wrap"><div class="slot-reel" id="slot-reel-2"><span class="slot-sym">?</span></div></div>
         </div>
 
+        <!-- Message résultat -->
         <div class="slot-msg" id="slot-msg" aria-live="polite"></div>
 
+        <!-- Bouton SPIN -->
         <button class="slot-spin-btn" id="slot-spin" aria-label="Lancer les rouleaux">
           <span id="slot-spin-label">SPIN ⚡</span>
         </button>
 
+        <!-- Table des gains -->
         <details class="slot-paytable">
           <summary class="slot-paytable-toggle">TABLE DES GAINS ▾</summary>
           <div class="slot-paytable-body">
             ${this.SYMBOLS.filter(s => s.mult > 0).map(s =>
               `<div class="slot-pay-row">
-                <span class="slot-pay-sym" style="colo
+                <span class="slot-pay-sym" style="color:${s.color}">${s.glyph}</span>
+                <span class="slot-pay-sym" style="color:${s.color}">${s.glyph}</span>
+                <span class="slot-pay-sym" style="color:${s.color}">${s.glyph}</span>
+                <span class="slot-pay-mult">× ${s.mult}</span>
+              </div>`
+            ).join('')}
+            <div class="slot-pay-row">
+              <span class="slot-pay-sym">🍒</span>
+              <span class="slot-pay-sym">🍒</span>
+              <span class="slot-pay-sym" style="opacity:.3">—</span>
+              <span class="slot-pay-mult">× 0.5</span>
+            </div>
+          </div>
+        </details>
+
+      </div>
+    `;
+    this._bind();
+    this._initReels();
+  }
+
+  _rand() {
+    return this._pool[Math.floor(Math.random() * this._pool.length)];
+  }
+
+  _initReels() {
+    const syms = [this._rand(), this._rand(), this._rand()];
+    for (let i = 0; i < 3; i++) this._setReel(i, syms[i], false);
+  }
+
+  _setReel(idx, sym, animate = true) {
+    const el = document.getElementById(`slot-reel-${idx}`);
+    if (!el) return;
+    el.innerHTML = `<span class="slot-sym" style="color:${sym.color}" aria-label="${sym.label}">${sym.glyph}</span>`;
+    if (animate) {
+      el.classList.add('slot-reel--land');
+      el.addEventListener('animationend', () => el.classList.remove('slot-reel--land'), { once: true });
+    }
+  }
+
+  _bind() {
+    document.getElementById('slot-spin')?.addEventListener('click',    () => { _sfx.click(); this._spin(); });
+    document.getElementById('slot-bet-down')?.addEventListener('click',() => { _sfx.click(); this._changeBet(-5); });
+    document.getElementById('slot-bet-up')?.addEventListener('click',  () => { _sfx.click(); this._changeBet(+5); });
+  }
+
+  _changeBet(delta) {
+    this.bet = Math.max(1, Math.min(this.credits, this.bet + delta));
+    const el = document.getElementById('slot-bet');
+    if (el) el.textContent = this.bet;
+  }
+
+  _updateCredits(v) {
+    this.credits = v;
+    const el = document.getElementById('slot-credits');
+    if (el) {
+      el.textContent = v;
+      // Flash visuel sur le compteur
+      el.classList.remove('slot-credits--flash');
+      requestAnimationFrame(() => el.classList.add('slot-credits--flash'));
+    }
+    this.bet = Math.min(this.bet, this.credits);
+    const betEl = document.getElementById('slot-bet');
+    if (betEl) betEl.textContent = this.bet;
+  }
+
+  async _spin() {
+    if (this.spinning) return;
+    if (this.credits < 1) {
+      this._showMsg('PLUS DE CRÉDITS · RELOAD LA PAGE', 'red');
+      return;
+    }
+    if (this.bet < 1) this.bet = 1;
+
+    this.spinning = true;
+    const spinBtn = document.getElementById('slot-spin');
+    const spinLbl = document.getElementById('slot-spin-label');
+    if (spinBtn) spinBtn.disabled = true;
+    if (spinLbl) spinLbl.textContent = '···';
+
+    _sfx.spin();
+    this._updateCredits(this.credits - this.bet);
+    this._showMsg('', '');
+    document.getElementById('slot-gain').textContent = '·';
+
+    // Shake le widget pendant le spin
+    const root = document.getElementById('slot-root');
+    root?.classList.add('slot-spinning');
+
+    const results = [this._rand(), this._rand(), this._rand()];
+    for (let i = 0; i < 3; i++) {
+      await this._spinReel(i, results[i], 400 + i * 250);
+    }
+
+    root?.classList.remove('slot-spinning');
+
+    const gain   = this._evalGain(results);
+    const gainEl = document.getElementById('slot-gain');
+
+    if (gain > 0) {
+      const winAmount = Math.round(this.bet * gain);
+      this._updateCredits(this.credits + winAmount);
+      if (gainEl) { gainEl.textContent = `+${winAmount}`; gainEl.style.color = 'var(--c-primary)'; }
+
+      if (gain >= 10) {
+        _sfx.jackpot();
+        this._showMsg(`🎰 JACKPOT × ${gain} ! +${winAmount} CRÉDITS`, 'jackpot');
+        this._flashReels('#ffd700');
+      } else if (gain >= 5) {
+        _sfx.win();
+        this._showMsg(`★ SUPER WIN × ${gain} ! +${winAmount} CRÉDITS`, 'win');
+        this._flashReels('#00cfff');
+      } else {
+        _sfx.win();
+        this._showMsg(`✦ WIN × ${gain} — +${winAmount} CRÉDITS`, 'win');
+      }
+    } else {
+      _sfx.lose();
+      if (gainEl) { gainEl.textContent = '0'; gainEl.style.color = 'var(--c-text-faint)'; }
+      this._showMsg('PERDU · BONNE CHANCE', 'lose');
+    }
+
+    if (this.credits <= 0) {
+      this._showMsg('GAME OVER · RELOAD POUR REJOUER', 'red');
+    }
+
+    this.spinning = false;
+    if (spinBtn) spinBtn.disabled = false;
+    if (spinLbl) spinLbl.textContent = 'SPIN ⚡';
+  }
+
+  // Flash coloré sur les rouleaux (win feedback)
+  _flashReels(color) {
+    for (let i = 0; i < 3; i++) {
+      const el = document.getElementById(`slot-reel-${i}`);
+      if (!el) continue;
+      el.style.transition = 'box-shadow 0.1s';
+      el.style.boxShadow  = `0 0 18px ${color}`;
+      setTimeout(() => { el.style.boxShadow = ''; }, 500);
+    }
+  }
+
+  _spinReel(idx, finalSym, duration) {
+    return new Promise(resolve => {
+      const el = document.getElementById(`slot-reel-${idx}`);
+      if (!el) { resolve(); return; }
+      el.classList.add('slot-reel--spin');
+      let ticks = 0;
+      const total = Math.floor(duration / 60);
+      const iv = setInterval(() => {
+        const s = ticks < total ? this._rand() : finalSym;
+        el.innerHTML = `<span class="slot-sym" style="color:${s.color}">${s.glyph}</span>`;
+        ticks++;
+        if (ticks > total) {
+          clearInterval(iv);
+          el.classList.remove('slot-reel--spin');
+          el.classList.add('slot-reel--land');
+          el.addEventListener('animationend', () => el.classList.remove('slot-reel--land'), { once: true });
+          resolve();
+        }
+      }, 60);
+    });
+  }
+
+  _evalGain(results) {
+    const [a, b, c] = results;
+    if (a.glyph === b.glyph && b.glyph === c.glyph) return a.mult;
+    const cherries = results.filter(s => s.glyph === '🍒').length;
+    if (cherries >= 2) return 0.5;
+    return 0;
+  }
+
+  _showMsg(text, type) {
+    const el = document.getElementById('slot-msg');
+    if (!el) return;
+    el.textContent = text;
+    el.className   = 'slot-msg';
+    if (type) el.classList.add(`slot-msg--${type}`);
+  }
+}
