@@ -12,12 +12,11 @@
   <link rel="stylesheet" href="../css/components.css"/>
   <link rel="stylesheet" href="../css/star.css"/>
   <style>
-    /* ── LAYOUT ────────────────────────────────────────────────── */
+    /* ── LAYOUT ────────────────────────────────────────────────────── */
     .star-page { min-height:100dvh; display:flex; flex-direction:column; background:var(--c-bg); }
-    /* Padding bas pour laisser place à la bottom-bar */
     .star-main { flex:1; max-width:1300px; width:100%; margin:0 auto; padding:var(--space-4) var(--space-4) var(--space-24); }
 
-    /* ── STATUS BAR (agrandie) ───────────────────────────────────── */
+    /* ── STATUS BAR ─────────────────────────────────────────────────── */
     .status-bar {
       display:flex; align-items:center; justify-content:space-between;
       gap:var(--space-4); padding:var(--space-3) var(--space-6);
@@ -37,28 +36,22 @@
     .sb-user  { color:var(--c-cyan); font-size:12px; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-    /* ── BOTTOM BAR (star-header-user) ─────────────────────────── */
+    /* ── BOTTOM BAR ─────────────────────────────────────────────────── */
     #star-header-user {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 300;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
       background: color-mix(in oklch, var(--c-surface) 92%, transparent);
       backdrop-filter: blur(16px) saturate(1.4);
       border-top: 1px solid var(--c-border);
       padding: var(--space-2) var(--space-6);
-      display: flex;
-      align-items: center;
-      min-height: 56px;
+      display: flex; align-items: center; min-height: 56px;
     }
-    /* Ligne déco en haut de la bottom-bar */
     #star-header-user::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
       background: linear-gradient(90deg, transparent, var(--c-primary), var(--c-cyan), var(--c-amber), transparent);
       opacity: 0.5;
     }
 
-    /* ── WELCOME STRIP ───────────────────────────────────────────── */
+    /* ── WELCOME STRIP ───────────────────────────────────────────────── */
     .welcome-strip {
       display:flex; align-items:center; gap:var(--space-4);
       padding:var(--space-5) var(--space-6);
@@ -88,17 +81,15 @@
     .w-actions{ display:flex; gap:var(--space-2); flex-shrink:0; }
     @media(max-width:600px){ .w-actions { display:none } }
 
-    /* ── KPI STRIP ───────────────────────────────────────────────── */
+    /* ── KPI STRIP ───────────────────────────────────────────────────── */
     .kpi-strip {
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
       gap:var(--space-3); margin-bottom:var(--space-5);
     }
     .kpi {
       background:var(--c-surface); border:1px solid var(--c-border);
       border-radius:var(--radius-lg); padding:var(--space-4) var(--space-5);
-      display:flex; flex-direction:column; gap:2px;
-      position:relative; overflow:hidden;
+      display:flex; flex-direction:column; gap:2px; position:relative; overflow:hidden;
     }
     .kpi::after {
       content:""; position:absolute; bottom:0; left:0; right:0; height:1px;
@@ -108,12 +99,8 @@
     .kpi-val { font-family:var(--font-display); font-size:var(--text-xl); line-height:1; color:var(--kpi-c, var(--c-primary)); text-shadow:0 0 18px var(--kpi-c, var(--c-primary)); }
     .kpi-sub { font-family:var(--font-mono); font-size:8px; letter-spacing:.1em; color:var(--c-text-faint); }
 
-    /* ── BENTO GRID ──────────────────────────────────────────────── */
-    .bento {
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap:var(--space-4);
-    }
+    /* ── BENTO GRID ──────────────────────────────────────────────────── */
+    .bento { display:grid; grid-template-columns: repeat(12, 1fr); gap:var(--space-4); }
     .bc {
       background:var(--c-surface); border:1px solid var(--c-border);
       border-radius:var(--radius-xl); padding:var(--space-5);
@@ -128,24 +115,25 @@
 
     /* Placements */
     .bc-qa       { grid-column: span 12; }
+    .bc-brand    { grid-column: span 4;  }
+    .bc-otk      { grid-column: span 5;  }
+    .bc-crew      { grid-column: span 3;  }
     .bc-pg       { grid-column: span 5;  }
     .bc-video    { grid-column: span 7;  }
     .bc-activity { grid-column: span 4;  }
     .bc-radio    { grid-column: span 5;  }
     .bc-slots    { grid-column: span 3;  }
     @media(max-width:1100px) {
+      .bc-brand, .bc-otk, .bc-crew,
       .bc-pg, .bc-video, .bc-activity, .bc-radio, .bc-slots { grid-column: span 12; }
     }
 
-    /* ── QUICK ACCESS ────────────────────────────────────────────── */
+    /* ── QUICK ACCESS ────────────────────────────────────────────────── */
     #quick-access-grid {
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(175px,1fr));
-      gap:var(--space-3);
+      display:grid; grid-template-columns: repeat(auto-fill, minmax(175px,1fr)); gap:var(--space-3);
     }
     .qa-card {
-      display:flex; flex-direction:column; gap:var(--space-1);
-      padding:var(--space-4);
+      display:flex; flex-direction:column; gap:var(--space-1); padding:var(--space-4);
       background:var(--c-surface-2); border:1px solid var(--c-border);
       border-radius:var(--radius-lg); text-decoration:none; color:var(--c-text);
       transition:border-color .18s, box-shadow .18s, background .18s;
@@ -162,7 +150,7 @@
     .qa-desc  { font-family:var(--font-mono); font-size:9px; letter-spacing:.06em; color:var(--c-text-muted); }
     .qa-ext   { position:absolute; top:var(--space-3); right:var(--space-3); font-size:9px; color:var(--c-text-faint); }
 
-    /* ── WIDGET EMPTY ────────────────────────────────────────────── */
+    /* ── WIDGET EMPTY ────────────────────────────────────────────────── */
     .widget-empty {
       display:flex; flex-direction:column; align-items:center; justify-content:center;
       padding:var(--space-10) var(--space-4); text-align:center; color:var(--c-text-muted);
@@ -171,24 +159,155 @@
     .widget-empty p    { font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; }
     .widget-empty-sub  { font-family:var(--font-mono); font-size:9px; letter-spacing:.15em; margin-top:var(--space-2); opacity:.4; }
 
-    /* ── POKEGANG WIDGET ─────────────────────────────────────────── */
-    .pg-widget  { display:flex; flex-direction:column; gap:var(--space-4); }
+    /* ── ENCART BRAND / LOGO ─────────────────────────────────────────── */
+    .brand-panel {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:var(--space-4); height:100%; min-height:220px;
+      position:relative;
+    }
+    .brand-logo-wrap {
+      width:120px; height:120px; display:flex; align-items:center; justify-content:center;
+      border-radius:var(--radius-xl);
+      background: radial-gradient(circle at 50% 40%, color-mix(in oklch, var(--c-primary) 12%, var(--c-surface-2)), var(--c-surface-2));
+      border:1px solid color-mix(in oklch, var(--c-primary) 30%, var(--c-border));
+      box-shadow: 0 0 32px color-mix(in oklch, var(--c-primary) 15%, transparent),
+                  inset 0 1px 0 color-mix(in oklch, var(--c-primary) 10%, transparent);
+      overflow:hidden; transition:box-shadow .3s;
+    }
+    .brand-logo-wrap:hover {
+      box-shadow: 0 0 52px color-mix(in oklch, var(--c-primary) 30%, transparent),
+                  inset 0 1px 0 color-mix(in oklch, var(--c-primary) 20%, transparent);
+    }
+    .brand-logo-wrap img { width:90px; height:90px; object-fit:contain; image-rendering:auto; }
+    .brand-name { font-family:var(--font-display); font-size:var(--text-lg); font-weight:700; color:var(--c-text); letter-spacing:.1em; text-align:center; }
+    .brand-tagline { font-family:var(--font-mono); font-size:9px; letter-spacing:.18em; color:var(--c-text-muted); text-align:center; }
+    .brand-color-set { display:flex; gap:var(--space-2); align-items:center; }
+    .brand-color-swatch {
+      width:28px; height:28px; border-radius:var(--radius-md); overflow:hidden;
+      border:1px solid var(--c-border); cursor:pointer; transition:transform .15s;
+      flex-shrink:0;
+    }
+    .brand-color-swatch:hover { transform:scale(1.15); }
+    .brand-color-swatch img { width:100%; height:100%; object-fit:cover; image-rendering:auto; }
 
+    /* ── ENCART OTK ──────────────────────────────────────────────────── */
+    .otk-panel { display:flex; flex-direction:column; gap:var(--space-4); }
+    .otk-cover-wrap {
+      position:relative; border-radius:var(--radius-lg); overflow:hidden;
+      border:1px solid var(--c-border); aspect-ratio:16/7;
+      background:var(--c-surface-2);
+    }
+    .otk-cover-wrap img {
+      width:100%; height:100%; object-fit:cover;
+      transition:transform .4s ease; display:block;
+    }
+    .otk-cover-wrap:hover img { transform:scale(1.03); }
+    .otk-cover-overlay {
+      position:absolute; inset:0; display:flex; align-items:flex-end;
+      padding:var(--space-4);
+      background:linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 60%);
+    }
+    .otk-cover-title {
+      font-family:var(--font-display); font-size:var(--text-lg); font-weight:700;
+      color:#fff; letter-spacing:.08em;
+    }
+    .otk-sprites { display:flex; gap:var(--space-3); align-items:center; }
+    .otk-sprite {
+      border-radius:var(--radius-md); overflow:hidden;
+      border:1px solid var(--c-border); background:var(--c-surface-2);
+      flex:1; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;
+      transition:border-color .18s, box-shadow .18s;
+    }
+    .otk-sprite:hover {
+      border-color:var(--c-amber);
+      box-shadow:0 0 14px color-mix(in oklch, var(--c-amber) 25%, transparent);
+    }
+    .otk-sprite img {
+      width:100%; height:100%; object-fit:cover; image-rendering:pixelated;
+      display:block;
+    }
+    .otk-map-btn {
+      display:flex; align-items:center; justify-content:center; gap:var(--space-2);
+      padding:var(--space-2) var(--space-4);
+      background:var(--c-surface-2); border:1px solid var(--c-border);
+      border-radius:var(--radius-md); font-family:var(--font-mono); font-size:9px;
+      letter-spacing:.14em; color:var(--c-text-muted); cursor:pointer;
+      text-decoration:none; transition:all .18s;
+    }
+    .otk-map-btn:hover { border-color:var(--c-cyan); color:var(--c-cyan); }
+
+    /* ── ENCART CREW PIXEL PP ─────────────────────────────────────────── */
+    .crew-panel { display:flex; flex-direction:column; gap:var(--space-3); }
+    .crew-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2);
+    }
+    .crew-member {
+      display:flex; flex-direction:column; align-items:center; gap:var(--space-1);
+      background:var(--c-surface-2); border:1px solid var(--c-border);
+      border-radius:var(--radius-lg); padding:var(--space-3) var(--space-2);
+      transition:border-color .18s, box-shadow .18s; overflow:hidden;
+    }
+    .crew-member:hover {
+      border-color:var(--c-purple);
+      box-shadow:0 0 12px color-mix(in oklch, var(--c-purple) 20%, transparent);
+    }
+    .crew-pp {
+      width:52px; height:52px; border-radius:var(--radius-md);
+      image-rendering:pixelated; object-fit:contain;
+      border:1px solid var(--c-border); background:var(--c-bg);
+    }
+    .crew-name {
+      font-family:var(--font-mono); font-size:8px; letter-spacing:.14em;
+      color:var(--c-text-muted); text-align:center; white-space:nowrap;
+      overflow:hidden; text-overflow:ellipsis; max-width:100%;
+    }
+    .crew-team-img {
+      width:100%; border-radius:var(--radius-md);
+      border:1px solid var(--c-border); object-fit:cover;
+      image-rendering:pixelated; margin-top:var(--space-1);
+    }
+
+    /* ── ENCART BZH / TCG CARD ───────────────────────────────────────── */
+    .bzh-tcg-row { display:flex; gap:var(--space-3); align-items:stretch; }
+    .bzh-logo-box {
+      flex:1; display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:var(--space-2);
+      background:var(--c-surface-2); border:1px solid var(--c-border);
+      border-radius:var(--radius-lg); padding:var(--space-4);
+      overflow:hidden;
+    }
+    .bzh-logo-box img {
+      max-width:110px; max-height:80px; object-fit:contain; filter:drop-shadow(0 0 8px var(--c-cyan));
+    }
+    .bzh-logo-box .bzh-lbl {
+      font-family:var(--font-mono); font-size:8px; letter-spacing:.18em; color:var(--c-cyan); opacity:.7;
+    }
+    .tcg-card-box {
+      flex-shrink:0; width:90px; display:flex; align-items:center; justify-content:center;
+      background:var(--c-surface-2); border:1px solid var(--c-border);
+      border-radius:var(--radius-lg); overflow:hidden; padding:var(--space-2);
+      transition:box-shadow .2s;
+    }
+    .tcg-card-box:hover { box-shadow:0 0 20px color-mix(in oklch, var(--c-purple) 35%, transparent); }
+    .tcg-card-box img {
+      width:100%; border-radius:var(--radius-sm); object-fit:cover; display:block;
+    }
+
+    /* ── POKEGANG WIDGET ──────────────────────────────────────────────── */
+    .pg-widget  { display:flex; flex-direction:column; gap:var(--space-4); }
     .pg-play-btn {
       display:flex; align-items:center; justify-content:center; gap:var(--space-3);
       padding:var(--space-4) var(--space-5);
       background: linear-gradient(135deg,
         color-mix(in oklch, var(--c-amber) 15%, var(--c-surface-2)) 0%,
         var(--c-surface-2) 100%);
-      border:1px solid var(--c-amber);
-      border-radius:var(--radius-lg);
+      border:1px solid var(--c-amber); border-radius:var(--radius-lg);
       text-decoration:none; color:var(--c-amber);
       font-family:var(--font-display); font-size:var(--text-lg); font-weight:700;
       letter-spacing:.12em;
       box-shadow: 0 0 24px color-mix(in oklch, var(--c-amber) 20%, transparent),
                   inset 0 1px 0 color-mix(in oklch, var(--c-amber) 15%, transparent);
-      transition: box-shadow .2s, background .2s, transform .15s;
-      cursor:pointer;
+      transition: box-shadow .2s, background .2s, transform .15s; cursor:pointer;
     }
     .pg-play-btn:hover {
       box-shadow: 0 0 40px color-mix(in oklch, var(--c-amber) 35%, transparent),
@@ -203,10 +322,7 @@
     .pg-play-label { display:flex; flex-direction:column; align-items:flex-start; }
     .pg-play-label-main { line-height:1; }
     .pg-play-label-sub  { font-family:var(--font-mono); font-size:8px; letter-spacing:.18em; color:var(--c-text-muted); margin-top:2px; }
-
-    .pg-stats-grid {
-      display:grid; grid-template-columns: 1fr 1fr; gap:var(--space-2);
-    }
+    .pg-stats-grid { display:grid; grid-template-columns: 1fr 1fr; gap:var(--space-2); }
     .pg-stat {
       background:var(--c-surface-2); border:1px solid var(--c-border);
       border-radius:var(--radius-md); padding:var(--space-2) var(--space-3);
@@ -219,12 +335,11 @@
     .pg-boss-sprite { width:48px; height:48px; object-fit:contain; image-rendering:pixelated; flex-shrink:0; }
     .pg-boss-info { display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; }
 
-    /* ── JUKEBOX RADIO WIDGET ────────────────────────────────────── */
+    /* ── JUKEBOX RADIO WIDGET ─────────────────────────────────────────── */
     .radio-player  { display:flex; flex-direction:column; gap:var(--space-3); }
     .jk-track-row  { display:flex; align-items:center; gap:var(--space-3); }
     .jk-cover {
-      width:48px; height:48px; border-radius:var(--radius-md);
-      border:1px solid var(--c-border);
+      width:48px; height:48px; border-radius:var(--radius-md); border:1px solid var(--c-border);
       background: radial-gradient(circle, var(--jk-c1,#14161a) 40%, var(--jk-c2,#050608) 100%);
       overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center;
     }
@@ -252,7 +367,7 @@
     .radio-vol-icon { font-size:.7rem; color:var(--c-text-muted); }
     .radio-vol     { flex:1; accent-color:var(--c-primary); }
 
-    /* ── ACTIVITY ────────────────────────────────────────────────── */
+    /* ── ACTIVITY ─────────────────────────────────────────────────────── */
     .activity-feed { list-style:none; display:flex; flex-direction:column; }
     .activity-item {
       display:grid; grid-template-columns:1.1rem 1fr auto;
@@ -267,134 +382,47 @@
     .activity-item--new { animation:fadeSlide .35s ease; }
     @keyframes fadeSlide { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:none} }
 
-    /* ── VIDEO ───────────────────────────────────────────────────── */
+    /* ── VIDEO ─────────────────────────────────────────────────────────── */
     .video-embed-wrap { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:var(--radius-lg); margin-top:var(--space-2); }
     .video-embed-wrap iframe { position:absolute; inset:0; width:100%; height:100%; border:none; }
     .widget-video-title { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--c-text-muted); margin-bottom:var(--space-2); }
 
-    /* ── SLOT MACHINE ────────────────────────────────────────────── */
+    /* ── SLOT MACHINE ─────────────────────────────────────────────────── */
     .slot-machine { display:flex; flex-direction:column; gap:var(--space-3); }
-
-    .slot-header {
-      display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--space-2);
-      background:var(--c-surface-2); border:1px solid var(--c-border);
-      border-radius:var(--radius-lg); padding:var(--space-3);
-    }
+    .slot-header { display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--space-2); background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-lg); padding:var(--space-3); }
     .slot-credit-box { display:flex; flex-direction:column; gap:2px; }
     .slot-lbl { font-family:var(--font-mono); font-size:8px; letter-spacing:.18em; color:var(--c-text-faint); }
-    .slot-credit-val {
-      font-family:var(--font-display); font-size:var(--text-xl); line-height:1.1;
-      color:var(--c-amber); text-shadow:0 0 14px var(--c-amber);
-      font-variant-numeric:tabular-nums;
-    }
+    .slot-credit-val { font-family:var(--font-display); font-size:var(--text-xl); line-height:1.1; color:var(--c-amber); text-shadow:0 0 14px var(--c-amber); font-variant-numeric:tabular-nums; }
     .slot-gain { color:var(--c-primary); text-shadow:0 0 14px var(--c-primary); }
     .slot-bet-row { display:flex; align-items:center; gap:var(--space-2); }
-    .slot-bet-btn {
-      width:22px; height:22px; border-radius:var(--radius-sm);
-      background:var(--c-surface); border:1px solid var(--c-border);
-      color:var(--c-text-muted); font-size:14px; font-weight:700;
-      display:flex; align-items:center; justify-content:center;
-      cursor:pointer; transition:background .15s, color .15s;
-    }
+    .slot-bet-btn { width:22px; height:22px; border-radius:var(--radius-sm); background:var(--c-surface); border:1px solid var(--c-border); color:var(--c-text-muted); font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s, color .15s; }
     .slot-bet-btn:hover { background:var(--c-surface-2); color:var(--c-text); }
-
-    .slot-reels {
-      display:flex; gap:var(--space-3); justify-content:center;
-      padding:var(--space-4) var(--space-2);
-      background: linear-gradient(180deg,
-        color-mix(in oklch, var(--c-amber) 6%, var(--c-surface-2)) 0%,
-        var(--c-surface-2) 100%);
-      border:1px solid color-mix(in oklch, var(--c-amber) 30%, var(--c-border));
-      border-radius:var(--radius-lg);
-      box-shadow: inset 0 2px 8px rgba(0,0,0,.4), 0 0 0 1px var(--c-border);
-    }
-    .slot-reel-wrap {
-      flex:1; display:flex; align-items:center; justify-content:center;
-      background:var(--c-bg); border:1px solid var(--c-border);
-      border-radius:var(--radius-md); overflow:hidden;
-      min-height:80px;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,.5);
-      position:relative;
-    }
-    .slot-reel-wrap::before, .slot-reel-wrap::after {
-      content:""; position:absolute; left:0; right:0; height:1px;
-      background:color-mix(in oklch, var(--c-amber) 20%, transparent);
-      pointer-events:none;
-    }
+    .slot-reels { display:flex; gap:var(--space-3); justify-content:center; padding:var(--space-4) var(--space-2); background: linear-gradient(180deg, color-mix(in oklch, var(--c-amber) 6%, var(--c-surface-2)) 0%, var(--c-surface-2) 100%); border:1px solid color-mix(in oklch, var(--c-amber) 30%, var(--c-border)); border-radius:var(--radius-lg); box-shadow: inset 0 2px 8px rgba(0,0,0,.4), 0 0 0 1px var(--c-border); }
+    .slot-reel-wrap { flex:1; display:flex; align-items:center; justify-content:center; background:var(--c-bg); border:1px solid var(--c-border); border-radius:var(--radius-md); overflow:hidden; min-height:80px; box-shadow: inset 0 2px 4px rgba(0,0,0,.5); position:relative; }
+    .slot-reel-wrap::before, .slot-reel-wrap::after { content:""; position:absolute; left:0; right:0; height:1px; background:color-mix(in oklch, var(--c-amber) 20%, transparent); pointer-events:none; }
     .slot-reel-wrap::before { top:25%; }
     .slot-reel-wrap::after  { bottom:25%; }
-
-    .slot-reel {
-      width:100%; display:flex; align-items:center; justify-content:center;
-      padding:var(--space-3);
-    }
-    .slot-sym {
-      font-size:2.2rem; line-height:1;
-      display:block; text-align:center;
-      filter:drop-shadow(0 0 6px currentColor);
-      user-select:none;
-    }
-
-    @keyframes slot-spin-anim {
-      0%   { transform:translateY(0); }
-      25%  { transform:translateY(-6px); }
-      75%  { transform:translateY(6px); }
-      100% { transform:translateY(0); }
-    }
-    @keyframes slot-land-anim {
-      0%   { transform:scale(1.25); opacity:.6; }
-      60%  { transform:scale(0.95); }
-      100% { transform:scale(1); opacity:1; }
-    }
+    .slot-reel { width:100%; display:flex; align-items:center; justify-content:center; padding:var(--space-3); }
+    .slot-sym { font-size:2.2rem; line-height:1; display:block; text-align:center; filter:drop-shadow(0 0 6px currentColor); user-select:none; }
+    @keyframes slot-spin-anim { 0%{transform:translateY(0)} 25%{transform:translateY(-6px)} 75%{transform:translateY(6px)} 100%{transform:translateY(0)} }
+    @keyframes slot-land-anim { 0%{transform:scale(1.25);opacity:.6} 60%{transform:scale(0.95)} 100%{transform:scale(1);opacity:1} }
     .slot-reel--spin .slot-sym { animation:slot-spin-anim .08s linear infinite; }
     .slot-reel--land .slot-sym { animation:slot-land-anim .3s cubic-bezier(.22,1,.36,1); }
-
-    .slot-msg {
-      font-family:var(--font-mono); font-size:10px; letter-spacing:.14em;
-      text-align:center; min-height:18px; color:var(--c-text-muted);
-      transition:color .2s;
-    }
+    .slot-msg { font-family:var(--font-mono); font-size:10px; letter-spacing:.14em; text-align:center; min-height:18px; color:var(--c-text-muted); transition:color .2s; }
     .slot-msg--win     { color:var(--c-primary); text-shadow:0 0 12px var(--c-primary); }
     .slot-msg--jackpot { color:var(--c-amber);   text-shadow:0 0 18px var(--c-amber); animation:blink .4s ease-in-out 4; }
     .slot-msg--lose    { color:var(--c-text-faint); }
     .slot-msg--red     { color:var(--c-red); }
-
-    .slot-spin-btn {
-      width:100%; padding:var(--space-3) var(--space-4);
-      background:linear-gradient(135deg,
-        color-mix(in oklch, var(--c-amber) 30%, var(--c-surface)) 0%,
-        color-mix(in oklch, var(--c-amber) 12%, var(--c-surface-2)) 100%);
-      border:1px solid var(--c-amber);
-      border-radius:var(--radius-lg);
-      color:var(--c-amber); font-family:var(--font-display); font-size:var(--text-base);
-      font-weight:700; letter-spacing:.2em;
-      box-shadow: 0 0 20px color-mix(in oklch, var(--c-amber) 25%, transparent);
-      cursor:pointer; transition:box-shadow .2s, transform .12s;
-    }
-    .slot-spin-btn:hover:not(:disabled) {
-      box-shadow: 0 0 36px color-mix(in oklch, var(--c-amber) 45%, transparent);
-      transform:translateY(-1px);
-    }
+    .slot-spin-btn { width:100%; padding:var(--space-3) var(--space-4); background:linear-gradient(135deg, color-mix(in oklch, var(--c-amber) 30%, var(--c-surface)) 0%, color-mix(in oklch, var(--c-amber) 12%, var(--c-surface-2)) 100%); border:1px solid var(--c-amber); border-radius:var(--radius-lg); color:var(--c-amber); font-family:var(--font-display); font-size:var(--text-base); font-weight:700; letter-spacing:.2em; box-shadow: 0 0 20px color-mix(in oklch, var(--c-amber) 25%, transparent); cursor:pointer; transition:box-shadow .2s, transform .12s; }
+    .slot-spin-btn:hover:not(:disabled) { box-shadow: 0 0 36px color-mix(in oklch, var(--c-amber) 45%, transparent); transform:translateY(-1px); }
     .slot-spin-btn:active:not(:disabled) { transform:translateY(0); }
     .slot-spin-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
-
     .slot-paytable { margin-top:var(--space-1); }
-    .slot-paytable-toggle {
-      font-family:var(--font-mono); font-size:8px; letter-spacing:.18em;
-      color:var(--c-text-faint); cursor:pointer; list-style:none;
-      text-align:center; padding:var(--space-1);
-    }
+    .slot-paytable-toggle { font-family:var(--font-mono); font-size:8px; letter-spacing:.18em; color:var(--c-text-faint); cursor:pointer; list-style:none; text-align:center; padding:var(--space-1); }
     .slot-paytable-toggle::-webkit-details-marker { display:none; }
     .slot-paytable-toggle:hover { color:var(--c-text-muted); }
-    .slot-paytable-body {
-      display:flex; flex-wrap:wrap; gap:var(--space-1); justify-content:center;
-      padding:var(--space-2) 0;
-    }
-    .slot-pay-row {
-      display:flex; align-items:center; gap:3px;
-      background:var(--c-surface-2); border:1px solid var(--c-border);
-      border-radius:var(--radius-sm); padding:2px var(--space-2);
-    }
+    .slot-paytable-body { display:flex; flex-wrap:wrap; gap:var(--space-1); justify-content:center; padding:var(--space-2) 0; }
+    .slot-pay-row { display:flex; align-items:center; gap:3px; background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-sm); padding:2px var(--space-2); }
     .slot-pay-sym  { font-size:.95rem; }
     .slot-pay-mult { font-family:var(--font-mono); font-size:9px; color:var(--c-amber); margin-left:4px; }
   </style>
@@ -464,17 +492,120 @@
         <div id="quick-access-grid"></div>
       </div>
 
+      <!-- ── ENCART BRAND / LOGO ── -->
+      <div class="bc bc-brand">
+        <div class="bc-label" style="color:var(--c-cyan)"><span class="bc-dot"></span>IDENTITÉ · RÉSEAU</div>
+        <div class="brand-panel">
+          <div class="brand-logo-wrap">
+            <img
+              src="../shared/logos/star_logo/star_logo_original.png"
+              alt="Gwen Ha Star — logo officiel"
+              width="90" height="90"
+              loading="lazy"
+            >
+          </div>
+          <div class="brand-name">GWEN·HA·STAR</div>
+          <div class="brand-tagline">// RÉSEAU · CREW · STERENNA</div>
+          <!-- Variantes couleur du logo -->
+          <div class="brand-color-set">
+            <div class="brand-color-swatch" title="Cyan / Blue">
+              <img src="../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png" alt="Logo cyan" width="28" height="28" loading="lazy">
+            </div>
+            <div class="brand-color-swatch" title="Gold / Orange">
+              <img src="../shared/logos/star_logo/star_logo_color_set/star_logo_gold_orange.png" alt="Logo gold" width="28" height="28" loading="lazy">
+            </div>
+            <div class="brand-color-swatch" title="Green / Lime">
+              <img src="../shared/logos/star_logo/star_logo_color_set/star_logo_green_lime.png" alt="Logo green" width="28" height="28" loading="lazy">
+            </div>
+            <div class="brand-color-swatch" title="Red">
+              <img src="../shared/logos/star_logo/star_logo_color_set/star_logo_red.png" alt="Logo red" width="28" height="28" loading="lazy">
+            </div>
+            <div class="brand-color-swatch" title="White / Silver">
+              <img src="../shared/logos/star_logo/star_logo_color_set/star_logo_white_silver.png" alt="Logo white" width="28" height="28" loading="lazy">
+            </div>
+          </div>
+          <!-- BZH logos + TCG card -->
+          <div class="bzh-tcg-row" style="width:100%;margin-top:var(--space-2)">
+            <div class="bzh-logo-box">
+              <img src="../shared/logos/bzh_power.png" alt="BZH Power" width="110" height="80" loading="lazy">
+              <span class="bzh-lbl">BZH POWER</span>
+            </div>
+            <a href="https://nitro.sterenna.fr/TCG" target="_blank" rel="noopener noreferrer" class="tcg-card-box" title="TCG · Gwen Ha Star">
+              <img src="../shared/logos/pixel_tcg_card.png" alt="Carte TCG pixel" width="90" loading="lazy">
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ENCART OTK ── -->
+      <div class="bc bc-otk">
+        <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>OTK · UNIVERS APHALONE</div>
+        <div class="otk-panel">
+          <!-- Cover principale -->
+          <div class="otk-cover-wrap">
+            <img
+              src="../shared/images/OTK/OTK_cover_pixel.png"
+              alt="OTK Cover pixel art"
+              width="800" height="350"
+              loading="lazy"
+            >
+            <div class="otk-cover-overlay">
+              <span class="otk-cover-title">OVER THE KINGDOM</span>
+            </div>
+          </div>
+          <!-- Sprites -->
+          <div class="otk-sprites">
+            <div class="otk-sprite" title="OTK — Pixel Cute">
+              <img src="../shared/images/OTK/OTK_pixel_cute_nosame.png" alt="OTK pixel cute" width="120" height="120" loading="lazy">
+            </div>
+            <div class="otk-sprite" title="OTK — Pixel">
+              <img src="../shared/images/OTK/OTK_pixel_nosame.png" alt="OTK pixel" width="120" height="120" loading="lazy">
+            </div>
+            <a href="../shared/images/OTK/OTK_aphalone_map.png" target="_blank" rel="noopener noreferrer" class="otk-map-btn" style="flex:1;height:100%">
+              <span>🗺</span><span>CARTE APHALONE</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ENCART CREW PIXEL PP ── -->
+      <div class="bc bc-crew">
+        <div class="bc-label" style="color:var(--c-purple)"><span class="bc-dot"></span>CREW · PIXEL ART</div>
+        <div class="crew-panel">
+          <div class="crew-grid">
+            <div class="crew-member">
+              <img class="crew-pp" src="../shared/images/pixel_pp/pixel_pp_sniky.png" alt="Sniky" width="52" height="52" loading="lazy">
+              <span class="crew-name">SNIKY</span>
+            </div>
+            <div class="crew-member">
+              <img class="crew-pp" src="../shared/images/pixel_pp/pixel_pp_cowboy.png" alt="Cowboy" width="52" height="52" loading="lazy">
+              <span class="crew-name">COWBOY</span>
+            </div>
+            <div class="crew-member">
+              <img class="crew-pp" src="../shared/images/pixel_pp/pixel_pp_abad.png" alt="Abad" width="52" height="52" loading="lazy">
+              <span class="crew-name">ABAD</span>
+            </div>
+            <div class="crew-member">
+              <img class="crew-pp" src="../shared/images/pixel_pp/pixel_pp_aligax.png" alt="Aligax" width="52" height="52" loading="lazy">
+              <span class="crew-name">ALIGAX</span>
+            </div>
+          </div>
+          <!-- Photo équipe -->
+          <img
+            class="crew-team-img"
+            src="../shared/images/pixel_pp/pixel_pp_team.png"
+            alt="Équipe Gwen Ha Star — pixel art"
+            width="400" height="120"
+            loading="lazy"
+          >
+        </div>
+      </div>
+
       <!-- PokeGang -->
       <div class="bc bc-pg">
         <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>POKEGANG · RÉSEAU</div>
         <div class="pg-widget">
-          <a
-            href="https://pokegang.sterenna.fr"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="pg-play-btn"
-            aria-label="Jouer à PokeGang"
-          >
+          <a href="https://pokegang.sterenna.fr" target="_blank" rel="noopener noreferrer" class="pg-play-btn" aria-label="Jouer à PokeGang">
             <span class="pg-play-icon" aria-hidden="true">◉</span>
             <span class="pg-play-label">
               <span class="pg-play-label-main">JOUER AU JEU</span>
@@ -587,14 +718,10 @@
           .eq('user_id', userId)
           .eq('is_anonymous', false)
           .maybeSingle();
-
         if (error || !data) { _setPGStatus(sbPg, 'off', 'NO DATA'); _fillPG(null); return; }
         _setPGStatus(sbPg, 'green', 'SYNC');
         _fillPG(data);
-      } catch {
-        _setPGStatus(sbPg, 'red', 'ERROR');
-        _fillPG(null);
-      }
+      } catch { _setPGStatus(sbPg, 'red', 'ERROR'); _fillPG(null); }
     }
 
     function _setPGStatus(el, state, label) {
