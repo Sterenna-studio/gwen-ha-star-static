@@ -548,9 +548,7 @@
     import { initDashboard }     from '../js/star/dashboard.js';
     import { supabase, signOut } from '../js/supabase.js';
     import { requireAuth }       from '../js/star/guard.js';
-
-    // ── Import dynamique avec cache-bust pour forcer la résolution des exports mis à jour
-    const { SlotMachine } = await import('../js/star/widgets.js?v=__WIDGETS_V__');
+    import { SlotMachine }       from '../js/star/widgets.js';
 
     // ── HORLOGE
     (function() {
