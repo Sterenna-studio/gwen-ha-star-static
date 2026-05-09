@@ -1,12 +1,8 @@
 // ════════════════════════════════════════════════════════════════
-//  Gwen Ha Star — Configuration Supabase (fallback public)
-//
-//  Ce fichier contient des valeurs vides et peut être commité.
-//  Pour activer Supabase, lance : bash generate-config.sh
-//  (nécessite un fichier .env avec SUPABASE_URL et SUPABASE_ANON_KEY)
-//
-//  ℹ️  Sans Supabase, le site fonctionne en mode dégradé.
+//  Gwen Ha Star — Configuration Supabase
+//  ⚠️  Fichier généré automatiquement par generate-config.sh
+//  ⚠️  Repo PRIVÉ — ne jamais repasser en public avec ce fichier
 // ════════════════════════════════════════════════════════════════
 
-export const SUPABASE_URL  = '';
-export const SUPABASE_ANON = '';
+export const SUPABASE_URL  = 'https://nmdjrcswlnydglrxaivx.supabase.co';
+export const SUPABASE_ANON = 'sb_publishable_dE0SfyUd-Xw4JhuAVy4x1A_NZfB7lcH';
