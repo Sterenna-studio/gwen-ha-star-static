@@ -1,0 +1,53 @@
+# ═══════════════════════════════════════════════════════════════
+#  .htaccess — Gwen Ha Star Static
+#  Cache-Control intelligent + CORS pour l'écosystème Sterenna
+# ═══════════════════════════════════════════════════════════════
+
+Options -Indexes
+
+# ── MODULES REQUIS ──────────────────────────────────────────────
+<IfModule mod_headers.c>
+
+  # ── CACHE : HTML → jamais en cache (toujours la version fraîche)
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+    Header set Pragma "no-cache"
+  </FilesMatch>
+
+  # ── CACHE : CSS / JS → 1 an immutable (cache busting via ?v= ou nom de fichier)
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # ── CACHE : Images / Fonts → 7 jours
+  <FilesMatch "\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|otf)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+
+  # ── CORS : Autoriser les appels depuis l'écosystème Sterenna
+  #    Projets concernés : pokegang.sterenna.fr, nitro.sterenna.fr,
+  #    sterenna.fr, gwen-ha-star.fr (et leurs variantes www)
+  <FilesMatch "\.(js|json|css|woff|woff2|png|jpg|svg)$">
+    SetEnvIf Origin "^https://(www\.)?(gwen-ha-star\.fr|sterenna\.fr|pokegang\.sterenna\.fr|nitro\.sterenna\.fr)$" ALLOWED_ORIGIN=$0
+    Header set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
+    Header set Access-Control-Allow-Methods "GET, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type"
+    Header set Vary "Origin"
+  </FilesMatch>
+
+</IfModule>
+
+# ── COMPRESSION GZIP ────────────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml font/woff font/woff2
+</IfModule>
+
+# ── MIME TYPES MANQUANTS ─────────────────────────────────────────
+<IfModule mod_mime.c>
+  AddType application/javascript .js .mjs
+  AddType text/css               .css
+  AddType font/woff2             .woff2
+  AddType font/woff              .woff
+  AddType application/json       .json
+</IfModule>
