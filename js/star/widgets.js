@@ -376,6 +376,16 @@ export class RadioPlayer {
 }
 
 // ── MACHINE À SOUS CASINO ─────────────────────────────────────────────────────
+// Chemins des assets pixel art du repo (relatifs à la racine du site)
+const PIXEL_BASE = '/shared/images';
+const LOGO_BASE  = '/shared/logos';
+
+// Helper pour rendre un symbole image pixel art dans le rouleau
+function _imgSym(src, alt, size = 36) {
+  return `<img src="${src}" alt="${alt}" width="${size}" height="${size}" loading="lazy" draggable="false"
+    style="image-rendering:pixelated;image-rendering:crisp-edges;object-fit:contain;display:block;margin:auto;">`;
+}
+
 export class SlotMachine {
   constructor(containerId) {
     this.el       = document.getElementById(containerId);
@@ -383,21 +393,66 @@ export class SlotMachine {
     this.bet      = 5;
     this.spinning = false;
 
+    // ── SYMBOLES ────────────────────────────────────────────────────────────
+    // Les 4 symboles rares utilisent les assets pixel art du repo.
+    // Les 5 symboles communs restent en glyphe Unicode (légers, pas de requête réseau).
     this.SYMBOLS = [
-      { glyph: '7',  label: 'SEPT',    weight: 2,  mult: 20,  color: '#ff4444' },
-      { glyph: '★',  label: 'ÉTOILE',  weight: 4,  mult: 8,   color: '#ffd700' },
-      { glyph: '♦',  label: 'DIAMANT', weight: 6,  mult: 5,   color: '#00cfff' },
-      { glyph: '♣',  label: 'TRÈFLE',  weight: 8,  mult: 3,   color: '#39ff14' },
-      { glyph: '♥',  label: 'CŒUR',    weight: 10, mult: 2,   color: '#ff69b4' },
-      { glyph: '🍋', label: 'CITRON',  weight: 14, mult: 1.5, color: '#ffe066' },
-      { glyph: '🍒', label: 'CERISE',  weight: 16, mult: 1,   color: '#ff6666' },
-      { glyph: '🔔', label: 'CLOCHE',  weight: 18, mult: 1,   color: '#ffd700' },
+      // ── RARES (images pixel art) ────────────────────────────────────────
+      {
+        // Jackpot absolu : logo BZH PW
+        img:    `${LOGO_BASE}/bzh_power.png`,
+        label:  'BZH PW',
+        weight: 1,
+        mult:   25,
+        color:  '#ffd700',
+        isImg:  true,
+      },
+      {
+        // Très rare : dos de carte TCG pixel art
+        img:    `${LOGO_BASE}/pixel_tcg_card.png`,
+        label:  'TCG',
+        weight: 2,
+        mult:   15,
+        color:  '#c678ff',
+        isImg:  true,
+      },
+      {
+        // Rare : OTK Nosame (Aphalone JDR)
+        img:    `${PIXEL_BASE}/OTK/OTK_pixel_cute_nosame.png`,
+        label:  'NOSAME',
+        weight: 3,
+        mult:   10,
+        color:  '#00cfff',
+        isImg:  true,
+      },
+      {
+        // Peu commun : Sniky pixel PP
+        img:    `${PIXEL_BASE}/pixel_pp/pixel_pp_sniky.png`,
+        label:  'SNIKY',
+        weight: 5,
+        mult:   6,
+        color:  '#ff69b4',
+        isImg:  true,
+      },
+      // ── COMMUNS (glyphes Unicode) ────────────────────────────────────────
+      { glyph: '★',  label: 'ÉTOILE',  weight: 8,  mult: 4,   color: '#ffd700' },
+      { glyph: '♦',  label: 'DIAMANT', weight: 10, mult: 3,   color: '#00cfff' },
+      { glyph: '♥',  label: 'CŒUR',    weight: 14, mult: 2,   color: '#ff69b4' },
+      { glyph: '🍒', label: 'CERISE',  weight: 18, mult: 1,   color: '#ff6666' },
       { glyph: '🍀', label: 'TRÈFLE',  weight: 22, mult: 0,   color: '#39ff14' },
     ];
 
     this._pool = [];
     for (const s of this.SYMBOLS)
       for (let i = 0; i < s.weight; i++) this._pool.push(s);
+  }
+
+  // Rendu HTML d'un symbole (image ou glyphe)
+  _symHtml(sym, size = 36) {
+    if (sym.isImg) {
+      return `<span class="slot-sym" aria-label="${sym.label}" style="display:flex;align-items:center;justify-content:center;height:${size}px;">${_imgSym(sym.img, sym.label, size)}</span>`;
+    }
+    return `<span class="slot-sym" style="color:${sym.color}" aria-label="${sym.label}">${sym.glyph}</span>`;
   }
 
   render() {
@@ -444,14 +499,12 @@ export class SlotMachine {
         <details class="slot-paytable">
           <summary class="slot-paytable-toggle">TABLE DES GAINS ▾</summary>
           <div class="slot-paytable-body">
-            ${this.SYMBOLS.filter(s => s.mult > 0).map(s =>
-              `<div class="slot-pay-row">
-                <span class="slot-pay-sym" style="color:${s.color}">${s.glyph}</span>
-                <span class="slot-pay-sym" style="color:${s.color}">${s.glyph}</span>
-                <span class="slot-pay-sym" style="color:${s.color}">${s.glyph}</span>
-                <span class="slot-pay-mult">× ${s.mult}</span>
-              </div>`
-            ).join('')}
+            ${this.SYMBOLS.filter(s => s.mult > 0).map(s => {
+              const sym3 = s.isImg
+                ? `<span style="display:inline-flex;align-items:center;">${_imgSym(s.img, s.label, 20)}</span>`.repeat(3)
+                : `<span class="slot-pay-sym" style="color:${s.color}">${s.glyph}</span>`.repeat(3);
+              return `<div class="slot-pay-row">${sym3}<span class="slot-pay-mult">× ${s.mult}</span></div>`;
+            }).join('')}
             <div class="slot-pay-row">
               <span class="slot-pay-sym">🍒</span>
               <span class="slot-pay-sym">🍒</span>
@@ -479,7 +532,7 @@ export class SlotMachine {
   _setReel(idx, sym, animate = true) {
     const el = document.getElementById(`slot-reel-${idx}`);
     if (!el) return;
-    el.innerHTML = `<span class="slot-sym" style="color:${sym.color}" aria-label="${sym.label}">${sym.glyph}</span>`;
+    el.innerHTML = this._symHtml(sym);
     if (animate) {
       el.classList.add('slot-reel--land');
       el.addEventListener('animationend', () => el.classList.remove('slot-reel--land'), { once: true });
@@ -503,7 +556,6 @@ export class SlotMachine {
     const el = document.getElementById('slot-credits');
     if (el) {
       el.textContent = v;
-      // Flash visuel sur le compteur
       el.classList.remove('slot-credits--flash');
       requestAnimationFrame(() => el.classList.add('slot-credits--flash'));
     }
@@ -531,7 +583,6 @@ export class SlotMachine {
     this._showMsg('', '');
     document.getElementById('slot-gain').textContent = '·';
 
-    // Shake le widget pendant le spin
     const root = document.getElementById('slot-root');
     root?.classList.add('slot-spinning');
 
@@ -550,13 +601,17 @@ export class SlotMachine {
       this._updateCredits(this.credits + winAmount);
       if (gainEl) { gainEl.textContent = `+${winAmount}`; gainEl.style.color = 'var(--c-primary)'; }
 
-      if (gain >= 10) {
+      if (gain >= 15) {
         _sfx.jackpot();
         this._showMsg(`🎰 JACKPOT × ${gain} ! +${winAmount} CRÉDITS`, 'jackpot');
         this._flashReels('#ffd700');
-      } else if (gain >= 5) {
+      } else if (gain >= 6) {
+        _sfx.jackpot();
+        this._showMsg(`★ SUPER WIN × ${gain} ! +${winAmount} CRÉDITS`, 'jackpot');
+        this._flashReels('#c678ff');
+      } else if (gain >= 3) {
         _sfx.win();
-        this._showMsg(`★ SUPER WIN × ${gain} ! +${winAmount} CRÉDITS`, 'win');
+        this._showMsg(`✦ WIN × ${gain} — +${winAmount} CRÉDITS`, 'win');
         this._flashReels('#00cfff');
       } else {
         _sfx.win();
@@ -577,7 +632,6 @@ export class SlotMachine {
     if (spinLbl) spinLbl.textContent = 'SPIN ⚡';
   }
 
-  // Flash coloré sur les rouleaux (win feedback)
   _flashReels(color) {
     for (let i = 0; i < 3; i++) {
       const el = document.getElementById(`slot-reel-${i}`);
@@ -597,7 +651,7 @@ export class SlotMachine {
       const total = Math.floor(duration / 60);
       const iv = setInterval(() => {
         const s = ticks < total ? this._rand() : finalSym;
-        el.innerHTML = `<span class="slot-sym" style="color:${s.color}">${s.glyph}</span>`;
+        el.innerHTML = this._symHtml(s);
         ticks++;
         if (ticks > total) {
           clearInterval(iv);
@@ -612,8 +666,10 @@ export class SlotMachine {
 
   _evalGain(results) {
     const [a, b, c] = results;
-    if (a.glyph === b.glyph && b.glyph === c.glyph) return a.mult;
-    const cherries = results.filter(s => s.glyph === '🍒').length;
+    // Triple identique (compare label pour gérer img vs glyphe)
+    if (a.label === b.label && b.label === c.label) return a.mult;
+    // Deux cerises
+    const cherries = results.filter(s => s.label === 'CERISE').length;
     if (cherries >= 2) return 0.5;
     return 0;
   }

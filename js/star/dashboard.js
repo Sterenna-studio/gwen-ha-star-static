@@ -155,6 +155,14 @@ function _renderQuickAccess() {
     { label: 'TCG',        icon: '🃏', href: '/TCG/',                             color: '--c-purple',  desc: 'Cartes · Collection · Duels' },
     { label: 'STERENNA',   icon: '▲', href: 'https://sterenna.fr',               color: '--c-amber',   desc: '3D · Gravure · Web', ext: true },
     { label: 'POKEGANG',   icon: '◉', href: 'https://pokegang.sterenna.fr',      color: '--c-red',     desc: 'Le jeu du crew', ext: true },
+    {
+      label: 'APHALONE',
+      icon: '⚔',
+      href: 'https://www.worldanvil.com/w/aphalone-drsorn',
+      color: '--c-purple',
+      desc: 'JDR · One True King · Wiki',
+      ext: true,
+    },
   ];
   el.innerHTML = links.map(l => `
     <a href="${l.href}"
