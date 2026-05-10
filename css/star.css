@@ -602,11 +602,11 @@
 
 
 /* ═══════════════════════════════════════════════════════════════
-   SLOT MACHINE 3×3 — Machine à sous grille (widgets.js)
-   Layout : en-tête crédits | grille 3 col × 3 lignes | lignes SVG overlay
+   SLOT MACHINE 3×5 — Machine à sous grille (widgets.js)
+   Layout : en-tête crédits | grille 3 lignes × 5 colonnes | lignes SVG overlay
+   5 lignes de gain : milieu, haut, bas, diag↘, diag↗
 ═══════════════════════════════════════════════════════════════ */
 
-/* Conteneur principal */
 .slot-machine {
   display: flex;
   flex-direction: column;
@@ -616,7 +616,7 @@
   user-select: none;
 }
 
-/* ── EN-TÊTE : crédits / mise / gain ───────────────────────────────────── */
+/* ── EN-TÊTE ────────────────────────────────────────────────────────────────────── */
 .slot-header {
   width: 100%;
   display: grid;
@@ -668,7 +668,7 @@
   color: var(--c-primary);
 }
 
-/* ── LÉGENDE DES LIGNES ─────────────────────────────────────────────────── */
+/* ── LÉGENDE LIGNES ──────────────────────────────────────────────────────────────── */
 .slot-lines-legend {
   display: flex; flex-wrap: wrap; gap: var(--space-2);
   justify-content: center;
@@ -687,24 +687,24 @@
   transition: all 0.2s;
 }
 
-/* ── GRILLE 3×3 ───────────────────────────────────────────────────────────────── */
+/* ── GRILLE 3 LIGNES × 5 COLONNES ───────────────────────────────────────────────── */
 .slot-grid {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);  /* 5 colonnes */
   gap: 3px;
   background: var(--c-surface-2);
   border: 2px solid var(--c-border);
   border-radius: var(--radius-md);
   overflow: hidden;
   width: 100%;
-  max-width: 360px;
-  aspect-ratio: 1 / 1;
+  max-width: 480px;                        /* plus large pour 5 col */
+  aspect-ratio: 5 / 3;                     /* ratio 5×3 */
   transition: box-shadow 0.3s;
 }
 .slot-col {
   display: grid;
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);     /* 3 lignes */
   gap: 3px;
 }
 .slot-cell {
@@ -717,28 +717,28 @@
   min-height: 0;
 }
 
-/* Ligne du milieu mise en évidence */
+/* Ligne du milieu mise en évidence (row 1) */
 .slot-cell[data-row="1"] {
   background: color-mix(in oklch, var(--c-primary) 5%, var(--c-bg));
 }
 
-/* ── SYMBOLES ───────────────────────────────────────────────────────────────────── */
+/* ── SYMBOLES ────────────────────────────────────────────────────────────────────── */
 .slot-sym {
   display: flex; align-items: center; justify-content: center;
-  font-size: clamp(20px, 5vw, 36px);
+  font-size: clamp(18px, 4vw, 30px);
   line-height: 1;
   pointer-events: none;
 }
 .slot-sym--img img {
-  width: clamp(28px, 7vw, 52px);
-  height: clamp(28px, 7vw, 52px);
+  width: clamp(24px, 6vw, 44px);
+  height: clamp(24px, 6vw, 44px);
   object-fit: contain;
   display: block;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
 
-/* ── SVG OVERLAY LIGNES DE GAIN ───────────────────────────────────────────── */
+/* ── SVG OVERLAY LIGNES DE GAIN ──────────────────────────────────────────────────── */
 .slot-lines-svg {
   position: absolute;
   inset: 0;
@@ -747,22 +747,19 @@
   z-index: 10;
 }
 
-/* ── ANIMATIONS CELLULES ──────────────────────────────────────────────────── */
-
-/* Défilement rapide pendant le spin */
+/* ── ANIMATIONS CELLULES ────────────────────────────────────────────────────────── */
 @keyframes cell-spin {
-  0%   { transform: translateY(0)    blur(0); filter: blur(0); opacity: 1; }
+  0%   { transform: translateY(0);    filter: blur(0);   opacity: 1; }
   25%  { transform: translateY(-6px); filter: blur(2px); opacity: 0.5; }
   50%  { transform: translateY(6px);  filter: blur(3px); opacity: 0.4; }
   75%  { transform: translateY(-3px); filter: blur(1px); opacity: 0.6; }
-  100% { transform: translateY(0);    filter: blur(0); opacity: 1; }
+  100% { transform: translateY(0);    filter: blur(0);   opacity: 1; }
 }
 .slot-cell--spin {
   animation: cell-spin 0.11s linear infinite;
   background: color-mix(in oklch, var(--c-primary) 8%, var(--c-bg)) !important;
 }
 
-/* Atterrissage avec rebond */
 @keyframes cell-land {
   0%   { transform: scale(1.18) translateY(-6px); opacity: 0.7; }
   55%  { transform: scale(0.92) translateY(3px);  opacity: 1; }
@@ -773,7 +770,6 @@
   animation: cell-land 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Pulse d'une cellule gagnante */
 @keyframes cell-win {
   0%, 100% { box-shadow: none; }
   50%       { box-shadow: inset 0 0 12px var(--c-primary); }
@@ -782,7 +778,6 @@
   animation: cell-win 0.5s ease-in-out 3;
 }
 
-/* Flash des crédits */
 @keyframes credits-flash {
   0%   { color: var(--c-text); }
   30%  { color: var(--c-primary); text-shadow: var(--glow-green); }
@@ -792,7 +787,30 @@
   animation: credits-flash 0.5s ease both;
 }
 
-/* ── MESSAGE RÉSULTAT ───────────────────────────────────────────────────────── */
+/* ── FLASH GRILLE PP (OR) ────────────────────────────────────────────────────────── */
+@keyframes slot-flash-gold {
+  0%   { box-shadow: 0 0 0   #ffd700; border-color: var(--c-border); }
+  30%  { box-shadow: 0 0 40px #ffd700; border-color: #ffd700; }
+  60%  { box-shadow: 0 0 20px #ffd700aa; }
+  100% { box-shadow: 0 0 0   #ffd700; border-color: var(--c-border); }
+}
+.slot-grid--flash-gold {
+  animation: slot-flash-gold 1.2s ease;
+}
+
+/* ── FLASH GRILLE CHRONICLES (VIOLET) ───────────────────────────────────────────── */
+@keyframes slot-flash-chronicles {
+  0%   { box-shadow: 0 0 0   #c084fc; border-color: var(--c-border); }
+  20%  { box-shadow: 0 0 50px #c084fc; border-color: #c084fc; }
+  50%  { box-shadow: 0 0 80px #a855f7, 0 0 20px #c084fc inset; }
+  80%  { box-shadow: 0 0 30px #c084fcaa; border-color: #a855f7; }
+  100% { box-shadow: 0 0 0   #c084fc; border-color: var(--c-border); }
+}
+.slot-grid--flash-chronicles {
+  animation: slot-flash-chronicles 1.4s ease;
+}
+
+/* ── MESSAGE ─────────────────────────────────────────────────────────────────────── */
 .slot-msg {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
@@ -811,17 +829,22 @@
   text-shadow: 0 0 10px #ffd700, 0 0 22px #ffd70066;
   animation: credits-flash 0.35s ease 4;
 }
-.slot-msg--lose {
-  color: var(--c-text-faint);
+.slot-msg--chronicles {
+  color: #c084fc;
+  text-shadow: 0 0 10px #c084fc, 0 0 24px #a855f766;
+  animation: chronicles-msg-pulse 0.4s ease 3;
 }
-.slot-msg--red {
-  color: var(--c-red, #f55);
+@keyframes chronicles-msg-pulse {
+  0%, 100% { opacity: 1; letter-spacing: 0.12em; }
+  50%       { opacity: 0.7; letter-spacing: 0.22em; text-shadow: 0 0 18px #c084fc; }
 }
+.slot-msg--lose { color: var(--c-text-faint); }
+.slot-msg--red  { color: var(--c-red, #f55); }
 
 /* ── BOUTON SPIN ─────────────────────────────────────────────────────────────────── */
 .slot-spin-btn {
   width: 100%;
-  max-width: 360px;
+  max-width: 480px;
   padding: var(--space-3) var(--space-6);
   background: var(--c-primary);
   color: var(--c-text-inv);
@@ -858,10 +881,10 @@
   transform: none;
 }
 
-/* ── TABLE DES GAINS ───────────────────────────────────────────────────────── */
+/* ── TABLE DES GAINS ─────────────────────────────────────────────────────────────── */
 .slot-paytable {
   width: 100%;
-  max-width: 360px;
+  max-width: 480px;
   border: 1px solid var(--c-border);
   border-radius: var(--radius-sm);
   background: var(--c-surface);
@@ -916,14 +939,17 @@
   margin-left: auto;
 }
 
-/* ── RESPONSIVE MOBILE ────────────────────────────────────────────────────────── */
-@media (max-width: 480px) {
+/* ── RESPONSIVE MOBILE ───────────────────────────────────────────────────────────── */
+@media (max-width: 520px) {
   .slot-grid, .slot-spin-btn, .slot-paytable {
     max-width: 100%;
   }
+  .slot-sym {
+    font-size: clamp(14px, 5.5vw, 24px);
+  }
   .slot-sym--img img {
-    width: clamp(24px, 9vw, 44px);
-    height: clamp(24px, 9vw, 44px);
+    width: clamp(18px, 7vw, 36px);
+    height: clamp(18px, 7vw, 36px);
   }
   .slot-credit-val { font-size: var(--text-base); }
 }
