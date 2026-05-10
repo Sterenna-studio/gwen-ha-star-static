@@ -203,9 +203,6 @@
 
     document.getElementById('btn-signout-strip')?.addEventListener('click',()=>signOut());
 
-    const slots = new SlotMachine('widget-slots');
-    slots.render();
-
     async function loadPGStats(userId){
       const sbPg=document.getElementById('sb-pg');
       try{
@@ -271,6 +268,10 @@
       populateWelcome(user,profile);
       loadMembers();
       loadPGStats(user.id);
+
+      // CASINO — init après auth pour avoir user.id
+      const slots = new SlotMachine('widget-slots');
+      await slots.init(user.id);
     }
     initDashboard();
   </script>
