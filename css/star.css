@@ -602,9 +602,10 @@
 
 
 /* ═══════════════════════════════════════════════════════════════
-   SLOT MACHINE 3×5 — Machine à sous grille (widgets.js)
-   Layout : en-tête crédits | grille 3 lignes × 5 colonnes | lignes SVG overlay
+   SLOT MACHINE 5×3 — Machine à sous grille (widgets.js)
+   Layout : panel crédits | grille 5 rouleaux × 3 lignes | lignes SVG overlay
    5 lignes de gain : milieu, haut, bas, diag↘, diag↗
+   Rouleaux : défilement vertical continu, boutons STOP individuels
 ═══════════════════════════════════════════════════════════════ */
 
 .slot-machine {
@@ -616,37 +617,70 @@
   user-select: none;
 }
 
-/* ── EN-TÊTE ────────────────────────────────────────────────────────────────────── */
-.slot-header {
+/* ── PANEL CRÉDITS ───────────────────────────────────────────────────────────────── */
+.slot-credits-panel {
   width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: var(--space-3);
-}
-.slot-credit-box {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  max-width: 520px;
   background: var(--c-surface-2);
   border: 1px solid var(--c-border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  position: relative;
+  overflow: hidden;
 }
-.slot-lbl {
+.slot-credits-panel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right, transparent, var(--c-amber, #fbbf24), transparent);
+  opacity: 0.5;
+}
+.slot-credits-main {
+  display: flex; align-items: baseline; gap: var(--space-2);
+  flex: 1;
+}
+.slot-credits-lbl {
   font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   color: var(--c-text-faint);
-  text-transform: uppercase;
 }
-.slot-credit-val {
+.slot-credits-num {
   font-family: var(--font-mono);
-  font-size: var(--text-lg);
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem);
   font-variant-numeric: tabular-nums;
-  color: var(--c-text);
+  color: var(--c-amber, #fbbf24);
+  text-shadow: 0 0 10px color-mix(in oklch, var(--c-amber, #fbbf24) 40%, transparent);
+  letter-spacing: 0.04em;
   line-height: 1;
+  transition: color 0.2s;
 }
-.slot-gain {
-  font-size: var(--text-base);
+.slot-credits-unit {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   color: var(--c-text-faint);
+  letter-spacing: 0.15em;
+}
+.slot-credits-sub {
+  display: flex; gap: var(--space-4); align-items: center;
+}
+.slot-stat {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.slot-stat-lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--c-text-faint);
+}
+.slot-stat-val {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text-muted);
+  letter-spacing: 0.05em;
 }
 .slot-bet-row {
   display: flex; align-items: center; gap: var(--space-2);
@@ -687,55 +721,134 @@
   transition: all 0.2s;
 }
 
-/* ── GRILLE 3 LIGNES × 5 COLONNES ───────────────────────────────────────────────── */
-.slot-grid {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);  /* 5 colonnes */
-  gap: 3px;
-  background: var(--c-surface-2);
+/* ── CABINET SLOT ─────────────────────────────────────────────────────────────────── */
+.slot-cabinet {
+  width: 100%;
+  max-width: 520px;
+  background: var(--c-surface);
   border: 2px solid var(--c-border);
   border-radius: var(--radius-md);
   overflow: hidden;
-  width: 100%;
-  max-width: 480px;                        /* plus large pour 5 col */
-  aspect-ratio: 5 / 3;                     /* ratio 5×3 */
-  transition: box-shadow 0.3s;
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--c-primary) 10%, transparent),
+              inset 0 0 30px color-mix(in oklch, var(--c-bg) 60%, transparent);
 }
-.slot-col {
-  display: grid;
-  grid-template-rows: repeat(3, 1fr);     /* 3 lignes */
-  gap: 3px;
-}
-.slot-cell {
-  background: var(--c-bg);
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 2px;
-  overflow: hidden;
+
+/* ── ROULEAUX WRAP ────────────────────────────────────────────────────────────────── */
+.slot-reels-wrap {
+  display: flex;
   position: relative;
-  transition: background 0.15s;
-  min-height: 0;
+  height: 204px; /* 3 × 64px + 2×6px gap ≈ 204px */
+  background: var(--c-bg);
+  gap: 4px;
+  padding: 4px;
 }
 
-/* Ligne du milieu mise en évidence (row 1) */
-.slot-cell[data-row="1"] {
-  background: color-mix(in oklch, var(--c-primary) 5%, var(--c-bg));
+/* ── ROULEAU INDIVIDUEL ──────────────────────────────────────────────────────────── */
+.slot-reel {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in oklch, var(--c-surface-2) 80%, var(--c-bg));
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-border);
 }
 
-/* ── SYMBOLES ────────────────────────────────────────────────────────────────────── */
-.slot-sym {
-  display: flex; align-items: center; justify-content: center;
-  font-size: clamp(18px, 4vw, 30px);
-  line-height: 1;
+/* Bande interne qui défile */
+.slot-reel-inner {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  will-change: transform;
+}
+
+/* Chaque item de la bande */
+.slot-reel-item {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid color-mix(in oklch, var(--c-border) 40%, transparent);
+}
+
+/* Masques flous en haut et bas du rouleau (simule la profondeur) */
+.slot-reel-mask {
+  position: absolute; left: 0; right: 0;
+  height: 48px;
   pointer-events: none;
+  z-index: 2;
 }
-.slot-sym--img img {
-  width: clamp(24px, 6vw, 44px);
-  height: clamp(24px, 6vw, 44px);
+.slot-reel-mask--top {
+  top: 0;
+  background: linear-gradient(to bottom,
+    var(--c-bg) 0%,
+    color-mix(in oklch, var(--c-bg) 60%, transparent) 50%,
+    transparent 100%);
+}
+.slot-reel-mask--bot {
+  bottom: 0;
+  background: linear-gradient(to top,
+    var(--c-bg) 0%,
+    color-mix(in oklch, var(--c-bg) 60%, transparent) 50%,
+    transparent 100%);
+}
+
+/* Ligne centrale lumineuse (payline du milieu) */
+.slot-reel-center-line {
+  position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 64px;
+  transform: translateY(-50%);
+  border-top: 1px solid color-mix(in oklch, var(--c-primary) 30%, transparent);
+  border-bottom: 1px solid color-mix(in oklch, var(--c-primary) 30%, transparent);
+  background: color-mix(in oklch, var(--c-primary) 4%, transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Animation atterrissage d'un rouleau */
+@keyframes reel-land {
+  0%   { transform: scaleY(1.06) translateY(-4px); }
+  55%  { transform: scaleY(0.96) translateY(2px); }
+  80%  { transform: scaleY(1.02); }
+  100% { transform: scaleY(1) translateY(0); }
+}
+.slot-reel--land {
+  animation: reel-land 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── SYMBOLE IMAGE ───────────────────────────────────────────────────────────────── */
+.slot-sym-img {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: var(--space-1);
+  position: relative;
+  filter: drop-shadow(0 0 4px color-mix(in oklch, var(--sym-color, #fff) 30%, transparent));
+}
+.slot-sym-img img {
+  width: clamp(32px, 5.5vw, 48px);
+  height: clamp(32px, 5.5vw, 48px);
   object-fit: contain;
-  display: block;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  display: block;
+}
+.slot-sym-name {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--sym-color, var(--c-text-faint));
+  text-align: center;
+  line-height: 1;
+  opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+.slot-sym-empty {
+  width: 32px; height: 32px;
+  background: var(--c-surface-2);
+  border-radius: var(--radius-sm);
+  opacity: 0.3;
 }
 
 /* ── SVG OVERLAY LIGNES DE GAIN ──────────────────────────────────────────────────── */
@@ -747,47 +860,11 @@
   z-index: 10;
 }
 
-/* ── ANIMATIONS CELLULES ────────────────────────────────────────────────────────── */
-@keyframes cell-spin {
-  0%   { transform: translateY(0);    filter: blur(0);   opacity: 1; }
-  25%  { transform: translateY(-6px); filter: blur(2px); opacity: 0.5; }
-  50%  { transform: translateY(6px);  filter: blur(3px); opacity: 0.4; }
-  75%  { transform: translateY(-3px); filter: blur(1px); opacity: 0.6; }
-  100% { transform: translateY(0);    filter: blur(0);   opacity: 1; }
-}
-.slot-cell--spin {
-  animation: cell-spin 0.11s linear infinite;
-  background: color-mix(in oklch, var(--c-primary) 8%, var(--c-bg)) !important;
+@keyframes slot-draw-line {
+  to { stroke-dashoffset: 0; }
 }
 
-@keyframes cell-land {
-  0%   { transform: scale(1.18) translateY(-6px); opacity: 0.7; }
-  55%  { transform: scale(0.92) translateY(3px);  opacity: 1; }
-  80%  { transform: scale(1.04) translateY(-1px); }
-  100% { transform: scale(1)    translateY(0); }
-}
-.slot-cell--land {
-  animation: cell-land 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes cell-win {
-  0%, 100% { box-shadow: none; }
-  50%       { box-shadow: inset 0 0 12px var(--c-primary); }
-}
-.slot-cell--win {
-  animation: cell-win 0.5s ease-in-out 3;
-}
-
-@keyframes credits-flash {
-  0%   { color: var(--c-text); }
-  30%  { color: var(--c-primary); text-shadow: var(--glow-green); }
-  100% { color: var(--c-text); text-shadow: none; }
-}
-.slot-credits--flash {
-  animation: credits-flash 0.5s ease both;
-}
-
-/* ── FLASH GRILLE PP (OR) ────────────────────────────────────────────────────────── */
+/* ── FLASH GRILLE ────────────────────────────────────────────────────────────────── */
 @keyframes slot-flash-gold {
   0%   { box-shadow: 0 0 0   #ffd700; border-color: var(--c-border); }
   30%  { box-shadow: 0 0 40px #ffd700; border-color: #ffd700; }
@@ -798,16 +875,71 @@
   animation: slot-flash-gold 1.2s ease;
 }
 
-/* ── FLASH GRILLE CHRONICLES (VIOLET) ───────────────────────────────────────────── */
-@keyframes slot-flash-chronicles {
-  0%   { box-shadow: 0 0 0   #c084fc; border-color: var(--c-border); }
-  20%  { box-shadow: 0 0 50px #c084fc; border-color: #c084fc; }
-  50%  { box-shadow: 0 0 80px #a855f7, 0 0 20px #c084fc inset; }
-  80%  { box-shadow: 0 0 30px #c084fcaa; border-color: #a855f7; }
-  100% { box-shadow: 0 0 0   #c084fc; border-color: var(--c-border); }
+/* ── BOUTONS STOP ────────────────────────────────────────────────────────────────── */
+.slot-stop-row {
+  display: flex;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 520px;
 }
-.slot-grid--flash-chronicles {
-  animation: slot-flash-chronicles 1.4s ease;
+.slot-stop-btn {
+  flex: 1;
+  padding: var(--space-2) var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface-2);
+  color: var(--c-text-faint);
+  cursor: not-allowed;
+  opacity: 0.4;
+  transition: all var(--transition);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.slot-stop-btn--active {
+  border-color: var(--c-red, #ef4444);
+  color: var(--c-red, #ef4444);
+  background: color-mix(in oklch, var(--c-red, #ef4444) 8%, var(--c-surface-2));
+  opacity: 1;
+  cursor: pointer;
+  box-shadow: 0 0 8px color-mix(in oklch, var(--c-red, #ef4444) 30%, transparent);
+  animation: stop-btn-pulse 0.8s ease-in-out infinite alternate;
+}
+@keyframes stop-btn-pulse {
+  from { box-shadow: 0 0 6px color-mix(in oklch, var(--c-red, #ef4444) 25%, transparent); }
+  to   { box-shadow: 0 0 14px color-mix(in oklch, var(--c-red, #ef4444) 50%, transparent); }
+}
+.slot-stop-btn--active:hover {
+  background: color-mix(in oklch, var(--c-red, #ef4444) 18%, var(--c-surface-2));
+  transform: translateY(-1px);
+}
+.slot-stop-btn:disabled:not(.slot-stop-btn--active) {
+  pointer-events: none;
+}
+
+/* ── WIN CELL ────────────────────────────────────────────────────────────────────── */
+@keyframes cell-win {
+  0%, 100% { box-shadow: none; }
+  50%       { box-shadow: inset 0 0 12px var(--c-primary); }
+}
+.slot-cell--win {
+  animation: cell-win 0.5s ease-in-out 3;
+  background: color-mix(in oklch, var(--c-primary) 12%, var(--c-bg)) !important;
+}
+
+/* ── CREDITS FLASH ───────────────────────────────────────────────────────────────── */
+@keyframes credits-flash {
+  0%   { color: var(--c-amber, #fbbf24); }
+  30%  { color: var(--c-primary); text-shadow: var(--glow-green); }
+  100% { color: var(--c-amber, #fbbf24); text-shadow: 0 0 10px color-mix(in oklch, var(--c-amber, #fbbf24) 40%, transparent); }
+}
+.slot-credits--flash {
+  animation: credits-flash 0.5s ease both;
 }
 
 /* ── MESSAGE ─────────────────────────────────────────────────────────────────────── */
@@ -820,23 +952,11 @@
   color: var(--c-text-faint);
   transition: color 0.2s;
 }
-.slot-msg--win {
-  color: var(--c-primary);
-  text-shadow: var(--glow-green);
-}
+.slot-msg--win     { color: var(--c-primary); text-shadow: var(--glow-green); }
 .slot-msg--jackpot {
   color: #ffd700;
   text-shadow: 0 0 10px #ffd700, 0 0 22px #ffd70066;
   animation: credits-flash 0.35s ease 4;
-}
-.slot-msg--chronicles {
-  color: #c084fc;
-  text-shadow: 0 0 10px #c084fc, 0 0 24px #a855f766;
-  animation: chronicles-msg-pulse 0.4s ease 3;
-}
-@keyframes chronicles-msg-pulse {
-  0%, 100% { opacity: 1; letter-spacing: 0.12em; }
-  50%       { opacity: 0.7; letter-spacing: 0.22em; text-shadow: 0 0 18px #c084fc; }
 }
 .slot-msg--lose { color: var(--c-text-faint); }
 .slot-msg--red  { color: var(--c-red, #f55); }
@@ -844,7 +964,7 @@
 /* ── BOUTON SPIN ─────────────────────────────────────────────────────────────────── */
 .slot-spin-btn {
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
   padding: var(--space-3) var(--space-6);
   background: var(--c-primary);
   color: var(--c-text-inv);
@@ -884,7 +1004,7 @@
 /* ── TABLE DES GAINS ─────────────────────────────────────────────────────────────── */
 .slot-paytable {
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
   border: 1px solid var(--c-border);
   border-radius: var(--radius-sm);
   background: var(--c-surface);
@@ -926,10 +1046,17 @@
   display: flex; align-items: center; gap: var(--space-2);
   padding: 2px 0;
 }
-.slot-pay-sym {
-  font-size: 16px;
-  line-height: 1;
-  width: 20px; text-align: center;
+.slot-pay-sym { font-size: 16px; line-height: 1; width: 20px; text-align: center; }
+.slot-pay-sym--img img {
+  width: 24px; height: 24px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.slot-pay-name {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  flex: 1;
 }
 .slot-pay-mult {
   font-family: var(--font-mono);
@@ -939,17 +1066,159 @@
   margin-left: auto;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   POPUP BIENVENUE MUTEN
+═══════════════════════════════════════════════════════════════ */
+
+#muten-welcome-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in oklch, var(--c-bg, #0d0e0f) 85%, transparent);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  padding: var(--space-4);
+}
+#muten-welcome-overlay.muten-welcome-overlay--in  { opacity: 1; }
+#muten-welcome-overlay.muten-welcome-overlay--out { opacity: 0; }
+
+.muten-popup {
+  position: relative;
+  max-width: 480px; width: 100%;
+  background: var(--c-surface, #1a1b1e);
+  border: 1px solid color-mix(in oklch, var(--c-amber, #fbbf24) 35%, var(--c-border, #2a2b2e));
+  border-radius: var(--radius-lg, 0.75rem);
+  padding: var(--space-8) var(--space-6);
+  box-shadow: 0 0 60px color-mix(in oklch, var(--c-amber, #fbbf24) 15%, transparent),
+              0 24px 48px color-mix(in oklch, #000 50%, transparent);
+  overflow: hidden;
+  transform: translateY(0);
+  animation: muten-popup-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes muten-popup-in {
+  from { transform: translateY(24px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+
+.muten-popup-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 0%,
+    color-mix(in oklch, var(--c-amber, #fbbf24) 12%, transparent) 0%,
+    transparent 65%);
+}
+
+.muten-popup-header {
+  display: flex; align-items: center; gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+.muten-avatar {
+  width: 72px; height: 72px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border: 2px solid color-mix(in oklch, var(--c-amber, #fbbf24) 50%, var(--c-border));
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  box-shadow: 0 0 16px color-mix(in oklch, var(--c-amber, #fbbf24) 20%, transparent);
+}
+.muten-popup-title {
+  display: flex; flex-direction: column; gap: var(--space-1);
+}
+.muten-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--c-amber, #fbbf24);
+  opacity: 0.7;
+}
+.muten-name {
+  font-family: var(--font-display, var(--font-mono));
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem);
+  letter-spacing: 0.15em;
+  color: var(--c-text);
+  text-shadow: 0 0 14px color-mix(in oklch, var(--c-amber, #fbbf24) 30%, transparent);
+}
+
+.muten-popup-body { margin-bottom: var(--space-6); }
+.muten-msg {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.8;
+  color: var(--c-text-muted);
+  letter-spacing: 0.05em;
+}
+.muten-msg strong {
+  color: var(--c-text);
+  font-weight: 600;
+}
+.muten-credits {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 1.05em;
+  font-weight: 700;
+  color: var(--c-amber, #fbbf24);
+  text-shadow: 0 0 10px color-mix(in oklch, var(--c-amber, #fbbf24) 40%, transparent);
+  padding: 0 var(--space-1);
+  animation: muten-credits-pulse 1.2s ease-in-out infinite alternate;
+}
+@keyframes muten-credits-pulse {
+  from { text-shadow: 0 0 6px  color-mix(in oklch, var(--c-amber, #fbbf24) 30%, transparent); }
+  to   { text-shadow: 0 0 20px color-mix(in oklch, var(--c-amber, #fbbf24) 60%, transparent); }
+}
+
+/* Pluie de pièces */
+.muten-popup-coins {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.muten-coin {
+  position: absolute;
+  top: -20px;
+  left: var(--x, 50%);
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffe066, #b8860b);
+  box-shadow: 0 0 6px #ffd700;
+  animation: coin-fall 1.4s ease-in var(--delay, 0s) both;
+}
+@keyframes coin-fall {
+  0%   { transform: translateY(0)     rotate(0deg);   opacity: 0.9; }
+  80%  { opacity: 0.7; }
+  100% { transform: translateY(120px) rotate(360deg); opacity: 0; }
+}
+
+.muten-popup-close {
+  width: 100%;
+  padding: var(--space-3) var(--space-6);
+  background: var(--c-amber, #fbbf24);
+  color: #0d0e0f;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition, 180ms cubic-bezier(0.16, 1, 0.3, 1));
+  position: relative; z-index: 1;
+}
+.muten-popup-close:hover {
+  background: color-mix(in oklch, var(--c-amber, #fbbf24) 80%, white);
+  box-shadow: 0 0 20px color-mix(in oklch, var(--c-amber, #fbbf24) 50%, transparent);
+  transform: translateY(-1px);
+}
+.muten-popup-close:active {
+  transform: translateY(1px);
+}
+
 /* ── RESPONSIVE MOBILE ───────────────────────────────────────────────────────────── */
-@media (max-width: 520px) {
-  .slot-grid, .slot-spin-btn, .slot-paytable {
-    max-width: 100%;
+@media (max-width: 540px) {
+  .slot-reels-wrap { height: 165px; }
+  .slot-reel-item  { height: 52px; }
+  .slot-reel-center-line { height: 52px; }
+  .slot-sym-img img {
+    width: clamp(24px, 8vw, 40px);
+    height: clamp(24px, 8vw, 40px);
   }
-  .slot-sym {
-    font-size: clamp(14px, 5.5vw, 24px);
-  }
-  .slot-sym--img img {
-    width: clamp(18px, 7vw, 36px);
-    height: clamp(18px, 7vw, 36px);
-  }
-  .slot-credit-val { font-size: var(--text-base); }
+  .slot-credits-panel { flex-direction: column; align-items: flex-start; }
+  .slot-credits-sub   { width: 100%; justify-content: space-around; }
+  .slot-stop-btn { font-size: 9px; padding: var(--space-1); }
 }
