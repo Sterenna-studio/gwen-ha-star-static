@@ -63,6 +63,11 @@
         <span class="kpi-val" id="kpi-pg-rep">·</span>
         <span class="kpi-sub">GANG · LEADERBOARD</span>
       </div>
+      <div class="kpi" style="--kpi-c:var(--c-gold, #ffd700)">
+        <span class="kpi-lbl">MONNAIE</span>
+        <span class="kpi-val" id="kpi-chronicles">·</span>
+        <span class="kpi-sub">CHRONICLES · CASINO</span>
+      </div>
       <div class="kpi" style="--kpi-c:var(--c-purple)">
         <span class="kpi-lbl">SESSION</span>
         <span class="kpi-val" id="kpi-uptime">·</span>
@@ -268,6 +273,15 @@
       populateWelcome(user,profile);
       loadMembers();
       loadPGStats(user.id);
+
+      // Charger les chronicles pour le KPI monnaie
+      (async () => {
+        const el = document.getElementById('kpi-chronicles');
+        try {
+          const { data } = await supabase.from('profiles').select('chronicles').eq('id', user.id).single();
+          if (el) el.textContent = (data?.chronicles ?? 0).toLocaleString('fr-FR');
+        } catch { if (el) el.textContent = '?'; }
+      })();
 
       // CASINO — init après auth pour avoir user.id
       const slots = new SlotMachine('widget-slots');

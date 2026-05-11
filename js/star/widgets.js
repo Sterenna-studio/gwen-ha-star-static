@@ -402,12 +402,13 @@ export class SlotMachine {
     this.credits     = 0;
     this.spinning    = false;
     this._isNew      = false;
+    // ✅ FIX: _buildPool() AVANT _buildReel() pour que this._pool soit défini
+    this._pool       = this._buildPool();
     this._reels      = Array.from({ length: SlotMachine.COLS }, () => this._buildReel());
     this._reelPos    = Array(SlotMachine.COLS).fill(0);
     this._reelSpeed  = Array(SlotMachine.COLS).fill(0);
     this._colStopped = Array(SlotMachine.COLS).fill(true);
     this._animId     = null;
-    this._pool       = this._buildPool();
   }
 
   // ── INIT ──────────────────────────────────────────────────────────────
@@ -451,6 +452,9 @@ export class SlotMachine {
         .from('profiles')
         .update({ chronicles: this.credits })
         .eq('id', this.userId);
+      // Mettre à jour le KPI monnaie dans le dashboard
+      const kpiEl = document.getElementById('kpi-chronicles');
+      if (kpiEl) kpiEl.textContent = this.credits.toLocaleString('fr-FR');
     } catch { /* silencieux */ }
   }
 
@@ -833,8 +837,7 @@ export class SlotMachine {
     const close = () => {
       overlay.classList.remove('muten-welcome-overlay--in');
       overlay.classList.add('muten-welcome-overlay--out');
-      setTimeout(() => overlay.remove(), 400);
-      _sfx.coin(); _sfx.coin();
+      setTimeout(() => overlay.remove(), 500);
     };
     document.getElementById('muten-popup-close')?.addEventListener('click', close);
     overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
