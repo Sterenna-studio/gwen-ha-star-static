@@ -10,6 +10,8 @@ import { supabase } from '../supabase.js';
 // ── SOUND ENGINE ─────────────────────────────────────────────────────────────────────
 const _sfx = {
   _ctx: null,
+  _unlocked: false,
+  // Crée le contexte uniquement après un geste utilisateur
   _get() {
     if (!this._ctx) {
       try { this._ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return null; }
@@ -89,10 +91,7 @@ const _sfx = {
       this._tone(f, 'sawtooth', 0.07, 0.01, 0.18, t);
     });
   },
-  boot() {
-    [440, 550, 660].forEach((f, i) =>
-      setTimeout(() => this._tone(f, 'sine', 0.06, 0.01, 0.10), i * 100));
-  },
+  // boot() supprimé — ne jamais appeler sans geste utilisateur (Chrome AudioContext policy)
   coin() {
     const ctx = this._get(); if (!ctx) return;
     this._tone(1200, 'sine', 0.07, 0.003, 0.04);
@@ -118,12 +117,13 @@ export class VideoDay {
   async load() {
     if (!this.el) return;
     try {
+      // maybeSingle() évite l'erreur 406 / 404 si la table est vide ou absente
       const { data, error } = await supabase
         .from('daily_content')
         .select('title, url, platform, note')
         .order('date', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
       if (error || !data) { this._renderEmpty(); return; }
       this._renderVideo(data);
     } catch { this._renderEmpty(); }
@@ -164,7 +164,6 @@ export class VideoDay {
 }
 
 // ── WEB RADIO ─────────────────────────────────────────────────────────────────────────
-// Fix : fetch depuis /jukebox/records.json (chemin absolu) + src audio absolu
 export class RadioPlayer {
   constructor(containerId) {
     this.el        = document.getElementById(containerId);
@@ -221,16 +220,13 @@ export class RadioPlayer {
 
   async _loadTracks() {
     try {
-      // ✅ Chemin absolu — fonctionne depuis n'importe quelle sous-page
       const res  = await fetch('/jukebox/records.json');
       const json = await res.json();
       const raw  = Array.isArray(json) ? json : (json.tracks ?? []);
-      // Filtrer les pistes visibles + construire le src absolu
       this.tracks = raw
         .filter(t => t.display !== false)
         .map(t => ({
           ...t,
-          // src relatif dans records.json → chemin absolu /jukebox/audio/...
           file: t.src ? `/jukebox/${t.src}` : (t.file ?? t.url ?? ''),
           cover: t.coverImage ? `/jukebox/${t.coverImage}` : null,
           color1: t.coverColor ?? '#14161a',
@@ -368,6 +364,7 @@ export class RadioPlayer {
 //  Symboles : PP pixel art + véhicules (pool pondéré)
 //  Monnaie  : chronicles (Supabase profiles.chronicles)
 //  Lignes   : L0 milieu (off 0) ×1.0 | L1 haut (off -1) ×0.5 | L2 bas (off +1) ×0.5
+//  SFX      : déclenchés UNIQUEMENT sur action utilisateur (Chrome autoplay policy)
 
 export class SlotMachine {
   static IMG_BASE = '../shared/images';
@@ -402,7 +399,6 @@ export class SlotMachine {
     this.credits     = 0;
     this.spinning    = false;
     this._isNew      = false;
-    // ✅ FIX: _buildPool() AVANT _buildReel() pour que this._pool soit défini
     this._pool       = this._buildPool();
     this._reels      = Array.from({ length: SlotMachine.COLS }, () => this._buildReel());
     this._reelPos    = Array(SlotMachine.COLS).fill(0);
@@ -411,17 +407,17 @@ export class SlotMachine {
     this._animId     = null;
   }
 
-  // ── INIT ──────────────────────────────────────────────────────────────
+  // ── INIT ──────────────────────────────────────────────────────────────────────────
   async init(userId) {
     if (userId) this.userId = userId;
     await this._loadCredits();
     this._render();
     this._startRenderLoop();
-    _sfx.boot();
+    // ✅ Pas de _sfx.boot() ici — AudioContext interdit avant geste utilisateur
     if (this._isNew) setTimeout(() => this._showWelcomePopup(), 800);
   }
 
-  // ── SUPABASE ──────────────────────────────────────────────────────────
+  // ── SUPABASE ──────────────────────────────────────────────────────────────────────
   async _loadCredits() {
     if (!this.userId) { this.credits = 100; return; }
     try {
@@ -452,13 +448,12 @@ export class SlotMachine {
         .from('profiles')
         .update({ chronicles: this.credits })
         .eq('id', this.userId);
-      // Mettre à jour le KPI monnaie dans le dashboard
       const kpiEl = document.getElementById('kpi-chronicles');
       if (kpiEl) kpiEl.textContent = this.credits.toLocaleString('fr-FR');
     } catch { /* silencieux */ }
   }
 
-  // ── POOL & BANDE ──────────────────────────────────────────────────────
+  // ── POOL & BANDE ──────────────────────────────────────────────────────────────────
   _buildPool() {
     const pool = [];
     for (const sym of SlotMachine.SYMBOLS)
@@ -481,7 +476,7 @@ export class SlotMachine {
     return this._reels[col][idx];
   }
 
-  // ── RENDER HTML ────────────────────────────────────────────────────────
+  // ── RENDER HTML ───────────────────────────────────────────────────────────────────
   _render() {
     if (!this.el) return;
     const COLS = SlotMachine.COLS;
@@ -581,7 +576,7 @@ export class SlotMachine {
     }
   }
 
-  // ── BUILD CELLS HTML ──────────────────────────────────────────────────
+  // ── BUILD CELLS HTML ──────────────────────────────────────────────────────────────
   _buildReelCells(col) {
     const offsets = [-2, -1, 0, 1, 2];
     return offsets.map((off, i) => {
@@ -601,7 +596,7 @@ export class SlotMachine {
     </div>`;
   }
 
-  // ── RENDER LOOP (rAF) ─────────────────────────────────────────────────
+  // ── RENDER LOOP (rAF) ─────────────────────────────────────────────────────────────
   _startRenderLoop() {
     const loop = () => {
       this._animId = requestAnimationFrame(loop);
@@ -613,6 +608,7 @@ export class SlotMachine {
           this._updateReelDOM(col);
         }
       }
+      // tick SFX seulement si rouleaux actifs (déjà dans un contexte de geste utilisateur)
       if (anySpinning && Math.random() < 0.04) _sfx.tick();
     };
     loop();
@@ -632,7 +628,7 @@ export class SlotMachine {
     });
   }
 
-  // ── SPIN ──────────────────────────────────────────────────────────────
+  // ── SPIN ──────────────────────────────────────────────────────────────────────────
   async spin() {
     if (this.spinning) return;
     if (this.credits < this.bet) { this._setMsg('CREDITS INSUFFISANTS', 'red'); return; }
@@ -640,7 +636,7 @@ export class SlotMachine {
     this.spinning = true;
     this.credits -= this.bet;
     this._updateCreditsDisplay();
-    _sfx.lever();
+    _sfx.lever(); // ✅ ici = après clic utilisateur → AudioContext autorisé
     this._setMsg('LANCÉ — STOPPE LES ROULEAUX !', '');
     this._clearGainHighlight();
 
@@ -658,7 +654,6 @@ export class SlotMachine {
       if (btn) { btn.disabled = false; btn.classList.add('slot-stop-btn3--active'); }
     }
 
-    // Attendre que le joueur stoppe TOUTES les colonnes (pas d'auto-stop)
     await this._waitAllStopped();
     await new Promise(r => setTimeout(r, 220));
 
@@ -700,7 +695,7 @@ export class SlotMachine {
     this.spinning = false;
   }
 
-  // ── STOP UNE COLONNE ──────────────────────────────────────────────────
+  // ── STOP UNE COLONNE ──────────────────────────────────────────────────────────────
   _stopCol(col) {
     if (this._colStopped[col] || !this.spinning) return;
     this._reelPos[col] = Math.round(this._reelPos[col]) % SlotMachine.REEL_LEN;
@@ -719,7 +714,7 @@ export class SlotMachine {
     if (btn) { btn.disabled = true; btn.classList.remove('slot-stop-btn3--active'); }
   }
 
-  // ── WAIT ALL STOPPED ──────────────────────────────────────────────────
+  // ── WAIT ALL STOPPED ──────────────────────────────────────────────────────────────
   _waitAllStopped() {
     return new Promise(resolve => {
       const check = () => {
@@ -730,7 +725,7 @@ export class SlotMachine {
     });
   }
 
-  // ── ÉVALUATION ────────────────────────────────────────────────────────
+  // ── ÉVALUATION ────────────────────────────────────────────────────────────────────
   _evaluateLines() {
     const wins = [];
     for (const line of SlotMachine.WIN_LINES) {
@@ -743,7 +738,7 @@ export class SlotMachine {
     return wins;
   }
 
-  // ── HIGHLIGHT WINS ────────────────────────────────────────────────────
+  // ── HIGHLIGHT WINS ────────────────────────────────────────────────────────────────
   _highlightWinCells(wins) {
     for (const w of wins) {
       const viewIdx = SlotMachine.ACTIVE_ROW + w.line.rowOff;
@@ -764,7 +759,7 @@ export class SlotMachine {
     document.querySelectorAll('.slot3-cell--win').forEach(c => c.classList.remove('slot3-cell--win'));
   }
 
-  // ── UI ────────────────────────────────────────────────────────────────
+  // ── UI ────────────────────────────────────────────────────────────────────────────
   _updateCreditsDisplay(flash = false) {
     const el = document.getElementById('slot3-credits');
     if (!el) return;
@@ -798,9 +793,9 @@ export class SlotMachine {
     setTimeout(() => el.classList.remove(`slot3-flash-${type}`), 1400);
   }
 
-  // ── POPUP BIENVENUE ───────────────────────────────────────────────────
+  // ── POPUP BIENVENUE ───────────────────────────────────────────────────────────────
   _showWelcomePopup() {
-    _sfx.welcome();
+    // _sfx.welcome() déplacé dans le handler du bouton close (geste utilisateur requis)
     const overlay = document.createElement('div');
     overlay.id = 'muten-welcome-overlay';
     overlay.innerHTML = `
@@ -835,6 +830,8 @@ export class SlotMachine {
     requestAnimationFrame(() => overlay.classList.add('muten-welcome-overlay--in'));
 
     const close = () => {
+      _sfx.welcome(); // ✅ son déclenché sur clic utilisateur → AudioContext autorisé
+      _sfx.coin();
       overlay.classList.remove('muten-welcome-overlay--in');
       overlay.classList.add('muten-welcome-overlay--out');
       setTimeout(() => overlay.remove(), 500);
