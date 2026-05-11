@@ -250,7 +250,7 @@ export class CasinoCore {
           <div class="casino-game-card" data-game="slots">
             <div class="casino-game-card__icon">🎰</div>
             <div class="casino-game-card__name">Slots</div>
-            <div class="casino-game-card__desc">Crew pixel art.<br>Stop the reels.</div>
+            <div class="casino-game-card__desc">Spin the reels.<br>Match symbols, win big.</div>
             <div class="casino-game-card__badge">1 – 50 CR</div>
           </div>
         </div>
@@ -297,7 +297,7 @@ export class CasinoCore {
         case 'blackjack': mod = await import('./games/blackjack.js'); break;
         case 'roulette':  mod = await import('./games/roulette.js');  break;
         case 'dice':      mod = await import('./games/dice.js');       break;
-        case 'slots':     this._showSlotsRedirect(area); return;
+        case 'slots':     mod = await import('./games/slots.js');      break;
         default:
           area.innerHTML = '<p style="color:var(--c-lose)">Jeu inconnu.</p>';
           return;
@@ -308,15 +308,6 @@ export class CasinoCore {
       console.error('Casino: erreur chargement jeu', e);
       area.innerHTML = `<p style="color:var(--c-lose)">Erreur: ${e.message}</p>`;
     }
-  }
-
-  _showSlotsRedirect(area) {
-    area.innerHTML = `
-      <div style="text-align:center;padding:40px;display:flex;flex-direction:column;align-items:center;gap:20px">
-        <div style="font-size:48px">🎰</div>
-        <p style="color:var(--c-muted);letter-spacing:2px;text-transform:uppercase">Les Slots sont disponibles<br>sur la page principale STAR</p>
-        <a href="/star/index.html" class="btn btn-secondary" style="display:inline-block">← Retour STAR</a>
-      </div>`;
   }
 
   /** API pour les jeux : change les crédits et joue un son */
