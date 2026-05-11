@@ -47,37 +47,37 @@ export const SFX = {
     g.gain.linearRampToValueAtTime(0, T + dur);
     s.start(T);
   },
-  click()     { this._t(880, 'sine', 0.08, 0.005, 0.06); },
-  card()      { this._t(600, 'triangle', 0.06, 0.003, 0.08); this._n(0.03, 0.04); },
-  chip()      { this._t(1400, 'sine', 0.05, 0.003, 0.05); },
-  spin()      {
+  click()    { this._t(880, 'sine', 0.08, 0.005, 0.06); },
+  card()     { this._t(600, 'triangle', 0.06, 0.003, 0.08); this._n(0.03, 0.04); },
+  chip()     { this._t(1400, 'sine', 0.05, 0.003, 0.05); },
+  spin()     {
     const ctx = this._get(); if (!ctx) return;
     [200, 180, 160, 140].forEach((f, i) => this._t(f, 'sawtooth', 0.06, 0.01, 0.05, ctx.currentTime + i * 0.05));
     this._n(0.04, 0.3);
   },
-  win()       {
+  win()      {
     const ctx = this._get(); if (!ctx) return;
     [523, 659, 784, 1047].forEach((f, i) => this._t(f, 'triangle', 0.10, 0.01, 0.14, ctx.currentTime + i * 0.09));
   },
-  bigWin()    {
+  bigWin()   {
     const ctx = this._get(); if (!ctx) return;
     [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => this._t(f, 'square', 0.08, 0.01, 0.16, ctx.currentTime + i * 0.07));
   },
-  lose()      {
+  lose()     {
     const ctx = this._get(); if (!ctx) return;
     [330, 280, 220].forEach((f, i) => this._t(f, 'sawtooth', 0.07, 0.01, 0.18, ctx.currentTime + i * 0.12));
   },
-  tick()      { this._t(1200, 'square', 0.03, 0.002, 0.02); },
-  diceRoll()  { this._n(0.08, 0.15); this._t(800, 'square', 0.04, 0.002, 0.06); },
-  push()      { this._t(440, 'sine', 0.06, 0.01, 0.2); },
+  tick()     { this._t(1200, 'square', 0.03, 0.002, 0.02); },
+  diceRoll() { this._n(0.08, 0.15); this._t(800, 'square', 0.04, 0.002, 0.06); },
+  push()     { this._t(440, 'sine', 0.06, 0.01, 0.2); },
 };
 
 // ── CREDITS MANAGER ──────────────────────────────────────────────────────────
 export class CreditsManager {
   constructor(supabase, userId) {
-    this.sb       = supabase;
-    this.userId   = userId;
-    this.credits  = 0;
+    this.sb        = supabase;
+    this.userId    = userId;
+    this.credits   = 0;
     this._watchers = [];
   }
 
@@ -125,7 +125,6 @@ export class CreditsManager {
 
   _notify() {
     this._watchers.forEach(fn => fn(this.credits));
-    // sync KPI STAR si présent
     const kpi = document.getElementById('kpi-chronicles');
     if (kpi) kpi.textContent = this.credits.toLocaleString('fr-FR');
   }
@@ -134,10 +133,10 @@ export class CreditsManager {
 // ── CASINO CORE ──────────────────────────────────────────────────────────────
 export class CasinoCore {
   /**
-   * @param {object} opts
-   * @param {string}  [opts.mount]    - sélecteur CSS du conteneur (défaut: 'body')
-   * @param {string}  [opts.userId]   - user.id Supabase
-   * @param {object}  [opts.supabase] - client Supabase (défaut: import interne)
+   * @param {object}  opts
+   * @param {string}  [opts.mount]      - sélecteur CSS du conteneur (défaut: 'body')
+   * @param {string}  [opts.userId]     - user.id Supabase
+   * @param {object}  [opts.supabase]   - client Supabase (défaut: import interne)
    * @param {boolean} [opts.standalone] - true = gérer le shell HTML complet
    */
   static async boot(opts = {}) {
@@ -147,12 +146,12 @@ export class CasinoCore {
   }
 
   constructor(opts) {
-    this.mountSel   = opts.mount ?? 'body';
-    this.userId     = opts.userId ?? null;
-    this.sb         = opts.supabase ?? _defaultSupabase;
-    this.standalone = opts.standalone ?? true;
-    this.credits    = new CreditsManager(this.sb, this.userId);
-    this._gameEl    = null;
+    this.mountSel     = opts.mount ?? 'body';
+    this.userId       = opts.userId ?? null;
+    this.sb           = opts.supabase ?? _defaultSupabase;
+    this.standalone   = opts.standalone ?? true;
+    this.credits      = new CreditsManager(this.sb, this.userId);
+    this._gameEl      = null;
     this._currentGame = null;
     this._toastTimer  = null;
   }
@@ -160,12 +159,9 @@ export class CasinoCore {
   async _init() {
     this._root = document.querySelector(this.mountSel);
     if (!this._root) throw new Error(`CasinoCore: mount "${this.mountSel}" not found`);
-
     if (this.standalone) this._renderShell();
-
     this._gameEl = this._root.querySelector('#casino-game-area');
     this._huds   = this._root.querySelectorAll('.casino-credits-hud__value');
-
     await this.credits.load();
     this.credits.watch(v => this._updateHUD(v));
     this._updateHUD(this.credits.credits);
@@ -213,12 +209,9 @@ export class CasinoCore {
     clearTimeout(this._toastTimer);
     toast.textContent = msg;
     toast.className = `visible toast-${type}`;
-    this._toastTimer = setTimeout(() => {
-      toast.classList.remove('visible');
-    }, duration);
+    this._toastTimer = setTimeout(() => toast.classList.remove('visible'), duration);
   }
 
-  /** Affiche le lobby des jeux */
   showLobby() {
     const area = this._root.querySelector('#casino-game-area');
     if (!area) return;
@@ -244,18 +237,18 @@ export class CasinoCore {
           <div class="casino-game-card" data-game="dice">
             <div class="casino-game-card__icon">🎲</div>
             <div class="casino-game-card__name">Dice</div>
-            <div class="casino-game-card__desc">Roll & hold.<br>Build combos, score big.</div>
+            <div class="casino-game-card__desc">Roll &amp; hold.<br>Build combos, score big.</div>
             <div class="casino-game-card__badge">5 – 100 CR</div>
           </div>
           <div class="casino-game-card" data-game="slots">
             <div class="casino-game-card__icon">🎰</div>
             <div class="casino-game-card__name">Slots</div>
-            <div class="casino-game-card__desc">Spin the reels.<br>Match symbols, win big.</div>
+            <div class="casino-game-card__desc">Star symbols.<br>Spin the reels.</div>
             <div class="casino-game-card__badge">1 – 50 CR</div>
           </div>
         </div>
 
-        <div class="casino-stats-bar" id="casino-stats-bar">
+        <div class="casino-stats-bar">
           <div class="casino-stat">
             <span class="casino-stat__label">Chronicles</span>
             <span class="casino-stat__value" id="casino-stat-cr">—</span>
@@ -285,7 +278,6 @@ export class CasinoCore {
     });
   }
 
-  /** Charge et monte un jeu par son slug */
   async showGame(slug) {
     const area = this._root.querySelector('#casino-game-area');
     if (!area) return;
@@ -310,7 +302,6 @@ export class CasinoCore {
     }
   }
 
-  /** API pour les jeux : change les crédits et joue un son */
   async reward(delta, sfxName = 'win') {
     const hud = this._root.querySelector('#casino-hud-credits');
     if (hud) {

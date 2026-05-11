@@ -3,332 +3,294 @@
  * Export : mount(container, casinoCore) → instance
  *
  * Mécaniques :
- *  - 3 rouleaux × 5 symboles (arrêt séquentiel)
- *  - Mise 1 – 50 CR ajustable
- *  - Paiements : 3× jackpot (×50), 3× étoile (×20), 3× lune (×10),
- *                3× identiques (×5), 2× jackpot (×3), aucune (×0)
- *  - Bouton SPIN + auto-stop par clic sur rouleau en cours
+ *  - 3 rouleaux × 3 lignes visibles
+ *  - 7 symboles pondérés (thème STAR)
+ *  - Mise variable (1–50 CR) via presets
+ *  - Paylines : 3 identiques = x mult, 2 identiques = x1 (remboursé)
+ *  - Auto-spin toggle
+ *  - SFX via core (spin, win, bigWin, lose, chip, tick, push)
  */
 
-import { SFX } from '../casino-core.js';
-
-// ── Symboles ─────────────────────────────────────────────────────────────────
+// ── SYMBOLES ─────────────────────────────────────────────────────────────────
 const SYMBOLS = [
-  { id: 'jackpot', glyph: '★', label: 'JACKPOT', weight: 1  },
-  { id: 'star',    glyph: '✦', label: 'STAR',    weight: 3  },
-  { id: 'moon',    glyph: '☽', label: 'MOON',    weight: 5  },
-  { id: 'gem',     glyph: '◈', label: 'GEM',     weight: 8  },
-  { id: 'bar',     glyph: '▰', label: 'BAR',     weight: 10 },
-  { id: 'coin',    glyph: '◉', label: 'COIN',    weight: 14 },
-  { id: 'seven',   glyph: '7', label: 'SEVEN',   weight: 6  },
-  { id: 'bell',    glyph: '♪', label: 'BELL',    weight: 7  },
+  { id: 'star',   glyph: '⭐', mult: 10, weight: 4  },
+  { id: 'gem',    glyph: '💎', mult: 8,  weight: 5  },
+  { id: 'planet', glyph: '🪐', mult: 6,  weight: 6  },
+  { id: 'rocket', glyph: '🚀', mult: 5,  weight: 8  },
+  { id: 'comet',  glyph: '☄️', mult: 4,  weight: 10 },
+  { id: 'moon',   glyph: '🌙', mult: 3,  weight: 14 },
+  { id: 'bolt',   glyph: '⚡',  mult: 2,  weight: 18 },
 ];
 
 // Pool pondéré
-const POOL = [];
-for (const s of SYMBOLS) for (let i = 0; i < s.weight; i++) POOL.push(s);
+const POOL = SYMBOLS.flatMap(s => Array(s.weight).fill(s));
 
-// Table de paiement (multiplicateur × mise)
-const PAYOUTS = [
-  { match: 3, id: 'jackpot', mult: 50,  label: '★★★ JACKPOT ★★★' },
-  { match: 3, id: 'seven',   mult: 25,  label: '7 7 7 — BIG WIN'  },
-  { match: 3, id: 'star',    mult: 20,  label: '✦✦✦ STAR WIN'    },
-  { match: 3, id: 'moon',    mult: 10,  label: '☽☽☽ MOON WIN'    },
-  { match: 3, id: '*',       mult: 5,   label: 'TRIPLE — WIN ×5'  },
-  { match: 2, id: 'jackpot', mult: 3,   label: '★★ JACKPOT PAIR'  },
-  { match: 2, id: 'seven',   mult: 2,   label: '7 7 — PAIR'       },
-];
-
-const BETS = [1, 2, 5, 10, 20, 50];
-
-function weightedRandom() {
+function randSymbol() {
   return POOL[Math.floor(Math.random() * POOL.length)];
 }
 
-function evaluate(row) {
-  // 3 identiques spécifiques
-  for (const p of PAYOUTS) {
-    if (p.match === 3 && p.id !== '*' && row.every(s => s.id === p.id)) return p;
-  }
-  // 3 identiques quelconques
-  if (row[0].id === row[1].id && row[1].id === row[2].id) {
-    return PAYOUTS.find(p => p.match === 3 && p.id === '*');
-  }
-  // Paires jackpot / seven
-  for (const p of PAYOUTS.filter(p => p.match === 2)) {
-    if (row.filter(s => s.id === p.id).length >= 2) return p;
-  }
-  return null;
-}
-
-// ── Export principal ──────────────────────────────────────────────────────────
+// ── EXPORT ───────────────────────────────────────────────────────────────────
 export async function mount(container, core) {
   const game = new SlotsGame(container, core);
   game.render();
   return game;
 }
 
-// ── Classe principale ─────────────────────────────────────────────────────────
+// ── CLASSE PRINCIPALE ────────────────────────────────────────────────────────
 class SlotsGame {
   constructor(container, core) {
-    this.el   = container;
-    this.core = core;
-    this.bet  = 5;
-    this.spinning = false;
-    this.reels    = [null, null, null];  // symboles résultats
-    this._stopFlags = [false, false, false];
-    this._spinTimers = [];
-    this._reelEls    = [];
+    this.el         = container;
+    this.core       = core;
+    this.bet        = 5;
+    this.BETS       = [1, 2, 5, 10, 20, 50];
+    this.spinning   = false;
+    this.autoSpin   = false;
+    this._autoTimer = null;
+    // 3 rouleaux × 3 lignes visibles
+    this.reels      = [[null,null,null],[null,null,null],[null,null,null]];
+    this._initReels();
   }
 
+  _initReels() {
+    for (let r = 0; r < 3; r++)
+      for (let row = 0; row < 3; row++)
+        this.reels[r][row] = randSymbol();
+  }
+
+  // ── RENDER ─────────────────────────────────────────────────────────────────
   render() {
     this.el.innerHTML = `
       <div class="game-wrap slots-wrap">
 
-        <!-- Paytable -->
-        <details class="slots-paytable">
-          <summary>PAYTABLE ▾</summary>
-          <div class="slots-paytable__grid">
-            <span>★★★ JACKPOT</span><span>×50</span>
-            <span>7 7 7</span><span>×25</span>
-            <span>✦✦✦ STAR</span><span>×20</span>
-            <span>☽☽☽ MOON</span><span>×10</span>
-            <span>3× identiques</span><span>×5</span>
-            <span>★★ paire</span><span>×3</span>
-            <span>7 7 paire</span><span>×2</span>
-          </div>
-        </details>
-
         <!-- Machine -->
         <div class="slots-machine">
-          <div class="slots-window">
-            <div class="slots-reel-wrap">
-              <div class="slots-reel" id="sl-reel-0" data-reel="0"><span class="slots-symbol">?</span></div>
-              <div class="slots-reel" id="sl-reel-1" data-reel="1"><span class="slots-symbol">?</span></div>
-              <div class="slots-reel" id="sl-reel-2" data-reel="2"><span class="slots-symbol">?</span></div>
-            </div>
-            <div class="slots-payline" aria-hidden="true"></div>
+          <div class="slots-title">★ STAR SLOTS ★</div>
+
+          <!-- Rouleaux -->
+          <div class="slots-reels" id="slots-reels">
+            ${[0,1,2].map(r => `
+              <div class="slots-reel" id="slots-reel-${r}">
+                ${[0,1,2].map(row => `
+                  <div class="slots-cell${row === 1 ? ' slots-cell--center' : ''}" id="slots-cell-${r}-${row}">
+                    ${this.reels[r][row].glyph}
+                  </div>
+                `).join('')}
+              </div>
+            `).join('')}
           </div>
 
+          <!-- Payline center -->
+          <div class="slots-payline" aria-hidden="true"></div>
+
           <!-- Résultat -->
-          <div class="game-result" id="sl-result">GOOD LUCK</div>
+          <div class="game-result" id="slots-result">PLACE YOUR BET &amp; SPIN</div>
         </div>
 
-        <!-- Commandes -->
+        <!-- Paytable -->
+        <div class="slots-paytable">
+          <div class="slots-paytable__title">PAYTABLE</div>
+          ${[...SYMBOLS].sort((a,b) => b.mult - a.mult).map(s =>
+            `<div class="slots-pay-row">
+              <span class="slots-pay-sym">${s.glyph} ${s.glyph} ${s.glyph}</span>
+              <span class="slots-pay-mult">× ${s.mult}</span>
+            </div>`
+          ).join('')}
+          <div class="slots-pay-row slots-pay-row--minor">
+            <span class="slots-pay-sym">X X —</span>
+            <span class="slots-pay-mult">× 1 (pair)</span>
+          </div>
+        </div>
+
+        <!-- Contrôles -->
         <div class="slots-controls">
-          <!-- Mise -->
           <div class="bet-panel">
             <span class="bet-panel__label">Bet</span>
             <button class="bet-btn" id="sl-bet-down">−</button>
             <span class="bet-value" id="sl-bet-display">${this.bet}</span>
             <button class="bet-btn" id="sl-bet-up">+</button>
             <div class="bet-presets">
-              ${BETS.map(b => `<button class="bet-preset-btn" data-bet="${b}">${b}</button>`).join('')}
+              ${this.BETS.map(b => `<button class="bet-preset-btn" data-bet="${b}">${b}</button>`).join('')}
             </div>
           </div>
 
-          <!-- SPIN -->
           <div class="action-row">
             <button class="btn btn-primary btn-spin" id="sl-spin">SPIN</button>
-            <button class="btn btn-secondary" id="sl-stop-all" disabled>STOP ALL</button>
-          </div>
-
-          <!-- Stats session -->
-          <div class="slots-session" id="sl-session">
-            <span>SPINS <b id="sl-stat-spins">0</b></span>
-            <span>WINS  <b id="sl-stat-wins">0</b></span>
+            <button class="btn btn-secondary" id="sl-auto" aria-pressed="false">AUTO</button>
           </div>
         </div>
 
       </div>`;
 
-    this._reelEls = [
-      this.el.querySelector('#sl-reel-0'),
-      this.el.querySelector('#sl-reel-1'),
-      this.el.querySelector('#sl-reel-2'),
-    ];
-
-    this._sessionSpins = 0;
-    this._sessionWins  = 0;
-
     this._bind();
   }
 
+  // ── BIND ───────────────────────────────────────────────────────────────────
   _bind() {
     this.el.querySelector('#sl-spin').addEventListener('click', () => this._spin());
-    this.el.querySelector('#sl-stop-all').addEventListener('click', () => this._stopAll());
+    this.el.querySelector('#sl-auto').addEventListener('click', () => this._toggleAuto());
 
     this.el.querySelector('#sl-bet-up').addEventListener('click', () => {
-      const idx = BETS.indexOf(this.bet);
-      if (idx < BETS.length - 1) this._setBet(BETS[idx + 1]);
+      const idx = this.BETS.indexOf(this.bet);
+      if (idx < this.BETS.length - 1) this._setBet(this.BETS[idx + 1]);
     });
     this.el.querySelector('#sl-bet-down').addEventListener('click', () => {
-      const idx = BETS.indexOf(this.bet);
-      if (idx > 0) this._setBet(BETS[idx - 1]);
+      const idx = this.BETS.indexOf(this.bet);
+      if (idx > 0) this._setBet(this.BETS[idx - 1]);
     });
     this.el.querySelectorAll('.bet-preset-btn').forEach(btn => {
       btn.addEventListener('click', () => this._setBet(parseInt(btn.dataset.bet)));
     });
-
-    // Clic sur un rouleau = stop ce rouleau
-    this._reelEls.forEach((el, i) => {
-      el.addEventListener('click', () => {
-        if (this.spinning && !this._stopFlags[i]) this._stopReel(i);
-      });
-    });
   }
 
   _setBet(v) {
+    if (this.spinning) return;
     this.bet = v;
     const el = this.el.querySelector('#sl-bet-display');
     if (el) el.textContent = v;
-    SFX.chip();
+    import('../casino-core.js').then(m => m.SFX.chip());
   }
 
+  // ── AUTO SPIN ──────────────────────────────────────────────────────────────
+  _toggleAuto() {
+    this.autoSpin = !this.autoSpin;
+    const btn = this.el.querySelector('#sl-auto');
+    if (btn) {
+      btn.setAttribute('aria-pressed', String(this.autoSpin));
+      btn.classList.toggle('active', this.autoSpin);
+      btn.textContent = this.autoSpin ? 'STOP' : 'AUTO';
+    }
+    if (this.autoSpin && !this.spinning) this._spin();
+    else if (!this.autoSpin) clearTimeout(this._autoTimer);
+  }
+
+  // ── SPIN ───────────────────────────────────────────────────────────────────
   async _spin() {
     if (this.spinning) return;
     if (this.core.credits.credits < this.bet) {
       this._setResult('NOT ENOUGH CREDITS', 'lose');
       this.core.showToast('CREDITS INSUFFISANTS', 'lose');
+      if (this.autoSpin) this._toggleAuto();
       return;
     }
 
     this.spinning = true;
-    this._stopFlags = [false, false, false];
-    this.reels = [null, null, null];
-
-    const spinBtn   = this.el.querySelector('#sl-spin');
-    const stopBtn   = this.el.querySelector('#sl-stop-all');
-    spinBtn.disabled = true;
-    stopBtn.disabled = false;
-    this._setBetControlsDisabled(true);
-
-    await this.core.reward(-this.bet, 'chip');
-    this._sessionSpins++;
-    this._updateStats();
+    this._lockUI(true);
     this._setResult('SPINNING...', '');
 
-    // Pré-calcule les résultats
-    const results = [weightedRandom(), weightedRandom(), weightedRandom()];
+    // Débiter la mise
+    await this.core.reward(-this.bet, 'chip');
+    import('../casino-core.js').then(m => m.SFX.spin());
 
-    SFX.spin();
+    // Générer les résultats finaux
+    const outcome = [
+      [randSymbol(), randSymbol(), randSymbol()],
+      [randSymbol(), randSymbol(), randSymbol()],
+      [randSymbol(), randSymbol(), randSymbol()],
+    ];
 
-    // Lance les 3 rouleaux en parallèle avec arrêts décalés
-    const reelPromises = results.map((sym, i) =>
-      this._animateReel(i, sym, 1200 + i * 600)
-    );
+    // Animation rouleaux en cascade
+    await this._animateReels(outcome);
+    this.reels = outcome;
 
-    await Promise.all(reelPromises);
+    // Évaluer la ligne centrale (row 1)
+    const line   = [outcome[0][1], outcome[1][1], outcome[2][1]];
+    const result = this._evaluate(line);
+    await this._applyResult(result);
 
     this.spinning = false;
-    spinBtn.disabled = false;
-    stopBtn.disabled = true;
-    this._setBetControlsDisabled(false);
+    this._lockUI(false);
 
-    await this._evaluate(results);
-  }
-
-  _stopAll() {
-    for (let i = 0; i < 3; i++) {
-      if (!this._stopFlags[i]) this._stopReel(i);
+    if (this.autoSpin) {
+      this._autoTimer = setTimeout(() => this._spin(), 800);
     }
-    SFX.click();
   }
 
-  _stopReel(i) {
-    this._stopFlags[i] = true;
-    SFX.tick();
-  }
+  // ── ANIMATION ──────────────────────────────────────────────────────────────
+  _animateReels(outcome) {
+    const TICKS = 10;
+    const DELAY = 60;
 
-  /**
-   * Anime un rouleau : fait défiler des symboles aléatoires
-   * jusqu'à stopFlag ou timeout, puis pose le symbole final.
-   */
-  _animateReel(index, finalSymbol, autoStopMs) {
-    return new Promise(resolve => {
-      const el = this._reelEls[index];
-      const symEl = el.querySelector('.slots-symbol');
-      el.classList.add('spinning');
-
-      let elapsed = 0;
-      const interval = 80;
-
-      const autoStop = setTimeout(() => {
-        this._stopFlags[index] = true;
-      }, autoStopMs);
-
-      const tick = setInterval(() => {
-        elapsed += interval;
-
-        if (this._stopFlags[index]) {
-          clearInterval(tick);
-          clearTimeout(autoStop);
-          symEl.textContent = finalSymbol.glyph;
-          el.classList.remove('spinning');
-          el.classList.add('stopped');
-          setTimeout(() => el.classList.remove('stopped'), 300);
-          this.reels[index] = finalSymbol;
+    const promises = [0, 1, 2].map(r => new Promise(resolve => {
+      let tick = 0;
+      const total = TICKS + r * 3; // cascade : rouleau 0 s'arrête en premier
+      const interval = setInterval(() => {
+        tick++;
+        const preview = tick < total
+          ? [randSymbol(), randSymbol(), randSymbol()]
+          : outcome[r];
+        this._updateReel(r, preview);
+        if (tick >= total) {
+          clearInterval(interval);
+          import('../casino-core.js').then(m => m.SFX.tick());
           resolve();
-          return;
         }
+      }, DELAY);
+    }));
 
-        // Affiche un symbole aléatoire pendant le spin
-        symEl.textContent = POOL[Math.floor(Math.random() * POOL.length)].glyph;
-      }, interval);
-
-      this._spinTimers.push(tick);
-    });
+    return Promise.all(promises).then(() => new Promise(r => setTimeout(r, 120)));
   }
 
-  async _evaluate(results) {
-    const payout = evaluate(results);
-    
-    if (payout) {
-      const gain = this.bet * payout.mult;
-      const sfx  = payout.mult >= 20 ? 'bigWin' : 'win';
-      await this.core.reward(gain, sfx);
-      this._setResult(`${payout.label}  +${gain} CR`, 'win');
-      this.core.showToast(`${payout.label}  +${gain} CR`, 'win');
-      this._sessionWins++;
+  _updateReel(reelIdx, symbols) {
+    for (let row = 0; row < 3; row++) {
+      const cell = this.el.querySelector(`#slots-cell-${reelIdx}-${row}`);
+      if (cell) cell.textContent = symbols[row].glyph;
+    }
+  }
 
-      // Flash rouleaux gagnants
-      this._reelEls.forEach(el => el.classList.add('reel-win'));
-      setTimeout(() => this._reelEls.forEach(el => el.classList.remove('reel-win')), 800);
+  // ── ÉVALUATION ─────────────────────────────────────────────────────────────
+  _evaluate(line) {
+    const [a, b, c] = line;
+    if (a.id === b.id && b.id === c.id)
+      return { type: 'triple', sym: a, mult: a.mult };
+    if (a.id === b.id || b.id === c.id || a.id === c.id)
+      return { type: 'pair', mult: 1 };
+    return { type: 'miss', mult: 0 };
+  }
+
+  async _applyResult({ type, mult, sym }) {
+    if (type === 'triple') {
+      const win  = this.bet * mult;
+      const isBig = mult >= 6;
+      await this.core.reward(win, isBig ? 'bigWin' : 'win');
+      this._setResult(`${sym.glyph} ${sym.glyph} ${sym.glyph}  ×${mult}  +${win} CR`, 'win');
+      this.core.showToast(isBig ? `JACKPOT ! +${win} CR` : `WIN +${win} CR`, 'win', isBig ? 3500 : 2200);
+      this._flashCells(isBig ? 'flash-big' : 'flash-win');
+    } else if (type === 'pair') {
+      await this.core.reward(this.bet, 'push');
+      this._setResult('PAIR — REMBOURSÉ', 'push');
+      this.core.showToast('PAIR — remboursé', 'info');
     } else {
-      SFX.lose();
-      this._setResult(`RIEN — −${this.bet} CR`, 'lose');
-    }
-
-    this._updateStats();
-
-    // Auto-ajuste la mise si plus assez de crédits
-    if (this.core.credits.credits < this.bet) {
-      const newBet = BETS.slice().reverse().find(b => b <= this.core.credits.credits);
-      if (newBet) this._setBet(newBet);
+      import('../casino-core.js').then(m => m.SFX.lose());
+      this._setResult(`MISS — −${this.bet} CR`, 'lose');
+      this.core.showToast(`−${this.bet} CR`, 'lose');
+      this._flashCells('flash-lose');
     }
   }
 
-  _setResult(txt, cls) {
-    const el = this.el.querySelector('#sl-result');
+  _flashCells(cls) {
+    [0, 1, 2].forEach(r => {
+      const cell = this.el.querySelector(`#slots-cell-${r}-1`);
+      if (!cell) return;
+      cell.classList.add(cls);
+      setTimeout(() => cell.classList.remove(cls), 700);
+    });
+  }
+
+  // ── HELPERS UI ─────────────────────────────────────────────────────────────
+  _setResult(txt, cls = '') {
+    const el = this.el.querySelector('#slots-result');
     if (!el) return;
-    el.textContent  = txt;
-    el.className    = 'game-result' + (cls ? ` ${cls}` : '');
+    el.textContent = txt;
+    el.className = 'game-result' + (cls ? ` ${cls}` : '');
   }
 
-  _updateStats() {
-    const spinsEl = this.el.querySelector('#sl-stat-spins');
-    const winsEl  = this.el.querySelector('#sl-stat-wins');
-    if (spinsEl) spinsEl.textContent = this._sessionSpins;
-    if (winsEl)  winsEl.textContent  = this._sessionWins;
-  }
-
-  _setBetControlsDisabled(disabled) {
-    ['#sl-bet-up', '#sl-bet-down'].forEach(sel => {
-      const el = this.el.querySelector(sel);
-      if (el) el.disabled = disabled;
-    });
-    this.el.querySelectorAll('.bet-preset-btn').forEach(btn => {
-      btn.disabled = disabled;
-    });
+  _lockUI(locked) {
+    const spinBtn = this.el.querySelector('#sl-spin');
+    const bets    = this.el.querySelectorAll('.bet-preset-btn, #sl-bet-up, #sl-bet-down');
+    if (spinBtn) {
+      spinBtn.disabled  = locked;
+      spinBtn.textContent = locked ? '...' : 'SPIN';
+    }
+    bets.forEach(b => b.disabled = locked);
   }
 }
