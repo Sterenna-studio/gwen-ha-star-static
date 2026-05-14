@@ -1,10 +1,11 @@
 /**
- * casino-core.js  —  STAR ARCADE  v1.2
- * Whack-A-Mole · Crash · Slot Machine
+ * casino-core.js  —  STAR ARCADE  v1.3
+ * Whack-A-Mole · Crash · Slot Machine · Midnight Chase
  * Monnaie : Chronicles (Supabase profiles.chronicles)
  */
 import { supabase } from '../../../js/supabase.js';
 import { SlotMachine } from '../../../js/star/widgets.js';
+import { MidnightChase } from './midnight-chase.js';
 
 const el = (tag, cls, txt) => {
   const e = document.createElement(tag);
@@ -13,7 +14,6 @@ const el = (tag, cls, txt) => {
   return e;
 };
 
-// ── SOUND ENGINE ──────────────────────────────────────────────────────
 const SFX = {
   _ctx: null,
   _g() {
@@ -58,7 +58,6 @@ const SFX = {
   wamEnd() { const ctx=this._g();if(!ctx)return;[440,554,659,880].forEach((f,i)=>this._t(f,'triangle',.1,.01,.18,ctx.currentTime+i*.1)); },
 };
 
-// ── WAM CONFIG ────────────────────────────────────────────────────────
 const WAM_DURATION   = 30;
 const WAM_HOLES      = 12;
 const WAM_MOLE_TYPES = [
@@ -83,13 +82,13 @@ export class CasinoCore {
     this.history   = [];
     this._jackpot  = 500;
     this._currentGame = null;
-    // Crash
+    this._boundChaseBack = null;
+    this._boundChaseResult = null;
     this._crashMult      = 1.00;
     this._crashRunning   = false;
     this._crashCashedOut = false;
     this._crashAnimId    = null;
     this._crashBetActive = false;
-    // Wam
     this._wamTimers  = [];
     this._wamRunning = false;
     this._wamRafId   = null;
@@ -115,7 +114,6 @@ export class CasinoCore {
     this._renderHistory();
   }
 
-  // ── LOBBY ────────────────────────────────────────────────────────────
   showLobby() {
     const root = document.querySelector(this.mountSel);
     if (!root) return;
@@ -149,7 +147,6 @@ export class CasinoCore {
         </div>
 
         <div class="lobby-grid">
-
           <div class="game-card" style="--card-color:var(--c-orange)" id="card-wam">
             <div class="gc-icon">🔨</div>
             <div class="gc-tag">// JEU 01</div>
@@ -189,6 +186,18 @@ export class CasinoCore {
             <div class="gc-play-btn">▶ JOUER</div>
           </div>
 
+          <div class="game-card" style="--card-color:var(--c-cyan)" id="card-chase">
+            <div class="gc-icon">🏎️</div>
+            <div class="gc-tag">// JEU 04</div>
+            <div class="gc-title">MIDNIGHT CHASE</div>
+            <div class="gc-desc">Choisis ton véhicule, slalome entre les obstacles et roule le plus loin possible dans la nuit néon.</div>
+            <div class="gc-meta">
+              <span class="gc-badge">ENDLESS</span>
+              <span class="gc-badge">3 VOIES</span>
+              <span class="gc-badge">SPRITES</span>
+            </div>
+            <div class="gc-play-btn">▶ JOUER</div>
+          </div>
         </div>
 
         <div class="history-section" style="margin-top:48px;width:100%" id="history-section">
@@ -202,18 +211,19 @@ export class CasinoCore {
       <section class="casino-game" id="game-wam"></section>
       <section class="casino-game" id="game-crash"></section>
       <section class="casino-game" id="game-slots"></section>
+      <section class="casino-game" id="game-chase"></section>
     </div>`;
 
     document.getElementById('card-wam')?.addEventListener('click',   () => { SFX.click(); this._showGame('wam'); });
     document.getElementById('card-crash')?.addEventListener('click', () => { SFX.click(); this._showGame('crash'); });
     document.getElementById('card-slots')?.addEventListener('click', () => { SFX.click(); this._showGame('slots'); });
-    ['card-wam','card-crash','card-slots'].forEach(id =>
+    document.getElementById('card-chase')?.addEventListener('click', () => { SFX.click(); this._showGame('chase'); });
+    ['card-wam','card-crash','card-slots','card-chase'].forEach(id =>
       document.getElementById(id)?.addEventListener('mouseenter', () => SFX.hover())
     );
     this._renderHistory();
   }
 
-  // ── NAV ───────────────────────────────────────────────────────────────
   _showGame(name) {
     document.getElementById('view-lobby')?.style.setProperty('display','none');
     document.querySelectorAll('.casino-game').forEach(g => g.classList.remove('active'));
@@ -224,14 +234,29 @@ export class CasinoCore {
     if      (name === 'wam')   this._initWam();
     else if (name === 'crash') this._initCrash();
     else if (name === 'slots') this._initSlots();
+    else if (name === 'chase') this._initChase();
   }
 
   _backToLobby() {
     this._wamStop();
     if (this._crashAnimId) { cancelAnimationFrame(this._crashAnimId); this._crashAnimId = null; }
+    this._cleanupChaseEvents();
     document.querySelectorAll('.casino-game').forEach(g => g.classList.remove('active'));
     document.getElementById('view-lobby').style.removeProperty('display');
+    this._updateCreditsDisplay();
+    this._renderHistory();
     this._currentGame = null;
+  }
+
+  _cleanupChaseEvents() {
+    if (this._boundChaseBack) {
+      document.removeEventListener('chase:back', this._boundChaseBack);
+      this._boundChaseBack = null;
+    }
+    if (this._boundChaseResult) {
+      document.removeEventListener('chase:result', this._boundChaseResult);
+      this._boundChaseResult = null;
+    }
   }
 
   _updateCreditsDisplay() {
@@ -239,7 +264,6 @@ export class CasinoCore {
     if (e) e.textContent = this.credits.toLocaleString('fr-FR');
   }
 
-  // ── BET PANEL ─────────────────────────────────────────────────────────
   _betPanelHTML(id) {
     const presets = [1,5,10,25,50,100];
     return `<div class="bet-panel">
@@ -264,9 +288,24 @@ export class CasinoCore {
     );
   }
 
-  // ═══════════════════════════════════════════════════════════════════
-  // WHACK-A-MOLE
-  // ═══════════════════════════════════════════════════════════════════
+  _initChase() {
+    this._cleanupChaseEvents();
+    const chase = new MidnightChase('game-chase', this.userId, this.credits, (newCredits) => {
+      this.credits = newCredits;
+      this._updateCreditsDisplay();
+    });
+
+    this._boundChaseBack = () => this._backToLobby();
+    this._boundChaseResult = (e) => {
+      const { bet, result, net } = e.detail || {};
+      this._addHistory('CHASE', bet ?? this.bet, result ?? 'push', net ?? 0);
+    };
+
+    document.addEventListener('chase:back', this._boundChaseBack);
+    document.addEventListener('chase:result', this._boundChaseResult);
+    chase.mount();
+  }
+
   _initWam() {
     this._wamStop();
     const g = document.getElementById('game-wam');
@@ -452,9 +491,6 @@ export class CasinoCore {
     if(!e)return; e.textContent=txt; e.className='game-msg'+(type?` ${type}`:'');
   }
 
-  // ═══════════════════════════════════════════════════════════════════
-  // CRASH GAME
-  // ═══════════════════════════════════════════════════════════════════
   _initCrash() {
     this._crashMult=1.00; this._crashRunning=false;
     this._crashCashedOut=false; this._crashBetActive=false;
@@ -466,8 +502,6 @@ export class CasinoCore {
         <span class="game-title">CRA<span class="game-title-accent">SH</span></span>
       </div>
       ${this._betPanelHTML('cr')}
-
-      <!-- EXPLICATION DU JEU -->
       <div class="crash-rules">
         <div class="crash-rules-title">⚡ COMMENT JOUER</div>
         <div class="crash-rules-grid">
@@ -495,26 +529,15 @@ export class CasinoCore {
         <div class="crash-odds">
           <div class="crash-odds-title">📊 PROBABILITÉS DE CRASH</div>
           <div class="crash-odds-row">
-            <div class="cod" style="--cod-c:var(--c-red)">
-              <span class="cod-pct">10%</span><span class="cod-label">crash avant ×1.5</span>
-            </div>
-            <div class="cod" style="--cod-c:var(--c-orange)">
-              <span class="cod-pct">30%</span><span class="cod-label">crash entre ×1.5 et ×3</span>
-            </div>
-            <div class="cod" style="--cod-c:var(--c-amber)">
-              <span class="cod-pct">30%</span><span class="cod-label">crash entre ×3 et ×7</span>
-            </div>
-            <div class="cod" style="--cod-c:var(--c-green)">
-              <span class="cod-pct">20%</span><span class="cod-label">crash entre ×7 et ×30</span>
-            </div>
-            <div class="cod" style="--cod-c:var(--c-cyan)">
-              <span class="cod-pct">7%</span><span class="cod-label">crash entre ×30 et ×100+</span>
-            </div>
+            <div class="cod" style="--cod-c:var(--c-red)"><span class="cod-pct">10%</span><span class="cod-label">crash avant ×1.5</span></div>
+            <div class="cod" style="--cod-c:var(--c-orange)"><span class="cod-pct">30%</span><span class="cod-label">crash entre ×1.5 et ×3</span></div>
+            <div class="cod" style="--cod-c:var(--c-amber)"><span class="cod-pct">30%</span><span class="cod-label">crash entre ×3 et ×7</span></div>
+            <div class="cod" style="--cod-c:var(--c-green)"><span class="cod-pct">20%</span><span class="cod-label">crash entre ×7 et ×30</span></div>
+            <div class="cod" style="--cod-c:var(--c-cyan)"><span class="cod-pct">7%</span><span class="cod-label">crash entre ×30 et ×100+</span></div>
           </div>
           <div class="crash-odds-note">Chaque partie est indépendante. Le passé n'influence pas le futur.</div>
         </div>
       </div>
-
       <div class="crash-layout">
         <div class="crash-canvas-wrap">
           <canvas class="crash-canvas" id="cr-canvas" width="800" height="220"></canvas>
@@ -541,12 +564,12 @@ export class CasinoCore {
 
   _crashCrashPoint() {
     const r=Math.random();
-    if(r<0.10) return 1.00+Math.random()*0.5;          // 10%  → <1.5×
-    if(r<0.40) return 1.5 +Math.random()*1.5;          // 30%  → 1.5–3×
-    if(r<0.70) return 3.0 +Math.random()*4.0;          // 30%  → 3–7×
-    if(r<0.90) return 7.0 +Math.random()*23.0;         // 20%  → 7–30×
-    if(r<0.97) return 30  +Math.random()*70;            // 7%   → 30–100×
-    return 100+Math.random()*900;                       // 3%   → 100–1000×
+    if(r<0.10) return 1.00+Math.random()*0.5;
+    if(r<0.40) return 1.5 +Math.random()*1.5;
+    if(r<0.70) return 3.0 +Math.random()*4.0;
+    if(r<0.90) return 7.0 +Math.random()*23.0;
+    if(r<0.97) return 30  +Math.random()*70;
+    return 100+Math.random()*900;
   }
 
   async _crashStart() {
@@ -654,9 +677,6 @@ export class CasinoCore {
     ctx.shadowColor=crashed?'#ff4757':'#ff6eb4'; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
   }
 
-  // ═══════════════════════════════════════════════════════════════════
-  // SLOT MACHINE
-  // ═══════════════════════════════════════════════════════════════════
   async _initSlots() {
     const g = document.getElementById('game-slots');
     g.innerHTML = `
@@ -666,12 +686,10 @@ export class CasinoCore {
       </div>
       <div id="slots-widget-wrap" style="width:100%;max-width:520px;margin:0 auto"></div>`;
     document.getElementById('slots-back')?.addEventListener('click', () => this._backToLobby());
-    // Réutilise le widget SlotMachine existant
     const sm = new SlotMachine('slots-widget-wrap');
     await sm.init(this.userId);
   }
 
-  // ── HISTORY ──────────────────────────────────────────────────────────
   _renderHistory() {
     const body=document.getElementById('history-body'); if(!body) return;
     if(!this.history.length){
