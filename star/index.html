@@ -17,7 +17,6 @@
 <body class="star-page">
   <div class="scanlines" aria-hidden="true"></div>
 
-  <!-- STATUS BAR -->
   <div class="status-bar" role="status" aria-live="polite">
     <div class="sb-left">
       <div class="sb-item"><span class="sb-dot"></span><span>GWEN·HA·STAR</span></div>
@@ -31,8 +30,6 @@
   </div>
 
   <main class="star-main" id="main-content">
-
-    <!-- Welcome strip -->
     <div class="welcome-strip">
       <div class="w-avatar" id="w-avatar"></div>
       <div class="w-info">
@@ -46,91 +43,51 @@
       </div>
     </div>
 
-    <!-- KPI strip -->
     <div class="kpi-strip">
-      <div class="kpi" style="--kpi-c:var(--c-primary)">
-        <span class="kpi-lbl">MEMBRES</span>
-        <span class="kpi-val" id="kpi-members">·</span>
-        <span class="kpi-sub">CREW · ACTIFS</span>
-      </div>
-      <div class="kpi" style="--kpi-c:var(--c-amber)">
-        <span class="kpi-lbl">PROJETS LIVE</span>
-        <span class="kpi-val">02</span>
-        <span class="kpi-sub">STERENNA · POKEGANG</span>
-      </div>
-      <div class="kpi" style="--kpi-c:var(--c-cyan)">
-        <span class="kpi-lbl">RÉPUTATION PG</span>
-        <span class="kpi-val" id="kpi-pg-rep">·</span>
-        <span class="kpi-sub">GANG · LEADERBOARD</span>
-      </div>
-      <div class="kpi" style="--kpi-c:var(--c-gold, #ffd700)">
-        <span class="kpi-lbl">MONNAIE</span>
-        <span class="kpi-val" id="kpi-chronicles">·</span>
-        <span class="kpi-sub">CHRONICLES · CASINO</span>
-      </div>
-      <div class="kpi" style="--kpi-c:var(--c-purple)">
-        <span class="kpi-lbl">SESSION</span>
-        <span class="kpi-val" id="kpi-uptime">·</span>
-        <span class="kpi-sub">UPTIME · HUB</span>
-      </div>
+      <div class="kpi" style="--kpi-c:var(--c-primary)"><span class="kpi-lbl">MEMBRES</span><span class="kpi-val" id="kpi-members">·</span><span class="kpi-sub">CREW · ACTIFS</span></div>
+      <div class="kpi" style="--kpi-c:var(--c-amber)"><span class="kpi-lbl">PROJETS LIVE</span><span class="kpi-val">02</span><span class="kpi-sub">STERENNA · POKEGANG</span></div>
+      <div class="kpi" style="--kpi-c:var(--c-cyan)"><span class="kpi-lbl">RÉPUTATION PG</span><span class="kpi-val" id="kpi-pg-rep">·</span><span class="kpi-sub">GANG · LEADERBOARD</span></div>
+      <div class="kpi" style="--kpi-c:var(--c-gold,#ffd700)"><span class="kpi-lbl">MONNAIE</span><span class="kpi-val" id="kpi-chronicles">·</span><span class="kpi-sub">CHRONICLES · CASINO</span></div>
+      <div class="kpi" style="--kpi-c:var(--c-purple)"><span class="kpi-lbl">SESSION</span><span class="kpi-val" id="kpi-uptime">·</span><span class="kpi-sub">UPTIME · HUB</span></div>
     </div>
 
-    <!-- BENTO GRID -->
     <div class="bento">
-
-      <!-- Quick access -->
       <div class="bc bc-qa">
         <div class="bc-label" style="color:var(--c-primary)"><span class="bc-dot"></span>ACCÈS RAPIDE</div>
         <div id="quick-access-grid"></div>
       </div>
 
-      <!-- IDENTITÉ / LOGO -->
       <div class="bc bc-brand">
         <div class="bc-label" style="color:var(--c-cyan)"><span class="bc-dot"></span>IDENTITÉ · RÉSEAU</div>
         <div class="brand-panel">
-          <div class="brand-logo-wrap">
-            <img src="../shared/logos/star_logo/star_logo_original.png" alt="Gwen Ha Star — logo officiel" width="90" height="90" loading="lazy">
-          </div>
+          <div class="brand-logo-wrap"><img src="../shared/logos/star_logo/star_logo_original.png" alt="Gwen Ha Star" width="90" height="90" loading="lazy"></div>
           <div class="brand-name">GWEN·HA·STAR</div>
           <div class="brand-tagline">// RÉSEAU · CREW · STERENNA</div>
           <div class="brand-color-set">
-            <div class="brand-color-swatch" title="Cyan / Blue"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png" alt="Logo cyan" width="28" height="28" loading="lazy"></div>
-            <div class="brand-color-swatch" title="Gold / Orange"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_gold_orange.png" alt="Logo gold" width="28" height="28" loading="lazy"></div>
-            <div class="brand-color-swatch" title="Green / Lime"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_green_lime.png" alt="Logo green" width="28" height="28" loading="lazy"></div>
-            <div class="brand-color-swatch" title="Red"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_red.png" alt="Logo red" width="28" height="28" loading="lazy"></div>
-            <div class="brand-color-swatch" title="White / Silver"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_white_silver.png" alt="Logo white" width="28" height="28" loading="lazy"></div>
+            <div class="brand-color-swatch"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png" alt="cyan" width="28" height="28" loading="lazy"></div>
+            <div class="brand-color-swatch"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_gold_orange.png" alt="gold" width="28" height="28" loading="lazy"></div>
+            <div class="brand-color-swatch"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_green_lime.png" alt="green" width="28" height="28" loading="lazy"></div>
+            <div class="brand-color-swatch"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_red.png" alt="red" width="28" height="28" loading="lazy"></div>
+            <div class="brand-color-swatch"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_white_silver.png" alt="white" width="28" height="28" loading="lazy"></div>
           </div>
           <div class="bzh-tcg-row" style="width:100%;margin-top:var(--space-2)">
-            <div class="bzh-logo-box">
-              <img src="../shared/logos/bzh_power.png" alt="BZH Power" width="110" height="80" loading="lazy">
-              <span class="bzh-lbl">BZH POWER</span>
-            </div>
-            <a href="https://nitro.sterenna.fr/TCG" target="_blank" rel="noopener noreferrer" class="tcg-card-box" title="TCG · Gwen Ha Star">
-              <img src="../shared/logos/pixel_tcg_card.png" alt="Carte TCG pixel" width="90" loading="lazy">
-            </a>
+            <div class="bzh-logo-box"><img src="../shared/logos/bzh_power.png" alt="BZH Power" width="110" height="80" loading="lazy"><span class="bzh-lbl">BZH POWER</span></div>
+            <a href="https://nitro.sterenna.fr/TCG" target="_blank" rel="noopener noreferrer" class="tcg-card-box"><img src="../shared/logos/pixel_tcg_card.png" alt="TCG pixel" width="90" loading="lazy"></a>
           </div>
         </div>
       </div>
 
-      <!-- POKEGANG -->
-      <div class="bc bc-pg">
+      <div class="bc bc-otk">
         <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>POKEGANG · RÉSEAU</div>
         <div class="pg-widget">
-          <a href="https://pokegang.sterenna.fr" target="_blank" rel="noopener noreferrer" class="pg-play-btn" aria-label="Jouer à PokeGang">
-            <span class="pg-play-icon" aria-hidden="true">◉</span>
-            <span class="pg-play-label">
-              <span class="pg-play-label-main">JOUER AU JEU</span>
-              <span class="pg-play-label-sub">POKEGANG.STERENNA.FR ↗</span>
-            </span>
+          <a href="https://pokegang.sterenna.fr" target="_blank" rel="noopener noreferrer" class="pg-play-btn">
+            <span class="pg-play-icon">◉</span>
+            <span class="pg-play-label"><span class="pg-play-label-main">JOUER AU JEU</span><span class="pg-play-label-sub">POKEGANG.STERENNA.FR ↗</span></span>
           </a>
           <div class="pg-stats-grid">
             <div class="pg-stat pg-stat-gang">
               <img id="pg-boss-sprite" class="pg-boss-sprite" src="" alt="" width="48" height="48" loading="lazy" style="display:none" onerror="this.style.display='none'">
-              <div class="pg-boss-info">
-                <span class="pg-stat-lbl">GANG</span>
-                <span class="pg-stat-val" id="pg-gang-name">·</span>
-                <span class="pg-stat-sub" id="pg-boss-name">BOSS : ·</span>
-              </div>
+              <div class="pg-boss-info"><span class="pg-stat-lbl">GANG</span><span class="pg-stat-val" id="pg-gang-name">·</span><span class="pg-stat-sub" id="pg-boss-name">BOSS : ·</span></div>
             </div>
             <div class="pg-stat"><span class="pg-stat-lbl">RÉPUTATION</span><span class="pg-stat-val" id="pg-rep">·</span><span class="pg-stat-sub">POINTS</span></div>
             <div class="pg-stat"><span class="pg-stat-lbl">POKÉMONS</span><span class="pg-stat-val" id="pg-caught">·</span><span class="pg-stat-sub" id="pg-shinies">✦ SHINIES : ·</span></div>
@@ -140,34 +97,28 @@
         </div>
       </div>
 
-      <!-- VIDÉO -->
       <div class="bc bc-video">
         <div class="bc-label" style="color:var(--c-red)"><span class="bc-dot"></span>VIDEO DU JOUR</div>
         <div id="widget-video"></div>
       </div>
 
-      <!-- ACTIVITÉ -->
       <div class="bc bc-activity">
         <div class="bc-label" style="color:var(--c-cyan)"><span class="bc-dot"></span>ACTIVITÉ RÉSEAU</div>
         <div id="widget-activity"></div>
       </div>
 
-      <!-- JUKEBOX -->
       <div class="bc bc-radio">
         <div class="bc-label" style="color:var(--c-purple)"><span class="bc-dot"></span>JUKEBOX · BZH</div>
         <div id="widget-radio"></div>
       </div>
 
-      <!-- CASINO -->
       <div class="bc bc-slots">
         <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>CASINO · SLOT</div>
         <div id="widget-slots"></div>
       </div>
-
     </div>
   </main>
 
-  <!-- BOTTOM NAV BAR -->
   <header id="star-header-user" role="banner"></header>
 
   <script type="module">
@@ -176,102 +127,44 @@
     import { requireAuth }       from '../js/star/guard.js';
     import { SlotMachine }       from '../js/star/widgets.js';
 
-    (function(){
-      const el = document.getElementById('sb-clock');
-      const tick = () => { if(el) el.textContent = new Date().toLocaleTimeString('fr-FR'); };
-      tick(); setInterval(tick,1000);
-    })();
-
-    (function(){
-      const t0=Date.now(), el=document.getElementById('kpi-uptime');
-      setInterval(()=>{
-        if(!el) return;
-        const s=Math.floor((Date.now()-t0)/1000);
-        el.textContent=`${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
-      },1000);
-    })();
+    (function(){ const el=document.getElementById('sb-clock'); const t=()=>{if(el)el.textContent=new Date().toLocaleTimeString('fr-FR');}; t();setInterval(t,1000); })();
+    (function(){ const t0=Date.now(),el=document.getElementById('kpi-uptime'); setInterval(()=>{ if(!el)return; const s=Math.floor((Date.now()-t0)/1000); el.textContent=`${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; },1000); })();
 
     document.getElementById('btn-signout-strip')?.addEventListener('click',()=>signOut());
 
     async function loadPGStats(userId){
       const sbPg=document.getElementById('sb-pg');
       try{
-        const{data,error}=await supabase.from('leaderboard')
-          .select('gang_name,boss_name,boss_sprite,reputation,total_caught,shiny_count,dex_kanto_count,dex_national_count,agents_count')
-          .eq('user_id',userId).eq('is_anonymous',false).maybeSingle();
+        const{data,error}=await supabase.from('leaderboard').select('gang_name,boss_name,boss_sprite,reputation,total_caught,shiny_count,dex_kanto_count,dex_national_count,agents_count').eq('user_id',userId).eq('is_anonymous',false).maybeSingle();
         if(error||!data){_setPGStatus(sbPg,'off','NO DATA');_fillPG(null);return;}
         _setPGStatus(sbPg,'green','SYNC');_fillPG(data);
       }catch{_setPGStatus(sbPg,'red','ERROR');_fillPG(null);}
     }
-
-    function _setPGStatus(el,state,label){
-      if(!el) return;
-      const cls=state==='green'?'':state==='red'?'red':'off';
-      el.innerHTML=`<span class="sb-dot ${cls}"></span><span>POKEGANG · ${label}</span>`;
-    }
-
+    function _setPGStatus(el,state,label){ if(!el)return; const cls=state==='green'?'':state==='red'?'red':'off'; el.innerHTML=`<span class="sb-dot ${cls}"></span><span>POKEGANG · ${label}</span>`; }
     function _fillPG(d){
       const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-      if(!d){
-        ['pg-gang-name','pg-boss-name','pg-rep','pg-dex','pg-dex-nat','pg-caught','pg-shinies','pg-agents','kpi-pg-rep'].forEach(id=>s(id,'—'));
-        return;
-      }
-      s('pg-gang-name',d.gang_name??'???');
-      s('pg-boss-name',`BOSS : ${d.boss_name??'—'}`);
-      s('pg-rep',(d.reputation??0).toLocaleString('fr-FR'));
-      s('pg-dex',`${d.dex_kanto_count??0} / 151`);
-      s('pg-dex-nat',`NATIONAL : ${d.dex_national_count??0}`);
-      s('pg-caught',(d.total_caught??0).toLocaleString('fr-FR'));
-      s('pg-shinies',`✦ SHINIES : ${d.shiny_count??0}`);
-      s('pg-agents',d.agents_count??0);
-      s('kpi-pg-rep',(d.reputation??0).toLocaleString('fr-FR'));
-      if(d.boss_sprite){
-        const img=document.getElementById('pg-boss-sprite');
-        if(img){img.src=`https://play.pokemonshowdown.com/sprites/trainers/${d.boss_sprite}.png`;img.style.display='block';img.alt=d.boss_name??'';}
-      }
+      if(!d){['pg-gang-name','pg-boss-name','pg-rep','pg-dex','pg-dex-nat','pg-caught','pg-shinies','pg-agents','kpi-pg-rep'].forEach(id=>s(id,'—'));return;}
+      s('pg-gang-name',d.gang_name??'???'); s('pg-boss-name',`BOSS : ${d.boss_name??'—'}`); s('pg-rep',(d.reputation??0).toLocaleString('fr-FR'));
+      s('pg-dex',`${d.dex_kanto_count??0} / 151`); s('pg-dex-nat',`NATIONAL : ${d.dex_national_count??0}`); s('pg-caught',(d.total_caught??0).toLocaleString('fr-FR'));
+      s('pg-shinies',`✦ SHINIES : ${d.shiny_count??0}`); s('pg-agents',d.agents_count??0); s('kpi-pg-rep',(d.reputation??0).toLocaleString('fr-FR'));
+      if(d.boss_sprite){const img=document.getElementById('pg-boss-sprite');if(img){img.src=`https://play.pokemonshowdown.com/sprites/trainers/${d.boss_sprite}.png`;img.style.display='block';img.alt=d.boss_name??'';}}
     }
-
-    async function loadMembers(){
-      const el=document.getElementById('kpi-members');
-      try{
-        const{count}=await supabase.from('profiles').select('id',{count:'exact',head:true});
-        if(el) el.textContent=count??'?';
-      }catch{if(el)el.textContent='?';}
-    }
-
+    async function loadMembers(){ const el=document.getElementById('kpi-members'); try{const{count}=await supabase.from('profiles').select('id',{count:'exact',head:true});if(el)el.textContent=count??'?';}catch{if(el)el.textContent='?';} }
     function populateWelcome(user,profile){
-      const username=profile?.username??user.email?.split('@')[0]??'AGENT';
-      const role=profile?.active_title??'Agent';
+      const username=profile?.username??user.email?.split('@')[0]??'AGENT'; const role=profile?.active_title??'Agent';
       document.getElementById('w-name').textContent=username.toUpperCase();
       document.getElementById('w-role').textContent='◆ '+role.toUpperCase();
       document.getElementById('sb-username').textContent=username.toUpperCase();
-      const av=document.getElementById('w-avatar');
-      if(av){
-        if(profile?.avatar_url) av.innerHTML=`<img src="${profile.avatar_url}" alt="Avatar" width="50" height="50" loading="lazy">`;
-        else av.textContent=username.charAt(0).toUpperCase();
-      }
+      const av=document.getElementById('w-avatar'); if(av){ if(profile?.avatar_url)av.innerHTML=`<img src="${profile.avatar_url}" alt="Avatar" width="50" height="50" loading="lazy">`; else av.textContent=username.charAt(0).toUpperCase(); }
     }
-
     const auth=await requireAuth();
     if(auth){
       const{user,profile}=auth;
-      populateWelcome(user,profile);
-      loadMembers();
-      loadPGStats(user.id);
-
-      (async () => {
-        const el = document.getElementById('kpi-chronicles');
-        try {
-          const { data } = await supabase.from('profiles').select('chronicles').eq('id', user.id).single();
-          if (el) el.textContent = (data?.chronicles ?? 0).toLocaleString('fr-FR');
-        } catch { if (el) el.textContent = '?'; }
-      })();
-
-      const slots = new SlotMachine('widget-slots');
-      await slots.init(user.id);
+      populateWelcome(user,profile); loadMembers(); loadPGStats(user.id);
+      (async()=>{ const el=document.getElementById('kpi-chronicles'); try{const{data}=await supabase.from('profiles').select('chronicles').eq('id',user.id).single(); if(el)el.textContent=(data?.chronicles??0).toLocaleString('fr-FR');}catch{if(el)el.textContent='?';} })();
+      const slots=new SlotMachine('widget-slots'); await slots.init(user.id);
     }
     initDashboard();
   </script>
-
 </body>
 </html>
