@@ -158,12 +158,6 @@
         <div id="widget-radio"></div>
       </div>
 
-      <!-- CASINO -->
-      <div class="bc bc-slots">
-        <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>CASINO · SLOT</div>
-        <div id="widget-slots"></div>
-      </div>
-
     </div>
   </main>
 
@@ -174,7 +168,6 @@
     import { initDashboard }     from '../js/star/dashboard.js';
     import { supabase, signOut } from '../js/supabase.js';
     import { requireAuth }       from '../js/star/guard.js';
-    import { SlotMachine }       from '../js/star/widgets.js';
 
     (function(){
       const el = document.getElementById('sb-clock');
@@ -266,9 +259,6 @@
           if (el) el.textContent = (data?.chronicles ?? 0).toLocaleString('fr-FR');
         } catch { if (el) el.textContent = '?'; }
       })();
-
-      const slots = new SlotMachine('widget-slots');
-      await slots.init(user.id);
     }
     initDashboard();
   </script>
