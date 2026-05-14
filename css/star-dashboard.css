@@ -1,13 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════
    STAR-DASHBOARD.CSS — Styles spécifiques au dashboard star/index.html
-   v2.5 : refonte widget slots (sl-*) + bouton casino
+   v3.0 : SlotMachine 5 colonnes + levier hold-to-spin
 ═══════════════════════════════════════════════════════════════ */
 
-/* ── LAYOUT ──────────────────────────────────────────────────── */
+/* ── LAYOUT ──────────────────────────────────────────────── */
 .star-page { min-height:100dvh; display:flex; flex-direction:column; background:var(--c-bg); }
 .star-main { flex:1; max-width:1300px; width:100%; margin:0 auto; padding:var(--space-4) var(--space-4) var(--space-24); }
 
-/* ── STATUS BAR ──────────────────────────────────────────────── */
+/* ── STATUS BAR ──────────────────────────────────────────── */
 .status-bar {
   display:flex; align-items:center; justify-content:space-between;
   gap:var(--space-4); padding:var(--space-3) var(--space-6);
@@ -27,7 +27,7 @@
 .sb-user  { color:var(--c-cyan); font-size:12px; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-/* ── BOTTOM BAR ──────────────────────────────────────────────── */
+/* ── BOTTOM BAR ─────────────────────────────────────────── */
 #star-header-user {
   position:fixed; bottom:0; left:0; right:0; z-index:300;
   background:color-mix(in oklch, var(--c-surface) 92%, transparent);
@@ -42,7 +42,7 @@
   opacity:0.5;
 }
 
-/* ── WELCOME STRIP ───────────────────────────────────────────── */
+/* ── WELCOME STRIP ───────────────────────────────────────── */
 .welcome-strip {
   display:flex; align-items:center; gap:var(--space-4);
   padding:var(--space-5) var(--space-6);
@@ -72,7 +72,7 @@
 .w-actions{ display:flex; gap:var(--space-2); flex-shrink:0; }
 @media(max-width:600px){ .w-actions { display:none } }
 
-/* ── KPI STRIP ───────────────────────────────────────────────── */
+/* ── KPI STRIP ───────────────────────────────────────────── */
 .kpi-strip {
   display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
   gap:var(--space-3); margin-bottom:var(--space-5);
@@ -90,8 +90,8 @@
 .kpi-val { font-family:var(--font-display); font-size:var(--text-xl); line-height:1; color:var(--kpi-c,var(--c-primary)); text-shadow:0 0 18px var(--kpi-c,var(--c-primary)); }
 .kpi-sub { font-family:var(--font-mono); font-size:8px; letter-spacing:.1em; color:var(--c-text-faint); }
 
-/* ── BENTO GRID ──────────────────────────────────────────────── */
-.bento { display:grid; grid-template-columns:repeat(12,1fr); gap:var(--space-4); }
+/* ── BENTO GRID ──────────────────────────────────────────── */
+.bento { display:grid; grid-template-columns:repeat(12,1fr); gap:var(--space-4)); }
 .bc {
   background:var(--c-surface); border:1px solid var(--c-border);
   border-radius:var(--radius-xl); padding:var(--space-5);
@@ -112,12 +112,12 @@
 .bc-video    { grid-column:span 7;  }
 .bc-activity { grid-column:span 4;  }
 .bc-radio    { grid-column:span 5;  }
-.bc-slots    { grid-column:span 3;  }
+.bc-slots    { grid-column:span 5;  }
 @media(max-width:1100px) {
   .bc-brand,.bc-otk,.bc-crew,.bc-pg,.bc-video,.bc-activity,.bc-radio,.bc-slots { grid-column:span 12; }
 }
 
-/* ── QUICK ACCESS ────────────────────────────────────────────── */
+/* ── QUICK ACCESS ───────────────────────────────────────── */
 #quick-access-grid {
   display:grid; grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); gap:var(--space-3);
 }
@@ -139,7 +139,7 @@
 .qa-desc  { font-family:var(--font-mono); font-size:9px; letter-spacing:.06em; color:var(--c-text-muted); }
 .qa-ext   { position:absolute; top:var(--space-3); right:var(--space-3); font-size:9px; color:var(--c-text-faint); }
 
-/* ── BRAND / LOGO ────────────────────────────────────────────── */
+/* ── BRAND / LOGO ───────────────────────────────────────── */
 .brand-panel {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:var(--space-4); height:100%; min-height:220px;
@@ -164,7 +164,7 @@
 .brand-color-swatch:hover { transform:scale(1.15); }
 .brand-color-swatch img { width:100%; height:100%; object-fit:cover; }
 
-/* ── BZH / TCG ───────────────────────────────────────────────── */
+/* ── BZH / TCG ───────────────────────────────────────────── */
 .bzh-tcg-row { display:flex; gap:var(--space-3); align-items:stretch; }
 .bzh-logo-box {
   flex:1; display:flex; flex-direction:column; align-items:center;
@@ -182,7 +182,7 @@
 .tcg-card-box:hover { box-shadow:0 0 20px color-mix(in oklch,var(--c-purple) 35%,transparent); }
 .tcg-card-box img { width:100%; border-radius:var(--radius-sm); object-fit:cover; display:block; }
 
-/* ── OTK ─────────────────────────────────────────────────────── */
+/* ── OTK ─────────────────────────────────────────────────── */
 .otk-panel { display:flex; flex-direction:column; gap:var(--space-4); }
 .otk-cover-wrap {
   position:relative; border-radius:var(--radius-lg); overflow:hidden;
@@ -214,7 +214,7 @@
 }
 .otk-map-btn:hover { border-color:var(--c-cyan); color:var(--c-cyan); }
 
-/* ── CREW PIXEL PP ───────────────────────────────────────────── */
+/* ── CREW PIXEL PP ────────────────────────────────────────── */
 .crew-panel { display:flex; flex-direction:column; gap:var(--space-3); }
 .crew-grid  { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2); }
 .crew-member {
@@ -240,7 +240,7 @@
   image-rendering:pixelated; margin-top:var(--space-1);
 }
 
-/* ── POKEGANG ────────────────────────────────────────────────── */
+/* ── POKEGANG ─────────────────────────────────────────────── */
 .pg-widget { display:flex; flex-direction:column; gap:var(--space-4); }
 .pg-play-btn {
   display:flex; align-items:center; justify-content:center; gap:var(--space-3);
@@ -275,14 +275,14 @@
 .pg-boss-sprite { width:48px; height:48px; object-fit:contain; image-rendering:pixelated; flex-shrink:0; }
 .pg-boss-info { display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; }
 
-/* ── VIDEO ───────────────────────────────────────────────────── */
+/* ── VIDEO ─────────────────────────────────────────────────── */
 .video-embed-wrap { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:var(--radius-lg); margin-top:var(--space-2); }
 .video-embed-wrap iframe { position:absolute; inset:0; width:100%; height:100%; border:none; }
 .widget-video-title { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--c-text-muted); margin-bottom:var(--space-2); }
 
-/* ══════════════════════════════════════════════════════════════
-   SLOT MACHINE v2.5 — REFONTE ARCADE NÉON
-══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   SLOT MACHINE v3.0 — ARCADE NÉON
+═══════════════════════════════════════════════════════════════ */
 
 /* Machine wrapper */
 .sl-machine {
@@ -352,7 +352,7 @@
 
 /* Légende lignes */
 .sl-line-legend {
-  display:flex; flex-direction:column; gap:2px;
+  display:flex; flex-wrap:wrap; gap:4px var(--space-3);
   padding:var(--space-1) var(--space-2);
 }
 .sl-line-badge {
@@ -363,7 +363,7 @@
 
 /* Zone rouleaux */
 .sl-reels-wrap {
-  display:flex; gap:var(--space-2); position:relative;
+  display:flex; gap:var(--space-1); position:relative;
   background:var(--c-bg);
   border:2px solid color-mix(in oklch,var(--c-amber) 35%,var(--c-border));
   border-radius:var(--radius-lg); padding:var(--space-2);
@@ -410,7 +410,7 @@
 .sl-cell {
   display:flex; align-items:center; justify-content:center;
   padding:var(--space-1); opacity:.35; transition:opacity .1s;
-  min-height:48px; position:relative;
+  min-height:44px; position:relative;
 }
 .sl-cell--active {
   opacity:1;
@@ -435,10 +435,10 @@
   image-rendering:pixelated;
 }
 .sl-sym-name {
-  font-size:7px; letter-spacing:.1em; color:var(--sym-color,var(--c-text-muted));
+  font-size:6px; letter-spacing:.1em; color:var(--sym-color,var(--c-text-muted));
   opacity:.8; text-align:center; line-height:1;
 }
-.sl-sym-empty { width:40px; height:40px; }
+.sl-sym-empty { width:36px; height:36px; }
 
 /* Lignes overlay */
 .sl-overlay {
@@ -452,7 +452,7 @@
 /* Cadre ligne active */
 .sl-active-frame {
   position:absolute; left:0; right:0;
-  top:calc(50% - 28px); height:56px;
+  top:calc(50% - 26px); height:52px;
   border-top:1px solid color-mix(in oklch,var(--c-amber) 50%,transparent);
   border-bottom:1px solid color-mix(in oklch,var(--c-amber) 50%,transparent);
   pointer-events:none; z-index:4;
@@ -467,43 +467,6 @@
   50%     { box-shadow:inset 0 3px 12px rgba(0,0,0,.4), 0 0 40px var(--c-amber), inset 0 0 30px color-mix(in oklch,var(--c-amber) 20%,transparent); }
 }
 
-/* Boutons STOP */
-.sl-stop-row {
-  display:flex; gap:var(--space-2);
-}
-.sl-stop-btn {
-  flex:1; display:flex; flex-direction:column; align-items:center;
-  padding:var(--space-2) var(--space-1); gap:1px;
-  background:var(--c-surface); border:1px solid var(--c-border);
-  border-radius:var(--radius-md); cursor:pointer;
-  transition:all .15s; opacity:.4;
-}
-.sl-stop-btn:disabled { cursor:not-allowed; }
-.sl-stop-btn--active {
-  opacity:1;
-  background:color-mix(in oklch,var(--c-red) 12%,var(--c-surface));
-  border-color:var(--c-red);
-  box-shadow:0 0 10px color-mix(in oklch,var(--c-red) 25%,transparent);
-  animation:sl-stop-pulse .9s ease-in-out infinite;
-}
-@keyframes sl-stop-pulse {
-  0%,100% { box-shadow:0 0 8px color-mix(in oklch,var(--c-red) 20%,transparent); }
-  50%     { box-shadow:0 0 16px color-mix(in oklch,var(--c-red) 40%,transparent); }
-}
-.sl-stop-btn--active:hover {
-  background:color-mix(in oklch,var(--c-red) 20%,var(--c-surface));
-  transform:translateY(-1px);
-}
-.sl-stop-num {
-  font-family:var(--font-display); font-size:var(--text-lg); line-height:1;
-  color:var(--c-text-muted);
-}
-.sl-stop-btn--active .sl-stop-num { color:var(--c-red); text-shadow:0 0 8px var(--c-red); }
-.sl-stop-lbl {
-  font-size:8px; letter-spacing:.2em; color:var(--c-text-faint);
-}
-.sl-stop-btn--active .sl-stop-lbl { color:var(--c-red); opacity:.8; }
-
 /* Message */
 .sl-msg {
   font-size:9px; letter-spacing:.14em; text-align:center;
@@ -514,30 +477,106 @@
 .sl-msg--jackpot { color:var(--c-amber);  text-shadow:0 0 12px var(--c-amber); animation:sl-neon-pulse 1s ease-in-out infinite; }
 .sl-msg--lose    { color:var(--c-red);    opacity:.7; }
 
-/* Bouton SPIN */
-.sl-spin-btn {
-  width:100%; display:flex; align-items:center; justify-content:center; gap:var(--space-2);
-  padding:var(--space-3) var(--space-4);
-  background:linear-gradient(135deg,
-    color-mix(in oklch,var(--c-amber) 28%,var(--c-surface)) 0%,
-    color-mix(in oklch,var(--c-amber) 10%,var(--c-surface-2)) 100%);
-  border:1px solid var(--c-amber); border-radius:var(--radius-lg);
-  color:var(--c-amber);
-  font-family:var(--font-display); font-size:var(--text-base); font-weight:700; letter-spacing:.22em;
-  box-shadow:0 0 18px color-mix(in oklch,var(--c-amber) 22%,transparent),inset 0 1px 0 color-mix(in oklch,var(--c-amber) 12%,transparent);
-  cursor:pointer; transition:box-shadow .2s,transform .12s;
+/* ─────────────────────────────────────────────────────────────── */
+/* LEVIER HOLD-TO-SPIN                                              */
+/* ─────────────────────────────────────────────────────────────── */
+.sl-lever {
+  display:flex; flex-direction:column; align-items:center; gap:var(--space-1);
+  padding:var(--space-3) 0 var(--space-2);
+  cursor:grab; user-select:none; -webkit-user-select:none;
+  position:relative;
 }
-.sl-spin-btn:hover:not(:disabled) {
-  box-shadow:0 0 32px color-mix(in oklch,var(--c-amber) 42%,transparent),inset 0 1px 0 color-mix(in oklch,var(--c-amber) 20%,transparent);
-  transform:translateY(-1px);
-}
-.sl-spin-btn:active:not(:disabled) { transform:translateY(0); }
-.sl-spin-btn:disabled { opacity:.45; cursor:not-allowed; transform:none; }
-.sl-spin-icon { font-size:1rem; animation:sl-spin-icon-idle 3s linear infinite; }
-@keyframes sl-spin-icon-idle { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
-.sl-spin-btn:disabled .sl-spin-icon { animation:none; }
+.sl-lever:active,
+.sl-lever--hold { cursor:grabbing; }
 
-/* ── BOUTON CASINO COMPLET ──────────────────────────────────── */
+/* Rail de guidage */
+.sl-lever-track {
+  position:absolute; left:50%; top:12px; bottom:20px;
+  transform:translateX(-50%);
+  width:6px;
+  background:linear-gradient(180deg,var(--c-surface-2),var(--c-bg));
+  border:1px solid var(--c-border);
+  border-radius:3px;
+  z-index:0;
+}
+
+/* Bras du levier */
+.sl-lever-arm {
+  position:relative; z-index:1;
+  width:10px; height:64px;
+  background:linear-gradient(180deg,
+    color-mix(in oklch,var(--c-amber) 40%,var(--c-surface-2)) 0%,
+    color-mix(in oklch,var(--c-amber) 15%,var(--c-surface-2)) 60%,
+    var(--c-surface-2) 100%);
+  border:1px solid color-mix(in oklch,var(--c-amber) 40%,var(--c-border));
+  border-radius:5px 5px 3px 3px;
+  transform-origin:bottom center;
+  transition:transform .12s ease-out, box-shadow .12s;
+  box-shadow:0 0 8px color-mix(in oklch,var(--c-amber) 15%,transparent);
+}
+
+/* Poignée */
+.sl-lever-knob {
+  position:absolute; top:-10px; left:50%; transform:translateX(-50%);
+  width:22px; height:22px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,
+    color-mix(in oklch,var(--c-amber) 70%,#fff) 0%,
+    var(--c-amber) 40%,
+    color-mix(in oklch,var(--c-amber) 60%,#000) 100%);
+  border:2px solid color-mix(in oklch,var(--c-amber) 60%,var(--c-border));
+  box-shadow:0 0 8px color-mix(in oklch,var(--c-amber) 30%,transparent),
+             inset 0 1px 0 rgba(255,255,255,.2);
+  transition:box-shadow .12s;
+}
+
+/* Pull : rotation 0 → -35deg */
+.sl-lever-arm--pull {
+  animation:sl-lever-pull .15s ease-out forwards;
+}
+@keyframes sl-lever-pull {
+  from { transform:rotate(0deg); }
+  to   { transform:rotate(-35deg); }
+}
+
+/* Release : -35deg → 0deg (ressort) */
+.sl-lever-arm--release {
+  animation:sl-lever-release .4s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes sl-lever-release {
+  0%   { transform:rotate(-35deg); }
+  65%  { transform:rotate(6deg); }
+  85%  { transform:rotate(-3deg); }
+  100% { transform:rotate(0deg); }
+}
+
+/* Glow amber sur la poignée pendant le hold */
+.sl-lever--hold .sl-lever-knob,
+.sl-lever-knob--glow {
+  box-shadow:
+    0 0 14px var(--c-amber),
+    0 0 28px color-mix(in oklch,var(--c-amber) 55%,transparent),
+    inset 0 1px 0 rgba(255,255,255,.25);
+  animation:sl-knob-pulse .4s ease-in-out infinite alternate;
+}
+@keyframes sl-knob-pulse {
+  from { box-shadow:0 0 10px var(--c-amber),0 0 22px color-mix(in oklch,var(--c-amber) 45%,transparent); }
+  to   { box-shadow:0 0 20px var(--c-amber),0 0 40px color-mix(in oklch,var(--c-amber) 65%,transparent),0 0 60px color-mix(in oklch,var(--c-amber) 25%,transparent); }
+}
+
+/* Label sous le levier */
+.sl-lever-label {
+  font-size:7px; letter-spacing:.22em; color:var(--c-amber); opacity:.6;
+  text-transform:uppercase;
+}
+.sl-lever--hold .sl-lever-label { opacity:1; }
+
+/* Focus clavier */
+.sl-lever:focus-visible {
+  outline:2px solid var(--c-amber); outline-offset:4px; border-radius:var(--radius-md);
+}
+/* ─────────────────────────────────────────────────────────────── */
+
+/* ── BOUTON CASINO COMPLET ───────────────────────────────────────── */
 .sl-casino-btn {
   width:100%; display:flex; align-items:center; gap:var(--space-3);
   padding:var(--space-3) var(--space-4);
