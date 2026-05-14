@@ -3,23 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STAR CASINO — Gwen Ha Star</title>
+  <title>STAR ARCADE — Gwen Ha Star</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@700;800;900&display=swap" rel="stylesheet">
+  <!-- Star base styles pour header/footer -->
+  <link rel="stylesheet" href="../../css/base.css">
+  <link rel="stylesheet" href="../../css/theme.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/star.css">
   <link rel="stylesheet" href="./css/casino.css">
   <link rel="icon" href="/shared/favicon.png" type="image/png">
 </head>
-<body>
+<body class="star-page">
+  <!-- HEADER STAR -->
+  <header id="star-header-user" role="banner"></header>
+
   <div id="casino-root"></div>
+
+  <!-- FOOTER STAR -->
+  <footer id="star-footer" role="contentinfo"></footer>
+
   <script type="module">
     import { getUser } from '../../js/supabase.js';
     import { CasinoCore } from './js/casino-core.js';
+    import { initDashboard } from '../../js/star/dashboard.js';
+
     (async () => {
       const user = await getUser();
       if (!user) { window.location.href = '/login.html'; return; }
-      const casino = await CasinoCore.boot({ mount:'#casino-root', userId:user.id });
+      const casino = await CasinoCore.boot({ mount:'#casino-root', userId: user.id });
       casino.showLobby();
+      initDashboard();
     })();
   </script>
 </body>
