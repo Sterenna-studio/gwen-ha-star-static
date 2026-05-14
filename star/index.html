@@ -158,11 +158,66 @@
         <div id="widget-radio"></div>
       </div>
 
+      <!-- ARCADE / CASINO -->
+      <div class="bc bc-casino">
+        <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>STAR · ARCADE</div>
+        <a href="./casino/" class="casino-hub-card" aria-label="Accéder à l'arcade">
+          <div class="casino-hub-vehicles">
+            <img src="../shared/images/vehicule/mash.png"    alt="Mash"      class="chv chv-1" loading="lazy">
+            <img src="../shared/images/vehicule/citroenAX.png" alt="Citroën AX" class="chv chv-2" loading="lazy">
+            <img src="../shared/images/vehicule/barossa.png" alt="Barossa"   class="chv chv-3" loading="lazy">
+          </div>
+          <div class="casino-hub-info">
+            <span class="casino-hub-title">ARCADE</span>
+            <span class="casino-hub-sub">WHACK-A-MOLE · CRASH · CHASE · SLOTS</span>
+          </div>
+          <span class="casino-hub-cta">▶ JOUER →</span>
+        </a>
+      </div>
+
     </div>
   </main>
 
   <!-- BOTTOM NAV BAR -->
   <header id="star-header-user" role="banner"></header>
+
+  <style>
+  .bc-casino { grid-column: span 2; }
+  .casino-hub-card {
+    display:flex; align-items:center; gap:16px;
+    background:linear-gradient(135deg,rgba(255,204,0,.06) 0%,rgba(255,140,0,.04) 100%);
+    border:1px solid rgba(255,204,0,.18); border-radius:14px;
+    padding:16px 20px; text-decoration:none; color:inherit;
+    transition:border-color .2s,box-shadow .2s,transform .15s;
+    overflow:hidden; position:relative;
+  }
+  .casino-hub-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,var(--c-amber,#ffcc00),var(--c-orange,#ff8c00));
+  }
+  .casino-hub-card:hover {
+    border-color:rgba(255,204,0,.45);
+    box-shadow:0 0 28px rgba(255,204,0,.18),0 6px 24px rgba(0,0,0,.4);
+    transform:translateY(-2px);
+  }
+  .casino-hub-vehicles {
+    display:flex; align-items:flex-end; gap:-8px;
+    flex-shrink:0; height:56px; position:relative; width:120px;
+  }
+  .chv { height:44px; width:auto; object-fit:contain;
+    filter:drop-shadow(0 0 6px rgba(255,204,0,.3));
+    transition:transform .2s;
+  }
+  .chv-1 { transform:translateX(8px) scale(.85); z-index:1; }
+  .chv-2 { transform:scale(1); z-index:2; }
+  .chv-3 { transform:translateX(-8px) scale(.85); z-index:1; }
+  .casino-hub-card:hover .chv-2 { transform:scale(1.1) translateY(-4px); }
+  .casino-hub-info { flex:1; display:flex; flex-direction:column; gap:4px; }
+  .casino-hub-title { font-family:'Share Tech Mono',monospace; font-size:1.1rem; font-weight:700; letter-spacing:.22em; color:var(--c-amber,#ffcc00); text-shadow:0 0 10px rgba(255,204,0,.5); }
+  .casino-hub-sub { font-size:8px; letter-spacing:.14em; color:var(--c-text-faint,#3a3d52); }
+  .casino-hub-cta { font-size:9px; letter-spacing:.18em; color:var(--c-amber,#ffcc00); opacity:.7; flex-shrink:0; }
+  @media(max-width:600px){ .bc-casino{ grid-column:span 1; } .casino-hub-vehicles{ width:80px; } .chv{ height:32px; } }
+  </style>
 
   <script type="module">
     import { initDashboard }     from '../js/star/dashboard.js';

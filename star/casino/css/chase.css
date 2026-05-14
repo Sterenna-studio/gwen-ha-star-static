@@ -1,0 +1,56 @@
+/* ── MIDNIGHT CHASE ── */
+
+.chase-select { display:flex; flex-direction:column; gap:var(--sp5); width:100%; }
+.chase-select-title { font-size:9px; letter-spacing:.25em; color:var(--c-text-faint); }
+
+.chase-vehicles-grid {
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
+  gap:var(--sp4);
+}
+.chase-vcard {
+  background:var(--c-surface); border:1px solid var(--c-border);
+  border-radius:var(--radius-lg); padding:var(--sp4);
+  cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;
+  transition:border-color .15s,box-shadow .15s,transform .12s;
+  position:relative; overflow:hidden;
+}
+.chase-vcard::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--vc); opacity:.6; }
+.chase-vcard:hover,
+.chase-vcard.selected {
+  border-color:var(--vc);
+  box-shadow:0 0 20px color-mix(in oklch,var(--vc) 20%,transparent);
+  transform:translateY(-2px);
+}
+.chase-vcard.selected { background:color-mix(in oklch,var(--vc) 5%,var(--c-surface)); }
+.chase-vimg { height:72px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px var(--vc)); }
+.chase-vname  { font-family:var(--font-display); font-size:.85rem; font-weight:700; letter-spacing:.14em; color:var(--vc); }
+.chase-vtype  { font-size:7px; letter-spacing:.2em; color:var(--c-text-faint); }
+.chase-vstars { font-size:9px; color:var(--vc); display:flex; align-items:center; gap:4px; width:100%; }
+.chase-vstat-lbl { font-size:7px; letter-spacing:.12em; color:var(--c-text-faint); min-width:44px; }
+.chase-vbonus { font-size:8px; letter-spacing:.14em; padding:2px 8px; border-radius:999px; border:1px solid var(--vc); color:var(--vc); opacity:.8; }
+.chase-vdesc  { font-size:8px; letter-spacing:.05em; color:var(--c-text-muted); text-align:center; line-height:1.5; }
+
+.chase-how { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-lg); padding:var(--sp4) var(--sp5); }
+.chase-how-title { font-size:9px; letter-spacing:.2em; color:var(--c-cyan); margin-bottom:var(--sp3); }
+.chase-how-grid  { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp3); }
+.chase-how-block { display:flex; align-items:center; gap:var(--sp3); font-size:9px; letter-spacing:.06em; color:var(--c-text-muted); }
+.chase-how-block span:first-child { font-size:1.2rem; flex-shrink:0; }
+
+.chase-arena { position:relative; display:flex; flex-direction:column; gap:var(--sp3); }
+.chase-arena canvas { width:100%; height:auto; border-radius:var(--radius-lg); border:1px solid var(--c-border); display:block; }
+
+.chase-hud {
+  display:flex; align-items:center; gap:var(--sp5); flex-wrap:wrap;
+  background:var(--c-surface); border:1px solid var(--c-border);
+  border-radius:var(--radius-lg); padding:var(--sp3) var(--sp5);
+}
+.chase-hud-block { display:flex; align-items:baseline; gap:4px; }
+.chase-hud-lbl  { font-size:7px; letter-spacing:.2em; color:var(--c-text-faint); }
+.chase-hud-val  { font-family:var(--font-display); font-size:1.3rem; font-weight:900; color:var(--c-amber); text-shadow:0 0 8px rgba(255,204,0,.4); font-variant-numeric:tabular-nums; }
+.chase-hud-unit { font-size:8px; letter-spacing:.1em; color:var(--c-text-faint); }
+
+@media(max-width:600px){
+  .chase-vehicles-grid { grid-template-columns:1fr; }
+  .chase-how-grid { grid-template-columns:1fr; }
+}
