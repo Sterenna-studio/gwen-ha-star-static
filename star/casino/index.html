@@ -3,30 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STAR CASINO</title>
+  <title>STAR CASINO — Gwen Ha Star</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/casino.css">
   <link rel="icon" href="/shared/favicon.png" type="image/png">
 </head>
 <body>
   <div id="casino-root"></div>
-
   <script type="module">
-    import { getUser }    from '../../js/supabase.js';
+    import { getUser } from '../../js/supabase.js';
     import { CasinoCore } from './js/casino-core.js';
-
     (async () => {
-      // Auth guard — redirige vers login si pas connecté
       const user = await getUser();
       if (!user) { window.location.href = '/login.html'; return; }
-
-      const casino = await CasinoCore.boot({
-        mount:      '#casino-root',
-        userId:     user.id,
-        standalone: true,
-      });
-
+      const casino = await CasinoCore.boot({ mount:'#casino-root', userId:user.id });
       casino.showLobby();
     })();
   </script>
