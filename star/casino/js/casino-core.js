@@ -1,12 +1,10 @@
 /**
- * casino-core.js  —  STAR CASINO  v1.0
- * Lobby + Blackjack + Roulette + Crash Game
+ * casino-core.js  —  STAR CASINO  v1.1
+ * Whack-A-Mole · Roulette · Crash
  * Monnaie : Chronicles (Supabase profiles.chronicles)
  */
 import { supabase } from '../../../js/supabase.js';
 
-// ── UTILS ─────────────────────────────────────────────────────────────
-const $ = s => document.querySelector(s);
 const el = (tag, cls, txt) => {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
@@ -14,7 +12,7 @@ const el = (tag, cls, txt) => {
   return e;
 };
 
-// ── SOUND ENGINE ──────────────────────────────────────────────────────
+// ── SOUND ENGINE ─────────────────────────────────────────────────────
 const SFX = {
   _ctx: null,
   _g() {
@@ -46,16 +44,20 @@ const SFX = {
     s.start(t0??ctx.currentTime);
   },
   click()  { this._t(800,'sine',.06,.004,.05); },
-  card()   { this._n(.05,.03); this._t(600,'triangle',.05,.003,.04); },
-  win()    { const ctx=this._g(); if(!ctx) return; [523,659,784,1047].forEach((f,i)=>this._t(f,'triangle',.09,.01,.14,ctx.currentTime+i*.09)); },
-  bj()     { const ctx=this._g(); if(!ctx) return; [523,659,784,1047,1319].forEach((f,i)=>this._t(f,'square',.07,.01,.12,ctx.currentTime+i*.07)); this._n(.05,.5); },
-  lose()   { const ctx=this._g(); if(!ctx) return; [330,280,220].forEach((f,i)=>this._t(f,'sawtooth',.07,.01,.18,ctx.currentTime+i*.12)); },
+  win()    { const ctx=this._g(); if(!ctx)return; [523,659,784,1047].forEach((f,i)=>this._t(f,'triangle',.09,.01,.14,ctx.currentTime+i*.09)); },
+  lose()   { const ctx=this._g(); if(!ctx)return; [330,280,220].forEach((f,i)=>this._t(f,'sawtooth',.07,.01,.18,ctx.currentTime+i*.12)); },
   push()   { this._t(440,'sine',.07,.01,.2); },
-  coin()   { this._t(1200,'sine',.06,.003,.04); this._t(1600,'sine',.04,.003,.04,this._g().currentTime+.05); },
   hover()  { this._t(1100,'sine',.03,.002,.03); },
-  crash()  { const ctx=this._g(); if(!ctx) return; [200,160,120].forEach((f,i)=>this._t(f,'sawtooth',.1,.005,.3,ctx.currentTime+i*.08)); this._n(.1,.5); },
-  eject()  { const ctx=this._g(); if(!ctx) return; [660,880,1100].forEach((f,i)=>this._t(f,'triangle',.08,.005,.1,ctx.currentTime+i*.05)); },
+  crash()  { const ctx=this._g(); if(!ctx)return; [200,160,120].forEach((f,i)=>this._t(f,'sawtooth',.1,.005,.3,ctx.currentTime+i*.08)); this._n(.1,.5); },
+  eject()  { const ctx=this._g(); if(!ctx)return; [660,880,1100].forEach((f,i)=>this._t(f,'triangle',.08,.005,.1,ctx.currentTime+i*.05)); },
   tick()   { this._t(1400,'square',.04,.002,.015); },
+  // Whack SFX
+  whack()  { this._n(.12,.04); this._t(300,'square',.08,.003,.06); },
+  bomb()   { const ctx=this._g(); if(!ctx)return; [150,100,80].forEach((f,i)=>this._t(f,'sawtooth',.12,.005,.25,ctx.currentTime+i*.04)); this._n(.1,.3); },
+  golden() { const ctx=this._g(); if(!ctx)return; [880,1100,1320,1760].forEach((f,i)=>this._t(f,'sine',.08,.005,.15,ctx.currentTime+i*.05)); },
+  miss()   { this._t(220,'sine',.04,.003,.12); },
+  countdown(n) { this._t(n===0?880:440,'square',.07,.005,.1); },
+  wamEnd() { const ctx=this._g(); if(!ctx)return; [440,554,659,880].forEach((f,i)=>this._t(f,'triangle',.1,.01,.18,ctx.currentTime+i*.1)); },
 };
 
 // ── ROULETTE CONFIG ────────────────────────────────────────────────────
@@ -64,13 +66,17 @@ const RL_NUMS = [
   24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26
 ];
 const RL_RED = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
-const RL_PAYOUTS = {
-  straight: 35,
-  red: 1, black: 1,
-  green: 17,
-};
 
-// ── CASINO CORE ───────────────────────────────────────────────────────
+// ── WAM CONFIG ────────────────────────────────────────────────────────
+const WAM_DURATION  = 30;   // secondes
+const WAM_HOLES     = 12;
+const WAM_MOLE_TYPES = [
+  { type:'normal', emoji:'🤖', pts: 1,  prob:.55, spd:.9  },
+  { type:'fast',   emoji:'⚡', pts: 2,  prob:.25, spd:.45 },
+  { type:'bomb',   emoji:'💣', pts:-3,  prob:.12, spd:1.1 },
+  { type:'golden', emoji:'⭐', pts: 5,  prob:.08, spd:.6  },
+];
+
 export class CasinoCore {
   static async boot({ mount, userId }) {
     const inst = new CasinoCore(mount, userId);
@@ -87,18 +93,22 @@ export class CasinoCore {
     this._jackpot  = 500;
     this._currentGame = null;
     // Crash state
-    this._crashMult    = 1.00;
-    this._crashRunning = false;
+    this._crashMult      = 1.00;
+    this._crashRunning   = false;
     this._crashCashedOut = false;
-    this._crashAnimId  = null;
+    this._crashAnimId    = null;
     this._crashBetActive = false;
     // Roulette
-    this._rlBetType   = null;
-    this._rlBetVal    = null;
-    this._rlSpinning  = false;
+    this._rlBetType  = null;
+    this._rlBetVal   = null;
+    this._rlSpinning = false;
+    // Wam
+    this._wamTimers  = [];
+    this._wamRunning = false;
+    this._wamRafId   = null;
   }
 
-  // ── SUPABASE ────────────────────────────────────────────────────────
+  // ── SUPABASE ─────────────────────────────────────────────────────────
   async _loadCredits() {
     if (!this.userId) { this.credits = 500; return; }
     try {
@@ -122,7 +132,7 @@ export class CasinoCore {
     this._renderHistory();
   }
 
-  // ── RENDER MAIN SHELL ───────────────────────────────────────────────
+  // ── RENDER MAIN SHELL ────────────────────────────────────────────────
   showLobby() {
     const root = document.querySelector(this.mountSel);
     if (!root) return;
@@ -130,8 +140,6 @@ export class CasinoCore {
     root.innerHTML = `
     <div class="scanlines" aria-hidden="true"></div>
     <div class="casino-page" id="casino-page">
-
-      <!-- STATUS BAR -->
       <nav class="casino-statusbar">
         <div class="sb-left">
           <span class="sb-logo">STAR · CASINO</span>
@@ -144,15 +152,13 @@ export class CasinoCore {
         </div>
       </nav>
 
-      <!-- LOBBY -->
       <section class="casino-lobby" id="view-lobby">
         <div class="lobby-hero">
-          <h1 class="lobby-hero-title">CASINO</h1>
-          <p class="lobby-hero-sub">STAR · CHRONICLES · ARCADE · NÉON</p>
+          <h1 class="lobby-hero-title">ARCADE</h1>
+          <p class="lobby-hero-sub">STAR · CHRONICLES · JEUX · NÉON</p>
           <span class="lobby-hero-line"></span>
         </div>
 
-        <!-- Jackpot banner -->
         <div class="jackpot-banner" style="width:100%;max-width:500px;margin-bottom:40px">
           <span class="jp-icon">🏆</span>
           <span class="jp-label">JACKPOT PROGRESSIF</span>
@@ -160,15 +166,15 @@ export class CasinoCore {
         </div>
 
         <div class="lobby-grid">
-          <div class="game-card" style="--card-color:var(--c-green)" id="card-bj">
-            <div class="gc-icon">🃏</div>
+          <div class="game-card" style="--card-color:var(--c-orange)" id="card-wam">
+            <div class="gc-icon">🔨</div>
             <div class="gc-tag">// JEU 01</div>
-            <div class="gc-title">BLACKJACK</div>
-            <div class="gc-desc">Bats le dealer sans dépasser 21. Blackjack naturel = ×2.5. Stratégie, mémoire, nerfs.</div>
+            <div class="gc-title">WHACK-A-MOLE</div>
+            <div class="gc-desc">30 secondes. Frappe les entités cyber avant qu'elles replongent. Évite les bombes. La taupe dorée vaut ×5.</div>
             <div class="gc-meta">
-              <span class="gc-badge">SKILL</span>
-              <span class="gc-badge">×2.5 BJ</span>
-              <span class="gc-badge">MISE MIN 1C</span>
+              <span class="gc-badge">RÉFLEXES</span>
+              <span class="gc-badge">⭐ ×5 PTS</span>
+              <span class="gc-badge">30 SEC</span>
             </div>
             <div class="gc-play-btn">▶ JOUER</div>
           </div>
@@ -177,10 +183,10 @@ export class CasinoCore {
             <div class="gc-icon">🎡</div>
             <div class="gc-tag">// JEU 02</div>
             <div class="gc-title">ROULETTE</div>
-            <div class="gc-desc">Mise sur couleur, numéro ou zero. Roue européenne 37 cases. Numéro plein = ×35.</div>
+            <div class="gc-desc">Mise sur couleur, numéro ou zéro. Roue européenne 37 cases. Numéro plein = ×36.</div>
             <div class="gc-meta">
               <span class="gc-badge">CHANCE</span>
-              <span class="gc-badge">×35 PLEIN</span>
+              <span class="gc-badge">×36 PLEIN</span>
               <span class="gc-badge">1 ZERO</span>
             </div>
             <div class="gc-play-btn">▶ JOUER</div>
@@ -200,7 +206,6 @@ export class CasinoCore {
           </div>
         </div>
 
-        <!-- Historique -->
         <div class="history-section" style="margin-top:48px;width:100%" id="history-section">
           <div class="history-head">
             <span>JEU</span><span>RÉSULTAT</span><span>MISE</span><span>GAIN</span><span>SOLDE</span>
@@ -209,58 +214,50 @@ export class CasinoCore {
         </div>
       </section>
 
-      <!-- BLACKJACK -->
-      <section class="casino-game" id="game-blackjack"></section>
-
-      <!-- ROULETTE -->
+      <section class="casino-game" id="game-wam"></section>
       <section class="casino-game" id="game-roulette"></section>
-
-      <!-- CRASH -->
       <section class="casino-game" id="game-crash"></section>
     </div>`;
 
-    document.getElementById('card-bj')?.addEventListener('click',    () => { SFX.click(); this._showGame('blackjack'); });
+    document.getElementById('card-wam')?.addEventListener('click',   () => { SFX.click(); this._showGame('wam'); });
     document.getElementById('card-rl')?.addEventListener('click',    () => { SFX.click(); this._showGame('roulette'); });
     document.getElementById('card-crash')?.addEventListener('click', () => { SFX.click(); this._showGame('crash'); });
-
-    // Hover SFX
-    ['card-bj','card-rl','card-crash'].forEach(id => {
+    ['card-wam','card-rl','card-crash'].forEach(id => {
       document.getElementById(id)?.addEventListener('mouseenter', () => SFX.hover());
     });
-
     this._renderHistory();
   }
 
-  // ── NAV ──────────────────────────────────────────────────────────────
+  // ── NAV ───────────────────────────────────────────────────────────────
   _showGame(name) {
     document.getElementById('view-lobby')?.style.setProperty('display','none');
     document.querySelectorAll('.casino-game').forEach(g => g.classList.remove('active'));
-    const el = document.getElementById(`game-${name}`);
-    if (!el) return;
-    el.classList.add('active');
+    const e = document.getElementById(`game-${name}`);
+    if (!e) return;
+    e.classList.add('active');
     this._currentGame = name;
-    if      (name === 'blackjack') this._initBlackjack();
-    else if (name === 'roulette')  this._initRoulette();
-    else if (name === 'crash')     this._initCrash();
+    if      (name === 'wam')      this._initWam();
+    else if (name === 'roulette') this._initRoulette();
+    else if (name === 'crash')    this._initCrash();
   }
 
   _backToLobby() {
+    this._wamStop();
+    if (this._crashAnimId) { cancelAnimationFrame(this._crashAnimId); this._crashAnimId = null; }
     document.querySelectorAll('.casino-game').forEach(g => g.classList.remove('active'));
     document.getElementById('view-lobby').style.removeProperty('display');
     this._currentGame = null;
-    if (this._crashAnimId) { cancelAnimationFrame(this._crashAnimId); this._crashAnimId = null; }
   }
 
   _updateCreditsDisplay() {
-    const el = document.getElementById('sb-credits');
-    if (el) el.textContent = this.credits.toLocaleString('fr-FR');
+    const e = document.getElementById('sb-credits');
+    if (e) e.textContent = this.credits.toLocaleString('fr-FR');
   }
 
-  // ── BET PANEL HTML ───────────────────────────────────────────────────
+  // ── BET PANEL ─────────────────────────────────────────────────────────
   _betPanelHTML(id) {
     const presets = [1,5,10,25,50,100];
-    return `
-    <div class="bet-panel">
+    return `<div class="bet-panel">
       <span class="bet-label">MISE</span>
       <button class="bet-btn" id="${id}-bet-down">−</button>
       <span class="bet-val" id="${id}-bet-val">${this.bet}</span>
@@ -270,7 +267,6 @@ export class CasinoCore {
   }
 
   _bindBetPanel(id) {
-    const presets = [1,5,10,25,50,100];
     const upd = () => {
       const v = document.getElementById(`${id}-bet-val`);
       if (v) v.textContent = this.bet;
@@ -283,201 +279,279 @@ export class CasinoCore {
       SFX.click(); this.bet = Math.min(this.credits, this.bet + (this.bet >= 10 ? 5 : 1)); upd();
     });
     document.querySelectorAll('.bet-preset').forEach(b => {
-      b.addEventListener('click', () => {
-        SFX.click(); this.bet = Math.min(this.credits, Number(b.dataset.preset)); upd();
-      });
+      b.addEventListener('click', () => { SFX.click(); this.bet = Math.min(this.credits, Number(b.dataset.preset)); upd(); });
     });
   }
 
   // ═══════════════════════════════════════════════════════════════════
-  // BLACKJACK
+  // WHACK-A-MOLE
   // ═══════════════════════════════════════════════════════════════════
-  _initBlackjack() {
-    this._bjDeck     = [];
-    this._bjPlayer   = [];
-    this._bjDealer   = [];
-    this._bjPhase    = 'bet'; // bet | play | done
-    const g = document.getElementById('game-blackjack');
+  _initWam() {
+    this._wamStop();
+    const g = document.getElementById('game-wam');
+    // Grille HTML
+    const holes = Array.from({length:WAM_HOLES}, (_,i) =>
+      `<div class="wam-hole" id="wh-${i}" data-idx="${i}" data-type="normal">
+        <div class="wam-mole" id="wm-${i}">🤖</div>
+      </div>`
+    ).join('');
+
     g.innerHTML = `
       <div class="game-header">
-        <button class="game-back-btn" id="bj-back">← LOBBY</button>
-        <span class="game-title">BLACK<span class="game-title-accent">JACK</span></span>
+        <button class="game-back-btn" id="wam-back">← LOBBY</button>
+        <span class="game-title">WHACK-A-<span class="game-title-accent">MOLE</span></span>
       </div>
-      ${this._betPanelHTML('bj')}
-      <div class="bj-table" id="bj-table">
-        <div class="bj-zone">
-          <div class="bj-zone-label">DEALER</div>
-          <div class="bj-score" id="bj-dealer-score">—</div>
-          <div class="bj-cards" id="bj-dealer-cards"></div>
+      ${this._betPanelHTML('wam')}
+      <div class="wam-arena" id="wam-arena">
+        <div class="wam-hud">
+          <div class="wam-hud-block">
+            <span class="wam-hud-label">SCORE</span>
+            <span class="wam-hud-val" id="wam-score">0</span>
+          </div>
+          <div class="wam-hud-block">
+            <span class="wam-hud-label">TEMPS</span>
+            <span class="wam-hud-val wam-timer" id="wam-timer">${WAM_DURATION}</span>
+          </div>
+          <div class="wam-hud-block">
+            <span class="wam-hud-label">COMBO</span>
+            <span class="wam-hud-val wam-combo" id="wam-combo">x1</span>
+          </div>
+          <div class="wam-hud-block">
+            <span class="wam-hud-label">FRAPPÉES</span>
+            <span class="wam-hud-val" id="wam-hits" style="color:var(--c-green);font-size:1.2rem">0</span>
+          </div>
         </div>
-        <div class="bj-divider"></div>
-        <div class="bj-zone">
-          <div class="bj-zone-label">VOUS</div>
-          <div class="bj-score" id="bj-player-score">—</div>
-          <div class="bj-cards" id="bj-player-cards"></div>
-        </div>
+        <div class="wam-grid" id="wam-grid">${holes}</div>
+        <div class="wam-timebar-wrap"><div class="wam-timebar" id="wam-timebar"></div></div>
       </div>
-      <div class="game-msg" id="bj-msg">APPUYER SUR DEAL POUR COMMENCER</div>
+      <div class="game-msg" id="wam-msg">MISE ET LANCE LA PARTIE</div>
       <div class="action-row">
-        <button class="action-btn primary" id="bj-deal">▶ DEAL</button>
-        <button class="action-btn" id="bj-hit"  disabled>HIT</button>
-        <button class="action-btn" id="bj-stand" disabled>STAND</button>
-        <button class="action-btn danger" id="bj-double" disabled>DOUBLE</button>
+        <button class="action-btn primary" id="wam-start">▶ DÉMARRER</button>
       </div>`;
 
-    document.getElementById('bj-back')?.addEventListener('click',   () => this._backToLobby());
-    document.getElementById('bj-deal')?.addEventListener('click',   () => this._bjDeal());
-    document.getElementById('bj-hit')?.addEventListener('click',    () => this._bjHit());
-    document.getElementById('bj-stand')?.addEventListener('click',  () => this._bjStand());
-    document.getElementById('bj-double')?.addEventListener('click', () => this._bjDouble());
-    this._bindBetPanel('bj');
+    document.getElementById('wam-back')?.addEventListener('click', () => { this._wamStop(); this._backToLobby(); });
+    document.getElementById('wam-start')?.addEventListener('click', () => this._wamLaunch());
+    this._bindBetPanel('wam');
   }
 
-  _bjNewDeck() {
-    const suits = ['♠','♥','♦','♣'];
-    const vals  = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-    this._bjDeck = suits.flatMap(s => vals.map(v => ({ s, v })));
-    // Shuffle (Fisher-Yates)
-    for (let i = this._bjDeck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [this._bjDeck[i], this._bjDeck[j]] = [this._bjDeck[j], this._bjDeck[i]];
-    }
-  }
-
-  _bjDraw() { return this._bjDeck.pop(); }
-
-  _bjVal(hand) {
-    let total = 0, aces = 0;
-    for (const c of hand) {
-      if (!c.hidden) {
-        if (c.v === 'A') { total += 11; aces++; }
-        else if (['J','Q','K'].includes(c.v)) total += 10;
-        else total += parseInt(c.v);
-      }
-    }
-    while (total > 21 && aces > 0) { total -= 10; aces--; }
-    return total;
-  }
-
-  _bjCardHTML(c) {
-    if (c.hidden) return '<div class="bj-card hidden"></div>';
-    const red = ['♥','♦'].includes(c.s);
-    return `<div class="bj-card${red?' red':''}"
-      style="animation-duration:${.15+Math.random()*.15}s">
-      <div class="bj-card-corner">${c.v}<br>${c.s}</div>
-      <div class="bj-card-center">${c.s}</div>
-      <div class="bj-card-corner" style="transform:rotate(180deg)">${c.v}<br>${c.s}</div>
-    </div>`;
-  }
-
-  _bjRenderHands() {
-    const pc = document.getElementById('bj-player-cards');
-    const dc = document.getElementById('bj-dealer-cards');
-    const ps = document.getElementById('bj-player-score');
-    const ds = document.getElementById('bj-dealer-score');
-    if (pc) pc.innerHTML = this._bjPlayer.map(c => this._bjCardHTML(c)).join('');
-    if (dc) dc.innerHTML = this._bjDealer.map(c => this._bjCardHTML(c)).join('');
-    const pv = this._bjVal(this._bjPlayer);
-    const dv = this._bjVal(this._bjDealer.filter(c => !c.hidden));
-    if (ps) { ps.textContent = pv || '—'; ps.className = 'bj-score' + (pv>21?' bust': pv===21&&this._bjPlayer.length===2?' bj':''); }
-    if (ds) { ds.textContent = dv || '—'; ds.className = 'bj-score' + (dv>21?' bust':''); }
-  }
-
-  async _bjDeal() {
-    if (this.credits < this.bet) { this._bjMsg('CRÉDITS INSUFFISANTS','lose'); return; }
-    this._bjNewDeck();
+  async _wamLaunch() {
+    if (this._wamRunning) return;
+    if (this.credits < this.bet) { this._wamMsg('CRÉDITS INSUFFISANTS','lose'); return; }
     this.credits -= this.bet;
     await this._saveCredits();
-    this._bjPlayer = [this._bjDraw(), this._bjDraw()];
-    this._bjDealer = [this._bjDraw(), { ...this._bjDraw(), hidden: true }];
-    this._bjPhase  = 'play';
-    SFX.card(); SFX.card();
-    this._bjRenderHands();
-    this._bjSetButtons(true);
-    document.getElementById('bj-deal').disabled = true;
-    const pv = this._bjVal(this._bjPlayer);
-    if (pv === 21) { await this._delay(400); this._bjStand(); return; }
-    this._bjMsg('HIT ou STAND ?','neutral');
+
+    this._wamScore  = 0;
+    this._wamHits   = 0;
+    this._wamCombo  = 1;
+    this._wamMisses = 0;
+    document.getElementById('wam-start').disabled = true;
+    this._wamMsg('','');
+
+    // Countdown 3-2-1-GO
+    await this._wamCountdown();
+    this._wamStart();
   }
 
-  async _bjHit() {
-    SFX.card();
-    this._bjPlayer.push(this._bjDraw());
-    this._bjRenderHands();
-    const v = this._bjVal(this._bjPlayer);
-    if (v > 21) { await this._delay(200); this._bjEnd(); }
-    else if (v === 21) { await this._delay(300); this._bjStand(); }
-    else this._bjMsg(`${v} — HIT ou STAND ?`,'neutral');
-  }
-
-  async _bjStand() {
-    this._bjSetButtons(false);
-    // Révéle carte cachée
-    this._bjDealer = this._bjDealer.map(c => ({ ...c, hidden: false }));
-    this._bjRenderHands();
-    await this._delay(300);
-    // Dealer tire jusqu'à 17
-    while (this._bjVal(this._bjDealer) < 17) {
-      SFX.card();
-      await this._delay(400);
-      this._bjDealer.push(this._bjDraw());
-      this._bjRenderHands();
+  async _wamCountdown() {
+    const arena = document.getElementById('wam-arena');
+    for (const txt of ['3','2','1','GO!']) {
+      SFX.countdown(txt === 'GO!' ? 0 : 1);
+      const d = document.createElement('div');
+      d.className = 'wam-countdown'; d.textContent = txt;
+      arena.appendChild(d);
+      await this._delay(650);
+      d.remove();
     }
-    await this._delay(300);
-    this._bjEnd();
   }
 
-  async _bjDouble() {
-    if (this.credits < this.bet) { this._bjMsg('CRÉDITS INSUFFISANTS','lose'); return; }
-    this.credits -= this.bet;
-    this.bet     *= 2;
-    await this._saveCredits();
-    this._bjSetButtons(false);
-    SFX.card();
-    this._bjPlayer.push(this._bjDraw());
-    this._bjRenderHands();
-    await this._delay(300);
-    this._bjStand();
+  _wamStart() {
+    this._wamRunning  = true;
+    this._wamTimeLeft = WAM_DURATION;
+    this._wamT0       = performance.now();
+    this._wamLastTick = this._wamT0;
+    this._wamActiveHoles = new Array(WAM_HOLES).fill(null); // null | {type,timer}
+    this._wamScheduleAll();
+    this._wamRafId = requestAnimationFrame(() => this._wamTick());
   }
 
-  _bjEnd() {
-    const pv = this._bjVal(this._bjPlayer);
-    const dv = this._bjVal(this._bjDealer);
-    const isBJ = pv === 21 && this._bjPlayer.length === 2;
-    let gain = 0, result = 'lose', msg = '';
-    if (pv > 21) {
-      msg = 'BUST — PERDU'; result = 'lose'; SFX.lose();
-    } else if (dv > 21 || pv > dv) {
-      if (isBJ) {
-        gain = Math.round(this.bet * 2.5); msg = '🃏 BLACKJACK ! ×2.5'; result = 'win'; SFX.bj();
-      } else {
-        gain = this.bet * 2; msg = `GAGNÉ ! +${gain} C`; result = 'win'; SFX.win();
+  _wamTick() {
+    if (!this._wamRunning) return;
+    const now = performance.now();
+    const elapsed = (now - this._wamT0) / 1000;
+    const timeLeft = Math.max(0, WAM_DURATION - elapsed);
+
+    const timerEl = document.getElementById('wam-timer');
+    const barEl   = document.getElementById('wam-timebar');
+    if (timerEl) {
+      timerEl.textContent = Math.ceil(timeLeft);
+      timerEl.classList.toggle('urgent', timeLeft <= 8);
+    }
+    if (barEl) {
+      barEl.style.transform = `scaleX(${timeLeft / WAM_DURATION})`;
+      barEl.classList.toggle('urgent', timeLeft <= 8);
+    }
+    if (timeLeft <= 0) { this._wamEnd(); return; }
+    this._wamRafId = requestAnimationFrame(() => this._wamTick());
+  }
+
+  _wamScheduleAll() {
+    // Programmation initiale et continue des apparitions
+    const schedule = () => {
+      if (!this._wamRunning) return;
+      const freeHoles = Array.from({length:WAM_HOLES},(_,i)=>i)
+        .filter(i => !this._wamActiveHoles[i]);
+      if (freeHoles.length === 0) { this._wamTimers.push(setTimeout(schedule, 300)); return; }
+      // Nb de taupes simultanées selon le temps écoulé
+      const elapsed = (performance.now() - this._wamT0) / 1000;
+      const maxSim = elapsed < 8 ? 2 : elapsed < 18 ? 3 : 4;
+      const active = this._wamActiveHoles.filter(Boolean).length;
+      if (active < maxSim) {
+        const holeIdx = freeHoles[Math.floor(Math.random() * freeHoles.length)];
+        this._wamPopMole(holeIdx);
       }
-    } else if (pv === dv) {
-      gain = this.bet; msg = 'ÉGALITÉ — REMBOURSÉ'; result = 'push'; SFX.push();
+      const nextDelay = 400 + Math.random() * 600;
+      this._wamTimers.push(setTimeout(schedule, nextDelay));
+    };
+    schedule();
+  }
+
+  _wamPickType() {
+    const r = Math.random();
+    let cum = 0;
+    for (const t of WAM_MOLE_TYPES) {
+      cum += t.prob;
+      if (r < cum) return t;
+    }
+    return WAM_MOLE_TYPES[0];
+  }
+
+  _wamPopMole(idx) {
+    if (!this._wamRunning) return;
+    const type = this._wamPickType();
+    const hole = document.getElementById(`wh-${idx}`);
+    const mole = document.getElementById(`wm-${idx}`);
+    if (!hole || !mole) return;
+
+    hole.dataset.type = type.type;
+    mole.textContent  = type.emoji;
+    hole.classList.add('active');
+    this._wamActiveHoles[idx] = type;
+
+    // Retire après la durée d'apparition
+    const timer = setTimeout(() => {
+      if (!this._wamRunning) return;
+      hole.classList.remove('active');
+      this._wamActiveHoles[idx] = null;
+      // Pénalité légère si taupe normale ratée (pas bombe)
+    }, type.spd * 1000 + 400);
+    this._wamTimers.push(timer);
+
+    // Gestionnaire de clic
+    const onClick = (e) => {
+      e.stopPropagation();
+      if (!this._wamRunning || !hole.classList.contains('active')) return;
+      hole.removeEventListener('click', onClick);
+      clearTimeout(timer);
+      hole.classList.remove('active');
+      this._wamActiveHoles[idx] = null;
+      this._wamHitMole(idx, type, hole);
+    };
+    hole.addEventListener('click', onClick, { once:true });
+  }
+
+  _wamHitMole(idx, type, holeEl) {
+    if (type.type === 'bomb') {
+      // Bombe : pénalité score + reset combo
+      SFX.bomb();
+      this._wamScore  = Math.max(0, this._wamScore + type.pts);
+      this._wamCombo  = 1;
+      holeEl.classList.add('miss');
+      this._wamPopScoreEl(holeEl, `${type.pts} 💥`, true);
+      setTimeout(() => holeEl.classList.remove('miss'), 300);
     } else {
-      msg = 'DEALER GAGNE — PERDU'; result = 'lose'; SFX.lose();
+      const pts = type.pts * this._wamCombo;
+      if (type.type === 'golden') SFX.golden();
+      else SFX.whack();
+      this._wamScore += pts;
+      this._wamHits++;
+      this._wamCombo = Math.min(8, this._wamCombo + 1);
+      holeEl.classList.add('hit');
+      this._wamPopScoreEl(holeEl, `+${pts}`, false);
+      setTimeout(() => holeEl.classList.remove('hit'), 300);
     }
-    if (gain) { this.credits += gain; this._saveCredits(); }
-    this._bjMsg(msg, result);
-    this._bjRenderHands();
-    this._bjSetButtons(false);
-    document.getElementById('bj-deal').disabled = false;
-    this._addHistory('BLACKJACK', this.bet, result, gain - this.bet);
-    this._bjPhase = 'done';
+    this._wamUpdateHUD();
   }
 
-  _bjMsg(txt, type='') {
-    const el = document.getElementById('bj-msg');
-    if (!el) return;
-    el.textContent = txt;
-    el.className = 'game-msg' + (type ? ` ${type}` : '');
+  _wamPopScoreEl(holeEl, txt, neg) {
+    const p = el('div', `wam-score-pop${neg?' neg':''}`, txt);
+    holeEl.appendChild(p);
+    setTimeout(() => p.remove(), 900);
   }
 
-  _bjSetButtons(active) {
-    ['bj-hit','bj-stand','bj-double'].forEach(id => {
-      const b = document.getElementById(id); if (b) b.disabled = !active;
-    });
+  _wamUpdateHUD() {
+    const s = document.getElementById('wam-score');
+    const c = document.getElementById('wam-combo');
+    const h = document.getElementById('wam-hits');
+    if (s) s.textContent = this._wamScore;
+    if (c) c.textContent = `x${this._wamCombo}`;
+    if (h) h.textContent = this._wamHits;
+  }
+
+  _wamStop() {
+    this._wamRunning = false;
+    this._wamTimers.forEach(t => clearTimeout(t));
+    this._wamTimers = [];
+    if (this._wamRafId) { cancelAnimationFrame(this._wamRafId); this._wamRafId = null; }
+    // Retire toutes les taupes actives visuellement
+    document.querySelectorAll('.wam-hole.active').forEach(h => h.classList.remove('active'));
+  }
+
+  async _wamEnd() {
+    this._wamStop();
+    SFX.wamEnd();
+
+    const score = this._wamScore;
+    // Gain = mise * score / 10 (arrondi), min 0
+    // Ex: mise 10C, score 15 → gain 15C (×1.5)
+    const gain   = Math.round(this.bet * score / 10);
+    const net    = gain - this.bet;
+    const result = net > 0 ? 'win' : net < 0 ? 'lose' : 'push';
+
+    if (gain > 0) { this.credits += gain; await this._saveCredits(); }
+    this._addHistory('WHACK', this.bet, result, net);
+
+    // Affiche l'écran de résultat
+    const arena = document.getElementById('wam-arena');
+    if (arena) {
+      const res = document.createElement('div');
+      res.className = 'wam-result-screen';
+      const gainTxt = net >= 0 ? `<span class="gain-pos">+${net} C</span>` : `<span class="gain-neg">${net} C</span>`;
+      res.innerHTML = `
+        <div class="wam-result-title">PARTIE TERMINÉE</div>
+        <div class="wam-result-score">${score} PTS</div>
+        <div class="wam-result-gain">
+          MISE ${this.bet} C → GAIN <strong>${gain} C</strong> ${gainTxt}
+        </div>
+        <div style="font-size:11px;letter-spacing:.12em;color:var(--c-text-faint)">
+          ${this._wamHits} TAUPE${this._wamHits>1?'S':''} FRAPPÉE${this._wamHits>1?'S':''}
+        </div>`;
+      arena.appendChild(res);
+    }
+
+    const msg = net > 0 ? `🔨 +${net} C — BIEN JOUÉ !` : net < 0 ? `Score insuffisant — ${net} C` : 'ÉGALITÉ — REMBOURSÉ';
+    this._wamMsg(msg, result);
+
+    const btn = document.getElementById('wam-start');
+    if (btn) { btn.disabled = false; btn.textContent = '↺ REJOUER'; }
+    // Retire l'écran de résultat au clic sur REJOUER
+    document.getElementById('wam-start')?.addEventListener('click', () => {
+      document.querySelector('.wam-result-screen')?.remove();
+    }, { once:true });
+  }
+
+  _wamMsg(txt, type='') {
+    const e = document.getElementById('wam-msg');
+    if (!e) return; e.textContent = txt; e.className = 'game-msg'+(type?` ${type}`:'');
   }
 
   // ═══════════════════════════════════════════════════════════════════
@@ -486,10 +560,6 @@ export class CasinoCore {
   _initRoulette() {
     this._rlBetType = null; this._rlBetVal = null; this._rlSpinning = false;
     const g = document.getElementById('game-roulette');
-    const numRows = [];
-    for (let i = 0; i < RL_NUMS.length; i += 6)
-      numRows.push(RL_NUMS.slice(i, i+6));
-
     g.innerHTML = `
       <div class="game-header">
         <button class="game-back-btn" id="rl-back">← LOBBY</button>
@@ -515,9 +585,9 @@ export class CasinoCore {
           <p class="rl-section-label" style="margin-top:12px">NUMÉRO PLEIN (×36)</p>
           <div class="rl-numbers-grid" id="rl-numbers">
             <button class="rl-num-btn zero" data-type="number" data-val="0">0</button>
-            ${Array.from({length:36},(_,i)=>i+1).map(n=>`
-              <button class="rl-num-btn${RL_RED.has(n)?' red-num':' black-num'}" data-type="number" data-val="${n}">${n}</button>
-            `).join('')}
+            ${Array.from({length:36},(_,i)=>i+1).map(n=>
+              `<button class="rl-num-btn${RL_RED.has(n)?' red-num':' black-num'}" data-type="number" data-val="${n}">${n}</button>`
+            ).join('')}
           </div>
           <div class="rl-selected-display" id="rl-sel-display">—</div>
           <div class="action-row" style="margin-top:8px">
@@ -530,8 +600,6 @@ export class CasinoCore {
     document.getElementById('rl-back')?.addEventListener('click', () => this._backToLobby());
     document.getElementById('rl-spin')?.addEventListener('click', () => this._rlSpin());
     this._bindBetPanel('rl');
-
-    // Bet selection
     g.querySelectorAll('[data-type]').forEach(b => {
       b.addEventListener('click', () => {
         SFX.click();
@@ -556,106 +624,72 @@ export class CasinoCore {
     const canvas = document.getElementById('rl-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const N   = RL_NUMS.length;
-    const cx  = 110, cy = 110, r = 108;
-    for (let i = 0; i < N; i++) {
-      const a0 = (i / N) * Math.PI * 2 - Math.PI / 2;
-      const a1 = ((i+1) / N) * Math.PI * 2 - Math.PI / 2;
-      const num = RL_NUMS[i];
-      ctx.beginPath(); ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, r, a0, a1);
-      ctx.closePath();
-      ctx.fillStyle = num === 0 ? '#007a33' : RL_RED.has(num) ? '#b01c1c' : '#151515';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,.4)'; ctx.lineWidth = 1; ctx.stroke();
-      // Number label
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate((a0 + a1) / 2);
-      ctx.translate(r * .72, 0);
-      ctx.rotate(Math.PI / 2);
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 8px Share Tech Mono';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(num, 0, 0);
+    const N = RL_NUMS.length, cx=110, cy=110, r=108;
+    for (let i=0;i<N;i++) {
+      const a0=(i/N)*Math.PI*2-Math.PI/2, a1=((i+1)/N)*Math.PI*2-Math.PI/2;
+      const num=RL_NUMS[i];
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,a0,a1); ctx.closePath();
+      ctx.fillStyle = num===0?'#007a33':RL_RED.has(num)?'#b01c1c':'#151515'; ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,.4)'; ctx.lineWidth=1; ctx.stroke();
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate((a0+a1)/2); ctx.translate(r*.72,0); ctx.rotate(Math.PI/2);
+      ctx.fillStyle='#fff'; ctx.font='bold 8px Share Tech Mono';
+      ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(num,0,0);
       ctx.restore();
     }
-    // Center circle
-    ctx.beginPath(); ctx.arc(cx, cy, 14, 0, Math.PI*2);
-    ctx.fillStyle = '#0f1117'; ctx.fill();
-    ctx.strokeStyle = 'rgba(176,106,255,.5)'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,14,0,Math.PI*2);
+    ctx.fillStyle='#0f1117'; ctx.fill();
+    ctx.strokeStyle='rgba(176,106,255,.5)'; ctx.lineWidth=2; ctx.stroke();
   }
 
   async _rlSpin() {
     if (this._rlSpinning) return;
-    if (!this._rlBetType) { this._rlMsg('CHOISIS UNE MISE D\'ABORD','lose'); return; }
+    if (!this._rlBetType) { this._rlMsg("CHOISIS UNE MISE D'ABORD",'lose'); return; }
     if (this.credits < this.bet) { this._rlMsg('CRÉDITS INSUFFISANTS','lose'); return; }
-
     this._rlSpinning = true;
     this.credits -= this.bet;
     await this._saveCredits();
     document.getElementById('rl-spin').disabled = true;
-
-    // Random result
     const resultIdx = Math.floor(Math.random() * RL_NUMS.length);
     const resultNum = RL_NUMS[resultIdx];
     const totalDeg  = 1440 + 360 - (resultIdx / RL_NUMS.length) * 360;
-    const dur       = 3.5;
-
+    const dur = 3.5;
     const wheel = document.getElementById('rl-wheel');
     if (wheel) {
-      wheel.style.setProperty('--spin-deg', `${totalDeg}deg`);
-      wheel.style.setProperty('--spin-dur', `${dur}s`);
+      wheel.style.setProperty('--spin-deg',`${totalDeg}deg`);
+      wheel.style.setProperty('--spin-dur',`${dur}s`);
       wheel.classList.add('spinning');
     }
     this._rlMsg('EN COURS…','neutral');
-
-    await this._delay(dur * 1000 + 200);
+    await this._delay(dur*1000+200);
     if (wheel) wheel.classList.remove('spinning');
-
     const resEl = document.getElementById('rl-result');
-    if (resEl) { resEl.textContent = resultNum; resEl.style.color = resultNum === 0 ? 'var(--c-green)' : RL_RED.has(resultNum) ? '#e74c3c' : 'var(--c-text)'; }
-
-    // Evaluate
-    let gain = 0, result = 'lose';
-    if (this._rlBetType === 'color') {
-      const winColor = resultNum === 0 ? 'green' : RL_RED.has(resultNum) ? 'red' : 'black';
-      if (winColor === this._rlBetVal) {
-        const mult = resultNum === 0 ? 18 : 2;
-        gain = this.bet * mult; result = 'win';
-      }
+    if (resEl) { resEl.textContent=resultNum; resEl.style.color=resultNum===0?'var(--c-green)':RL_RED.has(resultNum)?'#e74c3c':'var(--c-text)'; }
+    let gain=0, result='lose';
+    if (this._rlBetType==='color') {
+      const winColor=resultNum===0?'green':RL_RED.has(resultNum)?'red':'black';
+      if (winColor===this._rlBetVal) { const mult=resultNum===0?18:2; gain=this.bet*mult; result='win'; }
     } else {
-      if (Number(this._rlBetVal) === resultNum) { gain = this.bet * 36; result = 'win'; }
+      if (Number(this._rlBetVal)===resultNum) { gain=this.bet*36; result='win'; }
     }
-
-    if (gain) { this.credits += gain; await this._saveCredits(); SFX.win(); }
-    else SFX.lose();
-
-    const msg = gain > 0 ? `🎡 NUMÉRO ${resultNum} — +${gain} C` : `NUMÉRO ${resultNum} — PERDU`;
-    this._rlMsg(msg, result);
-    this._addHistory('ROULETTE', this.bet, result, gain - this.bet);
-
-    document.getElementById('rl-spin').disabled = false;
-    this._rlSpinning = false;
+    if (gain) { this.credits+=gain; await this._saveCredits(); SFX.win(); } else SFX.lose();
+    this._rlMsg(gain>0?`🎡 NUMÉRO ${resultNum} — +${gain} C`:`NUMÉRO ${resultNum} — PERDU`, result);
+    this._addHistory('ROULETTE',this.bet,result,gain-this.bet);
+    document.getElementById('rl-spin').disabled=false;
+    this._rlSpinning=false;
   }
 
-  _rlMsg(txt, type='') {
-    const el = document.getElementById('rl-msg');
-    if (!el) return;
-    el.textContent = txt;
-    el.className = 'game-msg' + (type ? ` ${type}` : '');
+  _rlMsg(txt,type='') {
+    const e=document.getElementById('rl-msg');
+    if(!e)return; e.textContent=txt; e.className='game-msg'+(type?` ${type}`:'');
   }
 
   // ═══════════════════════════════════════════════════════════════════
   // CRASH GAME
   // ═══════════════════════════════════════════════════════════════════
   _initCrash() {
-    this._crashMult       = 1.00;
-    this._crashRunning    = false;
-    this._crashCashedOut  = false;
-    this._crashBetActive  = false;
-    this._crashHistory    = [];
-    if (this._crashAnimId) { cancelAnimationFrame(this._crashAnimId); this._crashAnimId = null; }
-
+    this._crashMult=1.00; this._crashRunning=false;
+    this._crashCashedOut=false; this._crashBetActive=false;
+    if (this._crashAnimId) { cancelAnimationFrame(this._crashAnimId); this._crashAnimId=null; }
     const g = document.getElementById('game-crash');
     g.innerHTML = `
       <div class="game-header">
@@ -684,184 +718,135 @@ export class CasinoCore {
     document.getElementById('cr-start')?.addEventListener('click', () => this._crashStart());
     document.getElementById('cr-eject')?.addEventListener('click', () => this._crashEject());
     this._bindBetPanel('cr');
-    this._crashDrawCanvas(1.00, false);
+    this._crashDrawCanvas(1.00,false);
   }
 
   _crashCrashPoint() {
-    // Distribution : ~10% sous 1.5×, longue queue jusqu'à ~100×
-    const r = Math.random();
-    if (r < 0.1)  return 1.00 + Math.random() * 0.5;
-    if (r < 0.4)  return 1.5  + Math.random() * 1.5;
-    if (r < 0.7)  return 2.0  + Math.random() * 3.0;
-    if (r < 0.9)  return 4.0  + Math.random() * 8.0;
-    if (r < 0.97) return 10   + Math.random() * 20;
-    return 25 + Math.random() * 75;
+    const r=Math.random();
+    if(r<0.1)  return 1.00+Math.random()*0.5;
+    if(r<0.4)  return 1.5 +Math.random()*1.5;
+    if(r<0.7)  return 2.0 +Math.random()*3.0;
+    if(r<0.9)  return 4.0 +Math.random()*8.0;
+    if(r<0.97) return 10  +Math.random()*20;
+    return 25+Math.random()*75;
   }
 
   async _crashStart() {
-    if (this._crashRunning) return;
-    if (this.credits < this.bet) { this._crashMsg('CRÉDITS INSUFFISANTS','lose'); return; }
-    this.credits -= this.bet;
-    await this._saveCredits();
-    this._crashBetActive  = true;
-    this._crashRunning    = true;
-    this._crashCashedOut  = false;
-    this._crashMult       = 1.00;
-    this._crashTarget     = this._crashCrashPoint();
-    this._crashAutoEject  = parseFloat(document.getElementById('cr-auto')?.value ?? '2') || 0;
-    this._crashPoints     = [[0, 0]];
-    this._crashT0         = performance.now();
-
-    document.getElementById('cr-start').disabled = true;
-    document.getElementById('cr-eject').disabled = false;
+    if(this._crashRunning) return;
+    if(this.credits<this.bet){ this._crashMsg('CRÉDITS INSUFFISANTS','lose'); return; }
+    this.credits-=this.bet; await this._saveCredits();
+    this._crashBetActive=true; this._crashRunning=true;
+    this._crashCashedOut=false; this._crashMult=1.00;
+    this._crashTarget=this._crashCrashPoint();
+    this._crashAutoEject=parseFloat(document.getElementById('cr-auto')?.value??'2')||0;
+    this._crashPoints=[[0,0]]; this._crashT0=performance.now();
+    document.getElementById('cr-start').disabled=true;
+    document.getElementById('cr-eject').disabled=false;
     this._crashMsg('EN VOL — ÉJECTE-TOI !','neutral');
     this._crashLoop();
   }
 
   _crashLoop() {
-    const step = () => {
-      if (!this._crashRunning) return;
-      const elapsed = (performance.now() - this._crashT0) / 1000;
-      // Croissance exponentielle douce
-      this._crashMult = Math.pow(1.06, elapsed * 6);
-      this._crashMult = Math.round(this._crashMult * 100) / 100;
-
-      const multEl = document.getElementById('cr-mult');
-      if (multEl) multEl.textContent = `${this._crashMult.toFixed(2)}×`;
-
-      this._crashPoints.push([elapsed, this._crashMult]);
-      this._crashDrawCanvas(this._crashMult, false);
+    const step=()=>{
+      if(!this._crashRunning) return;
+      const elapsed=(performance.now()-this._crashT0)/1000;
+      this._crashMult=Math.round(Math.pow(1.06,elapsed*6)*100)/100;
+      const multEl=document.getElementById('cr-mult');
+      if(multEl) multEl.textContent=`${this._crashMult.toFixed(2)}×`;
+      this._crashPoints.push([elapsed,this._crashMult]);
+      this._crashDrawCanvas(this._crashMult,false);
       SFX.tick();
-
-      // Auto-éject
-      if (this._crashAutoEject > 1 && this._crashMult >= this._crashAutoEject && !this._crashCashedOut) {
-        this._crashEject(); return;
-      }
-
-      if (this._crashMult >= this._crashTarget) {
-        this._crashDoCrash(); return;
-      }
-
-      this._crashAnimId = requestAnimationFrame(step);
+      if(this._crashAutoEject>1&&this._crashMult>=this._crashAutoEject&&!this._crashCashedOut){ this._crashEject(); return; }
+      if(this._crashMult>=this._crashTarget){ this._crashDoCrash(); return; }
+      this._crashAnimId=requestAnimationFrame(step);
     };
-    this._crashAnimId = requestAnimationFrame(step);
+    this._crashAnimId=requestAnimationFrame(step);
   }
 
   _crashEject() {
-    if (!this._crashRunning || this._crashCashedOut || !this._crashBetActive) return;
-    SFX.eject();
-    this._crashCashedOut = true;
-    const gain = Math.round(this.bet * this._crashMult);
-    this.credits += gain;
-    this._saveCredits();
-    this._crashMsg(`🚀 ÉJECTÉ × ${this._crashMult.toFixed(2)} — +${gain} C`, 'win');
-    this._addHistory('CRASH', this.bet, 'win', gain - this.bet);
-    this._addCrashPill(this._crashMult, 'safe');
-    document.getElementById('cr-eject').disabled = true;
+    if(!this._crashRunning||this._crashCashedOut||!this._crashBetActive) return;
+    SFX.eject(); this._crashCashedOut=true;
+    const gain=Math.round(this.bet*this._crashMult);
+    this.credits+=gain; this._saveCredits();
+    this._crashMsg(`🚀 ÉJECTÉ × ${this._crashMult.toFixed(2)} — +${gain} C`,'win');
+    this._addHistory('CRASH',this.bet,'win',gain-this.bet);
+    this._addCrashPill(this._crashMult,'safe');
+    document.getElementById('cr-eject').disabled=true;
   }
 
   _crashDoCrash() {
-    cancelAnimationFrame(this._crashAnimId);
-    this._crashRunning = false;
-    const multEl = document.getElementById('cr-mult');
-    if (multEl) { multEl.textContent = `💥 ${this._crashMult.toFixed(2)}×`; multEl.classList.add('crashed'); }
-    SFX.crash();
-    this._crashDrawCanvas(this._crashMult, true);
-    if (!this._crashCashedOut) {
-      this._crashMsg(`CRASH × ${this._crashMult.toFixed(2)} — PERDU`, 'lose');
-      this._addHistory('CRASH', this.bet, 'lose', -this.bet);
-      const cat = this._crashMult < 1.5 ? 'danger' : this._crashMult < 3 ? 'risky' : 'safe';
-      this._addCrashPill(this._crashMult, cat);
+    cancelAnimationFrame(this._crashAnimId); this._crashRunning=false;
+    const m=document.getElementById('cr-mult');
+    if(m){ m.textContent=`💥 ${this._crashMult.toFixed(2)}×`; m.classList.add('crashed'); }
+    SFX.crash(); this._crashDrawCanvas(this._crashMult,true);
+    if(!this._crashCashedOut){
+      this._crashMsg(`CRASH × ${this._crashMult.toFixed(2)} — PERDU`,'lose');
+      this._addHistory('CRASH',this.bet,'lose',-this.bet);
+      const cat=this._crashMult<1.5?'danger':this._crashMult<3?'risky':'safe';
+      this._addCrashPill(this._crashMult,cat);
     }
-    this._crashBetActive = false;
-    document.getElementById('cr-start').disabled = false;
-    document.getElementById('cr-eject').disabled = true;
-    setTimeout(() => {
-      const m = document.getElementById('cr-mult');
-      if (m) { m.classList.remove('crashed'); m.textContent = '1.00×'; }
-    }, 2000);
+    this._crashBetActive=false;
+    document.getElementById('cr-start').disabled=false;
+    document.getElementById('cr-eject').disabled=true;
+    setTimeout(()=>{ const m=document.getElementById('cr-mult'); if(m){ m.classList.remove('crashed'); m.textContent='1.00×'; } },2000);
   }
 
   _crashAbort() {
-    if (this._crashAnimId) cancelAnimationFrame(this._crashAnimId);
-    this._crashRunning = false;
+    if(this._crashAnimId) cancelAnimationFrame(this._crashAnimId);
+    this._crashRunning=false;
   }
 
-  _addCrashPill(mult, cat) {
-    const wrap = document.getElementById('cr-history');
-    if (!wrap) return;
-    const p = el('span', `crash-hist-pill ${cat}`, `${mult.toFixed(2)}×`);
-    wrap.insertBefore(p, wrap.firstChild);
-    if (wrap.children.length > 12) wrap.lastChild?.remove();
+  _addCrashPill(mult,cat) {
+    const wrap=document.getElementById('cr-history'); if(!wrap) return;
+    const p=el('span',`crash-hist-pill ${cat}`,`${mult.toFixed(2)}×`);
+    wrap.insertBefore(p,wrap.firstChild);
+    if(wrap.children.length>12) wrap.lastChild?.remove();
   }
 
-  _crashMsg(txt, type='') {
-    const e = document.getElementById('cr-msg');
-    if (!e) return; e.textContent = txt; e.className = 'game-msg'+(type?` ${type}`:'');
+  _crashMsg(txt,type='') {
+    const e=document.getElementById('cr-msg');
+    if(!e)return; e.textContent=txt; e.className='game-msg'+(type?` ${type}`:'');
   }
 
-  _crashDrawCanvas(mult, crashed) {
-    const canvas = document.getElementById('cr-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const W = canvas.width, H = canvas.height;
-    ctx.clearRect(0, 0, W, H);
-
-    // Grid
-    ctx.strokeStyle = 'rgba(255,255,255,.04)'; ctx.lineWidth = 1;
-    for (let x=0;x<W;x+=60){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
-    for (let y=0;y<H;y+=40){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
-
-    if (!this._crashPoints || this._crashPoints.length < 2) return;
-
-    const pts   = this._crashPoints;
-    const maxT  = Math.max(pts[pts.length-1][0], 1);
-    const maxM  = Math.max(mult, 2);
-    const toX   = t => (t / maxT) * (W - 20) + 10;
-    const toY   = m => H - 10 - ((m - 1) / (maxM - 1)) * (H - 20);
-
-    // Gradient fill
-    const grad = ctx.createLinearGradient(0, 0, 0, H);
-    grad.addColorStop(0, crashed ? 'rgba(255,71,87,.3)'  : 'rgba(255,110,180,.25)');
-    grad.addColorStop(1, crashed ? 'rgba(255,71,87,.02)' : 'rgba(255,110,180,.02)');
+  _crashDrawCanvas(mult,crashed) {
+    const canvas=document.getElementById('cr-canvas'); if(!canvas) return;
+    const ctx=canvas.getContext('2d'), W=canvas.width, H=canvas.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(255,255,255,.04)'; ctx.lineWidth=1;
+    for(let x=0;x<W;x+=60){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
+    for(let y=0;y<H;y+=40){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+    if(!this._crashPoints||this._crashPoints.length<2) return;
+    const pts=this._crashPoints;
+    const maxT=Math.max(pts[pts.length-1][0],1), maxM=Math.max(mult,2);
+    const toX=t=>(t/maxT)*(W-20)+10, toY=m=>H-10-((m-1)/(maxM-1))*(H-20);
+    const grad=ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0,crashed?'rgba(255,71,87,.3)':'rgba(255,110,180,.25)');
+    grad.addColorStop(1,crashed?'rgba(255,71,87,.02)':'rgba(255,110,180,.02)');
+    ctx.beginPath(); ctx.moveTo(toX(pts[0][0]),H);
+    pts.forEach(([t,m])=>ctx.lineTo(toX(t),toY(m)));
+    ctx.lineTo(toX(pts[pts.length-1][0]),H); ctx.closePath();
+    ctx.fillStyle=grad; ctx.fill();
     ctx.beginPath();
-    ctx.moveTo(toX(pts[0][0]), H);
-    pts.forEach(([t, m]) => ctx.lineTo(toX(t), toY(m)));
-    ctx.lineTo(toX(pts[pts.length-1][0]), H);
-    ctx.closePath();
-    ctx.fillStyle = grad; ctx.fill();
-
-    // Line
-    ctx.beginPath();
-    pts.forEach(([t, m], i) => {
-      if (i === 0) ctx.moveTo(toX(t), toY(m));
-      else ctx.lineTo(toX(t), toY(m));
-    });
-    ctx.strokeStyle = crashed ? 'var(--c-red, #ff4757)' : 'var(--c-pink, #ff6eb4)';
-    ctx.lineWidth = 2.5; ctx.stroke();
-
-    // Dot courant
-    const last = pts[pts.length-1];
-    ctx.beginPath();
-    ctx.arc(toX(last[0]), toY(last[1]), 5, 0, Math.PI*2);
-    ctx.fillStyle = crashed ? '#ff4757' : '#ff6eb4';
-    ctx.shadowColor = crashed ? '#ff4757' : '#ff6eb4';
-    ctx.shadowBlur = 10; ctx.fill(); ctx.shadowBlur = 0;
+    pts.forEach(([t,m],i)=>{ if(i===0)ctx.moveTo(toX(t),toY(m)); else ctx.lineTo(toX(t),toY(m)); });
+    ctx.strokeStyle=crashed?'var(--c-red,#ff4757)':'var(--c-pink,#ff6eb4)';
+    ctx.lineWidth=2.5; ctx.stroke();
+    const last=pts[pts.length-1];
+    ctx.beginPath(); ctx.arc(toX(last[0]),toY(last[1]),5,0,Math.PI*2);
+    ctx.fillStyle=crashed?'#ff4757':'#ff6eb4';
+    ctx.shadowColor=crashed?'#ff4757':'#ff6eb4'; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
   }
 
   // ── HISTORY ──────────────────────────────────────────────────────────
   _renderHistory() {
-    const body = document.getElementById('history-body');
-    if (!body) return;
-    if (!this.history.length) {
-      body.innerHTML = '<div style="padding:16px 20px;font-size:10px;letter-spacing:.1em;color:var(--c-text-faint);text-align:center">AUCUNE PARTIE JOUÉE</div>';
+    const body=document.getElementById('history-body'); if(!body) return;
+    if(!this.history.length){
+      body.innerHTML='<div style="padding:16px 20px;font-size:10px;letter-spacing:.1em;color:var(--c-text-faint);text-align:center">AUCUNE PARTIE JOUÉE</div>';
       return;
     }
-    let running = this.credits;
-    body.innerHTML = this.history.map((h, i) => {
-      const balance = this.credits + this.history.slice(0, i).reduce((acc, x) => acc - x.gain, 0);
-      const cls = h.result === 'win' ? 'hr-win' : h.result === 'lose' ? 'hr-lose' : 'hr-push';
-      const gainTxt = h.gain > 0 ? `+${h.gain}` : h.gain;
+    body.innerHTML=this.history.map((h,i)=>{
+      const balance=this.credits+this.history.slice(0,i).reduce((acc,x)=>acc-x.gain,0);
+      const cls=h.result==='win'?'hr-win':h.result==='lose'?'hr-lose':'hr-push';
+      const gainTxt=h.gain>0?`+${h.gain}`:h.gain;
       return `<div class="history-row">
         <span class="hr-game">${h.game}</span>
         <span class="${cls}">${h.result.toUpperCase()}</span>
@@ -872,6 +857,5 @@ export class CasinoCore {
     }).join('');
   }
 
-  // ── HELPERS ───────────────────────────────────────────────────────────
-  _delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+  _delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
 }
