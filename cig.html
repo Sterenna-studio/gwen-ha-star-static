@@ -71,7 +71,7 @@
     .field-input:focus, .field-textarea:focus { outline:none; border-color:var(--c-primary); box-shadow:0 0 0 2px var(--c-primary-hl); }
     .field-input[readonly] { opacity:.5; cursor:not-allowed; }
 
-    /* MODE LECTURE : champs visibles mais non éditables */
+    /* MODE LECTURE */
     .readonly-mode .field-input:not([readonly]),
     .readonly-mode .field-textarea { pointer-events:none; opacity:.6; }
     .readonly-mode .btn-save, .readonly-mode .title-chip, .readonly-mode .btn-danger { display:none; }
@@ -99,6 +99,182 @@
     /* SKELETON */
     @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
     .skel { border-radius:var(--radius-sm); background:linear-gradient(90deg,var(--c-surface-2) 25%,var(--c-surface) 50%,var(--c-surface-2) 75%); background-size:200% 100%; animation:shimmer 1.5s ease-in-out infinite; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       CRÉDITS CHRONICLES — section pleine largeur
+    ═══════════════════════════════════════════════════════════════ */
+    .cig-chronicles {
+      grid-column: span 2;
+      background: var(--c-surface);
+      border: 1px solid color-mix(in oklch, var(--c-amber) 35%, var(--c-border));
+      border-radius: var(--radius-lg);
+      padding: var(--space-5) var(--space-6);
+      position: relative; overflow: hidden;
+    }
+    .cig-chronicles::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--c-amber), var(--c-primary), var(--c-amber));
+      background-size: 200% 100%; animation: shimmer-bar 4s linear infinite;
+    }
+    @media(max-width:640px) { .cig-chronicles { grid-column: span 1; } }
+
+    .chr-inner {
+      display: flex; align-items: center; gap: var(--space-6); flex-wrap: wrap;
+    }
+    .chr-coin {
+      width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0;
+      background: radial-gradient(circle at 38% 35%,
+        color-mix(in oklch, var(--c-amber) 80%, #fff) 0%,
+        var(--c-amber) 45%,
+        color-mix(in oklch, var(--c-amber) 55%, #000) 100%);
+      border: 2px solid color-mix(in oklch, var(--c-amber) 60%, var(--c-border));
+      box-shadow: 0 0 20px color-mix(in oklch, var(--c-amber) 35%, transparent),
+                  inset 0 1px 0 rgba(255,255,255,.25);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 1.5rem; font-weight: 900;
+      color: color-mix(in oklch, var(--c-amber) 20%, #000);
+      animation: chr-coin-glow 3s ease-in-out infinite alternate;
+    }
+    @keyframes chr-coin-glow {
+      from { box-shadow: 0 0 14px color-mix(in oklch, var(--c-amber) 30%, transparent); }
+      to   { box-shadow: 0 0 32px color-mix(in oklch, var(--c-amber) 60%, transparent), 0 0 60px color-mix(in oklch, var(--c-amber) 20%, transparent); }
+    }
+    .chr-info { flex: 1; min-width: 180px; }
+    .chr-lbl {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: .22em;
+      color: var(--c-amber); opacity: .7; margin-bottom: 4px;
+    }
+    .chr-val {
+      font-family: var(--font-display); font-size: 2.2rem; font-weight: 900;
+      color: var(--c-amber); line-height: 1;
+      text-shadow: 0 0 18px color-mix(in oklch, var(--c-amber) 55%, transparent);
+      font-variant-numeric: tabular-nums;
+    }
+    .chr-sub {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em;
+      color: var(--c-text-faint); margin-top: 4px;
+    }
+    .chr-rank-block {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: var(--space-3) var(--space-5);
+      background: var(--c-surface-2);
+      border: 1px solid color-mix(in oklch, var(--c-amber) 25%, var(--c-border));
+      border-radius: var(--radius-lg);
+    }
+    .chr-rank-lbl { font-family: var(--font-mono); font-size: 8px; letter-spacing: .18em; color: var(--c-text-faint); }
+    .chr-rank-val {
+      font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700;
+      color: var(--c-amber); line-height: 1;
+    }
+    .chr-rank-val.gold   { color: #ffd700; text-shadow: 0 0 12px #ffd700; }
+    .chr-rank-val.silver { color: #c0c0c0; text-shadow: 0 0 10px #c0c0c0; }
+    .chr-rank-val.bronze { color: #cd7f32; text-shadow: 0 0 10px #cd7f32; }
+    .chr-rank-name { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; color: var(--c-text-muted); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LEADERBOARD
+    ═══════════════════════════════════════════════════════════════ */
+    .cig-leaderboard {
+      grid-column: span 2;
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5) var(--space-6);
+      overflow: hidden;
+    }
+    @media(max-width:640px) { .cig-leaderboard { grid-column: span 1; } }
+
+    .lb-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-4);
+    }
+    .lb-refresh {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em;
+      color: var(--c-primary); cursor: pointer; background: none; border: none;
+      padding: 2px var(--space-2); border-radius: var(--radius-sm);
+      transition: background 150ms;
+    }
+    .lb-refresh:hover { background: var(--c-surface-2); }
+
+    .lb-list { display: flex; flex-direction: column; gap: 6px; }
+
+    .lb-row {
+      display: grid;
+      grid-template-columns: 28px 32px 1fr auto auto;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      background: var(--c-surface-2);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius-md);
+      transition: border-color 150ms, background 150ms;
+      cursor: default;
+    }
+    .lb-row:hover { border-color: color-mix(in oklch, var(--c-amber) 30%, var(--c-border)); background: var(--c-surface); }
+    .lb-row.lb-me {
+      border-color: color-mix(in oklch, var(--c-primary) 50%, var(--c-border));
+      background: color-mix(in oklch, var(--c-primary) 4%, var(--c-surface-2));
+    }
+    .lb-row.lb-top1 { border-color: color-mix(in oklch, #ffd700 40%, var(--c-border)); }
+    .lb-row.lb-top2 { border-color: color-mix(in oklch, #c0c0c0 30%, var(--c-border)); }
+    .lb-row.lb-top3 { border-color: color-mix(in oklch, #cd7f32 30%, var(--c-border)); }
+
+    .lb-pos {
+      font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700;
+      text-align: center; color: var(--c-text-faint);
+    }
+    .lb-pos.gold   { color: #ffd700; text-shadow: 0 0 8px #ffd700; }
+    .lb-pos.silver { color: #c0c0c0; }
+    .lb-pos.bronze { color: #cd7f32; }
+
+    .lb-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid var(--c-border);
+      background: var(--c-surface); overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      color: var(--c-primary); flex-shrink: 0;
+    }
+    .lb-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .lb-name {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+      color: var(--c-text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lb-name .lb-me-tag {
+      font-size: 8px; letter-spacing: .12em; color: var(--c-primary);
+      margin-left: 6px; opacity: .8;
+    }
+    .lb-title {
+      font-family: var(--font-mono); font-size: 8px; letter-spacing: .1em;
+      color: var(--c-text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .lb-bar-wrap {
+      width: 80px; flex-shrink: 0;
+    }
+    .lb-bar {
+      height: 4px; border-radius: 2px;
+      background: linear-gradient(90deg, var(--c-amber), var(--c-primary));
+      transition: width .6s cubic-bezier(.22,1,.36,1);
+    }
+
+    .lb-credits {
+      font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700;
+      color: var(--c-amber); text-align: right; white-space: nowrap;
+      min-width: 70px;
+    }
+
+    .lb-empty {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em;
+      color: var(--c-text-faint); text-align: center; padding: var(--space-6);
+    }
+
+    /* Skel leaderboard */
+    .lb-skel-row {
+      height: 40px; border-radius: var(--radius-md);
+    }
   </style>
 </head>
 <body class="cig-page">
@@ -127,7 +303,6 @@
       <span class="breadcrumb-current" id="bc-name">CARTE AGENT</span>
     </nav>
 
-    <!-- Banner mode lecture (masquée par défaut) -->
     <div class="view-mode-banner" id="view-banner" style="display:none">
       ⊙ MODE LECTURE · Profil d'un autre agent. <a href="/cig.html">→ Voir ma CIG</a>
     </div>
@@ -171,6 +346,25 @@
       </div>
 
       <div class="cig-grid" id="cig-grid">
+        <!-- 05 · CHRONICLES CRÉDITS -->
+        <div class="cig-chronicles" id="cig-chronicles">
+          <p class="cig-card-tag">// 05 · CHRONICLES</p>
+          <h2 class="cig-card-title">Crédits Casino</h2>
+          <div class="chr-inner">
+            <div class="chr-coin" aria-hidden="true">C</div>
+            <div class="chr-info">
+              <p class="chr-lbl">SOLDE CHRONICLES</p>
+              <p class="chr-val" id="chr-val">—</p>
+              <p class="chr-sub">Monnaie virtuelle · Casino &amp; Slots</p>
+            </div>
+            <div class="chr-rank-block" id="chr-rank-block" style="display:none">
+              <span class="chr-rank-lbl">CLASSEMENT</span>
+              <span class="chr-rank-val" id="chr-rank-val">#—</span>
+              <span class="chr-rank-name" id="chr-rank-name">—</span>
+            </div>
+          </div>
+        </div>
+
         <!-- PROFIL ÉDITABLE -->
         <div class="cig-card">
           <p class="cig-card-tag">// 01 · PROFIL</p>
@@ -238,6 +432,25 @@
           <p style="font-family:var(--font-mono);font-size:10px;color:var(--c-text-muted);margin-bottom:var(--space-5);letter-spacing:.06em;line-height:1.6">Met fin à ta session sur cet appareil.</p>
           <button class="btn-danger" id="btn-logout">✕ SE DÉCONNECTER</button>
         </div>
+
+        <!-- 06 · LEADERBOARD -->
+        <div class="cig-leaderboard" id="cig-leaderboard">
+          <div class="lb-header">
+            <div>
+              <p class="cig-card-tag">// 06 · LEADERBOARD</p>
+              <h2 class="cig-card-title" style="margin-bottom:0">Top Chronicles</h2>
+            </div>
+            <button class="lb-refresh" id="lb-refresh" aria-label="Actualiser le leaderboard">↻ ACTUALISER</button>
+          </div>
+          <div class="lb-list" id="lb-list">
+            <!-- 5 skeleton rows -->
+            <div class="skel lb-skel-row"></div>
+            <div class="skel lb-skel-row"></div>
+            <div class="skel lb-skel-row"></div>
+            <div class="skel lb-skel-row"></div>
+            <div class="skel lb-skel-row"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -251,16 +464,16 @@
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
-      <span class="footer-version">CIG · v1.1</span>
+      <span class="footer-version">CIG · v1.2</span>
     </div>
   </footer>
 
   <script type="module">
     import { supabase, getSession, signOut } from './js/supabase.js';
 
-    const $       = id => document.getElementById(id);
-    const show    = id => { const e=$(id); if(e) e.style.display=''; };
-    const hide    = id => { const e=$(id); if(e) e.style.display='none'; };
+    const $    = id => document.getElementById(id);
+    const show = id => { const e=$(id); if(e) e.style.display=''; };
+    const hide = id => { const e=$(id); if(e) e.style.display='none'; };
 
     function setStatus(elId, msg, type) {
       const el = $(elId);
@@ -275,20 +488,107 @@
       return new Date(iso).toLocaleDateString('fr-FR', { year:'numeric', month:'short', day:'numeric' });
     }
 
+    // ─── LEADERBOARD ──────────────────────────────────────────────────────────
+    async function loadLeaderboard(myId) {
+      const listEl = $('lb-list');
+      if (!listEl) return;
+
+      // Squelettes pendant le chargement
+      listEl.innerHTML = Array.from({length:5}, () =>
+        '<div class="skel lb-skel-row"></div>').join('');
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, username, avatar_url, active_title, chronicles')
+          .not('chronicles', 'is', null)
+          .order('chronicles', { ascending: false })
+          .limit(10);
+
+        if (error) throw error;
+        if (!data || !data.length) {
+          listEl.innerHTML = '<p class="lb-empty">AUCUN JOUEUR CLASSÉ</p>';
+          return;
+        }
+
+        const maxCredits = data[0].chronicles ?? 1;
+
+        listEl.innerHTML = data.map((p, i) => {
+          const rank      = i + 1;
+          const isMe      = p.id === myId;
+          const username  = (p.username ?? 'AGENT').toUpperCase();
+          const credits   = (p.chronicles ?? 0).toLocaleString('fr-FR');
+          const barPct    = Math.round(((p.chronicles ?? 0) / maxCredits) * 100);
+          const initials  = username.charAt(0);
+
+          const posClass  = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+          const medal     = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+          const rowClass  = `lb-row${isMe ? ' lb-me' : ''}${rank <= 3 ? ` lb-top${rank}` : ''}`;
+
+          const avatarHTML = p.avatar_url
+            ? `<div class="lb-avatar"><img src="${p.avatar_url}" alt="${username}" loading="lazy"/></div>`
+            : `<div class="lb-avatar">${initials}</div>`;
+
+          return `
+          <div class="${rowClass}" title="${username}">
+            <span class="lb-pos ${posClass}">${medal}</span>
+            ${avatarHTML}
+            <div style="min-width:0">
+              <div class="lb-name">
+                ${username}${isMe ? '<span class="lb-me-tag">▶ MOI</span>' : ''}
+              </div>
+              <div class="lb-title">${(p.active_title ?? 'RECRUE').toUpperCase()}</div>
+            </div>
+            <div class="lb-bar-wrap">
+              <div class="lb-bar" style="width:${barPct}%"></div>
+            </div>
+            <span class="lb-credits">${credits} C</span>
+          </div>`;
+        }).join('');
+
+        // Injecter rang du joueur courant dans le bloc Chronicles
+        if (myId) {
+          const myIdx = data.findIndex(p => p.id === myId);
+          if (myIdx !== -1) {
+            const rank    = myIdx + 1;
+            const rankEl  = $('chr-rank-val');
+            const nameEl  = $('chr-rank-name');
+            const blockEl = $('chr-rank-block');
+            if (rankEl)  rankEl.textContent  = `#${rank}`;
+            if (rankEl)  rankEl.className    = 'chr-rank-val ' + (rank===1?'gold':rank===2?'silver':rank===3?'bronze':'');
+            if (nameEl)  nameEl.textContent  = rank <= 3 ? ['🥇 1ER','🥈 2ÈME','🥉 3ÈME'][rank-1] : `TOP ${rank}`;
+            if (blockEl) blockEl.style.display = '';
+          }
+        }
+
+      } catch(e) {
+        console.error(e);
+        listEl.innerHTML = '<p class="lb-empty">ERREUR CHARGEMENT LEADERBOARD</p>';
+      }
+    }
+
+    // ─── FILL CIG ─────────────────────────────────────────────────────────────
     function fillCIG(profile, user, readOnly) {
       const username    = profile.username    ?? user.email?.split('@')[0] ?? 'AGENT';
       const role        = profile.role        ?? 'guest';
       const activeTitle = profile.active_title ?? 'Recrue';
       const titles      = profile.titles      ?? ['Recrue'];
 
-      $('bc-name').textContent              = username.toUpperCase();
-      $('cig-username').textContent         = username.toUpperCase();
-      $('cig-active-title').textContent     = '◆ ' + activeTitle.toUpperCase();
-      $('cig-tag').textContent              = `// AGENT · ${role.toUpperCase()}`;
-      $('cig-bio').textContent              = profile.bio ?? '';
-      $('cig-email').textContent            = readOnly ? '—' : (user.email ?? '—');
-      $('cig-joined').textContent           = formatDate(profile.joined_at ?? profile.created_at);
-      $('cig-lang').textContent             = (profile.lang ?? 'fr').toUpperCase();
+      $('bc-name').textContent          = username.toUpperCase();
+      $('cig-username').textContent     = username.toUpperCase();
+      $('cig-active-title').textContent = '◆ ' + activeTitle.toUpperCase();
+      $('cig-tag').textContent          = `// AGENT · ${role.toUpperCase()}`;
+      $('cig-bio').textContent          = profile.bio ?? '';
+      $('cig-email').textContent        = readOnly ? '—' : (user.email ?? '—');
+      $('cig-joined').textContent       = formatDate(profile.joined_at ?? profile.created_at);
+      $('cig-lang').textContent         = (profile.lang ?? 'fr').toUpperCase();
+
+      // Crédits Chronicles
+      const chrVal = $('chr-val');
+      if (chrVal) {
+        const credits = profile.chronicles ?? 0;
+        chrVal.textContent = credits.toLocaleString('fr-FR') + ' C';
+      }
 
       if (profile.avatar_url) {
         const img = $('cig-avatar-img');
@@ -299,8 +599,8 @@
         $('cig-avatar-fallback').textContent = username.charAt(0).toUpperCase();
       }
 
-      $('cig-role-dot').className   = 'cig-role-dot ' + role;
-      $('cig-role-badge').className = 'cig-role-badge ' + role;
+      $('cig-role-dot').className    = 'cig-role-dot ' + role;
+      $('cig-role-badge').className  = 'cig-role-badge ' + role;
       $('cig-role-badge').textContent = role.toUpperCase();
 
       $('f-username').value   = profile.username   ?? '';
@@ -327,7 +627,6 @@
         list.appendChild(li);
       });
 
-      // Mode lecture : désactiver formulaires
       if (readOnly) {
         $('cig-grid').classList.add('readonly-mode');
         show('view-banner');
@@ -351,25 +650,22 @@
       $('hdr-logout')?.addEventListener('click', () => signOut());
     }
 
+    // ─── INIT ─────────────────────────────────────────────────────────────────
     async function init() {
-      // Détection mode : ?id=<uuid> présent ?
       const params   = new URLSearchParams(window.location.search);
       const targetId = params.get('id');
-
-      const session = await getSession();
+      const session  = await getSession();
 
       if (!session && !targetId) {
-        // Pas connecté, pas de cible → rediriger vers login
         hide('cig-skeleton');
         show('cig-unauth');
         return;
       }
 
-      const myId    = session?.user?.id ?? null;
-      const readOnly = targetId && targetId !== myId;
+      const myId      = session?.user?.id ?? null;
+      const readOnly  = !!(targetId && targetId !== myId);
       const profileId = targetId ?? myId;
 
-      // Charger profil cible
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
@@ -378,20 +674,21 @@
 
       if (error && error.code !== 'PGRST116') console.error(error);
 
-      // Construire objet user (réel ou proxy lecture seule)
-      const user = readOnly
-        ? { id: profileId, email: null }
-        : session.user;
+      const user = readOnly ? { id: profileId, email: null } : session.user;
 
       hide('cig-skeleton');
       fillCIG(profile ?? {}, user, readOnly);
 
-      // Header auth seulement si connecté
       if (session) injectHeaderAuth(session.user, session.user.id === profileId ? profile : null);
 
       show('cig-content');
 
-      if (readOnly) return; // Pas d'actions d'écriture en mode lecture
+      // Charger leaderboard (visible pour tous)
+      await loadLeaderboard(myId);
+
+      $('lb-refresh')?.addEventListener('click', () => loadLeaderboard(myId));
+
+      if (readOnly) return;
 
       // SAUVEGARDER PROFIL
       $('btn-save-profile').addEventListener('click', async () => {
