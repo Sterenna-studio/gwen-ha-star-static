@@ -4,14 +4,13 @@
  * RadioPlayer : lecteur des musiques du Jukebox (records.json) + visualiseur canvas
  * SlotMachine : machine à sous 3×3 (+ preview haut/bas) — PP pixel art uniquement
  *               stop uniquement sur bouton STOP, monnaie virtuelle chronicles (Supabase)
+ *               v2.5 : refonte visuelle arcade néon + bouton CASINO COMPLET (−50 C)
  */
 import { supabase } from '../supabase.js';
 
 // ── SOUND ENGINE ─────────────────────────────────────────────────────────────────────
 const _sfx = {
   _ctx: null,
-  _unlocked: false,
-  // Crée le contexte uniquement après un geste utilisateur
   _get() {
     if (!this._ctx) {
       try { this._ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return null; }
@@ -21,8 +20,7 @@ const _sfx = {
   },
   _tone(freq, type, vol, attack, decay, t0) {
     const ctx = this._get(); if (!ctx) return;
-    const osc  = ctx.createOscillator();
-    const gain = ctx.createGain();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
     osc.type = type;
     osc.frequency.setValueAtTime(freq, t0 ?? ctx.currentTime);
@@ -34,11 +32,10 @@ const _sfx = {
   },
   _noise(vol, dur, t0) {
     const ctx = this._get(); if (!ctx) return;
-    const buf  = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * dur), ctx.sampleRate);
+    const buf = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * dur), ctx.sampleRate);
     const data = buf.getChannelData(0);
     for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1);
-    const src  = ctx.createBufferSource();
-    const gain = ctx.createGain();
+    const src = ctx.createBufferSource(), gain = ctx.createGain();
     src.buffer = buf; src.connect(gain); gain.connect(ctx.destination);
     gain.gain.setValueAtTime(vol, t0 ?? ctx.currentTime);
     gain.gain.linearRampToValueAtTime(0, (t0 ?? ctx.currentTime) + dur);
@@ -77,8 +74,7 @@ const _sfx = {
   },
   jackpot() {
     const ctx = this._get(); if (!ctx) return;
-    const melody = [523, 659, 784, 1047, 784, 1047, 1319, 1047, 1319, 1568];
-    melody.forEach((f, i) => {
+    [523, 659, 784, 1047, 784, 1047, 1319, 1047, 1319, 1568].forEach((f, i) => {
       const t = ctx.currentTime + i * 0.06;
       this._tone(f, i % 2 === 0 ? 'square' : 'triangle', 0.09, 0.005, 0.10, t);
     });
@@ -91,7 +87,6 @@ const _sfx = {
       this._tone(f, 'sawtooth', 0.07, 0.01, 0.18, t);
     });
   },
-  // boot() supprimé — ne jamais appeler sans geste utilisateur (Chrome AudioContext policy)
   coin() {
     const ctx = this._get(); if (!ctx) return;
     this._tone(1200, 'sine', 0.07, 0.003, 0.04);
@@ -105,19 +100,24 @@ const _sfx = {
     });
     this._noise(0.03, 0.5);
   },
+  enter_casino() {
+    const ctx = this._get(); if (!ctx) return;
+    [220, 277, 330, 440, 554, 659].forEach((f, i) => {
+      const t = ctx.currentTime + i * 0.05;
+      this._tone(f, 'sawtooth', 0.06, 0.005, 0.12, t);
+    });
+    this._noise(0.04, 0.4);
+  },
 };
 export const SFX = _sfx;
 
 // ── VIDEO DU JOUR ───────────────────────────────────────────────────────────────────
 export class VideoDay {
-  constructor(containerId) {
-    this.el = document.getElementById(containerId);
-  }
+  constructor(containerId) { this.el = document.getElementById(containerId); }
 
   async load() {
     if (!this.el) return;
     try {
-      // maybeSingle() évite l'erreur 406 / 404 si la table est vide ou absente
       const { data, error } = await supabase
         .from('daily_content')
         .select('title, url, platform, note')
@@ -212,7 +212,6 @@ export class RadioPlayer {
           </div>
         </div>
       </div>`;
-
     await this._loadTracks();
     this._bindEvents();
     this._vizLoop();
@@ -251,16 +250,14 @@ export class RadioPlayer {
     const t = this.tracks[this.idx];
     this.audio.src = t.file ?? '';
     this.audio.load();
-    const titleEl  = document.getElementById('jk-title');
-    const artistEl = document.getElementById('jk-artist');
-    const badgeEl  = document.getElementById('jk-badge');
-    const coverEl  = document.getElementById('jk-cover');
-    const stEl     = document.getElementById('radio-station');
-    const selEl    = document.getElementById('radio-playlist');
-    if (titleEl)  titleEl.textContent  = t.title  ?? '—';
-    if (artistEl) artistEl.textContent = t.artist ?? '—';
-    if (badgeEl)  badgeEl.textContent  = t.genre  ?? 'JUKEBOX';
-    if (stEl)     stEl.textContent     = `STAR · ${(t.artist ?? 'UNKNOWN').toUpperCase()}`;
+    const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+    s('jk-title',  t.title  ?? '—');
+    s('jk-artist', t.artist ?? '—');
+    s('jk-badge',  t.genre  ?? 'JUKEBOX');
+    s('radio-station', `STAR · ${(t.artist ?? 'UNKNOWN').toUpperCase()}`);
+    const selEl   = document.getElementById('radio-playlist');
+    const coverEl = document.getElementById('jk-cover');
+    const seekEl  = document.getElementById('jk-seek');
     if (selEl)    selEl.value = String(this.idx);
     if (coverEl) {
       coverEl.innerHTML = t.cover
@@ -269,7 +266,6 @@ export class RadioPlayer {
       coverEl.style.setProperty('--jk-c1', t.color1 ?? '#14161a');
       coverEl.style.setProperty('--jk-c2', t.color2 ?? '#050608');
     }
-    const seekEl = document.getElementById('jk-seek');
     if (seekEl) seekEl.value = 0;
   }
 
@@ -281,7 +277,6 @@ export class RadioPlayer {
     const seekEl  = document.getElementById('jk-seek');
     const selEl   = document.getElementById('radio-playlist');
     const ledEl   = document.getElementById('radio-led');
-
     playBtn?.addEventListener('click', () => {
       _sfx.click();
       if (this.audio.paused) { this._ensureAudioCtx(); this.audio.play(); }
@@ -294,15 +289,14 @@ export class RadioPlayer {
       if (this.audio.duration) this.audio.currentTime = (parseFloat(seekEl.value) / 100) * this.audio.duration;
     });
     selEl?.addEventListener('change', () => { this._loadTrack(parseInt(selEl.value)); this.audio.play(); });
-
     this.audio.addEventListener('play',  () => { if (playBtn) playBtn.textContent = '⏸'; if (ledEl) ledEl.classList.add('active'); });
     this.audio.addEventListener('pause', () => { if (playBtn) playBtn.textContent = '▶'; if (ledEl) ledEl.classList.remove('active'); });
     this.audio.addEventListener('ended', () => { this._loadTrack(this.idx + 1); this.audio.play(); });
     this.audio.addEventListener('timeupdate', () => {
+      const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
       const cur = document.getElementById('jk-cur');
       const dur = document.getElementById('jk-dur');
       const sk  = document.getElementById('jk-seek');
-      const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
       if (cur) cur.textContent = fmt(this.audio.currentTime);
       if (dur) dur.textContent = fmt(this.audio.duration || 0);
       if (sk && this.audio.duration) sk.value = (this.audio.currentTime / this.audio.duration) * 100;
@@ -346,28 +340,17 @@ export class RadioPlayer {
   }
 }
 
-// ── SLOT MACHINE 3×3 + preview ──────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════════════
+// ── SLOT MACHINE v2.5 — REFONTE ARCADE NÉON ──────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════════════
 //
-//  MODÈLE VISUEL : 5 rangées affichées, la RANGÉE CENTRALE [2] est la ligne active
+//  MODÈLE VISUEL : 5 rangées (2 fantômes haut + ACTIVE + 2 fantômes bas)
+//  3 COLONNES — stop individuel uniquement
+//  Bouton CASINO COMPLET → déduit 50 chronicles → redirect star/casino/
 //
-//  ┌─────────────────────────────────┐
-//  │  [preview haut]  row 0 — faded  │   ← rangée fantôme haut
-//  │  [preview haut]  row 1 — faded  │   ← rangée fantôme haut
-//  ├═════════════════════════════════╡
-//  │  [ ACTIF ]       row 2 — plein  │   ◄ LIGNE DE GAIN PRINCIPALE
-//  ├═════════════════════════════════╡
-//  │  [preview bas]   row 3 — faded  │   ← rangée fantôme bas
-//  │  [preview bas]   row 4 — faded  │   ← rangée fantôme bas
-//  └─────────────────────────────────┘
-//
-//  3 COLONNES — stop uniquement sur bouton STOP individuel (pas d'auto-stop)
-//  Symboles : PP pixel art + véhicules (pool pondéré)
-//  Monnaie  : chronicles (Supabase profiles.chronicles)
-//  Lignes   : L0 milieu (off 0) ×1.0 | L1 haut (off -1) ×0.5 | L2 bas (off +1) ×0.5
-//  SFX      : déclenchés UNIQUEMENT sur action utilisateur (Chrome autoplay policy)
-
 export class SlotMachine {
   static IMG_BASE = '../shared/images';
+  static CASINO_COST = 50;
 
   static SYMBOLS = [
     { id: 'pp_sniky',  name: 'SNIKY',  img: 'pixel_pp/pixel_pp_sniky.png',  mult: 50, rare: 1, color: '#f87171' },
@@ -413,7 +396,6 @@ export class SlotMachine {
     await this._loadCredits();
     this._render();
     this._startRenderLoop();
-    // ✅ Pas de _sfx.boot() ici — AudioContext interdit avant geste utilisateur
     if (this._isNew) setTimeout(() => this._showWelcomePopup(), 800);
   }
 
@@ -422,10 +404,7 @@ export class SlotMachine {
     if (!this.userId) { this.credits = 100; return; }
     try {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('chronicles')
-        .eq('id', this.userId)
-        .single();
+        .from('profiles').select('chronicles').eq('id', this.userId).single();
       if (!error && data != null) {
         const stored = data.chronicles;
         if (stored === null || stored === undefined || stored === 0) {
@@ -435,19 +414,14 @@ export class SlotMachine {
         } else {
           this.credits = stored;
         }
-      } else {
-        this.credits = 100;
-      }
+      } else { this.credits = 100; }
     } catch { this.credits = 100; }
   }
 
   async _saveCredits() {
     if (!this.userId) return;
     try {
-      await supabase
-        .from('profiles')
-        .update({ chronicles: this.credits })
-        .eq('id', this.userId);
+      await supabase.from('profiles').update({ chronicles: this.credits }).eq('id', this.userId);
       const kpiEl = document.getElementById('kpi-chronicles');
       if (kpiEl) kpiEl.textContent = this.credits.toLocaleString('fr-FR');
     } catch { /* silencieux */ }
@@ -460,18 +434,10 @@ export class SlotMachine {
       for (let i = 0; i < sym.rare; i++) pool.push(sym);
     return pool;
   }
-
-  _roll() {
-    return this._pool[Math.floor(Math.random() * this._pool.length)];
-  }
-
-  _buildReel() {
-    return Array.from({ length: SlotMachine.REEL_LEN }, () => this._roll());
-  }
-
+  _roll()       { return this._pool[Math.floor(Math.random() * this._pool.length)]; }
+  _buildReel()  { return Array.from({ length: SlotMachine.REEL_LEN }, () => this._roll()); }
   _getSymAt(col, rowOffset) {
-    const pos = this._reelPos[col];
-    const len = SlotMachine.REEL_LEN;
+    const pos = this._reelPos[col], len = SlotMachine.REEL_LEN;
     const idx = ((Math.floor(pos) + rowOffset) % len + len) % len;
     return this._reels[col][idx];
   }
@@ -480,178 +446,191 @@ export class SlotMachine {
   _render() {
     if (!this.el) return;
     const COLS = SlotMachine.COLS;
+    const canEnter = this.credits >= SlotMachine.CASINO_COST;
 
     const reelsHTML = Array.from({ length: COLS }, (_, col) => `
-      <div class="slot-reel3" id="slot-reel3-${col}">
-        <div class="slot-reel3-inner" id="slot-reel3-inner-${col}">
-          ${this._buildReelCells(col)}
-        </div>
-        <div class="slot-reel3-frame"></div>
-        <div class="slot-reel3-scanline"></div>
+      <div class="sl-reel" id="sl-reel-${col}">
+        <div class="sl-reel-inner" id="sl-reel-inner-${col}">${this._buildReelCells(col)}</div>
+        <div class="sl-reel-shine" aria-hidden="true"></div>
       </div>`).join('');
 
     const stopBtnsHTML = Array.from({ length: COLS }, (_, col) =>
-      `<button class="slot-stop-btn3" id="slot-stop3-${col}" disabled aria-label="Stopper rouleau ${col+1}">STOP ${col+1}</button>`
-    ).join('');
+      `<button class="sl-stop-btn" id="sl-stop-${col}" disabled aria-label="Stop rouleau ${col+1}">
+        <span class="sl-stop-num">${col+1}</span>
+        <span class="sl-stop-lbl">STOP</span>
+      </button>`).join('');
 
     const paytableRows = [...SlotMachine.SYMBOLS]
       .sort((a,b) => b.mult - a.mult)
-      .map(s => `<div class="slot-pay-row">
-        <img src="${SlotMachine.IMG_BASE}/${s.img}" alt="${s.name}" width="24" height="24" loading="lazy">
-        <span class="slot-pay-name" style="color:${s.color}">${s.name}</span>
-        <span class="slot-pay-mult">x${s.mult}</span>
+      .map(s => `<div class="sl-pay-row">
+        <img src="${SlotMachine.IMG_BASE}/${s.img}" alt="${s.name}" width="22" height="22" loading="lazy">
+        <span class="sl-pay-name" style="color:${s.color}">${s.name}</span>
+        <span class="sl-pay-mult">×${s.mult}</span>
       </div>`).join('');
 
     this.el.innerHTML = `
-      <div class="slot-machine3">
+    <div class="sl-machine">
 
-        <!-- Crédits -->
-        <div class="slot3-credits-panel">
-          <div class="slot3-credit-block">
-            <span class="slot3-lbl">CREDITS</span>
-            <span class="slot3-num" id="slot3-credits">${this.credits.toLocaleString('fr-FR')}</span>
-          </div>
-          <div class="slot3-credit-block">
-            <span class="slot3-lbl">MISE</span>
-            <div class="slot3-bet-row">
-              <button class="slot3-bet-btn" id="slot3-bet-down">−</button>
-              <span class="slot3-num" id="slot3-bet">${this.bet}</span>
-              <button class="slot3-bet-btn" id="slot3-bet-up">+</button>
-            </div>
-          </div>
-          <div class="slot3-credit-block">
-            <span class="slot3-lbl">GAIN</span>
-            <span class="slot3-num slot3-gain" id="slot3-gain">—</span>
+      <!-- En-tête néon -->
+      <div class="sl-header" aria-label="CASINO · CHRONICLES">
+        <div class="sl-header-dot" aria-hidden="true"></div>
+        <span class="sl-header-label">CASINO <span class="sl-header-accent">·</span> SLOT</span>
+        <div class="sl-header-dot" aria-hidden="true"></div>
+      </div>
+
+      <!-- Crédits / Mise / Gain -->
+      <div class="sl-scoreboard">
+        <div class="sl-score-block">
+          <span class="sl-score-lbl">CRÉDITS</span>
+          <span class="sl-score-val sl-score-credits" id="sl-credits">${this.credits.toLocaleString('fr-FR')}</span>
+        </div>
+        <div class="sl-score-block">
+          <span class="sl-score-lbl">MISE</span>
+          <div class="sl-bet-row">
+            <button class="sl-bet-btn" id="sl-bet-down" aria-label="Réduire mise">−</button>
+            <span class="sl-score-val" id="sl-bet">${this.bet}</span>
+            <button class="sl-bet-btn" id="sl-bet-up" aria-label="Augmenter mise">+</button>
           </div>
         </div>
+        <div class="sl-score-block">
+          <span class="sl-score-lbl">GAIN</span>
+          <span class="sl-score-val sl-score-gain" id="sl-gain">—</span>
+        </div>
+      </div>
 
-        <!-- Machine -->
-        <div class="slot3-cabinet">
-          <!-- Légende lignes -->
-          <div class="slot3-line-labels">
-            <span class="slot3-line-tag" style="--lc:#60a5fa">HAUT ×0.5</span>
-            <span class="slot3-line-tag slot3-line-tag--main" style="--lc:#00ff80">MILIEU ×1</span>
-            <span class="slot3-line-tag" style="--lc:#f97316">BAS ×0.5</span>
-          </div>
-
-          <!-- Rouleaux -->
-          <div class="slot3-reels-wrap" id="slot3-reels-wrap">
-            ${reelsHTML}
-            <!-- Lignes overlay -->
-            <div class="slot3-line-overlay slot3-line-overlay--top"  style="--lc:#60a5fa"></div>
-            <div class="slot3-line-overlay slot3-line-overlay--mid"  style="--lc:#00ff80"></div>
-            <div class="slot3-line-overlay slot3-line-overlay--bot"  style="--lc:#f97316"></div>
-          </div>
-
-          <!-- Boutons STOP -->
-          <div class="slot3-stop-row">
-            ${stopBtnsHTML}
-          </div>
+      <!-- Cabinet rouleaux -->
+      <div class="sl-cabinet">
+        <!-- Légende lignes de gain -->
+        <div class="sl-line-legend" aria-hidden="true">
+          <span class="sl-line-badge" style="--lc:#60a5fa">▸ HAUT ×0.5</span>
+          <span class="sl-line-badge sl-line-badge--main" style="--lc:#00ff80">▶ MILIEU ×1</span>
+          <span class="sl-line-badge" style="--lc:#f97316">▸ BAS ×0.5</span>
         </div>
 
-        <!-- Message -->
-        <div class="slot3-msg" id="slot3-msg">APPUYER SUR SPIN</div>
+        <!-- Rouleaux -->
+        <div class="sl-reels-wrap" id="sl-reels-wrap">
+          ${reelsHTML}
+          <div class="sl-overlay sl-overlay--top"  style="--lc:#60a5fa" aria-hidden="true"></div>
+          <div class="sl-overlay sl-overlay--mid"  style="--lc:#00ff80" aria-hidden="true"></div>
+          <div class="sl-overlay sl-overlay--bot"  style="--lc:#f97316" aria-hidden="true"></div>
+          <div class="sl-active-frame" aria-hidden="true"></div>
+        </div>
 
-        <!-- SPIN -->
-        <button class="slot3-spin-btn" id="slot3-spin">SPIN</button>
+        <!-- Boutons STOP -->
+        <div class="sl-stop-row">${stopBtnsHTML}</div>
+      </div>
 
-        <!-- Paytable -->
-        <details class="slot3-paytable">
-          <summary>TABLE DES GAINS</summary>
-          <div class="slot3-paytable-body">
-            <p class="slot3-pay-hint">3 IDENTIQUES SUR UNE LIGNE = GAIN<br>MILIEU ×1 · HAUT/BAS ×0.5</p>
-            ${paytableRows}
-          </div>
-        </details>
-      </div>`;
+      <!-- Message -->
+      <div class="sl-msg" id="sl-msg">APPUYER SUR SPIN</div>
 
-    document.getElementById('slot3-spin')?.addEventListener('click',    () => this.spin());
-    document.getElementById('slot3-bet-up')?.addEventListener('click',  () => this._changeBet(1));
-    document.getElementById('slot3-bet-down')?.addEventListener('click',() => this._changeBet(-1));
+      <!-- SPIN -->
+      <button class="sl-spin-btn" id="sl-spin">
+        <span class="sl-spin-icon" aria-hidden="true">◉</span>
+        SPIN
+      </button>
+
+      <!-- Bouton CASINO COMPLET -->
+      <button class="sl-casino-btn ${canEnter ? '' : 'sl-casino-btn--locked'}" id="sl-casino-btn"
+              aria-label="Accéder au casino complet — coûte ${SlotMachine.CASINO_COST} chronicles">
+        <span class="sl-casino-icon" aria-hidden="true">${canEnter ? '🎰' : '🔒'}</span>
+        <span class="sl-casino-text">
+          <span class="sl-casino-title">CASINO COMPLET</span>
+          <span class="sl-casino-sub">${canEnter ? `−${SlotMachine.CASINO_COST} C · ENTRER` : `CRÉDITS INSUFFISANTS (min. ${SlotMachine.CASINO_COST})`}</span>
+        </span>
+        <span class="sl-casino-arrow" aria-hidden="true">→</span>
+      </button>
+
+      <!-- Paytable -->
+      <details class="sl-paytable">
+        <summary class="sl-paytable-toggle">▾ TABLE DES GAINS</summary>
+        <div class="sl-paytable-body">
+          <p class="sl-pay-hint">3 IDENTIQUES SUR UNE LIGNE = GAIN · MILIEU ×1 · HAUT/BAS ×0.5</p>
+          <div class="sl-pay-grid">${paytableRows}</div>
+        </div>
+      </details>
+    </div>`;
+
+    // Events
+    document.getElementById('sl-spin')?.addEventListener('click',      () => this.spin());
+    document.getElementById('sl-bet-up')?.addEventListener('click',    () => this._changeBet(1));
+    document.getElementById('sl-bet-down')?.addEventListener('click',  () => this._changeBet(-1));
+    document.getElementById('sl-casino-btn')?.addEventListener('click',() => this._enterCasino());
     for (let col = 0; col < COLS; col++) {
-      document.getElementById(`slot-stop3-${col}`)?.addEventListener('click', () => {
-        _sfx.click();
-        this._stopCol(col);
+      document.getElementById(`sl-stop-${col}`)?.addEventListener('click', () => {
+        _sfx.click(); this._stopCol(col);
       });
     }
   }
 
-  // ── BUILD CELLS HTML ──────────────────────────────────────────────────────────────
+  // ── BUILD CELLS ───────────────────────────────────────────────────────────────────
   _buildReelCells(col) {
-    const offsets = [-2, -1, 0, 1, 2];
-    return offsets.map((off, i) => {
+    return [-2,-1,0,1,2].map((off, i) => {
       const sym = this._getSymAt(col, off);
       const isActive = (i === SlotMachine.ACTIVE_ROW);
-      return `<div class="slot3-cell${isActive ? ' slot3-cell--active' : ''}" data-off="${off}">
-        ${this._symHTML(sym, isActive)}
-      </div>`;
+      return `<div class="sl-cell${isActive ? ' sl-cell--active' : ''}" data-off="${off}">${this._symHTML(sym, isActive)}</div>`;
     }).join('');
   }
 
   _symHTML(sym, active = false) {
-    if (!sym) return '<div class="slot3-sym-empty"></div>';
-    return `<div class="slot3-sym" data-id="${sym.id}" style="--sym-color:${sym.color}">
-      <img src="${SlotMachine.IMG_BASE}/${sym.img}" alt="${sym.name}" width="${active ? 56 : 40}" height="${active ? 56 : 40}" loading="lazy" onerror="this.style.opacity='0.15'">
-      <span class="slot3-sym-name">${sym.name}</span>
+    if (!sym) return '<div class="sl-sym-empty"></div>';
+    const sz = active ? 52 : 36;
+    return `<div class="sl-sym" data-id="${sym.id}" style="--sym-color:${sym.color}">
+      <img src="${SlotMachine.IMG_BASE}/${sym.img}" alt="${sym.name}" width="${sz}" height="${sz}" loading="lazy" onerror="this.style.opacity='0.1'">
+      <span class="sl-sym-name">${sym.name}</span>
     </div>`;
   }
 
-  // ── RENDER LOOP (rAF) ─────────────────────────────────────────────────────────────
+  // ── RENDER LOOP ───────────────────────────────────────────────────────────────────
   _startRenderLoop() {
     const loop = () => {
       this._animId = requestAnimationFrame(loop);
-      let anySpinning = false;
+      let any = false;
       for (let col = 0; col < SlotMachine.COLS; col++) {
         if (!this._colStopped[col]) {
-          anySpinning = true;
+          any = true;
           this._reelPos[col] = (this._reelPos[col] + this._reelSpeed[col]) % SlotMachine.REEL_LEN;
           this._updateReelDOM(col);
         }
       }
-      // tick SFX seulement si rouleaux actifs (déjà dans un contexte de geste utilisateur)
-      if (anySpinning && Math.random() < 0.04) _sfx.tick();
+      if (any && Math.random() < 0.04) _sfx.tick();
     };
     loop();
   }
 
   _updateReelDOM(col) {
-    const inner = document.getElementById(`slot-reel3-inner-${col}`);
+    const inner = document.getElementById(`sl-reel-inner-${col}`);
     if (!inner) return;
-    const cells  = inner.querySelectorAll('.slot3-cell');
-    const offsets = [-2, -1, 0, 1, 2];
-    offsets.forEach((off, i) => {
+    const cells = inner.querySelectorAll('.sl-cell');
+    [-2,-1,0,1,2].forEach((off, i) => {
       const sym = this._getSymAt(col, off);
       const isActive = (i === SlotMachine.ACTIVE_ROW);
       const cell = cells[i];
-      if (!cell) return;
-      cell.innerHTML = this._symHTML(sym, isActive);
+      if (cell) cell.innerHTML = this._symHTML(sym, isActive);
     });
   }
 
   // ── SPIN ──────────────────────────────────────────────────────────────────────────
   async spin() {
     if (this.spinning) return;
-    if (this.credits < this.bet) { this._setMsg('CREDITS INSUFFISANTS', 'red'); return; }
+    if (this.credits < this.bet) { this._setMsg('CRÉDITS INSUFFISANTS', 'lose'); _sfx.lose(); return; }
 
     this.spinning = true;
     this.credits -= this.bet;
     this._updateCreditsDisplay();
-    _sfx.lever(); // ✅ ici = après clic utilisateur → AudioContext autorisé
-    this._setMsg('LANCÉ — STOPPE LES ROULEAUX !', '');
-    this._clearGainHighlight();
+    this._updateCasinoBtn();
+    _sfx.lever();
+    this._setMsg('EN JEU — STOPPE LES ROULEAUX !', '');
+    this._clearWin();
 
-    for (let col = 0; col < SlotMachine.COLS; col++) {
-      this._reels[col] = this._buildReel();
-    }
-
+    for (let col = 0; col < SlotMachine.COLS; col++) this._reels[col] = this._buildReel();
     this._reelSpeed  = [0.18, 0.20, 0.22];
     this._colStopped = Array(SlotMachine.COLS).fill(false);
 
-    const spinBtn = document.getElementById('slot3-spin');
-    if (spinBtn) { spinBtn.disabled = true; spinBtn.textContent = 'EN COURS...'; }
+    const spinBtn = document.getElementById('sl-spin');
+    if (spinBtn) { spinBtn.disabled = true; spinBtn.querySelector('.sl-spin-icon').textContent = '⏳'; }
     for (let col = 0; col < SlotMachine.COLS; col++) {
-      const btn = document.getElementById(`slot-stop3-${col}`);
-      if (btn) { btn.disabled = false; btn.classList.add('slot-stop-btn3--active'); }
+      const btn = document.getElementById(`sl-stop-${col}`);
+      if (btn) { btn.disabled = false; btn.classList.add('sl-stop-btn--active'); }
     }
 
     await this._waitAllStopped();
@@ -664,63 +643,55 @@ export class SlotMachine {
     if (totalGain > 0) {
       this.credits += totalGain;
       this._updateCreditsDisplay(true);
+      this._updateCasinoBtn();
       this._highlightWinCells(wins);
       if (wins.some(w => w.line.mult === 1.0 && ['pp_sniky','pp_aligax'].includes(w.sym.id))) {
         _sfx.jackpot();
-        this._setMsg(`JACKPOT ${wins[0].sym.name} ! +${totalGain} C`, 'jackpot');
-        this._flashWrap('gold');
+        this._setMsg(`🎰 JACKPOT ${wins[0].sym.name} ! +${totalGain} C`, 'jackpot');
+        this._flashReels('gold');
       } else if (totalGain >= this.bet * 15) {
         _sfx.super_win();
-        this._setMsg(`SUPER WIN ×${Math.round(totalGain/this.bet)} — +${totalGain} C`, 'jackpot');
-        this._flashWrap('gold');
+        this._setMsg(`⚡ SUPER WIN ×${Math.round(totalGain/this.bet)} — +${totalGain} C`, 'jackpot');
+        this._flashReels('gold');
       } else {
         _sfx.win();
-        this._setMsg(`+${totalGain} C — ${wins.map(w => w.line.name).join(', ')}`, 'win');
+        this._setMsg(`✦ +${totalGain} C — ${wins.map(w => w.line.name).join(', ')}`, 'win');
       }
     } else {
       _sfx.lose();
       this._setMsg('— RIEN CETTE FOIS', 'lose');
     }
 
-    const gainEl = document.getElementById('slot3-gain');
+    const gainEl = document.getElementById('sl-gain');
     if (gainEl) gainEl.textContent = totalGain > 0 ? `+${totalGain}` : '—';
 
-    if (spinBtn) { spinBtn.disabled = false; spinBtn.textContent = 'SPIN'; }
+    if (spinBtn) { spinBtn.disabled = false; spinBtn.querySelector('.sl-spin-icon').textContent = '◉'; }
     for (let col = 0; col < SlotMachine.COLS; col++) {
-      const btn = document.getElementById(`slot-stop3-${col}`);
-      if (btn) { btn.disabled = true; btn.classList.remove('slot-stop-btn3--active'); }
+      const btn = document.getElementById(`sl-stop-${col}`);
+      if (btn) { btn.disabled = true; btn.classList.remove('sl-stop-btn--active'); }
     }
 
     await this._saveCredits();
     this.spinning = false;
   }
 
-  // ── STOP UNE COLONNE ──────────────────────────────────────────────────────────────
+  // ── STOP COLONNE ──────────────────────────────────────────────────────────────────
   _stopCol(col) {
     if (this._colStopped[col] || !this.spinning) return;
-    this._reelPos[col] = Math.round(this._reelPos[col]) % SlotMachine.REEL_LEN;
-    this._reelSpeed[col] = 0;
+    this._reelPos[col]    = Math.round(this._reelPos[col]) % SlotMachine.REEL_LEN;
+    this._reelSpeed[col]  = 0;
     this._colStopped[col] = true;
     this._updateReelDOM(col);
     _sfx.reel_stop(col);
-
-    const reel = document.getElementById(`slot-reel3-${col}`);
-    if (reel) {
-      reel.classList.add('slot-reel3--land');
-      setTimeout(() => reel.classList.remove('slot-reel3--land'), 300);
-    }
-
-    const btn = document.getElementById(`slot-stop3-${col}`);
-    if (btn) { btn.disabled = true; btn.classList.remove('slot-stop-btn3--active'); }
+    const reel = document.getElementById(`sl-reel-${col}`);
+    if (reel) { reel.classList.add('sl-reel--land'); setTimeout(() => reel.classList.remove('sl-reel--land'), 300); }
+    const btn = document.getElementById(`sl-stop-${col}`);
+    if (btn) { btn.disabled = true; btn.classList.remove('sl-stop-btn--active'); }
   }
 
-  // ── WAIT ALL STOPPED ──────────────────────────────────────────────────────────────
   _waitAllStopped() {
     return new Promise(resolve => {
-      const check = () => {
-        if (this._colStopped.every(Boolean)) resolve();
-        else setTimeout(check, 50);
-      };
+      const check = () => { if (this._colStopped.every(Boolean)) resolve(); else setTimeout(check, 50); };
       check();
     });
   }
@@ -729,82 +700,108 @@ export class SlotMachine {
   _evaluateLines() {
     const wins = [];
     for (const line of SlotMachine.WIN_LINES) {
-      const syms = Array.from({ length: SlotMachine.COLS }, (_, col) =>
-        this._getSymAt(col, line.rowOff));
-      if (syms.every(s => s && s.id === syms[0].id)) {
-        wins.push({ line, sym: syms[0] });
-      }
+      const syms = Array.from({ length: SlotMachine.COLS }, (_, col) => this._getSymAt(col, line.rowOff));
+      if (syms.every(s => s && s.id === syms[0].id)) wins.push({ line, sym: syms[0] });
     }
     return wins;
   }
 
-  // ── HIGHLIGHT WINS ────────────────────────────────────────────────────────────────
   _highlightWinCells(wins) {
     for (const w of wins) {
       const viewIdx = SlotMachine.ACTIVE_ROW + w.line.rowOff;
       for (let col = 0; col < SlotMachine.COLS; col++) {
-        const inner = document.getElementById(`slot-reel3-inner-${col}`);
+        const inner = document.getElementById(`sl-reel-inner-${col}`);
         if (!inner) continue;
-        const cells = inner.querySelectorAll('.slot3-cell');
-        const cell  = cells[viewIdx];
-        if (cell) {
-          cell.classList.add('slot3-cell--win');
-          setTimeout(() => cell.classList.remove('slot3-cell--win'), 1800);
-        }
+        const cell = inner.querySelectorAll('.sl-cell')[viewIdx];
+        if (cell) { cell.classList.add('sl-cell--win'); setTimeout(() => cell.classList.remove('sl-cell--win'), 2000); }
       }
     }
   }
 
-  _clearGainHighlight() {
-    document.querySelectorAll('.slot3-cell--win').forEach(c => c.classList.remove('slot3-cell--win'));
+  _clearWin() { document.querySelectorAll('.sl-cell--win').forEach(c => c.classList.remove('sl-cell--win')); }
+
+  // ── ENTRÉE CASINO ─────────────────────────────────────────────────────────────────
+  async _enterCasino() {
+    const cost = SlotMachine.CASINO_COST;
+    if (this.credits < cost) {
+      this._setMsg(`CRÉDITS INSUFFISANTS — il faut ${cost} C minimum`, 'lose');
+      _sfx.lose();
+      return;
+    }
+    _sfx.enter_casino();
+    _sfx.coin();
+    this.credits -= cost;
+    await this._saveCredits();
+    this._updateCreditsDisplay(true);
+
+    // Confirmation visuelle avant redirect
+    const btn = document.getElementById('sl-casino-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.querySelector('.sl-casino-title').textContent = 'ACCÈS ACCORDÉ';
+      btn.querySelector('.sl-casino-sub').textContent   = `−${cost} C · CHARGEMENT...`;
+      btn.querySelector('.sl-casino-icon').textContent  = '✓';
+      btn.classList.add('sl-casino-btn--enter');
+    }
+    this._setMsg(`✦ −${cost} CHRONICLES · BIENVENUE AU CASINO`, 'win');
+    setTimeout(() => { window.location.href = '/star/casino/'; }, 900);
   }
 
   // ── UI ────────────────────────────────────────────────────────────────────────────
   _updateCreditsDisplay(flash = false) {
-    const el = document.getElementById('slot3-credits');
+    const el = document.getElementById('sl-credits');
     if (!el) return;
     el.textContent = this.credits.toLocaleString('fr-FR');
-    if (flash) {
-      el.classList.add('slot3-num--flash');
-      setTimeout(() => el.classList.remove('slot3-num--flash'), 700);
-    }
+    if (flash) { el.classList.add('sl-num--flash'); setTimeout(() => el.classList.remove('sl-num--flash'), 700); }
+  }
+
+  _updateCasinoBtn() {
+    const btn = document.getElementById('sl-casino-btn');
+    if (!btn) return;
+    const canEnter = this.credits >= SlotMachine.CASINO_COST;
+    const icon  = btn.querySelector('.sl-casino-icon');
+    const title = btn.querySelector('.sl-casino-title');
+    const sub   = btn.querySelector('.sl-casino-sub');
+    if (icon)  icon.textContent  = canEnter ? '🎰' : '🔒';
+    if (title) title.textContent = 'CASINO COMPLET';
+    if (sub)   sub.textContent   = canEnter
+      ? `−${SlotMachine.CASINO_COST} C · ENTRER`
+      : `CRÉDITS INSUFFISANTS (min. ${SlotMachine.CASINO_COST})`;
+    btn.classList.toggle('sl-casino-btn--locked', !canEnter);
   }
 
   _setMsg(txt, type) {
-    const el = document.getElementById('slot3-msg');
+    const el = document.getElementById('sl-msg');
     if (!el) return;
     el.textContent = txt;
-    el.className = 'slot3-msg' + (type ? ` slot3-msg--${type}` : '');
+    el.className = 'sl-msg' + (type ? ` sl-msg--${type}` : '');
   }
 
   _changeBet(delta) {
     const bets = [1, 2, 5, 10, 20, 50];
     const idx  = bets.indexOf(this.bet);
     this.bet   = bets[Math.max(0, Math.min(bets.length - 1, idx + delta))];
-    const el   = document.getElementById('slot3-bet');
+    const el   = document.getElementById('sl-bet');
     if (el) el.textContent = this.bet;
     _sfx.click();
   }
 
-  _flashWrap(type) {
-    const el = document.getElementById('slot3-reels-wrap');
+  _flashReels(type) {
+    const el = document.getElementById('sl-reels-wrap');
     if (!el) return;
-    el.classList.add(`slot3-flash-${type}`);
-    setTimeout(() => el.classList.remove(`slot3-flash-${type}`), 1400);
+    el.classList.add(`sl-flash-${type}`);
+    setTimeout(() => el.classList.remove(`sl-flash-${type}`), 1400);
   }
 
   // ── POPUP BIENVENUE ───────────────────────────────────────────────────────────────
   _showWelcomePopup() {
-    // _sfx.welcome() déplacé dans le handler du bouton close (geste utilisateur requis)
     const overlay = document.createElement('div');
     overlay.id = 'muten-welcome-overlay';
     overlay.innerHTML = `
       <div class="muten-popup" role="dialog" aria-modal="true" aria-label="Message de bienvenue du Commandant Muten">
         <div class="muten-popup-glow" aria-hidden="true"></div>
         <div class="muten-popup-header">
-          <img class="muten-avatar"
-               src="../shared/images/pixel_pp/pixel_pp_cowboy.png"
-               alt="Commandant Muten" width="72" height="72">
+          <img class="muten-avatar" src="../shared/images/pixel_pp/pixel_pp_cowboy.png" alt="Commandant Muten" width="72" height="72">
           <div class="muten-popup-title">
             <span class="muten-tag">// COMMANDANT DE BORD</span>
             <span class="muten-name">MUTEN</span>
@@ -823,15 +820,12 @@ export class SlotMachine {
         <div class="muten-popup-coins" aria-hidden="true">
           ${Array.from({length: 10}, () => `<div class="muten-coin" style="--delay:${(Math.random()*0.8).toFixed(2)}s;--x:${Math.floor(Math.random()*90)}%"></div>`).join('')}
         </div>
-        <button class="muten-popup-close" id="muten-popup-close">PRENDRE LES CREDITS</button>
+        <button class="muten-popup-close" id="muten-popup-close">PRENDRE LES CRÉDITS</button>
       </div>`;
-
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add('muten-welcome-overlay--in'));
-
     const close = () => {
-      _sfx.welcome(); // ✅ son déclenché sur clic utilisateur → AudioContext autorisé
-      _sfx.coin();
+      _sfx.welcome(); _sfx.coin();
       overlay.classList.remove('muten-welcome-overlay--in');
       overlay.classList.add('muten-welcome-overlay--out');
       setTimeout(() => overlay.remove(), 500);
