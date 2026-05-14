@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    STAR-DASHBOARD.CSS — Styles spécifiques au dashboard star/index.html
-   v3.0 : SlotMachine 5 colonnes + levier hold-to-spin
+   v3.2 : SlotMachine — tile glow coloré par ligne + breakdown crédits
 ═══════════════════════════════════════════════════════════════ */
 
 /* ── LAYOUT ──────────────────────────────────────────────── */
@@ -281,16 +281,15 @@
 .widget-video-title { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--c-text-muted); margin-bottom:var(--space-2); }
 
 /* ═══════════════════════════════════════════════════════════════
-   SLOT MACHINE v3.0 — ARCADE NÉON
+   SLOT MACHINE v3.2 — ARCADE NÉON
 ═══════════════════════════════════════════════════════════════ */
 
-/* Machine wrapper */
 .sl-machine {
   display:flex; flex-direction:column; gap:var(--space-3);
   font-family:var(--font-mono);
 }
 
-/* Header néon animé */
+/* Header */
 .sl-header {
   display:flex; align-items:center; justify-content:center; gap:var(--space-2);
   padding:var(--space-2) 0;
@@ -346,6 +345,49 @@
   cursor:pointer; transition:background .15s,color .15s,border-color .15s;
 }
 .sl-bet-btn:hover { background:var(--c-surface-2); color:var(--c-amber); border-color:var(--c-amber); }
+
+/* ─────────────────────────────────────────────────────────────── */
+/* BREAKDOWN CRÉDITS PAR LIGNE GAGNANTE (v3.2)                     */
+/* ─────────────────────────────────────────────────────────────── */
+.sl-breakdown {
+  display:none; flex-direction:column; gap:3px;
+  padding:var(--space-2) var(--space-3);
+  background:color-mix(in oklch,var(--c-bg) 80%,var(--c-surface));
+  border:1px solid color-mix(in oklch,var(--c-green) 20%,var(--c-border));
+  border-radius:var(--radius-md);
+  animation:sl-bd-in .25s ease;
+}
+.sl-breakdown--visible { display:flex; }
+@keyframes sl-bd-in {
+  from { opacity:0; transform:translateY(-4px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.sl-bd-row {
+  display:flex; align-items:center; gap:var(--space-2);
+  font-size:8px; letter-spacing:.1em;
+}
+.sl-bd-dot {
+  width:6px; height:6px; border-radius:50%; flex-shrink:0;
+  background:var(--bd-color,var(--c-primary));
+  box-shadow:0 0 5px var(--bd-color,var(--c-primary));
+}
+.sl-bd-line {
+  color:var(--bd-color,var(--c-primary));
+  font-weight:700; min-width:52px;
+}
+.sl-bd-sym  { flex:1; color:var(--c-text-muted); }
+.sl-bd-mult { color:var(--c-text-faint); }
+.sl-bd-gain {
+  color:var(--c-green); font-family:var(--font-display);
+  font-size:10px; font-weight:700;
+  text-shadow:0 0 8px var(--c-green);
+  margin-left:auto;
+  animation:sl-gain-pop .35s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes sl-gain-pop {
+  from { transform:scale(.7); opacity:0; }
+  to   { transform:scale(1);  opacity:1; }
+}
 
 /* Cabinet */
 .sl-cabinet { display:flex; flex-direction:column; gap:var(--space-2); }
@@ -416,13 +458,29 @@
   opacity:1;
   background:color-mix(in oklch,var(--c-amber) 5%,var(--c-surface));
 }
+
+/* ─────────────────────────────────────────────────────────────── */
+/* TILE GLOW — coloré par ligne gagnante via --line-color (v3.2)   */
+/* ─────────────────────────────────────────────────────────────── */
 .sl-cell--win {
-  animation:sl-win-pulse 2s ease-in-out;
-  background:color-mix(in oklch,var(--c-amber) 12%,var(--c-surface)) !important;
+  animation:sl-win-pulse 2.2s ease-in-out;
+  background:color-mix(in oklch,var(--line-color,var(--c-amber)) 12%,var(--c-surface)) !important;
 }
 @keyframes sl-win-pulse {
-  0%,100% { background:color-mix(in oklch,var(--c-amber) 8%,var(--c-surface)); }
-  30%     { background:color-mix(in oklch,var(--c-amber) 22%,var(--c-surface)); box-shadow:inset 0 0 16px color-mix(in oklch,var(--c-amber) 30%,transparent); }
+  0%,100% {
+    background:color-mix(in oklch,var(--line-color,var(--c-amber)) 8%,var(--c-surface));
+    box-shadow:none;
+  }
+  25% {
+    background:color-mix(in oklch,var(--line-color,var(--c-amber)) 25%,var(--c-surface));
+    box-shadow:
+      inset 0 0 14px color-mix(in oklch,var(--line-color,var(--c-amber)) 35%,transparent),
+      0 0 8px color-mix(in oklch,var(--line-color,var(--c-amber)) 40%,transparent);
+  }
+  60% {
+    background:color-mix(in oklch,var(--line-color,var(--c-amber)) 16%,var(--c-surface));
+    box-shadow:inset 0 0 8px color-mix(in oklch,var(--line-color,var(--c-amber)) 20%,transparent);
+  }
 }
 
 /* Symbole */
@@ -433,6 +491,19 @@
 .sl-cell--active .sl-sym img {
   filter:drop-shadow(0 0 6px var(--sym-color,var(--c-primary)));
   image-rendering:pixelated;
+}
+/* Bonus glow sur le symbole quand la tile est win */
+.sl-cell--win .sl-sym img {
+  filter:
+    drop-shadow(0 0 8px var(--line-color,var(--c-amber)))
+    drop-shadow(0 0 4px var(--sym-color,var(--c-primary)));
+  image-rendering:pixelated;
+  animation:sl-sym-glow 2.2s ease-in-out;
+}
+@keyframes sl-sym-glow {
+  0%,100% { filter:drop-shadow(0 0 4px var(--line-color,var(--c-amber))); }
+  25%     { filter:drop-shadow(0 0 14px var(--line-color,var(--c-amber))) drop-shadow(0 0 6px var(--sym-color,var(--c-primary))); }
+  60%     { filter:drop-shadow(0 0 8px var(--line-color,var(--c-amber))); }
 }
 .sl-sym-name {
   font-size:6px; letter-spacing:.1em; color:var(--sym-color,var(--c-text-muted));
@@ -459,9 +530,7 @@
 }
 
 /* Flash jackpot */
-.sl-flash-gold {
-  animation:sl-flash-gold .35s ease 4;
-}
+.sl-flash-gold { animation:sl-flash-gold .35s ease 4; }
 @keyframes sl-flash-gold {
   0%,100% { box-shadow:inset 0 3px 12px rgba(0,0,0,.6); }
   50%     { box-shadow:inset 0 3px 12px rgba(0,0,0,.4), 0 0 40px var(--c-amber), inset 0 0 30px color-mix(in oklch,var(--c-amber) 20%,transparent); }
@@ -488,8 +557,6 @@
 }
 .sl-lever:active,
 .sl-lever--hold { cursor:grabbing; }
-
-/* Rail de guidage */
 .sl-lever-track {
   position:absolute; left:50%; top:12px; bottom:20px;
   transform:translateX(-50%);
@@ -499,8 +566,6 @@
   border-radius:3px;
   z-index:0;
 }
-
-/* Bras du levier */
 .sl-lever-arm {
   position:relative; z-index:1;
   width:10px; height:64px;
@@ -514,8 +579,6 @@
   transition:transform .12s ease-out, box-shadow .12s;
   box-shadow:0 0 8px color-mix(in oklch,var(--c-amber) 15%,transparent);
 }
-
-/* Poignée */
 .sl-lever-knob {
   position:absolute; top:-10px; left:50%; transform:translateX(-50%);
   width:22px; height:22px; border-radius:50%;
@@ -528,28 +591,13 @@
              inset 0 1px 0 rgba(255,255,255,.2);
   transition:box-shadow .12s;
 }
-
-/* Pull : rotation 0 → -35deg */
-.sl-lever-arm--pull {
-  animation:sl-lever-pull .15s ease-out forwards;
-}
-@keyframes sl-lever-pull {
-  from { transform:rotate(0deg); }
-  to   { transform:rotate(-35deg); }
-}
-
-/* Release : -35deg → 0deg (ressort) */
-.sl-lever-arm--release {
-  animation:sl-lever-release .4s cubic-bezier(.22,1,.36,1) forwards;
-}
+.sl-lever-arm--pull    { animation:sl-lever-pull .15s ease-out forwards; }
+@keyframes sl-lever-pull    { from{transform:rotate(0deg)} to{transform:rotate(-35deg)} }
+.sl-lever-arm--release { animation:sl-lever-release .4s cubic-bezier(.22,1,.36,1) forwards; }
 @keyframes sl-lever-release {
-  0%   { transform:rotate(-35deg); }
-  65%  { transform:rotate(6deg); }
-  85%  { transform:rotate(-3deg); }
-  100% { transform:rotate(0deg); }
+  0%  {transform:rotate(-35deg)} 65% {transform:rotate(6deg)}
+  85% {transform:rotate(-3deg)}  100%{transform:rotate(0deg)}
 }
-
-/* Glow amber sur la poignée pendant le hold */
 .sl-lever--hold .sl-lever-knob,
 .sl-lever-knob--glow {
   box-shadow:
@@ -562,19 +610,14 @@
   from { box-shadow:0 0 10px var(--c-amber),0 0 22px color-mix(in oklch,var(--c-amber) 45%,transparent); }
   to   { box-shadow:0 0 20px var(--c-amber),0 0 40px color-mix(in oklch,var(--c-amber) 65%,transparent),0 0 60px color-mix(in oklch,var(--c-amber) 25%,transparent); }
 }
-
-/* Label sous le levier */
 .sl-lever-label {
   font-size:7px; letter-spacing:.22em; color:var(--c-amber); opacity:.6;
   text-transform:uppercase;
 }
 .sl-lever--hold .sl-lever-label { opacity:1; }
-
-/* Focus clavier */
 .sl-lever:focus-visible {
   outline:2px solid var(--c-amber); outline-offset:4px; border-radius:var(--radius-md);
 }
-/* ─────────────────────────────────────────────────────────────── */
 
 /* ── BOUTON CASINO COMPLET ───────────────────────────────────────── */
 .sl-casino-btn {
@@ -598,25 +641,16 @@
   box-shadow:0 0 24px color-mix(in oklch,var(--c-purple) 35%,transparent);
   transform:translateY(-1px);
 }
-.sl-casino-btn--locked {
-  opacity:.5; cursor:not-allowed;
-  filter:grayscale(.4);
-}
+.sl-casino-btn--locked { opacity:.5; cursor:not-allowed; filter:grayscale(.4); }
 .sl-casino-btn--enter {
   border-color:var(--c-green) !important;
   background:linear-gradient(135deg,color-mix(in oklch,var(--c-green) 18%,var(--c-surface)) 0%,var(--c-surface) 100%) !important;
   box-shadow:0 0 20px color-mix(in oklch,var(--c-green) 30%,transparent) !important;
 }
-.sl-casino-icon { font-size:1.4rem; flex-shrink:0; line-height:1; }
-.sl-casino-text { display:flex; flex-direction:column; gap:1px; flex:1; min-width:0; }
-.sl-casino-title {
-  font-family:var(--font-display); font-size:var(--text-sm); font-weight:700;
-  letter-spacing:.14em; color:var(--c-text);
-}
-.sl-casino-sub {
-  font-size:8px; letter-spacing:.1em;
-  color:color-mix(in oklch,var(--c-purple) 80%,var(--c-text-muted));
-}
+.sl-casino-icon  { font-size:1.4rem; flex-shrink:0; line-height:1; }
+.sl-casino-text  { display:flex; flex-direction:column; gap:1px; flex:1; min-width:0; }
+.sl-casino-title { font-family:var(--font-display); font-size:var(--text-sm); font-weight:700; letter-spacing:.14em; color:var(--c-text); }
+.sl-casino-sub   { font-size:8px; letter-spacing:.1em; color:color-mix(in oklch,var(--c-purple) 80%,var(--c-text-muted)); }
 .sl-casino-btn--locked .sl-casino-sub { color:var(--c-text-faint); }
 .sl-casino-arrow {
   font-family:var(--font-mono); font-size:var(--text-base); color:var(--c-purple);
@@ -647,7 +681,7 @@
 .sl-pay-name { font-size:9px; letter-spacing:.06em; }
 .sl-pay-mult { font-size:9px; color:var(--c-amber); margin-left:2px; }
 
-/* ── LEGACY (ancienne slot-machine) — conservé pour compat ─── */
+/* ── LEGACY ─────────────────────────────────────────────────── */
 .slot-machine { display:flex; flex-direction:column; gap:var(--space-3); }
 .slot-header  { display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--space-2); background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-lg); padding:var(--space-3); }
 .slot-credit-box { display:flex; flex-direction:column; gap:2px; }
