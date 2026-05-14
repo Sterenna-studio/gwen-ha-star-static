@@ -112,19 +112,6 @@
         </div>
       </div>
 
-      <!-- CREW PIXEL PP -->
-      <div class="bc bc-crew">
-        <div class="bc-label" style="color:var(--c-purple)"><span class="bc-dot"></span>CREW · PIXEL ART</div>
-        <div class="crew-panel">
-          <div class="crew-grid">
-            <div class="crew-member"><img class="crew-pp" src="../shared/images/pixel_pp/pixel_pp_sniky.png" alt="Sniky" width="52" height="52" loading="lazy"><span class="crew-name">SNIKY</span></div>
-            <div class="crew-member"><img class="crew-pp" src="../shared/images/pixel_pp/pixel_pp_cowboy.png" alt="Cowboy" width="52" height="52" loading="lazy"><span class="crew-name">COWBOY</span></div>
-            <div class="crew-member"><img class="crew-pp" src="../shared/images/pixel_pp/pixel_pp_abad.png" alt="Abad" width="52" height="52" loading="lazy"><span class="crew-name">ABAD</span></div>
-            <div class="crew-member"><img class="crew-pp" src="../shared/images/pixel_pp/pixel_pp_aligax.png" alt="Aligax" width="52" height="52" loading="lazy"><span class="crew-name">ALIGAX</span></div>
-          </div>
-        </div>
-      </div>
-
       <!-- POKEGANG -->
       <div class="bc bc-pg">
         <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>POKEGANG · RÉSEAU</div>
@@ -189,14 +176,12 @@
     import { requireAuth }       from '../js/star/guard.js';
     import { SlotMachine }       from '../js/star/widgets.js';
 
-    // HORLOGE
     (function(){
       const el = document.getElementById('sb-clock');
       const tick = () => { if(el) el.textContent = new Date().toLocaleTimeString('fr-FR'); };
       tick(); setInterval(tick,1000);
     })();
 
-    // UPTIME SESSION
     (function(){
       const t0=Date.now(), el=document.getElementById('kpi-uptime');
       setInterval(()=>{
@@ -274,7 +259,6 @@
       loadMembers();
       loadPGStats(user.id);
 
-      // Charger les chronicles pour le KPI monnaie
       (async () => {
         const el = document.getElementById('kpi-chronicles');
         try {
@@ -283,7 +267,6 @@
         } catch { if (el) el.textContent = '?'; }
       })();
 
-      // CASINO — init après auth pour avoir user.id
       const slots = new SlotMachine('widget-slots');
       await slots.init(user.id);
     }
