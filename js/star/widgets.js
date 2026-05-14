@@ -5,7 +5,7 @@
  * SlotMachine : machine à sous 5×5 (+ preview haut/bas) — PP pixel art uniquement
  *               levier hold-to-spin, 5 lignes de gain (dont 2 diagonales)
  *               monnaie virtuelle chronicles (Supabase)
- *               v3.0 : 5 colonnes, levier, WIN_LINES L0-L4
+ *               v3.1 : PP-only, RTP ~150% (pool 15, rare [1,1,2,3,8], mults [50,50,40,30,10])
  */
 import { supabase } from '../supabase.js';
 
@@ -348,11 +348,17 @@ export class RadioPlayer {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════════════
-// ── SLOT MACHINE v3.0 — 5 COLONNES · LEVIER · DIAGONALES ─────────────────────────────
+// ── SLOT MACHINE v3.1 — PP-ONLY · 5 COLONNES · LEVIER · RTP ~150% ────────────────────
 // ══════════════════════════════════════════════════════════════════════════════════════
 //
-//  MODÈLE VISUEL : 5 rangées (2 fantômes haut + ACTIVE + 2 fantômes bas)
-//  5 COLONNES — arrêt automatique par timeout après relâchement du levier
+//  SYMBOLES : 5 PP pixel art uniquement — pool 15 entrées
+//    SNIKY  rare:1  mult:50  (6.7% — jackpot)
+//    ALIGAX rare:1  mult:50  (6.7% — jackpot)
+//    COWBOY rare:2  mult:40  (13.3% — rare)
+//    ABAD   rare:3  mult:30  (20%   — medium)
+//    SPIRIT rare:8  mult:10  (53.3% — commun)
+//  RTP théorique : ~150% (retour 150 C pour 100 C misés en moyenne)
+//
 //  5 LIGNES DE GAIN : milieu ×1, haut ×0.5, bas ×0.5, diag↘ ×0.7, diag↗ ×0.7
 //  Bouton CASINO COMPLET → déduit 50 chronicles → redirect star/casino/
 //
@@ -360,15 +366,15 @@ export class SlotMachine {
   static IMG_BASE = '../shared/images';
   static CASINO_COST = 50;
 
+  // ── SYMBOLES PP-ONLY — pool 15, RTP ~150% ─────────────────────────────────────────
+  // rare  = nombre d'entrées dans le pool (poids de tirage)
+  // mult  = multiplicateur de gain (mise × mult × mult_ligne)
   static SYMBOLS = [
     { id: 'pp_sniky',  name: 'SNIKY',  img: 'pixel_pp/pixel_pp_sniky.png',  mult: 50, rare: 1, color: '#f87171' },
     { id: 'pp_aligax', name: 'ALIGAX', img: 'pixel_pp/pixel_pp_aligax.png', mult: 50, rare: 1, color: '#34d399' },
     { id: 'pp_cowboy', name: 'COWBOY', img: 'pixel_pp/pixel_pp_cowboy.png', mult: 40, rare: 2, color: '#ffd700' },
-    { id: 'pp_abad',   name: 'ABAD',   img: 'pixel_pp/pixel_pp_abad.png',   mult: 40, rare: 2, color: '#a78bfa' },
-    { id: 'pp_spirit', name: 'SPIRIT', img: 'pixel_pp/pixel_pp_spirit.png', mult: 30, rare: 3, color: '#60a5fa' },
-    { id: 'mash',      name: 'MASH',    img: 'vehicule/mash.png',           mult: 20, rare: 4, color: '#fbbf24' },
-    { id: 'barossa',   name: 'BAROSSA', img: 'vehicule/barossa.png',        mult: 12, rare: 6, color: '#f97316' },
-    { id: 'citroenax', name: 'AX',      img: 'vehicule/citroenAX.png',      mult:  6, rare: 9, color: '#ef4444' },
+    { id: 'pp_abad',   name: 'ABAD',   img: 'pixel_pp/pixel_pp_abad.png',   mult: 30, rare: 3, color: '#a78bfa' },
+    { id: 'pp_spirit', name: 'SPIRIT', img: 'pixel_pp/pixel_pp_spirit.png', mult: 10, rare: 8, color: '#60a5fa' },
   ];
 
   // L0 milieu, L1 haut, L2 bas : rowOff uniforme pour toutes les colonnes
