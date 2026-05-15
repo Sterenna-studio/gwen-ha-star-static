@@ -1,5 +1,5 @@
 /**
- * casino-core.js  —  STAR ARCADE  v1.3
+ * casino-core.js  —  STAR ARCADE  v1.4
  * Whack-A-Mole · Crash · Slot Machine · Midnight Chase
  * Monnaie : Chronicles (Supabase profiles.chronicles)
  */
@@ -14,15 +14,33 @@ const el = (tag, cls, txt) => {
   return e;
 };
 
+// ── SOUND ENGINE ──────────────────────────────────────────────────────
+// AudioContext is created lazily on first actual sound call (after user gesture).
+// SFX.unlock() is called once on the first click/touchstart in showLobby()
+// so the context is resumed and ready for subsequent calls.
 const SFX = {
   _ctx: null,
+  _unlocked: false,
+
+  // Get or create the AudioContext. Never called on hover/page load —
+  // only called from within sound methods triggered by user gestures.
   _g() {
     if (!this._ctx) {
-      try { this._ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return null; }
+      try { this._ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch { return null; }
     }
     if (this._ctx.state === 'suspended') this._ctx.resume();
     return this._ctx;
   },
+
+  // Call once on first user gesture to pre-warm the context.
+  unlock() {
+    if (this._unlocked) return;
+    this._unlocked = true;
+    const ctx = this._g();
+    if (ctx && ctx.state === 'suspended') ctx.resume();
+  },
+
   _t(f, type, vol, atk, dec, t0) {
     const ctx = this._g(); if (!ctx) return;
     const osc = ctx.createOscillator(), g = ctx.createGain();
@@ -47,7 +65,8 @@ const SFX = {
   click()  { this._t(800,'sine',.06,.004,.05); },
   win()    { const ctx=this._g();if(!ctx)return;[523,659,784,1047].forEach((f,i)=>this._t(f,'triangle',.09,.01,.14,ctx.currentTime+i*.09)); },
   lose()   { const ctx=this._g();if(!ctx)return;[330,280,220].forEach((f,i)=>this._t(f,'sawtooth',.07,.01,.18,ctx.currentTime+i*.12)); },
-  hover()  { this._t(1100,'sine',.03,.002,.03); },
+  // hover does NOT create AudioContext — silent no-op if not yet unlocked
+  hover()  { if (!this._unlocked) return; this._t(1100,'sine',.03,.002,.03); },
   crash()  { const ctx=this._g();if(!ctx)return;[200,160,120].forEach((f,i)=>this._t(f,'sawtooth',.1,.005,.3,ctx.currentTime+i*.08));this._n(.1,.5); },
   eject()  { const ctx=this._g();if(!ctx)return;[660,880,1100].forEach((f,i)=>this._t(f,'triangle',.08,.005,.1,ctx.currentTime+i*.05)); },
   tick()   { this._t(1400,'square',.04,.002,.015); },
@@ -58,6 +77,7 @@ const SFX = {
   wamEnd() { const ctx=this._g();if(!ctx)return;[440,554,659,880].forEach((f,i)=>this._t(f,'triangle',.1,.01,.18,ctx.currentTime+i*.1)); },
 };
 
+// ── WAM CONFIG ────────────────────────────────────────────────────────
 const WAM_DURATION   = 30;
 const WAM_HOLES      = 12;
 const WAM_MOLE_TYPES = [
@@ -82,16 +102,20 @@ export class CasinoCore {
     this.history   = [];
     this._jackpot  = 500;
     this._currentGame = null;
-    this._boundChaseBack = null;
+    this._boundChaseBack   = null;
     this._boundChaseResult = null;
+    this._sfxUnlockBound   = null;
+    // Crash state
     this._crashMult      = 1.00;
     this._crashRunning   = false;
     this._crashCashedOut = false;
     this._crashAnimId    = null;
     this._crashBetActive = false;
+    // WAM state
     this._wamTimers  = [];
     this._wamRunning = false;
     this._wamRafId   = null;
+    this._wamEnding  = false;
   }
 
   async _loadCredits() {
@@ -114,6 +138,7 @@ export class CasinoCore {
     this._renderHistory();
   }
 
+  // ── LOBBY ────────────────────────────────────────────────────────────
   showLobby() {
     const root = document.querySelector(this.mountSel);
     if (!root) return;
@@ -214,6 +239,18 @@ export class CasinoCore {
       <section class="casino-game" id="game-chase"></section>
     </div>`;
 
+    // One-time unlock of AudioContext on first user gesture anywhere on the page
+    if (!this._sfxUnlockBound) {
+      this._sfxUnlockBound = () => {
+        SFX.unlock();
+        document.removeEventListener('click',      this._sfxUnlockBound);
+        document.removeEventListener('touchstart', this._sfxUnlockBound);
+        this._sfxUnlockBound = null;
+      };
+      document.addEventListener('click',      this._sfxUnlockBound, { once: true });
+      document.addEventListener('touchstart', this._sfxUnlockBound, { once: true, passive: true });
+    }
+
     document.getElementById('card-wam')?.addEventListener('click',   () => { SFX.click(); this._showGame('wam'); });
     document.getElementById('card-crash')?.addEventListener('click', () => { SFX.click(); this._showGame('crash'); });
     document.getElementById('card-slots')?.addEventListener('click', () => { SFX.click(); this._showGame('slots'); });
@@ -224,6 +261,7 @@ export class CasinoCore {
     this._renderHistory();
   }
 
+  // ── NAV ───────────────────────────────────────────────────────────────
   _showGame(name) {
     document.getElementById('view-lobby')?.style.setProperty('display','none');
     document.querySelectorAll('.casino-game').forEach(g => g.classList.remove('active'));
@@ -249,14 +287,8 @@ export class CasinoCore {
   }
 
   _cleanupChaseEvents() {
-    if (this._boundChaseBack) {
-      document.removeEventListener('chase:back', this._boundChaseBack);
-      this._boundChaseBack = null;
-    }
-    if (this._boundChaseResult) {
-      document.removeEventListener('chase:result', this._boundChaseResult);
-      this._boundChaseResult = null;
-    }
+    if (this._boundChaseBack)   { document.removeEventListener('chase:back',   this._boundChaseBack);   this._boundChaseBack   = null; }
+    if (this._boundChaseResult) { document.removeEventListener('chase:result', this._boundChaseResult); this._boundChaseResult = null; }
   }
 
   _updateCreditsDisplay() {
@@ -264,6 +296,7 @@ export class CasinoCore {
     if (e) e.textContent = this.credits.toLocaleString('fr-FR');
   }
 
+  // ── BET PANEL ─────────────────────────────────────────────────────────
   _betPanelHTML(id) {
     const presets = [1,5,10,25,50,100];
     return `<div class="bet-panel">
@@ -288,26 +321,31 @@ export class CasinoCore {
     );
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  // MIDNIGHT CHASE
+  // ═══════════════════════════════════════════════════════════════════
   _initChase() {
     this._cleanupChaseEvents();
     const chase = new MidnightChase('game-chase', this.userId, this.credits, (newCredits) => {
       this.credits = newCredits;
       this._updateCreditsDisplay();
     });
-
-    this._boundChaseBack = () => this._backToLobby();
+    this._boundChaseBack   = () => this._backToLobby();
     this._boundChaseResult = (e) => {
       const { bet, result, net } = e.detail || {};
       this._addHistory('CHASE', bet ?? this.bet, result ?? 'push', net ?? 0);
     };
-
-    document.addEventListener('chase:back', this._boundChaseBack);
+    document.addEventListener('chase:back',   this._boundChaseBack);
     document.addEventListener('chase:result', this._boundChaseResult);
     chase.mount();
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  // WHACK-A-MOLE
+  // ═══════════════════════════════════════════════════════════════════
   _initWam() {
     this._wamStop();
+    this._wamEnding = false;
     const g = document.getElementById('game-wam');
     const holes = Array.from({length:WAM_HOLES},(_,i)=>
       `<div class="wam-hole" id="wh-${i}" data-idx="${i}" data-type="normal">
@@ -334,25 +372,43 @@ export class CasinoCore {
       <div class="action-row">
         <button class="action-btn primary" id="wam-start">▶ DÉMARRER</button>
       </div>`;
-    document.getElementById('wam-back')?.addEventListener('click', () => { this._wamStop(); this._backToLobby(); });
-    document.getElementById('wam-start')?.addEventListener('click', () => this._wamLaunch());
+
+    document.getElementById('wam-back')?.addEventListener('click', () => {
+      this._wamStop();
+      this._wamEnding = false;
+      this._backToLobby();
+    });
+    this._wamBindStart();
     this._bindBetPanel('wam');
   }
 
+  // Bind the start button — called on init and after each game ends
+  _wamBindStart() {
+    const btn = document.getElementById('wam-start');
+    if (!btn) return;
+    btn.onclick = () => this._wamLaunch();
+  }
+
   async _wamLaunch() {
-    if (this._wamRunning) return;
+    if (this._wamRunning || this._wamEnding) return;
+    // Remove any leftover result screen from previous round
+    document.querySelector('.wam-result-screen')?.remove();
     if (this.credits < this.bet) { this._wamMsg('CRÉDITS INSUFFISANTS','lose'); return; }
     this.credits -= this.bet;
     await this._saveCredits();
     this._wamScore = 0; this._wamHits = 0; this._wamCombo = 1;
-    document.getElementById('wam-start').disabled = true;
+    const btn = document.getElementById('wam-start');
+    if (btn) btn.disabled = true;
     this._wamMsg('','');
     await this._wamCountdown();
+    // Guard: user may have navigated away during countdown
+    if (!document.getElementById('wam-start')) return;
     this._wamStart();
   }
 
   async _wamCountdown() {
     const arena = document.getElementById('wam-arena');
+    if (!arena) return;
     for (const txt of ['3','2','1','GO!']) {
       SFX.countdown(txt==='GO!'?0:1);
       const d = document.createElement('div'); d.className='wam-countdown'; d.textContent=txt;
@@ -362,7 +418,7 @@ export class CasinoCore {
 
   _wamStart() {
     this._wamRunning = true;
-    this._wamTimeLeft = WAM_DURATION;
+    this._wamEnding  = false;
     this._wamT0 = performance.now();
     this._wamActiveHoles = new Array(WAM_HOLES).fill(null);
     this._wamScheduleAll();
@@ -371,10 +427,10 @@ export class CasinoCore {
 
   _wamTick() {
     if (!this._wamRunning) return;
-    const elapsed = (performance.now() - this._wamT0) / 1000;
+    const elapsed  = (performance.now() - this._wamT0) / 1000;
     const timeLeft = Math.max(0, WAM_DURATION - elapsed);
-    const timerEl = document.getElementById('wam-timer');
-    const barEl   = document.getElementById('wam-timebar');
+    const timerEl  = document.getElementById('wam-timer');
+    const barEl    = document.getElementById('wam-timebar');
     if (timerEl) { timerEl.textContent = Math.ceil(timeLeft); timerEl.classList.toggle('urgent', timeLeft <= 8); }
     if (barEl)   { barEl.style.transform=`scaleX(${timeLeft/WAM_DURATION})`; barEl.classList.toggle('urgent', timeLeft<=8); }
     if (timeLeft <= 0) { this._wamEnd(); return; }
@@ -415,14 +471,14 @@ export class CasinoCore {
       hole.classList.remove('active'); this._wamActiveHoles[idx]=null;
     }, type.spd*1000+400);
     this._wamTimers.push(timer);
-    const onClick = (e) => {
+    // {once:true} handles both the click de-registration and prevents duplicates
+    hole.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (!this._wamRunning||!hole.classList.contains('active')) return;
-      hole.removeEventListener('click',onClick); clearTimeout(timer);
+      if (!this._wamRunning || !hole.classList.contains('active')) return;
+      clearTimeout(timer);
       hole.classList.remove('active'); this._wamActiveHoles[idx]=null;
-      this._wamHitMole(idx,type,hole);
-    };
-    hole.addEventListener('click', onClick, {once:true});
+      this._wamHitMole(idx, type, hole);
+    }, { once: true });
   }
 
   _wamHitMole(idx, type, holeEl) {
@@ -455,20 +511,27 @@ export class CasinoCore {
   }
 
   _wamStop() {
-    this._wamRunning=false;
+    this._wamRunning = false;
     this._wamTimers.forEach(t=>clearTimeout(t)); this._wamTimers=[];
     if (this._wamRafId){ cancelAnimationFrame(this._wamRafId); this._wamRafId=null; }
     document.querySelectorAll('.wam-hole.active').forEach(h=>h.classList.remove('active'));
   }
 
   async _wamEnd() {
-    this._wamStop(); SFX.wamEnd();
-    const score = this._wamScore;
-    const gain  = Math.round(this.bet * score / 10);
-    const net   = gain - this.bet;
+    // Guard: prevent double-call from tick + timer collision
+    if (this._wamEnding) return;
+    this._wamEnding = true;
+    this._wamStop();
+    SFX.wamEnd();
+    const score  = this._wamScore ?? 0;
+    const gain   = Math.round(this.bet * score / 10);
+    const net    = gain - this.bet;
     const result = net>0?'win':net<0?'lose':'push';
     if (gain>0) { this.credits+=gain; await this._saveCredits(); }
-    this._addHistory('WHACK',this.bet,result,net);
+    this._addHistory('WHACK', this.bet, result, net);
+
+    // Remove any stale result screen before appending new one
+    document.querySelector('.wam-result-screen')?.remove();
     const arena = document.getElementById('wam-arena');
     if (arena) {
       const res = document.createElement('div'); res.className='wam-result-screen';
@@ -481,16 +544,24 @@ export class CasinoCore {
       arena.appendChild(res);
     }
     this._wamMsg(net>0?`🔨 +${net} C — BIEN JOUÉ !`:net<0?`Score insuffisant — ${net} C`:'ÉGALITÉ — REMBOURSÉ', result);
-    const btn=document.getElementById('wam-start');
-    if(btn){ btn.disabled=false; btn.textContent='↺ REJOUER'; }
-    document.getElementById('wam-start')?.addEventListener('click',()=>{ document.querySelector('.wam-result-screen')?.remove(); },{once:true});
+
+    // Reset button for replay — reassign onclick cleanly
+    const btn = document.getElementById('wam-start');
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '↺ REJOUER';
+      this._wamBindStart();
+    }
   }
 
-  _wamMsg(txt,type='') {
+  _wamMsg(txt, type='') {
     const e=document.getElementById('wam-msg');
     if(!e)return; e.textContent=txt; e.className='game-msg'+(type?` ${type}`:'');
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  // CRASH GAME
+  // ═══════════════════════════════════════════════════════════════════
   _initCrash() {
     this._crashMult=1.00; this._crashRunning=false;
     this._crashCashedOut=false; this._crashBetActive=false;
@@ -559,7 +630,7 @@ export class CasinoCore {
     document.getElementById('cr-start')?.addEventListener('click', () => this._crashStart());
     document.getElementById('cr-eject')?.addEventListener('click', () => this._crashEject());
     this._bindBetPanel('cr');
-    this._crashDrawCanvas(1.00,false);
+    this._crashDrawCanvas(1.00, false);
   }
 
   _crashCrashPoint() {
@@ -677,6 +748,9 @@ export class CasinoCore {
     ctx.shadowColor=crashed?'#ff4757':'#ff6eb4'; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  // SLOT MACHINE
+  // ═══════════════════════════════════════════════════════════════════
   async _initSlots() {
     const g = document.getElementById('game-slots');
     g.innerHTML = `
@@ -690,6 +764,7 @@ export class CasinoCore {
     await sm.init(this.userId);
   }
 
+  // ── HISTORY ──────────────────────────────────────────────────────────
   _renderHistory() {
     const body=document.getElementById('history-body'); if(!body) return;
     if(!this.history.length){
