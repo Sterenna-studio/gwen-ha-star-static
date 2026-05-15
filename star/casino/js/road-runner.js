@@ -1,385 +1,349 @@
 /**
  * road-runner.js — STAR ARCADE  JEU 05
- * Vertical scrolling road game. Canvas 2D, no external deps.
- * Dispatches: roadrunner:back, roadrunner:result
+ * Vertical scroll shooter : évite les obstacles, collecte les boosts.
+ * Dispatche road-runner:back et road-runner:result sur document.
  */
+
+const RR_WIDTH   = 360;
+const RR_HEIGHT  = 560;
+const RR_LANES   = 3;          // 0=left, 1=center, 2=right
+const RR_SPEED0  = 4;          // px/frame initial
+const RR_ACCEL   = 0.0012;     // accélération par frame
+const RR_LIVES   = 3;
+
+const OBSTACLE_TYPES = [
+  { type:'rock',   emoji:'🪨', pts:0,   prob:.45, w:38, h:34 },
+  { type:'cactus', emoji:'🌵', pts:0,   prob:.30, w:28, h:42 },
+  { type:'bomb',   emoji:'💣', pts:0,   prob:.15, w:32, h:32 },
+  { type:'star',   emoji:'⭐', pts:5,   prob:.07, w:30, h:30 },
+  { type:'coin',   emoji:'🪙', pts:2,   prob:.03, w:26, h:26 },
+];
+
 export class RoadRunner {
-  constructor(mountId, userId, credits, onCreditsChange) {
-    this.mountId        = mountId;
-    this.userId         = userId;
-    this.credits        = credits;
-    this.onCreditsChange = onCreditsChange;
-    this.bet            = 10;
-    // canvas / loop
-    this._raf    = null;
-    this._running = false;
-    this._ended   = false;
+  /**
+   * @param {string} mountId  — id de la <section> cible (sans #)
+   * @param {string|null} userId
+   * @param {number} credits
+   * @param {number} bet
+   * @param {function} onCreditsChange  — appelé avec le nouveau solde
+   */
+  constructor(mountId, userId, credits, bet, onCreditsChange) {
+    this._mountId  = mountId;
+    this._userId   = userId;
+    this._credits  = credits;
+    this._bet      = bet;
+    this._onCr     = onCreditsChange;
+
+    this._running  = false;
+    this._raf      = null;
+    this._frame    = 0;
+    this._speed    = RR_SPEED0;
+    this._score    = 0;
+    this._lives    = RR_LIVES;
+    this._lane     = 1;          // lane courante du joueur
+    this._invincible = 0;        // frames d'invincibilité après un hit
+    this._obstacles  = [];       // { lane, y, type }
+    this._particles  = [];       // { x, y, vx, vy, life, emoji }
+    this._bgOffset   = 0;
+    this._canvas     = null;
+    this._ctx        = null;
+    this._keyBound   = null;
+    this._touchStartX = null;
   }
 
+  // ─── PUBLIC ───────────────────────────────────────────────────────
   mount() {
-    const el = document.getElementById(this.mountId);
-    if (!el) return;
-    el.innerHTML = `
-      <div class="game-header">
-        <button class="game-back-btn" id="rr-back">← LOBBY</button>
-        <span class="game-title">ROAD <span class="game-title-accent">RUNNER</span></span>
-      </div>
-      <div class="rr-wrap">
-        <canvas id="rr-canvas" class="rr-canvas" width="320" height="480"></canvas>
-        <div class="rr-side">
-          <div class="rr-hud">
-            <div class="rr-hud-block"><span class="rr-hud-label">DISTANCE</span><span class="rr-hud-val" id="rr-dist">0 m</span></div>
-            <div class="rr-hud-block"><span class="rr-hud-label">VITESSE</span><span class="rr-hud-val" id="rr-speed">0</span></div>
-            <div class="rr-hud-block"><span class="rr-hud-label">VIES</span><span class="rr-hud-val" id="rr-lives">❤️❤️❤️</span></div>
-          </div>
-          <div class="bet-panel rr-bet">
-            <span class="bet-label">MISE</span>
-            <button class="bet-btn" id="rr-bet-down">−</button>
-            <span class="bet-val" id="rr-bet-val">${this.bet}</span>
-            <button class="bet-btn" id="rr-bet-up">+</button>
-            <div class="bet-presets">
-              ${[1,5,10,25,50,100].map(p=>`<button class="bet-preset${this.bet===p?' active':''}" data-preset="${p}">${p}</button>`).join('')}
-            </div>
-          </div>
-          <div class="game-msg" id="rr-msg">MISE ET DÉMARRE</div>
-          <div class="action-row" style="flex-direction:column;gap:8px">
-            <button class="action-btn primary" id="rr-start">▶ DÉMARRER</button>
-            <div class="rr-controls-hint">← → ou A D pour diriger</div>
-          </div>
+    const section = document.getElementById(this._mountId);
+    if (!section) return;
+    section.innerHTML = `
+      <div class="rr-wrap" id="rr-wrap">
+        <canvas id="rr-canvas" width="${RR_WIDTH}" height="${RR_HEIGHT}"></canvas>
+        <div class="rr-overlay" id="rr-overlay">
+          <div class="rr-overlay-title" id="rr-ov-title">ROAD RUNNER</div>
+          <div class="rr-overlay-sub"   id="rr-ov-sub">Évite les obstacles, collecte les étoiles</div>
+          <button class="rr-btn-start" id="rr-btn-start">▶ DÉMARRER</button>
+        </div>
+        <div class="rr-hud" id="rr-hud">
+          <span id="rr-score-disp">0 PTS</span>
+          <span id="rr-lives-disp">❤️❤️❤️</span>
         </div>
       </div>`;
 
-    this._bindBet();
-    document.getElementById('rr-back')?.addEventListener('click', () => this._quit());
-    document.getElementById('rr-start')?.addEventListener('click', () => this._launch());
+    this._canvas = document.getElementById('rr-canvas');
+    this._ctx    = this._canvas.getContext('2d');
     this._drawIdle();
+
+    document.getElementById('rr-btn-start')?.addEventListener('click', () => this._startGame(), { once: true });
   }
 
-  // ── BET ───────────────────────────────────────────────────────────────
-  _bindBet() {
-    const upd = () => {
-      const v = document.getElementById('rr-bet-val');
-      if (v) v.textContent = this.bet;
-      document.querySelectorAll('.rr-bet .bet-preset').forEach(b =>
-        b.classList.toggle('active', Number(b.dataset.preset) === this.bet));
-    };
-    document.getElementById('rr-bet-down')?.addEventListener('click', () => {
-      this.bet = Math.max(1, this.bet - (this.bet > 10 ? 5 : 1)); upd();
-    });
-    document.getElementById('rr-bet-up')?.addEventListener('click', () => {
-      this.bet = Math.min(this.credits, this.bet + (this.bet >= 10 ? 5 : 1)); upd();
-    });
-    document.querySelectorAll('.rr-bet .bet-preset').forEach(b =>
-      b.addEventListener('click', () => {
-        this.bet = Math.min(this.credits, Number(b.dataset.preset)); upd();
-      })
-    );
+  destroy() {
+    this._stopLoop();
+    if (this._keyBound) {
+      document.removeEventListener('keydown', this._keyBound);
+      this._keyBound = null;
+    }
+    if (this._canvas) {
+      this._canvas.removeEventListener('touchstart', this._onTouchStart);
+      this._canvas.removeEventListener('touchend',   this._onTouchEnd);
+    }
   }
 
-  // ── IDLE SCREEN ───────────────────────────────────────────────────────
-  _drawIdle() {
-    const cv = document.getElementById('rr-canvas');
-    if (!cv) return;
-    const ctx = cv.getContext('2d');
-    this._drawRoadBg(ctx, 0);
-    // player car
-    this._drawCar(ctx, 160, 400, '#00e5ff', 0);
-  }
-
-  // ── LAUNCH ────────────────────────────────────────────────────────────
-  _launch() {
-    if (this._running) return;
-    if (this.credits < this.bet) { this._msg('CRÉDITS INSUFFISANTS', 'lose'); return; }
-    this.credits -= this.bet;
-    this.onCreditsChange(this.credits);
-    this._ended  = false;
-    this._running = true;
-
-    // Game state
-    this._dist     = 0;
-    this._speed    = 2.5;          // px/frame scroll speed
-    this._lives    = 3;
-    this._lane     = 1;            // 0=left 1=center 2=right
-    this._laneX    = [96, 160, 224];
-    this._playerX  = 160;
-    this._playerY  = 400;
-    this._obstacles = [];
-    this._roadOffset = 0;
-    this._spawnTimer = 0;
-    this._invincible = 0;          // frames of invincibility after hit
-    this._frameCount = 0;
-    this._keys     = {};
-    this._laneCooldown = 0;
-
-    this._keyDown = (e) => { this._keys[e.code] = true; };
-    this._keyUp   = (e) => { this._keys[e.code] = false; };
-    document.addEventListener('keydown', this._keyDown);
-    document.addEventListener('keyup',   this._keyUp);
-
-    // Touch / swipe
-    this._touchStartX = null;
-    this._touchHandler = (e) => {
-      const t = e.touches[0];
-      if (!this._touchStartX) { this._touchStartX = t.clientX; return; }
-      const dx = t.clientX - this._touchStartX;
-      if (Math.abs(dx) > 30) {
-        this._changeLane(dx > 0 ? 1 : -1);
-        this._touchStartX = t.clientX;
-      }
-    };
-    const cv = document.getElementById('rr-canvas');
-    cv?.addEventListener('touchstart', e => { this._touchStartX = e.touches[0].clientX; }, { passive:true });
-    cv?.addEventListener('touchmove',  this._touchHandler, { passive:true });
-
-    document.getElementById('rr-start').disabled = true;
-    this._msg('', '');
-    this._updateHUD();
+  // ─── GAME LIFECYCLE ───────────────────────────────────────────────
+  _startGame() {
+    document.getElementById('rr-overlay')?.style.setProperty('display','none');
+    this._running  = true;
+    this._frame    = 0;
+    this._speed    = RR_SPEED0;
+    this._score    = 0;
+    this._lives    = RR_LIVES;
+    this._lane     = 1;
+    this._invincible = 0;
+    this._obstacles  = [];
+    this._particles  = [];
+    this._bgOffset   = 0;
+    this._bindInput();
     this._raf = requestAnimationFrame(() => this._loop());
   }
 
-  // ── MAIN LOOP ─────────────────────────────────────────────────────────
+  _stopLoop() {
+    this._running = false;
+    if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
+  }
+
   _loop() {
     if (!this._running) return;
-    this._frameCount++;
-
-    // Input
-    if (this._laneCooldown > 0) this._laneCooldown--;
-    if (this._laneCooldown === 0) {
-      if (this._keys['ArrowLeft']  || this._keys['KeyA']) { this._changeLane(-1); this._laneCooldown = 12; }
-      if (this._keys['ArrowRight'] || this._keys['KeyD']) { this._changeLane(1);  this._laneCooldown = 12; }
-    }
-
-    // Smooth player X towards target lane
-    const targetX = this._laneX[this._lane];
-    this._playerX += (targetX - this._playerX) * 0.22;
-
-    // Speed ramp: every 300 frames +0.15 px/frame
-    if (this._frameCount % 300 === 0) this._speed = Math.min(12, this._speed + 0.15);
-
-    // Road scroll
-    this._roadOffset = (this._roadOffset + this._speed) % 60;
-    this._dist += this._speed * 0.05;
-
-    // Spawn obstacles
-    this._spawnTimer--;
-    if (this._spawnTimer <= 0) {
-      this._spawnObstacle();
-      this._spawnTimer = Math.max(35, 80 - Math.floor(this._speed * 3));
-    }
-
-    // Move obstacles
-    this._obstacles.forEach(o => o.y += this._speed * 1.1);
-    this._obstacles = this._obstacles.filter(o => o.y < 520);
-
-    // Collision
-    if (this._invincible > 0) this._invincible--;
-    else {
-      for (const o of this._obstacles) {
-        if (o.hit) continue;
-        const dx = Math.abs(this._playerX - o.x);
-        const dy = Math.abs(this._playerY - o.y);
-        if (dx < 22 && dy < 28) {
-          o.hit = true;
-          this._lives--;
-          this._invincible = 80;
-          this._updateHUD();
-          if (this._lives <= 0) { this._end(); return; }
-        }
-      }
-    }
-
-    // Draw
-    const cv = document.getElementById('rr-canvas');
-    if (!cv) { this._running = false; return; }
-    const ctx = cv.getContext('2d');
-    this._drawRoadBg(ctx, this._roadOffset);
-    this._obstacles.forEach(o => this._drawObstacle(ctx, o));
-    // Player blink when invincible
-    if (this._invincible === 0 || Math.floor(this._invincible / 6) % 2 === 0)
-      this._drawCar(ctx, this._playerX, this._playerY, '#00e5ff', 0);
-
-    this._updateHUD();
+    this._frame++;
+    this._speed += RR_ACCEL;
+    this._update();
+    this._draw();
     this._raf = requestAnimationFrame(() => this._loop());
   }
 
-  // ── LANE CHANGE ──────────────────────────────────────────────────────
-  _changeLane(dir) {
-    const next = this._lane + dir;
-    if (next < 0 || next > 2) return;
-    this._lane = next;
+  // ─── INPUT ────────────────────────────────────────────────────────
+  _bindInput() {
+    this._keyBound = (e) => {
+      if (e.key === 'ArrowLeft'  || e.key === 'a') this._moveLane(-1);
+      if (e.key === 'ArrowRight' || e.key === 'd') this._moveLane(+1);
+    };
+    document.addEventListener('keydown', this._keyBound);
+
+    // Touch swipe
+    this._onTouchStart = (e) => { this._touchStartX = e.touches[0].clientX; };
+    this._onTouchEnd   = (e) => {
+      if (this._touchStartX === null) return;
+      const dx = e.changedTouches[0].clientX - this._touchStartX;
+      if (Math.abs(dx) > 30) this._moveLane(dx > 0 ? 1 : -1);
+      this._touchStartX = null;
+    };
+    this._canvas.addEventListener('touchstart', this._onTouchStart, { passive: true });
+    this._canvas.addEventListener('touchend',   this._onTouchEnd);
   }
 
-  // ── SPAWN ────────────────────────────────────────────────────────────
+  _moveLane(dir) {
+    this._lane = Math.max(0, Math.min(RR_LANES - 1, this._lane + dir));
+  }
+
+  // ─── UPDATE ───────────────────────────────────────────────────────
+  _update() {
+    this._bgOffset = (this._bgOffset + this._speed) % RR_HEIGHT;
+
+    // Spawn obstacles every N frames (faster as speed increases)
+    const spawnRate = Math.max(28, Math.round(72 - this._speed * 5));
+    if (this._frame % spawnRate === 0) this._spawnObstacle();
+
+    // Move obstacles
+    this._obstacles.forEach(o => { o.y += this._speed; });
+
+    // Collision / collect
+    const playerY  = RR_HEIGHT - 90;
+    const laneX    = this._laneX(this._lane);
+    const HIT_R    = 26;
+    this._obstacles = this._obstacles.filter(o => {
+      if (o.y > RR_HEIGHT + 40) return false;
+      const ox  = this._laneX(o.lane);
+      const oy  = o.y;
+      const dx  = Math.abs(ox - laneX);
+      const dy  = Math.abs(oy - playerY);
+      if (dx < HIT_R && dy < HIT_R) {
+        this._onHit(o);
+        return false;
+      }
+      return true;
+    });
+
+    // Score: 1 pt per 6 frames survived
+    if (this._frame % 6 === 0) this._score++;
+
+    // Particles
+    this._particles = this._particles.filter(p => {
+      p.x += p.vx; p.y += p.vy; p.life--;
+      return p.life > 0;
+    });
+
+    // Invincibility countdown
+    if (this._invincible > 0) this._invincible--;
+
+    // HUD
+    this._updateHUD();
+  }
+
   _spawnObstacle() {
-    const types = [
-      { type:'car',    color:'#ff4757', w:28, h:44 },
-      { type:'car',    color:'#ffa502', w:28, h:44 },
-      { type:'barrel', color:'#2ed573', w:20, h:20 },
-      { type:'oil',    color:'#747d8c', w:30, h:16 },
-    ];
-    const t = types[Math.floor(Math.random()*types.length)];
-    const lane = Math.floor(Math.random()*3);
-    this._obstacles.push({ ...t, x: this._laneX[lane], y: -60, hit: false, lane });
+    const r = Math.random(); let cum = 0;
+    let picked = OBSTACLE_TYPES[0];
+    for (const t of OBSTACLE_TYPES) { cum += t.prob; if (r < cum) { picked = t; break; } }
+    this._obstacles.push({ lane: Math.floor(Math.random() * RR_LANES), y: -40, ...picked });
   }
 
-  // ── DRAW HELPERS ─────────────────────────────────────────────────────
-  _drawRoadBg(ctx, offset) {
-    const W = 320, H = 480;
-    // Sky
-    const sky = ctx.createLinearGradient(0,0,0,H*0.35);
-    sky.addColorStop(0,'#0a0015'); sky.addColorStop(1,'#1a0030');
-    ctx.fillStyle = sky; ctx.fillRect(0,0,W,H*0.35);
-    // Neon horizon glow
-    ctx.save();
-    ctx.shadowColor='#ff00ff'; ctx.shadowBlur=30;
-    ctx.strokeStyle='#ff00ff'; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.moveTo(0,H*0.35); ctx.lineTo(W,H*0.35); ctx.stroke();
-    ctx.restore();
-    // Road
-    ctx.fillStyle='#1a1a2e'; ctx.fillRect(0,H*0.35,W,H*0.65);
-    // Kerb stripes left/right
-    ctx.fillStyle='#e84393';
-    for (let y=H*0.35-offset; y<H; y+=30) {
-      ctx.fillRect(40,y,8,14);
-      ctx.fillRect(272,y,8,14);
+  _onHit(o) {
+    if (o.pts > 0) {
+      // Collect bonus
+      this._score += o.pts * 10;
+      this._spawnParticles(this._laneX(o.lane), o.y, o.emoji, 6);
+      return;
     }
-    // Center dashes
-    ctx.strokeStyle='rgba(255,255,255,.18)'; ctx.lineWidth=2; ctx.setLineDash([20,20]);
-    ctx.lineDashOffset = -offset;
-    ctx.beginPath(); ctx.moveTo(160,H*0.35); ctx.lineTo(160,H); ctx.stroke();
-    ctx.setLineDash([]);
-    // Lane lines
-    ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=1; ctx.setLineDash([14,18]);
-    ctx.lineDashOffset = -offset;
-    [112,208].forEach(lx => {
-      ctx.beginPath(); ctx.moveTo(lx,H*0.35); ctx.lineTo(lx,H); ctx.stroke();
-    });
-    ctx.setLineDash([]);
-    // Neon road edge glow
-    ctx.save();
-    ctx.shadowColor='#00e5ff'; ctx.shadowBlur=12;
-    ctx.strokeStyle='#00e5ff'; ctx.lineWidth=2;
-    ctx.beginPath(); ctx.moveTo(48,H*0.35); ctx.lineTo(48,H); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(272,H*0.35); ctx.lineTo(272,H); ctx.stroke();
-    ctx.restore();
+    if (this._invincible > 0) return;
+    this._lives = Math.max(0, this._lives - 1);
+    this._invincible = 80;
+    this._spawnParticles(this._laneX(this._lane), RR_HEIGHT - 90, '💥', 8);
+    if (this._lives <= 0) this._gameOver();
   }
 
-  _drawCar(ctx, x, y, color, rotation) {
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(rotation);
-    // Body
-    ctx.shadowColor = color; ctx.shadowBlur = 14;
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.roundRect(-12, -22, 24, 44, 4);
-    ctx.fill();
-    // Windshield
-    ctx.fillStyle = 'rgba(0,0,0,.5)';
-    ctx.fillRect(-8, -16, 16, 10);
-    // Wheels
-    ctx.fillStyle = '#222';
-    [[-14,-14],[14,-14],[-14,10],[14,10]].forEach(([wx,wy]) => {
-      ctx.fillRect(wx-3, wy-4, 6, 8);
-    });
-    ctx.restore();
-  }
-
-  _drawObstacle(ctx, o) {
-    ctx.save();
-    ctx.globalAlpha = o.hit ? 0.3 : 1;
-    ctx.shadowColor = o.color; ctx.shadowBlur = 10;
-    ctx.fillStyle = o.color;
-    if (o.type === 'car') {
-      ctx.beginPath(); ctx.roundRect(o.x - o.w/2, o.y - o.h/2, o.w, o.h, 4); ctx.fill();
-      ctx.fillStyle = 'rgba(0,0,0,.5)';
-      ctx.fillRect(o.x - o.w/2 + 3, o.y - o.h/2 + 6, o.w - 6, 10);
-    } else if (o.type === 'barrel') {
-      ctx.beginPath(); ctx.arc(o.x, o.y, 10, 0, Math.PI*2); ctx.fill();
-    } else {
-      ctx.beginPath(); ctx.ellipse(o.x, o.y, 15, 8, 0, 0, Math.PI*2); ctx.fill();
+  _spawnParticles(x, y, emoji, n) {
+    for (let i = 0; i < n; i++) {
+      const angle = (Math.PI * 2 / n) * i;
+      this._particles.push({
+        x, y, emoji,
+        vx: Math.cos(angle) * (1.5 + Math.random()),
+        vy: Math.sin(angle) * (1.5 + Math.random()) - 1,
+        life: 28 + Math.floor(Math.random() * 14),
+      });
     }
-    ctx.restore();
   }
 
-  // ── HUD ──────────────────────────────────────────────────────────────
   _updateHUD() {
-    const d = document.getElementById('rr-dist');
-    const s = document.getElementById('rr-speed');
-    const l = document.getElementById('rr-lives');
-    if (d) d.textContent = `${Math.floor(this._dist)} m`;
-    if (s) s.textContent = `${Math.floor(this._speed * 20)} km/h`;
-    if (l) l.textContent = '❤️'.repeat(Math.max(0,this._lives)) + '🖤'.repeat(Math.max(0,3-this._lives));
+    const s = document.getElementById('rr-score-disp');
+    const l = document.getElementById('rr-lives-disp');
+    if (s) s.textContent = `${this._score} PTS`;
+    if (l) l.textContent = '❤️'.repeat(this._lives) || '💀';
   }
 
-  // ── END ──────────────────────────────────────────────────────────────
-  _end() {
-    if (this._ended) return;
-    this._ended   = true;
-    this._running = false;
-    cancelAnimationFrame(this._raf);
-    this._removeListeners();
+  async _gameOver() {
+    this._stopLoop();
+    if (this._keyBound) { document.removeEventListener('keydown', this._keyBound); this._keyBound = null; }
 
-    const dist = Math.floor(this._dist);
-    // Gain formula: 0 m = 0×, 200 m = 1×, 500 m = 2×, 1000 m = 4×
-    const mult = dist < 100  ? 0
-               : dist < 300  ? 1
-               : dist < 600  ? 1.5
-               : dist < 1000 ? 2.5
-               : 4;
-    const gain = Math.round(this.bet * mult);
-    const net  = gain - this.bet;
-    const result = net > 0 ? 'win' : net < 0 ? 'lose' : 'push';
+    // Calcul gain : 1 C par 20 pts de score, plafonné à 10× la mise
+    const rawGain  = Math.floor(this._score / 20);
+    const gain     = Math.min(rawGain, this._bet * 10);
+    const net      = gain - this._bet;
+    const result   = net > 0 ? 'win' : net < 0 ? 'lose' : 'push';
 
     if (gain > 0) {
-      this.credits += gain;
-      this.onCreditsChange(this.credits);
+      this._credits += gain;
+      this._onCr(this._credits);
     }
 
-    document.dispatchEvent(new CustomEvent('roadrunner:result', {
-      detail: { bet: this.bet, result, net, dist }
+    document.dispatchEvent(new CustomEvent('road-runner:result', {
+      detail: { bet: this._bet, result, net, score: this._score }
     }));
 
-    this._msg(`${dist} m — ${net >= 0 ? '+' : ''}${net} C`, result);
-
-    // Draw game over overlay on canvas
-    const cv = document.getElementById('rr-canvas');
-    if (cv) {
-      const ctx = cv.getContext('2d');
-      ctx.fillStyle = 'rgba(0,0,0,.65)';
-      ctx.fillRect(0, 0, 320, 480);
-      ctx.fillStyle = '#ff4757';
-      ctx.font = 'bold 28px "Share Tech Mono", monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('GAME OVER', 160, 200);
-      ctx.fillStyle = '#fff';
-      ctx.font = '16px "Share Tech Mono", monospace';
-      ctx.fillText(`${dist} m parcourus`, 160, 240);
-      ctx.fillStyle = net >= 0 ? '#2ed573' : '#ff4757';
-      ctx.fillText(`${net >= 0 ? '+' : ''}${net} Chronicles`, 160, 270);
+    // Show result overlay
+    const ov  = document.getElementById('rr-overlay');
+    const ovT = document.getElementById('rr-ov-title');
+    const ovS = document.getElementById('rr-ov-sub');
+    const btn = document.getElementById('rr-btn-start');
+    if (ov && ovT && ovS) {
+      ovT.textContent = `GAME OVER — ${this._score} PTS`;
+      const gainTxt = net >= 0 ? `+${net} C` : `${net} C`;
+      ovS.textContent = `MISE ${this._bet} C → GAIN ${gain} C (${gainTxt})`;
+      ovS.style.color = net > 0 ? 'var(--c-green,#2ed573)' : net < 0 ? 'var(--c-red,#ff4757)' : '';
+      if (btn) {
+        btn.textContent = '↺ REJOUER';
+        btn.style.display = '';
+        btn.addEventListener('click', () => {
+          this._startGame();
+        }, { once: true });
+      }
+      ov.style.removeProperty('display');
     }
-
-    const btn = document.getElementById('rr-start');
-    if (btn) { btn.disabled = false; btn.textContent = '↺ REJOUER'; }
   }
 
-  _quit() {
-    this._running = false;
-    this._ended   = true;
-    cancelAnimationFrame(this._raf);
-    this._removeListeners();
-    document.dispatchEvent(new CustomEvent('roadrunner:back'));
+  // ─── DRAW ─────────────────────────────────────────────────────────
+  _laneX(lane) {
+    const margin = 54;
+    const step   = (RR_WIDTH - margin * 2) / (RR_LANES - 1);
+    return margin + lane * step;
   }
 
-  _removeListeners() {
-    if (this._keyDown) document.removeEventListener('keydown', this._keyDown);
-    if (this._keyUp)   document.removeEventListener('keyup',   this._keyUp);
+  _drawIdle() {
+    const ctx = this._ctx;
+    ctx.fillStyle = '#0a0a14';
+    ctx.fillRect(0, 0, RR_WIDTH, RR_HEIGHT);
+    this._drawRoad(ctx, 0);
   }
 
-  _msg(txt, type='') {
-    const e = document.getElementById('rr-msg');
-    if (!e) return;
-    e.textContent = txt;
-    e.className   = 'game-msg' + (type ? ` ${type}` : '');
+  _draw() {
+    const ctx = this._ctx;
+    // Background
+    ctx.fillStyle = '#0a0a14';
+    ctx.fillRect(0, 0, RR_WIDTH, RR_HEIGHT);
+    this._drawRoad(ctx, this._bgOffset);
+
+    // Obstacles
+    this._obstacles.forEach(o => {
+      ctx.font = `${o.h}px serif`;
+      ctx.textAlign = 'center';
+      ctx.globalAlpha = 1;
+      ctx.fillText(o.emoji, this._laneX(o.lane), o.y);
+    });
+
+    // Player
+    const px = this._laneX(this._lane);
+    const py = RR_HEIGHT - 90;
+    if (this._invincible > 0) {
+      ctx.globalAlpha = Math.sin(this._frame * 0.35) > 0 ? 0.35 : 1;
+    }
+    ctx.font = '48px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🏎️', px, py);
+    ctx.globalAlpha = 1;
+
+    // Particles
+    this._particles.forEach(p => {
+      ctx.globalAlpha = p.life / 42;
+      ctx.font = '18px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.emoji, p.x, p.y);
+    });
+    ctx.globalAlpha = 1;
+
+    // Lane guides (subtle)
+    ctx.strokeStyle = 'rgba(255,255,255,.04)';
+    ctx.lineWidth   = 1;
+    for (let l = 0; l < RR_LANES; l++) {
+      const x = this._laneX(l);
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, RR_HEIGHT); ctx.stroke();
+    }
+  }
+
+  _drawRoad(ctx, offset) {
+    // Road surface
+    ctx.fillStyle = '#111120';
+    ctx.fillRect(24, 0, RR_WIDTH - 48, RR_HEIGHT);
+    // Dashed center lines
+    ctx.strokeStyle = 'rgba(255,220,50,.18)';
+    ctx.lineWidth   = 2;
+    ctx.setLineDash([28, 20]);
+    const dashStep = (RR_WIDTH - 96) / (RR_LANES - 1);
+    for (let l = 0; l < RR_LANES - 1; l++) {
+      const x = 54 + (l + 0.5) * dashStep;
+      ctx.lineDashOffset = -offset;
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, RR_HEIGHT); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    // Road edges
+    ctx.strokeStyle = 'rgba(255,110,180,.25)';
+    ctx.lineWidth   = 3;
+    ctx.beginPath(); ctx.moveTo(24, 0); ctx.lineTo(24, RR_HEIGHT); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(RR_WIDTH - 24, 0); ctx.lineTo(RR_WIDTH - 24, RR_HEIGHT); ctx.stroke();
   }
 }

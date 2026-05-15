@@ -1,11 +1,12 @@
 /**
- * casino-core.js  —  STAR ARCADE  v1.4
- * Whack-A-Mole · Crash · Slot Machine · Midnight Chase
+ * casino-core.js  —  STAR ARCADE  v1.5
+ * Whack-A-Mole · Crash · Slot Machine · Midnight Chase · Road Runner
  * Monnaie : Chronicles (Supabase profiles.chronicles)
  */
 import { supabase } from '../../../js/supabase.js';
 import { SlotMachine } from '../../../js/star/widgets.js';
 import { MidnightChase } from './midnight-chase.js';
+import { RoadRunner }    from './road-runner.js';
 
 const el = (tag, cls, txt) => {
   const e = document.createElement(tag);
@@ -15,32 +16,22 @@ const el = (tag, cls, txt) => {
 };
 
 // ── SOUND ENGINE ──────────────────────────────────────────────────────
-// AudioContext is created lazily on first actual sound call (after user gesture).
-// SFX.unlock() is called once on the first click/touchstart in showLobby()
-// so the context is resumed and ready for subsequent calls.
 const SFX = {
   _ctx: null,
   _unlocked: false,
-
-  // Get or create the AudioContext. Never called on hover/page load —
-  // only called from within sound methods triggered by user gestures.
   _g() {
     if (!this._ctx) {
-      try { this._ctx = new (window.AudioContext || window.webkitAudioContext)(); }
-      catch { return null; }
+      try { this._ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return null; }
     }
     if (this._ctx.state === 'suspended') this._ctx.resume();
     return this._ctx;
   },
-
-  // Call once on first user gesture to pre-warm the context.
   unlock() {
     if (this._unlocked) return;
     this._unlocked = true;
     const ctx = this._g();
     if (ctx && ctx.state === 'suspended') ctx.resume();
   },
-
   _t(f, type, vol, atk, dec, t0) {
     const ctx = this._g(); if (!ctx) return;
     const osc = ctx.createOscillator(), g = ctx.createGain();
@@ -55,26 +46,26 @@ const SFX = {
   _n(vol, dur, t0) {
     const ctx = this._g(); if (!ctx) return;
     const buf = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * dur), ctx.sampleRate);
-    const d = buf.getChannelData(0); for (let i=0;i<d.length;i++) d[i]=(Math.random()*2-1);
+    const d = buf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1);
     const s = ctx.createBufferSource(), g = ctx.createGain();
     s.buffer = buf; s.connect(g); g.connect(ctx.destination);
-    g.gain.setValueAtTime(vol, t0??ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0, (t0??ctx.currentTime)+dur);
-    s.start(t0??ctx.currentTime);
+    g.gain.setValueAtTime(vol, t0 ?? ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0, (t0 ?? ctx.currentTime) + dur);
+    s.start(t0 ?? ctx.currentTime);
   },
-  click()  { this._t(800,'sine',.06,.004,.05); },
-  win()    { const ctx=this._g();if(!ctx)return;[523,659,784,1047].forEach((f,i)=>this._t(f,'triangle',.09,.01,.14,ctx.currentTime+i*.09)); },
-  lose()   { const ctx=this._g();if(!ctx)return;[330,280,220].forEach((f,i)=>this._t(f,'sawtooth',.07,.01,.18,ctx.currentTime+i*.12)); },
-  // hover does NOT create AudioContext — silent no-op if not yet unlocked
-  hover()  { if (!this._unlocked) return; this._t(1100,'sine',.03,.002,.03); },
-  crash()  { const ctx=this._g();if(!ctx)return;[200,160,120].forEach((f,i)=>this._t(f,'sawtooth',.1,.005,.3,ctx.currentTime+i*.08));this._n(.1,.5); },
-  eject()  { const ctx=this._g();if(!ctx)return;[660,880,1100].forEach((f,i)=>this._t(f,'triangle',.08,.005,.1,ctx.currentTime+i*.05)); },
-  tick()   { this._t(1400,'square',.04,.002,.015); },
-  whack()  { this._n(.12,.04);this._t(300,'square',.08,.003,.06); },
-  bomb()   { const ctx=this._g();if(!ctx)return;[150,100,80].forEach((f,i)=>this._t(f,'sawtooth',.12,.005,.25,ctx.currentTime+i*.04));this._n(.1,.3); },
-  golden() { const ctx=this._g();if(!ctx)return;[880,1100,1320,1760].forEach((f,i)=>this._t(f,'sine',.08,.005,.15,ctx.currentTime+i*.05)); },
+  click()     { this._t(800,'sine',.06,.004,.05); },
+  win()       { const ctx=this._g();if(!ctx)return;[523,659,784,1047].forEach((f,i)=>this._t(f,'triangle',.09,.01,.14,ctx.currentTime+i*.09)); },
+  lose()      { const ctx=this._g();if(!ctx)return;[330,280,220].forEach((f,i)=>this._t(f,'sawtooth',.07,.01,.18,ctx.currentTime+i*.12)); },
+  hover()     { if (!this._unlocked) return; this._t(1100,'sine',.03,.002,.03); },
+  crash()     { const ctx=this._g();if(!ctx)return;[200,160,120].forEach((f,i)=>this._t(f,'sawtooth',.1,.005,.3,ctx.currentTime+i*.08));this._n(.1,.5); },
+  eject()     { const ctx=this._g();if(!ctx)return;[660,880,1100].forEach((f,i)=>this._t(f,'triangle',.08,.005,.1,ctx.currentTime+i*.05)); },
+  tick()      { this._t(1400,'square',.04,.002,.015); },
+  whack()     { this._n(.12,.04);this._t(300,'square',.08,.003,.06); },
+  bomb()      { const ctx=this._g();if(!ctx)return;[150,100,80].forEach((f,i)=>this._t(f,'sawtooth',.12,.005,.25,ctx.currentTime+i*.04));this._n(.1,.3); },
+  golden()    { const ctx=this._g();if(!ctx)return;[880,1100,1320,1760].forEach((f,i)=>this._t(f,'sine',.08,.005,.15,ctx.currentTime+i*.05)); },
   countdown(n){ this._t(n===0?880:440,'square',.07,.005,.1); },
-  wamEnd() { const ctx=this._g();if(!ctx)return;[440,554,659,880].forEach((f,i)=>this._t(f,'triangle',.1,.01,.18,ctx.currentTime+i*.1)); },
+  wamEnd()    { const ctx=this._g();if(!ctx)return;[440,554,659,880].forEach((f,i)=>this._t(f,'triangle',.1,.01,.18,ctx.currentTime+i*.1)); },
+  rrEngine()  { this._t(180,'sawtooth',.04,.01,.08); },
 };
 
 // ── WAM CONFIG ────────────────────────────────────────────────────────
@@ -102,16 +93,21 @@ export class CasinoCore {
     this.history   = [];
     this._jackpot  = 500;
     this._currentGame = null;
+    // Chase
     this._boundChaseBack   = null;
     this._boundChaseResult = null;
+    // Road Runner
+    this._rrInstance       = null;
+    this._boundRRResult    = null;
+    // SFX
     this._sfxUnlockBound   = null;
-    // Crash state
+    // Crash
     this._crashMult      = 1.00;
     this._crashRunning   = false;
     this._crashCashedOut = false;
     this._crashAnimId    = null;
     this._crashBetActive = false;
-    // WAM state
+    // WAM
     this._wamTimers  = [];
     this._wamRunning = false;
     this._wamRafId   = null;
@@ -138,7 +134,7 @@ export class CasinoCore {
     this._renderHistory();
   }
 
-  // ── LOBBY ────────────────────────────────────────────────────────────
+  // ── LOBBY ─────────────────────────────────────────────────────────
   showLobby() {
     const root = document.querySelector(this.mountSel);
     if (!root) return;
@@ -223,6 +219,19 @@ export class CasinoCore {
             </div>
             <div class="gc-play-btn">▶ JOUER</div>
           </div>
+
+          <div class="game-card" style="--card-color:var(--c-green)" id="card-rr">
+            <div class="gc-icon">🛣️</div>
+            <div class="gc-tag">// JEU 05</div>
+            <div class="gc-title">ROAD RUNNER</div>
+            <div class="gc-desc">Scroll vertical infini. Évite les rochers, cactus et bombes. Collecte les étoiles pour booster ton score.</div>
+            <div class="gc-meta">
+              <span class="gc-badge">RÉFLEXES</span>
+              <span class="gc-badge">3 VIES</span>
+              <span class="gc-badge">ENDLESS</span>
+            </div>
+            <div class="gc-play-btn">▶ JOUER</div>
+          </div>
         </div>
 
         <div class="history-section" style="margin-top:48px;width:100%" id="history-section">
@@ -237,9 +246,10 @@ export class CasinoCore {
       <section class="casino-game" id="game-crash"></section>
       <section class="casino-game" id="game-slots"></section>
       <section class="casino-game" id="game-chase"></section>
+      <section class="casino-game" id="game-rr"></section>
     </div>`;
 
-    // One-time unlock of AudioContext on first user gesture anywhere on the page
+    // One-time AudioContext unlock on first user gesture
     if (!this._sfxUnlockBound) {
       this._sfxUnlockBound = () => {
         SFX.unlock();
@@ -255,13 +265,14 @@ export class CasinoCore {
     document.getElementById('card-crash')?.addEventListener('click', () => { SFX.click(); this._showGame('crash'); });
     document.getElementById('card-slots')?.addEventListener('click', () => { SFX.click(); this._showGame('slots'); });
     document.getElementById('card-chase')?.addEventListener('click', () => { SFX.click(); this._showGame('chase'); });
-    ['card-wam','card-crash','card-slots','card-chase'].forEach(id =>
+    document.getElementById('card-rr')?.addEventListener('click',    () => { SFX.click(); this._showGame('rr'); });
+    ['card-wam','card-crash','card-slots','card-chase','card-rr'].forEach(id =>
       document.getElementById(id)?.addEventListener('mouseenter', () => SFX.hover())
     );
     this._renderHistory();
   }
 
-  // ── NAV ───────────────────────────────────────────────────────────────
+  // ── NAV ───────────────────────────────────────────────────────────
   _showGame(name) {
     document.getElementById('view-lobby')?.style.setProperty('display','none');
     document.querySelectorAll('.casino-game').forEach(g => g.classList.remove('active'));
@@ -273,12 +284,14 @@ export class CasinoCore {
     else if (name === 'crash') this._initCrash();
     else if (name === 'slots') this._initSlots();
     else if (name === 'chase') this._initChase();
+    else if (name === 'rr')    this._initRR();
   }
 
   _backToLobby() {
     this._wamStop();
     if (this._crashAnimId) { cancelAnimationFrame(this._crashAnimId); this._crashAnimId = null; }
     this._cleanupChaseEvents();
+    this._cleanupRR();
     document.querySelectorAll('.casino-game').forEach(g => g.classList.remove('active'));
     document.getElementById('view-lobby').style.removeProperty('display');
     this._updateCreditsDisplay();
@@ -291,12 +304,17 @@ export class CasinoCore {
     if (this._boundChaseResult) { document.removeEventListener('chase:result', this._boundChaseResult); this._boundChaseResult = null; }
   }
 
+  _cleanupRR() {
+    if (this._rrInstance)   { this._rrInstance.destroy(); this._rrInstance = null; }
+    if (this._boundRRResult) { document.removeEventListener('road-runner:result', this._boundRRResult); this._boundRRResult = null; }
+  }
+
   _updateCreditsDisplay() {
     const e = document.getElementById('sb-credits');
     if (e) e.textContent = this.credits.toLocaleString('fr-FR');
   }
 
-  // ── BET PANEL ─────────────────────────────────────────────────────────
+  // ── BET PANEL ─────────────────────────────────────────────────────
   _betPanelHTML(id) {
     const presets = [1,5,10,25,50,100];
     return `<div class="bet-panel">
@@ -319,6 +337,59 @@ export class CasinoCore {
     document.querySelectorAll('.bet-preset').forEach(b =>
       b.addEventListener('click', () => { SFX.click(); this.bet = Math.min(this.credits, Number(b.dataset.preset)); upd(); })
     );
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // ROAD RUNNER — JEU 05
+  // ═══════════════════════════════════════════════════════════════════
+  _initRR() {
+    this._cleanupRR();
+    if (this.credits < this.bet) {
+      const g = document.getElementById('game-rr');
+      if (g) g.innerHTML = `
+        <div class="game-header">
+          <button class="game-back-btn" id="rr-back">← LOBBY</button>
+          <span class="game-title">ROAD <span class="game-title-accent">RUNNER</span></span>
+        </div>
+        <div class="game-msg lose">CRÉDITS INSUFFISANTS</div>`;
+      document.getElementById('rr-back')?.addEventListener('click', () => this._backToLobby());
+      return;
+    }
+
+    // Déduire la mise avant de lancer
+    this.credits -= this.bet;
+    this._saveCredits();
+
+    const g = document.getElementById('game-rr');
+    g.innerHTML = `
+      <div class="game-header">
+        <button class="game-back-btn" id="rr-back">← LOBBY</button>
+        <span class="game-title">ROAD <span class="game-title-accent">RUNNER</span></span>
+      </div>
+      ${this._betPanelHTML('rr')}
+      <div id="rr-mount"></div>`;
+
+    document.getElementById('rr-back')?.addEventListener('click', () => {
+      this._cleanupRR();
+      this._backToLobby();
+    });
+    this._bindBetPanel('rr');
+
+    this._boundRRResult = (e) => {
+      const { bet, result, net, score } = e.detail || {};
+      this._addHistory('ROAD RUN', bet ?? this.bet, result ?? 'push', net ?? 0);
+      this._updateCreditsDisplay();
+    };
+    document.addEventListener('road-runner:result', this._boundRRResult);
+
+    this._rrInstance = new RoadRunner(
+      'rr-mount',
+      this.userId,
+      this.credits,
+      this.bet,
+      (newCredits) => { this.credits = newCredits; this._updateCreditsDisplay(); }
+    );
+    this._rrInstance.mount();
   }
 
   // ═══════════════════════════════════════════════════════════════════
@@ -372,17 +443,11 @@ export class CasinoCore {
       <div class="action-row">
         <button class="action-btn primary" id="wam-start">▶ DÉMARRER</button>
       </div>`;
-
-    document.getElementById('wam-back')?.addEventListener('click', () => {
-      this._wamStop();
-      this._wamEnding = false;
-      this._backToLobby();
-    });
+    document.getElementById('wam-back')?.addEventListener('click', () => { this._wamStop(); this._wamEnding = false; this._backToLobby(); });
     this._wamBindStart();
     this._bindBetPanel('wam');
   }
 
-  // Bind the start button — called on init and after each game ends
   _wamBindStart() {
     const btn = document.getElementById('wam-start');
     if (!btn) return;
@@ -391,7 +456,6 @@ export class CasinoCore {
 
   async _wamLaunch() {
     if (this._wamRunning || this._wamEnding) return;
-    // Remove any leftover result screen from previous round
     document.querySelector('.wam-result-screen')?.remove();
     if (this.credits < this.bet) { this._wamMsg('CRÉDITS INSUFFISANTS','lose'); return; }
     this.credits -= this.bet;
@@ -401,14 +465,12 @@ export class CasinoCore {
     if (btn) btn.disabled = true;
     this._wamMsg('','');
     await this._wamCountdown();
-    // Guard: user may have navigated away during countdown
     if (!document.getElementById('wam-start')) return;
     this._wamStart();
   }
 
   async _wamCountdown() {
-    const arena = document.getElementById('wam-arena');
-    if (!arena) return;
+    const arena = document.getElementById('wam-arena'); if (!arena) return;
     for (const txt of ['3','2','1','GO!']) {
       SFX.countdown(txt==='GO!'?0:1);
       const d = document.createElement('div'); d.className='wam-countdown'; d.textContent=txt;
@@ -417,8 +479,7 @@ export class CasinoCore {
   }
 
   _wamStart() {
-    this._wamRunning = true;
-    this._wamEnding  = false;
+    this._wamRunning = true; this._wamEnding = false;
     this._wamT0 = performance.now();
     this._wamActiveHoles = new Array(WAM_HOLES).fill(null);
     this._wamScheduleAll();
@@ -427,10 +488,10 @@ export class CasinoCore {
 
   _wamTick() {
     if (!this._wamRunning) return;
-    const elapsed  = (performance.now() - this._wamT0) / 1000;
+    const elapsed = (performance.now() - this._wamT0) / 1000;
     const timeLeft = Math.max(0, WAM_DURATION - elapsed);
-    const timerEl  = document.getElementById('wam-timer');
-    const barEl    = document.getElementById('wam-timebar');
+    const timerEl = document.getElementById('wam-timer');
+    const barEl   = document.getElementById('wam-timebar');
     if (timerEl) { timerEl.textContent = Math.ceil(timeLeft); timerEl.classList.toggle('urgent', timeLeft <= 8); }
     if (barEl)   { barEl.style.transform=`scaleX(${timeLeft/WAM_DURATION})`; barEl.classList.toggle('urgent', timeLeft<=8); }
     if (timeLeft <= 0) { this._wamEnd(); return; }
@@ -443,7 +504,7 @@ export class CasinoCore {
       const free = Array.from({length:WAM_HOLES},(_,i)=>i).filter(i=>!this._wamActiveHoles[i]);
       if (free.length === 0) { this._wamTimers.push(setTimeout(schedule,300)); return; }
       const elapsed = (performance.now()-this._wamT0)/1000;
-      const maxSim  = elapsed<8?2:elapsed<18?3:4;
+      const maxSim = elapsed<8?2:elapsed<18?3:4;
       if (this._wamActiveHoles.filter(Boolean).length < maxSim)
         this._wamPopMole(free[Math.floor(Math.random()*free.length)]);
       this._wamTimers.push(setTimeout(schedule, 400+Math.random()*600));
@@ -471,7 +532,6 @@ export class CasinoCore {
       hole.classList.remove('active'); this._wamActiveHoles[idx]=null;
     }, type.spd*1000+400);
     this._wamTimers.push(timer);
-    // {once:true} handles both the click de-registration and prevents duplicates
     hole.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!this._wamRunning || !hole.classList.contains('active')) return;
@@ -518,7 +578,6 @@ export class CasinoCore {
   }
 
   async _wamEnd() {
-    // Guard: prevent double-call from tick + timer collision
     if (this._wamEnding) return;
     this._wamEnding = true;
     this._wamStop();
@@ -529,8 +588,6 @@ export class CasinoCore {
     const result = net>0?'win':net<0?'lose':'push';
     if (gain>0) { this.credits+=gain; await this._saveCredits(); }
     this._addHistory('WHACK', this.bet, result, net);
-
-    // Remove any stale result screen before appending new one
     document.querySelector('.wam-result-screen')?.remove();
     const arena = document.getElementById('wam-arena');
     if (arena) {
@@ -544,14 +601,8 @@ export class CasinoCore {
       arena.appendChild(res);
     }
     this._wamMsg(net>0?`🔨 +${net} C — BIEN JOUÉ !`:net<0?`Score insuffisant — ${net} C`:'ÉGALITÉ — REMBOURSÉ', result);
-
-    // Reset button for replay — reassign onclick cleanly
     const btn = document.getElementById('wam-start');
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = '↺ REJOUER';
-      this._wamBindStart();
-    }
+    if (btn) { btn.disabled=false; btn.textContent='↺ REJOUER'; this._wamBindStart(); }
   }
 
   _wamMsg(txt, type='') {
@@ -576,26 +627,10 @@ export class CasinoCore {
       <div class="crash-rules">
         <div class="crash-rules-title">⚡ COMMENT JOUER</div>
         <div class="crash-rules-grid">
-          <div class="crash-rule-block">
-            <span class="crb-icon">🚀</span>
-            <span class="crb-label">DÉCOLLAGE</span>
-            <span class="crb-desc">Mise ta mise puis lance. Le multiplicateur part de ×1.00 et monte à l'infini.</span>
-          </div>
-          <div class="crash-rule-block">
-            <span class="crb-icon">💥</span>
-            <span class="crb-label">LE CRASH</span>
-            <span class="crb-desc">À tout moment le serveur peut crasher. Si tu n'as pas éjecté, tu perds tout.</span>
-          </div>
-          <div class="crash-rule-block">
-            <span class="crb-icon">🛸</span>
-            <span class="crb-label">ÉJECTER</span>
-            <span class="crb-desc">Clique ÉJECTER avant le crash pour encaisser : mise × multiplicateur actuel.</span>
-          </div>
-          <div class="crash-rule-block">
-            <span class="crb-icon">🤖</span>
-            <span class="crb-label">AUTO-EJECT</span>
-            <span class="crb-desc">Configure un seuil auto. Ex : ×2 = éjection automatique dès que le mult atteint 2.</span>
-          </div>
+          <div class="crash-rule-block"><span class="crb-icon">🚀</span><span class="crb-label">DÉCOLLAGE</span><span class="crb-desc">Mise ta mise puis lance. Le multiplicateur part de ×1.00 et monte à l'infini.</span></div>
+          <div class="crash-rule-block"><span class="crb-icon">💥</span><span class="crb-label">LE CRASH</span><span class="crb-desc">À tout moment le serveur peut crasher. Si tu n'as pas éjecté, tu perds tout.</span></div>
+          <div class="crash-rule-block"><span class="crb-icon">🛸</span><span class="crb-label">ÉJECTER</span><span class="crb-desc">Clique ÉJECTER avant le crash pour encaisser : mise × multiplicateur actuel.</span></div>
+          <div class="crash-rule-block"><span class="crb-icon">🤖</span><span class="crb-label">AUTO-EJECT</span><span class="crb-desc">Configure un seuil auto. Ex : ×2 = éjection automatique dès que le mult atteint 2.</span></div>
         </div>
         <div class="crash-odds">
           <div class="crash-odds-title">📊 PROBABILITÉS DE CRASH</div>
@@ -618,14 +653,10 @@ export class CasinoCore {
         <div class="crash-controls">
           <button class="action-btn primary" id="cr-start">▶ LANCER</button>
           <button class="action-btn" id="cr-eject" disabled style="--game-accent:var(--c-pink)">🚀 ÉJECTER</button>
-          <div class="crash-autoeject-row">
-            AUTO-EJECT ×
-            <input class="crash-autoeject-inp" id="cr-auto" type="number" min="1.1" max="100" step="0.1" value="2.0">
-          </div>
+          <div class="crash-autoeject-row">AUTO-EJECT ×<input class="crash-autoeject-inp" id="cr-auto" type="number" min="1.1" max="100" step="0.1" value="2.0"></div>
         </div>
         <div class="game-msg" id="cr-msg">MISE ET LANCE LE CRASH</div>
       </div>`;
-
     document.getElementById('cr-back')?.addEventListener('click',  () => { this._crashAbort(); this._backToLobby(); });
     document.getElementById('cr-start')?.addEventListener('click', () => this._crashStart());
     document.getElementById('cr-eject')?.addEventListener('click', () => this._crashEject());
@@ -764,7 +795,7 @@ export class CasinoCore {
     await sm.init(this.userId);
   }
 
-  // ── HISTORY ──────────────────────────────────────────────────────────
+  // ── HISTORY ──────────────────────────────────────────────────────
   _renderHistory() {
     const body=document.getElementById('history-body'); if(!body) return;
     if(!this.history.length){

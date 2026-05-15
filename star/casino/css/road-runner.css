@@ -1,60 +1,83 @@
-/* ── ROAD RUNNER ───────────────────────────────────────────────────── */
+/* ── ROAD RUNNER — JEU 05 ────────────────────────────────────────────── */
 .rr-wrap {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-  justify-content: center;
-  width: 100%;
-  padding: 0 16px 32px;
-  box-sizing: border-box;
-}
-
-.rr-canvas {
-  border: 2px solid var(--c-cyan, #00e5ff);
-  box-shadow: 0 0 20px rgba(0,229,255,.25), inset 0 0 40px rgba(0,0,0,.5);
-  border-radius: 6px;
-  display: block;
-  touch-action: none;
-  flex-shrink: 0;
-  /* scale down on small screens */
+  position: relative;
+  width: 360px;
   max-width: 100%;
+  margin: 0 auto;
+  border: 1px solid rgba(255,110,180,.18);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0a0a14;
+  box-shadow: 0 0 40px rgba(255,110,180,.08);
+}
+
+#rr-canvas {
+  display: block;
+  width: 100%;
   height: auto;
+  touch-action: none;
 }
 
-.rr-side {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 180px;
-  max-width: 220px;
-}
-
+/* HUD */
 .rr-hud {
+  position: absolute;
+  top: 10px; left: 0; right: 0;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  background: rgba(0,0,0,.4);
-  border: 1px solid rgba(0,229,255,.2);
-  border-radius: 6px;
-  padding: 12px 14px;
+  justify-content: space-between;
+  padding: 0 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .85rem;
+  color: rgba(255,255,255,.85);
+  pointer-events: none;
+  letter-spacing: .08em;
+  text-shadow: 0 0 8px rgba(255,110,180,.6);
 }
 
-.rr-hud-block { display: flex; flex-direction: column; gap: 2px; }
-.rr-hud-label { font-size: 9px; letter-spacing: .14em; color: var(--c-text-faint, #666); }
-.rr-hud-val   { font-size: 1.2rem; font-family: 'Share Tech Mono', monospace; color: var(--c-cyan, #00e5ff); }
+/* Overlay (start / game-over) */
+.rr-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(10,10,20,.82);
+  backdrop-filter: blur(3px);
+}
 
-.rr-bet { margin-top: 0; }
-
-.rr-controls-hint {
-  font-size: 10px;
-  letter-spacing: .1em;
-  color: var(--c-text-faint, #555);
+.rr-overlay-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 1.7rem;
+  font-weight: 900;
+  letter-spacing: .18em;
+  color: var(--c-pink, #ff6eb4);
+  text-shadow: 0 0 24px rgba(255,110,180,.55);
   text-align: center;
 }
 
-/* Responsive: stack on narrow screens */
-@media (max-width: 640px) {
-  .rr-wrap       { flex-direction: column; align-items: center; }
-  .rr-side       { max-width: 320px; width: 100%; }
-  .rr-canvas     { width: 320px; }
+.rr-overlay-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .78rem;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.65);
+  text-align: center;
+  padding: 0 20px;
 }
+
+.rr-btn-start {
+  margin-top: 6px;
+  padding: 10px 32px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .9rem;
+  letter-spacing: .12em;
+  background: var(--c-pink, #ff6eb4);
+  color: #0a0a14;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: opacity .15s, transform .1s;
+}
+.rr-btn-start:hover { opacity: .85; transform: scale(1.03); }
+.rr-btn-start:active { transform: scale(.97); }
