@@ -1,0 +1,60 @@
+/* ── ROAD RUNNER ───────────────────────────────────────────────────── */
+.rr-wrap {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  padding: 0 16px 32px;
+  box-sizing: border-box;
+}
+
+.rr-canvas {
+  border: 2px solid var(--c-cyan, #00e5ff);
+  box-shadow: 0 0 20px rgba(0,229,255,.25), inset 0 0 40px rgba(0,0,0,.5);
+  border-radius: 6px;
+  display: block;
+  touch-action: none;
+  flex-shrink: 0;
+  /* scale down on small screens */
+  max-width: 100%;
+  height: auto;
+}
+
+.rr-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 180px;
+  max-width: 220px;
+}
+
+.rr-hud {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(0,0,0,.4);
+  border: 1px solid rgba(0,229,255,.2);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+
+.rr-hud-block { display: flex; flex-direction: column; gap: 2px; }
+.rr-hud-label { font-size: 9px; letter-spacing: .14em; color: var(--c-text-faint, #666); }
+.rr-hud-val   { font-size: 1.2rem; font-family: 'Share Tech Mono', monospace; color: var(--c-cyan, #00e5ff); }
+
+.rr-bet { margin-top: 0; }
+
+.rr-controls-hint {
+  font-size: 10px;
+  letter-spacing: .1em;
+  color: var(--c-text-faint, #555);
+  text-align: center;
+}
+
+/* Responsive: stack on narrow screens */
+@media (max-width: 640px) {
+  .rr-wrap       { flex-direction: column; align-items: center; }
+  .rr-side       { max-width: 320px; width: 100%; }
+  .rr-canvas     { width: 320px; }
+}
