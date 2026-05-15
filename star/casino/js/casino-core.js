@@ -60,7 +60,7 @@ const SFX = {
   wamEnd()     { const ctx=this._g();if(!ctx)return;[440,554,659,880].forEach((f,i)=>this._t(f,'triangle',.1,.01,.18,ctx.currentTime+i*.1)); },
 };
 
-// ── WAM CONFIG ─────────────────────────────────────────────────────────
+// ── WAM CONFIG ────────────────────────────────────────────────────────
 const WAM_DURATION   = 30;
 const WAM_HOLES      = 12;
 const WAM_MOLE_TYPES = [
@@ -84,16 +84,16 @@ export class CasinoCore {
     this.bet       = 10;
     this.history   = [];
     this._jackpot  = 500;
-    this._currentGame  = null;
-    this._nrInstance   = null;
-    this._boundNRResult= null;
-    this._boundNRBack  = null;
+    this._currentGame   = null;
+    this._nrInstance    = null;
+    this._boundNRResult = null;
+    this._boundNRBack   = null;
     this._sfxUnlockBound = null;
     // Crash
-    this._crashMult=1.00;this._crashRunning=false;
-    this._crashCashedOut=false;this._crashAnimId=null;this._crashBetActive=false;
+    this._crashMult=1.00; this._crashRunning=false;
+    this._crashCashedOut=false; this._crashAnimId=null; this._crashBetActive=false;
     // WAM
-    this._wamTimers=[];this._wamRunning=false;this._wamRafId=null;this._wamEnding=false;
+    this._wamTimers=[]; this._wamRunning=false; this._wamRafId=null; this._wamEnding=false;
   }
 
   async _loadCredits() {
@@ -116,7 +116,7 @@ export class CasinoCore {
     this._renderHistory();
   }
 
-  // ── LOBBY ────────────────────────────────────────────────────────────
+  // ── LOBBY ─────────────────────────────────────────────────────────────
   showLobby() {
     const root = document.querySelector(this.mountSel);
     if (!root) return;
@@ -171,7 +171,7 @@ export class CasinoCore {
           <div class="game-card" style="--card-color:var(--c-cyan)" id="card-nr">
             <div class="gc-icon">🏁</div><div class="gc-tag">// JEU 04</div>
             <div class="gc-title">NEON RACER</div>
-            <div class="gc-desc">Horizontal puis vertical : l'axe bascule tous les 500m. Choisis tes coeurs (1❤ 50C · 2❤ 100C · 3❤ 200C) — chaque crash coûte une vie.</div>
+            <div class="gc-desc">Horizontal puis vertical : l'axe bascule tous les 500m. Choisis tes cœurs (1❤ 50C · 2❤ 100C · 3❤ 200C) — chaque crash coûte une vie.</div>
             <div class="gc-meta"><span class="gc-badge">2 AXES</span><span class="gc-badge">❤️ VIES</span><span class="gc-badge">3 VÉHICULES</span></div>
             <div class="gc-play-btn">▶ JOUER</div>
           </div>
@@ -619,4 +619,110 @@ export class CasinoCore {
     const wrap=document.getElementById('cr-history');if(!wrap)return;
     const p=el('span',`crash-hist-pill ${cat}`,`${mult.toFixed(2)}×`);
     wrap.insertBefore(p,wrap.firstChild);
-    if(wrap.children.length>12)wrap.lastChild?.remove
+    if(wrap.children.length>12)wrap.lastChild?.remove();
+  }
+
+  _crashDrawCanvas(mult,crashed) {
+    const canvas=document.getElementById('cr-canvas');if(!canvas)return;
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width,H=canvas.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#07080c';ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+    for(let i=1;i<5;i++){
+      ctx.beginPath();ctx.moveTo(0,H*i/5);ctx.lineTo(W,H*i/5);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(W*i/5,0);ctx.lineTo(W*i/5,H);ctx.stroke();
+    }
+    if(!this._crashPoints||this._crashPoints.length<2)return;
+    const maxT=Math.max(this._crashPoints[this._crashPoints.length-1][0],5);
+    const maxM=Math.max(mult*1.2,2);
+    const toX=t=>(t/maxT)*W;
+    const toY=m=>H-(m/maxM)*H;
+    const grad=ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0,crashed?'rgba(255,71,87,.18)':'rgba(0,229,255,.15)');
+    grad.addColorStop(1,'transparent');
+    ctx.beginPath();
+    ctx.moveTo(toX(this._crashPoints[0][0]),H);
+    this._crashPoints.forEach(([t,m])=>ctx.lineTo(toX(t),toY(m)));
+    ctx.lineTo(toX(this._crashPoints[this._crashPoints.length-1][0]),H);
+    ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+    ctx.beginPath();
+    ctx.strokeStyle=crashed?'#ff4757':'#00e5ff';
+    ctx.lineWidth=2.5;ctx.shadowColor=crashed?'#ff4757':'#00e5ff';ctx.shadowBlur=8;
+    this._crashPoints.forEach(([t,m],i)=>{
+      if(i===0)ctx.moveTo(toX(t),toY(m));
+      else ctx.lineTo(toX(t),toY(m));
+    });
+    ctx.stroke();ctx.shadowBlur=0;
+    const last=this._crashPoints[this._crashPoints.length-1];
+    ctx.beginPath();
+    ctx.arc(toX(last[0]),toY(last[1]),5,0,Math.PI*2);
+    ctx.fillStyle=crashed?'#ff4757':'#00e5ff';
+    ctx.shadowColor=crashed?'#ff4757':'#00e5ff';ctx.shadowBlur=12;
+    ctx.fill();ctx.shadowBlur=0;
+  }
+
+  _crashMsg(txt,type='neutral'){
+    const e=document.getElementById('cr-msg');
+    if(!e)return;e.textContent=txt;
+    e.className='game-msg'+(type?` ${type}`:'');
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // SLOT MACHINE
+  // ══════════════════════════════════════════════════════════════════════
+  _initSlots() {
+    const g=document.getElementById('game-slots');
+    g.innerHTML=`
+      <div class="game-header">
+        <button class="game-back-btn" id="sl-back">← LOBBY</button>
+        <span class="game-title">SLOT <span class="game-title-accent" style="--game-accent:var(--c-amber)">MACHINE</span></span>
+      </div>
+      ${this._betPanelHTML('sl')}
+      <div id="sl-mount"></div>`;
+    document.getElementById('sl-back')?.addEventListener('click',()=>this._backToLobby());
+    this._bindBetPanel('sl');
+    const sm=new SlotMachine('sl-mount',this.userId,this.credits,this._jackpot,(nc,jackpotUsed)=>{
+      this.credits=nc;
+      if(jackpotUsed)this._jackpot=500;
+      else this._jackpot+=Math.round(this.bet*0.05);
+      const jpEl=document.getElementById('jp-val');
+      if(jpEl)jpEl.textContent=`${this._jackpot.toLocaleString('fr-FR')} C`;
+      this._updateCreditsDisplay();
+    });
+    sm.setBet(()=>this.bet);
+    sm.onResult=(bet,result,net)=>{
+      this._addHistory('SLOTS',bet,result,net);
+      this._updateCreditsDisplay();
+    };
+    sm.mount();
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // HISTORY
+  // ══════════════════════════════════════════════════════════════════════
+  _renderHistory() {
+    const body=document.getElementById('history-body');if(!body)return;
+    if(!this.history.length){body.innerHTML='<div class="history-empty">Aucune partie jouée</div>';return;}
+    let running=this.credits;
+    const withBal=this.history.map(h=>{
+      const bal=running;
+      running-=h.gain;
+      return{...h,bal};
+    });
+    body.innerHTML=withBal.map(h=>{
+      const resClass=h.result==='win'?'win':h.result==='lose'?'lose':'push';
+      const gainTxt=h.gain>0?`+${h.gain}`:h.gain;
+      return `<div class="history-row ${resClass}">
+        <span>${h.game}</span>
+        <span class="history-result">${h.result.toUpperCase()}</span>
+        <span>${h.bet} C</span>
+        <span class="history-gain">${gainTxt} C</span>
+        <span>${h.bal.toLocaleString('fr-FR')} C</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── UTILS ──────────────────────────────────────────────────────────────
+  _delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+}
