@@ -40,6 +40,23 @@
     .cig-role-dot { position:absolute; bottom:4px; right:4px; width:14px; height:14px; border-radius:50%; border:2px solid var(--c-bg); background:var(--c-green); box-shadow:0 0 6px var(--c-green); }
     .cig-role-dot.superuser { background:var(--c-amber); box-shadow:0 0 6px var(--c-amber); }
     .cig-role-dot.guest     { background:var(--c-text-faint); box-shadow:none; }
+    /* UPLOAD AVATAR */
+    .cig-avatar-upload {
+      position:absolute; inset:0; border-radius:50%;
+      display:flex; align-items:flex-end; justify-content:center;
+      padding-bottom:10px;
+      background:transparent; cursor:pointer; border:none;
+      opacity:0; transition:opacity .2s, background .2s;
+      font-size:18px; z-index:3;
+    }
+    .cig-avatar-wrap:hover .cig-avatar-upload { opacity:1; background:rgba(0,0,0,.52); }
+    .cig-avatar-upload:focus-visible { opacity:1; outline:2px solid var(--c-primary); }
+    .cig-avatar-upload.uploading { opacity:1; background:rgba(0,0,0,.65); cursor:wait; }
+    .cig-avatar-upload-label {
+      font-family:var(--font-mono); font-size:8px; letter-spacing:.12em;
+      color:#fff; line-height:1; text-align:center; pointer-events:none;
+    }
+    .readonly-mode .cig-avatar-upload { display:none; }
 
     /* INFO */
     .cig-info { flex:1; }
@@ -329,6 +346,10 @@
             <div class="cig-avatar-fallback" id="cig-avatar-fallback">?</div>
             <img id="cig-avatar-img" class="cig-avatar" style="display:none" alt="Avatar" loading="lazy"/>
             <div class="cig-role-dot" id="cig-role-dot"></div>
+            <button class="cig-avatar-upload" id="cig-avatar-upload-btn" type="button" title="Changer la photo de profil" aria-label="Uploader une photo de profil">
+              <span class="cig-avatar-upload-label" id="cig-upload-label">📷 UPLOAD</span>
+            </button>
+            <input type="file" id="cig-avatar-file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" aria-hidden="true"/>
           </div>
           <div class="cig-info">
             <p class="cig-tag" id="cig-tag">// AGENT · CIG</p>
@@ -689,6 +710,72 @@
       $('lb-refresh')?.addEventListener('click', () => loadLeaderboard(myId));
 
       if (readOnly) return;
+
+      // UPLOAD AVATAR DEPUIS PC
+      const uploadBtn  = $('cig-avatar-upload-btn');
+      const fileInput  = $('cig-avatar-file');
+      const uploadLabel = $('cig-upload-label');
+
+      uploadBtn?.addEventListener('click', () => fileInput?.click());
+
+      fileInput?.addEventListener('change', async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        // Limite 3 Mo
+        if (file.size > 3 * 1024 * 1024) {
+          setStatus('status-profile', '⚠ IMAGE TROP LOURDE (max 3 Mo)', 'err');
+          fileInput.value = '';
+          return;
+        }
+
+        uploadBtn.classList.add('uploading');
+        uploadBtn.disabled = true;
+        uploadLabel.textContent = '⏳';
+
+        try {
+          const ext  = file.name.split('.').pop().toLowerCase() || 'jpg';
+          const path = `${myId}/avatar.${ext}`;
+
+          const { error: upErr } = await supabase.storage
+            .from('avatars')
+            .upload(path, file, { upsert: true, contentType: file.type });
+
+          if (upErr) throw upErr;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(path);
+
+          // Cache-busting pour forcer le rechargement
+          const finalUrl = `${publicUrl}?t=${Date.now()}`;
+
+          // Sauvegarder en base
+          const { error: saveErr } = await supabase
+            .from('profiles')
+            .update({ avatar_url: finalUrl })
+            .eq('id', myId);
+
+          if (saveErr) throw saveErr;
+
+          // Mettre à jour l'affichage
+          $('f-avatar-url').value           = finalUrl;
+          $('cig-avatar-img').src           = finalUrl;
+          $('cig-avatar-img').style.display = 'block';
+          $('cig-avatar-fallback').style.display = 'none';
+
+          setStatus('status-profile', '✓ PHOTO MISE À JOUR', 'ok');
+
+        } catch (err) {
+          console.error('Upload avatar:', err);
+          setStatus('status-profile', '⚠ ERREUR : ' + (err.message ?? 'upload échoué'), 'err');
+        } finally {
+          uploadBtn.classList.remove('uploading');
+          uploadBtn.disabled = false;
+          uploadLabel.textContent = '📷 UPLOAD';
+          fileInput.value = '';
+        }
+      });
 
       // SAUVEGARDER PROFIL
       $('btn-save-profile').addEventListener('click', async () => {

@@ -328,7 +328,8 @@ export class CasinoCore {
   }
 
   async _wamLaunch() {
-    if(this._wamRunning||this._wamEnding)return;
+    if(this._wamRunning)return;
+    this._wamEnding=false;
     document.querySelector('.wam-result-screen')?.remove();
     if(this.credits<this.bet){this._wamMsg('CRÉDITS INSUFFISANTS','lose');return;}
     this.credits-=this.bet;await this._saveCredits();
@@ -353,6 +354,7 @@ export class CasinoCore {
     this._wamRunning=true;this._wamEnding=false;
     this._wamT0=performance.now();
     this._wamActiveHoles=new Array(WAM_HOLES).fill(null);
+    this._wamHoleAborts=new Array(WAM_HOLES).fill(null);
     this._wamScheduleAll();
     this._wamRafId=requestAnimationFrame(()=>this._wamTick());
   }
@@ -391,6 +393,9 @@ export class CasinoCore {
 
   _wamPopMole(idx) {
     if(!this._wamRunning)return;
+    if(this._wamHoleAborts[idx]){this._wamHoleAborts[idx].abort();}
+    const ac=new AbortController();
+    this._wamHoleAborts[idx]=ac;
     const type=this._wamPickType();
     const hole=document.getElementById(`wh-${idx}`);
     const mole=document.getElementById(`wm-${idx}`);
@@ -409,7 +414,7 @@ export class CasinoCore {
       clearTimeout(timer);
       hole.classList.remove('active');this._wamActiveHoles[idx]=null;
       this._wamHitMole(idx,type,hole);
-    },{once:true});
+    },{once:true,signal:ac.signal});
   }
 
   _wamHitMole(idx,type,holeEl) {
