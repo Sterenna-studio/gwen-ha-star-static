@@ -231,6 +231,7 @@ export class CasinoCore {
     this._updateCreditsDisplay();
     this._renderHistory();
     this._currentGame=null;
+    this._loadCredits().then(()=>this._updateCreditsDisplay());
   }
 
   _cleanupNR() {
@@ -275,15 +276,7 @@ export class CasinoCore {
   _initNR() {
     this._cleanupNR();
     const g=document.getElementById('game-nr');
-    g.innerHTML=`
-      <div class="game-header">
-        <button class="game-back-btn" id="nr-back-btn">← LOBBY</button>
-        <span class="game-title">NEON <span class="game-title-accent" style="--game-accent:var(--c-amber)">RACER</span></span>
-      </div>
-      <div id="nr-mount"></div>`;
-    document.getElementById('nr-back-btn')?.addEventListener('click',()=>{
-      this._cleanupNR();this._backToLobby();
-    });
+    g.innerHTML=`<div id="nr-mount"></div>`;
     this._boundNRResult=(e)=>{
       const{bet,result,net}=e.detail||{};
       this._addHistory('NEON RCR',bet??50,result??'push',net??0);
@@ -678,24 +671,10 @@ export class CasinoCore {
         <button class="game-back-btn" id="sl-back">← LOBBY</button>
         <span class="game-title">SLOT <span class="game-title-accent" style="--game-accent:var(--c-amber)">MACHINE</span></span>
       </div>
-      ${this._betPanelHTML('sl')}
       <div id="sl-mount"></div>`;
     document.getElementById('sl-back')?.addEventListener('click',()=>this._backToLobby());
-    this._bindBetPanel('sl');
-    const sm=new SlotMachine('sl-mount',this.userId,this.credits,this._jackpot,(nc,jackpotUsed)=>{
-      this.credits=nc;
-      if(jackpotUsed)this._jackpot=500;
-      else this._jackpot+=Math.round(this.bet*0.05);
-      const jpEl=document.getElementById('jp-val');
-      if(jpEl)jpEl.textContent=`${this._jackpot.toLocaleString('fr-FR')} C`;
-      this._updateCreditsDisplay();
-    });
-    sm.setBet(()=>this.bet);
-    sm.onResult=(bet,result,net)=>{
-      this._addHistory('SLOTS',bet,result,net);
-      this._updateCreditsDisplay();
-    };
-    sm.mount();
+    const sm=new SlotMachine('sl-mount',{userId:this.userId});
+    sm.init();
   }
 
   // ══════════════════════════════════════════════════════════════════════
