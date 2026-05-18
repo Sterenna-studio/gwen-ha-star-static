@@ -12,6 +12,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.SYNC_TOKEN }}
+          persist-credentials: true
 
       - name: Checkout botanica-obscura
         uses: actions/checkout@v4
@@ -24,13 +25,18 @@ jobs:
         run: |
           rm -rf botanica-obscura
           mkdir -p botanica-obscura
-          rsync -av --exclude='.git' --exclude='.env*' --exclude='README.md' _botanica_tmp/ botanica-obscura/
+          cp -r _botanica_tmp/. botanica-obscura/
+          rm -rf botanica-obscura/.git
+          rm -f botanica-obscura/.env botanica-obscura/.env.example botanica-obscura/.env.local
           rm -rf _botanica_tmp
+          echo "Files copied:"
+          ls -la botanica-obscura/
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add botanica-obscura/
-          git diff --staged --quiet || git commit -m "chore: sync botanica-obscura [auto]"
+          git status
+          git diff --staged --quiet && echo "Nothing to commit" || git commit -m "chore: sync botanica-obscura [auto]"
           git push
