@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Botanica Obscura</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>🌿 Botanica Obscura</h1>
+        <p class="subtitle">Idle gacha botanique • mutations • codex partagé</p>
+      </div>
+      <div class="player-stats">
+        <span id="coins">🪙 100</span>
+        <span id="level">Lv. 1</span>
+        <button id="notifBtn" class="notif-btn">🔔 Activer notifs</button>
+      </div>
+    </header>
+
+    <main class="layout">
+
+      <!-- POT DE MUTATION -->
+      <section class="panel">
+        <h2>🧪 Pot de mutation</h2>
+        <div class="pot-card">
+          <label>Espèce mère A
+            <select id="speciesA"></select>
+          </label>
+          <label>Espèce mère B
+            <select id="speciesB"></select>
+          </label>
+          <button id="startMutationBtn">Lancer une mutation (24h)</button>
+          <button id="harvestBtn" style="display:none">🌺 Récolter la mutation</button>
+          <div id="mutationStatus" class="status"></div>
+          <div class="progress-wrap"><div id="progressBar" class="progress-bar"></div></div>
+          <div id="potVisual" class="pot-visual"></div>
+        </div>
+      </section>
+
+      <!-- PREVIEW -->
+      <section class="panel">
+        <h2>🔍 Prévisualisation</h2>
+        <div class="plant-preview">
+          <div id="plantCharacter"></div>
+          <div id="plantDescription">Sélectionnez une espèce.</div>
+        </div>
+      </section>
+
+      <!-- TESTEURS -->
+      <section class="panel full-width">
+        <h2>🧑‍🌾 Testeurs</h2>
+        <p class="muted">Récoltez une plante puis faites-la goûter à vos testeurs !</p>
+        <div id="testersContainer" class="testers-grid"></div>
+      </section>
+
+      <!-- INVENTAIRE -->
+      <section class="panel full-width">
+        <h2>🎒 Inventaire des graines</h2>
+        <p class="muted">Cliquez sur "Utiliser" pour sélectionner une graine dans le pot de mutation.</p>
+        <div id="inventoryEmpty" class="muted" style="display:none">Aucune graine pour l'instant. Récoltez votre première mutation !</div>
+        <div id="inventoryGrid" class="inventory-grid"></div>
+      </section>
+
+      <!-- CODEX -->
+      <section class="panel full-width">
+        <h2>📖 Codex botanique global</h2>
+        <p class="muted">Soyez le premier à découvrir une espèce sur le serveur !</p>
+        <div id="codexGrid" class="codex-grid"></div>
+      </section>
+
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
