@@ -55,8 +55,8 @@
       </div>
       <div class="kpi" style="--kpi-c:var(--c-amber)">
         <span class="kpi-lbl">PROJETS LIVE</span>
-        <span class="kpi-val">02</span>
-        <span class="kpi-sub">STERENNA · POKEGANG</span>
+        <span class="kpi-val">03</span>
+        <span class="kpi-sub">STERENNA · POKEGANG · BOTANICA</span>
       </div>
       <div class="kpi" style="--kpi-c:var(--c-cyan)">
         <span class="kpi-lbl">RÉPUTATION PG</span>
@@ -175,6 +175,19 @@
         </a>
       </div>
 
+      <!-- BOTANICA OBSCURA -->
+      <div class="bc bc-botanica">
+        <div class="bc-label" style="color:#4a9e3f"><span class="bc-dot" style="background:#4a9e3f"></span>BOTANICA OBSCURA · LAB</div>
+        <a href="/botanica-obscura/landing.html" class="botanica-hub-card" aria-label="Accéder à Botanica Obscura">
+          <div class="botanica-hub-emblem">🌿</div>
+          <div class="botanica-hub-info">
+            <span class="botanica-hub-title">BOTANICA OBSCURA</span>
+            <span class="botanica-hub-sub">IDLE GACHA · MUTATIONS · CODEX PARTAGÉ</span>
+          </div>
+          <span class="botanica-hub-cta">▶ ENTRER →</span>
+        </a>
+      </div>
+
     </div>
   </main>
 
@@ -217,6 +230,40 @@
   .casino-hub-sub { font-size:8px; letter-spacing:.14em; color:var(--c-text-faint,#3a3d52); }
   .casino-hub-cta { font-size:9px; letter-spacing:.18em; color:var(--c-amber,#ffcc00); opacity:.7; flex-shrink:0; }
   @media(max-width:600px){ .bc-casino{ grid-column:span 1; } .casino-hub-vehicles{ width:80px; } .chv{ height:32px; } }
+
+  /* BOTANICA OBSCURA CARD */
+  .bc-botanica { grid-column: span 2; }
+  .botanica-hub-card {
+    display:flex; align-items:center; gap:16px;
+    background:linear-gradient(135deg,rgba(74,158,63,.08) 0%,rgba(26,46,26,.6) 100%);
+    border:1px solid rgba(74,158,63,.25); border-radius:14px;
+    padding:16px 20px; text-decoration:none; color:inherit;
+    transition:border-color .2s,box-shadow .2s,transform .15s;
+    overflow:hidden; position:relative;
+  }
+  .botanica-hub-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,#2d5a27,#4a9e3f,#2d5a27);
+  }
+  .botanica-hub-card:hover {
+    border-color:rgba(74,158,63,.6);
+    box-shadow:0 0 28px rgba(74,158,63,.2),0 6px 24px rgba(0,0,0,.4);
+    transform:translateY(-2px);
+  }
+  .botanica-hub-emblem {
+    font-size:2.8rem; flex-shrink:0;
+    filter:drop-shadow(0 0 10px rgba(74,158,63,.6));
+    animation:float-leaf 4s ease-in-out infinite;
+  }
+  @keyframes float-leaf {
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-6px)}
+  }
+  .botanica-hub-info { flex:1; display:flex; flex-direction:column; gap:4px; }
+  .botanica-hub-title { font-family:'Share Tech Mono',monospace; font-size:1.1rem; font-weight:700; letter-spacing:.22em; color:#4a9e3f; text-shadow:0 0 10px rgba(74,158,63,.5); }
+  .botanica-hub-sub { font-size:8px; letter-spacing:.14em; color:var(--c-text-faint,#3a3d52); }
+  .botanica-hub-cta { font-size:9px; letter-spacing:.18em; color:#4a9e3f; opacity:.7; flex-shrink:0; }
+  @media(max-width:600px){ .bc-botanica{ grid-column:span 1; } .botanica-hub-emblem{ font-size:2rem; } }
   </style>
 
   <script type="module">
