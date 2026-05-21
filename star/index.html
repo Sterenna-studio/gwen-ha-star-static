@@ -22,7 +22,7 @@
     <div class="sb-left">
       <div class="sb-item"><span class="sb-dot"></span><span>GWEN·HA·STAR</span></div>
       <div class="sb-item" id="sb-supa"><span class="sb-dot amber"></span><span>SUPABASE · LINK</span></div>
-      <div class="sb-item" id="sb-pg"><span class="sb-dot off"></span><span>POKEGANG · …</span></div>
+      <div class="sb-item" id="sb-pg"><span class="sb-dot off"></span><span>POKEGANG · EXTERNE</span></div>
     </div>
     <div class="sb-right">
       <span class="sb-user" id="sb-username">···</span>
@@ -60,8 +60,8 @@
       </div>
       <div class="kpi" style="--kpi-c:var(--c-cyan)">
         <span class="kpi-lbl">RÉPUTATION PG</span>
-        <span class="kpi-val" id="kpi-pg-rep">·</span>
-        <span class="kpi-sub">GANG · LEADERBOARD</span>
+        <span class="kpi-val" id="kpi-pg-rep">—</span>
+        <span class="kpi-sub">POKEGANG · EXTERNE</span>
       </div>
       <div class="kpi" style="--kpi-c:var(--c-gold, #ffd700)">
         <span class="kpi-lbl">MONNAIE</span>
@@ -197,17 +197,16 @@
           </a>
           <div class="pg-stats-grid">
             <div class="pg-stat pg-stat-gang">
-              <img id="pg-boss-sprite" class="pg-boss-sprite" src="" alt="" width="48" height="48" loading="lazy" style="display:none" onerror="this.style.display='none'">
               <div class="pg-boss-info">
                 <span class="pg-stat-lbl">GANG</span>
-                <span class="pg-stat-val" id="pg-gang-name">·</span>
-                <span class="pg-stat-sub" id="pg-boss-name">BOSS : ·</span>
+                <span class="pg-stat-val" id="pg-gang-name">—</span>
+                <span class="pg-stat-sub" id="pg-boss-name">BOSS : —</span>
               </div>
             </div>
-            <div class="pg-stat"><span class="pg-stat-lbl">RÉPUTATION</span><span class="pg-stat-val" id="pg-rep">·</span><span class="pg-stat-sub">POINTS</span></div>
-            <div class="pg-stat"><span class="pg-stat-lbl">POKÉMONS</span><span class="pg-stat-val" id="pg-caught">·</span><span class="pg-stat-sub" id="pg-shinies">✦ SHINIES : ·</span></div>
-            <div class="pg-stat"><span class="pg-stat-lbl">POKÉDEX</span><span class="pg-stat-val" id="pg-dex">·</span><span class="pg-stat-sub" id="pg-dex-nat">NATIONAL : ·</span></div>
-            <div class="pg-stat"><span class="pg-stat-lbl">AGENTS</span><span class="pg-stat-val" id="pg-agents">·</span><span class="pg-stat-sub">RECRUTEMENT</span></div>
+            <div class="pg-stat"><span class="pg-stat-lbl">RÉPUTATION</span><span class="pg-stat-val" id="pg-rep">—</span><span class="pg-stat-sub">POINTS</span></div>
+            <div class="pg-stat"><span class="pg-stat-lbl">POKÉMONS</span><span class="pg-stat-val" id="pg-caught">—</span><span class="pg-stat-sub" id="pg-shinies">✦ SHINIES : —</span></div>
+            <div class="pg-stat"><span class="pg-stat-lbl">POKÉDEX</span><span class="pg-stat-val" id="pg-dex">—</span><span class="pg-stat-sub" id="pg-dex-nat">NATIONAL : —</span></div>
+            <div class="pg-stat"><span class="pg-stat-lbl">AGENTS</span><span class="pg-stat-val" id="pg-agents">—</span><span class="pg-stat-sub">RECRUTEMENT</span></div>
           </div>
         </div>
       </div>
@@ -466,6 +465,7 @@
     import { initDashboard }     from '../js/star/dashboard.js';
     import { supabase, signOut } from '../js/supabase.js';
     import { requireAuth }       from '../js/star/guard.js';
+    import { getProfile }        from '../js/star/profile-cache.js';
 
     (function(){
       const el = document.getElementById('sb-clock');
@@ -483,44 +483,6 @@
     })();
 
     document.getElementById('btn-signout-strip')?.addEventListener('click',()=>signOut());
-
-    async function loadPGStats(userId){
-      const sbPg=document.getElementById('sb-pg');
-      try{
-        const{data,error}=await supabase.from('leaderboard')
-          .select('gang_name,boss_name,boss_sprite,reputation,total_caught,shiny_count,dex_kanto_count,dex_national_count,agents_count')
-          .eq('user_id',userId).eq('is_anonymous',false).maybeSingle();
-        if(error||!data){_setPGStatus(sbPg,'off','NO DATA');_fillPG(null);return;}
-        _setPGStatus(sbPg,'green','SYNC');_fillPG(data);
-      }catch{_setPGStatus(sbPg,'red','ERROR');_fillPG(null);}
-    }
-
-    function _setPGStatus(el,state,label){
-      if(!el) return;
-      const cls=state==='green'?'':state==='red'?'red':'off';
-      el.innerHTML=`<span class="sb-dot ${cls}"></span><span>POKEGANG · ${label}</span>`;
-    }
-
-    function _fillPG(d){
-      const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-      if(!d){
-        ['pg-gang-name','pg-boss-name','pg-rep','pg-dex','pg-dex-nat','pg-caught','pg-shinies','pg-agents','kpi-pg-rep'].forEach(id=>s(id,'—'));
-        return;
-      }
-      s('pg-gang-name',d.gang_name??'???');
-      s('pg-boss-name',`BOSS : ${d.boss_name??'—'}`);
-      s('pg-rep',(d.reputation??0).toLocaleString('fr-FR'));
-      s('pg-dex',`${d.dex_kanto_count??0} / 151`);
-      s('pg-dex-nat',`NATIONAL : ${d.dex_national_count??0}`);
-      s('pg-caught',(d.total_caught??0).toLocaleString('fr-FR'));
-      s('pg-shinies',`✦ SHINIES : ${d.shiny_count??0}`);
-      s('pg-agents',d.agents_count??0);
-      s('kpi-pg-rep',(d.reputation??0).toLocaleString('fr-FR'));
-      if(d.boss_sprite){
-        const img=document.getElementById('pg-boss-sprite');
-        if(img){img.src=`https://play.pokemonshowdown.com/sprites/trainers/${d.boss_sprite}.png`;img.style.display='block';img.alt=d.boss_name??'';}
-      }
-    }
 
     async function loadMembers(){
       const el=document.getElementById('kpi-members');
@@ -548,15 +510,11 @@
       const{user,profile}=auth;
       populateWelcome(user,profile);
       loadMembers();
-      loadPGStats(user.id);
 
-      (async () => {
-        const el = document.getElementById('kpi-chronicles');
-        try {
-          const { data } = await supabase.from('profiles').select('chronicles').eq('id', user.id).single();
-          if (el) el.textContent = (data?.chronicles ?? 0).toLocaleString('fr-FR');
-        } catch { if (el) el.textContent = '?'; }
-      })();
+      // kpi-chronicles : réutilise le profil déjà chargé par requireAuth via cache
+      const cachedProfile = await getProfile(supabase, user.id);
+      const el = document.getElementById('kpi-chronicles');
+      if(el) el.textContent = (cachedProfile?.chronicles ?? 0).toLocaleString('fr-FR');
     }
     initDashboard();
   </script>
