@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Botanica Obscura — Présentation</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&family=Share+Tech+Mono&display=swap');
 
@@ -308,12 +307,14 @@
   </head>
   <body>
 
+    <!-- OVERLAY REDIRECTION (caché par défaut, visible si session active) -->
     <div id="redirect-overlay" style="display:none">
       <div class="redir-emblem">🌿</div>
       <div class="redir-name" id="redir-name">Botaniste</div>
       <div class="redir-text">SESSION ACTIVE · REDIRECTION EN COURS…</div>
     </div>
 
+    <!-- HERO -->
     <section class="hero">
       <div class="hero-emblem">🌿</div>
       <h1>Botanica Obscura</h1>
@@ -326,8 +327,10 @@
       <a href="index.html" class="btn-primary">🧪 Entrer dans le laboratoire</a>
     </section>
 
+    <!-- SAVE PREVIEW -->
     <section class="save-section">
       <div class="save-section-title">// TA PROGRESSION · SAVE EN COURS</div>
+
       <div class="save-loading" id="save-loading">CHARGEMENT…</div>
 
       <div class="save-no-auth" id="save-no-auth" style="display:none">
@@ -341,7 +344,7 @@
           <div id="player-avatar" class="player-avatar-ph">🌿</div>
           <div style="flex:1">
             <div class="player-name" id="player-name">···</div>
-            <div class="player-sub" id="player-sub">BOTANISTE · NIVEAU ·</div>
+            <div class="player-sub"  id="player-sub">BOTANISTE · NIVEAU ·</div>
           </div>
           <div class="player-coins" id="player-coins">🪙 ···</div>
         </div>
@@ -371,10 +374,13 @@
             <div class="stat-sub">complétées</div>
           </div>
         </div>
+
+        <!-- Bouton Jouer affiché quand connecté -->
         <a href="index.html" class="btn-primary" style="text-align:center;margin-top:8px;">🧪 Continuer l'aventure →</a>
       </div>
     </section>
 
+    <!-- FEATURES -->
     <section class="features">
       <h2>Méchaniques de jeu</h2>
       <div class="features-grid">
@@ -401,6 +407,7 @@
       </div>
     </section>
 
+    <!-- HOW TO PLAY -->
     <section class="howto">
       <h2>Comment jouer</h2>
       <div class="steps">
@@ -436,6 +443,7 @@
       <a href="index.html" class="btn-primary">🌱 Commencer l'aventure</a>
     </section>
 
+    <!-- CTA FOOTER -->
     <section class="cta-footer">
       <div class="badge">Alpha — En développement actif</div>
       <p>Botanica Obscura évolue en continu. Nouvelles espèces, mécaniques et surprises à venir.</p>
@@ -458,15 +466,20 @@
 
         if (!user) { show('save-no-auth'); return; }
 
+        // ── Utilisateur déjà connecté : afficher overlay et rediriger ──
         const meta     = user.user_metadata;
         const username = meta?.username ?? meta?.full_name ?? user.email?.split('@')[0] ?? 'Botaniste';
+
         set('redir-name', username.toUpperCase());
         $('redirect-overlay').style.display = 'flex';
+
+        // Petit délai pour que l'overlay soit visible, puis redirect
         await new Promise(r => setTimeout(r, 1200));
         window.location.href = 'index.html';
       }
 
       init().catch(err => {
+        // En cas d'erreur, on affiche quand même la landing normalement
         console.error('[landing] init error:', err);
         hide('save-loading');
         show('save-no-auth');
