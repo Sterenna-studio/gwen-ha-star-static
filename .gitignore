@@ -1,7 +1,12 @@
-# Clés secrètes — NE JAMAIS commiter
+# Local/private configuration
 .env
+.env.*
+config.js
 TCG/config.local.js
+TCG/config.js
 
-# Config générée en local (contient les vraies clés)
-# Décommente si tu génères config.js via generate-config.sh
-# TCG/config.js
+# Dependencies / build caches
+node_modules/
+.cache/
+dist/
+build/
