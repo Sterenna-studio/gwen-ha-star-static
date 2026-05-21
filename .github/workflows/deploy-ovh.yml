@@ -41,11 +41,8 @@ jobs:
           rsync -avz --delete \
             --exclude='.git/' \
             --exclude='.github/' \
-            --exclude='.env' \
-            --exclude='.env.*' \
             --exclude='README.md' \
             --exclude='LICENSE' \
             --exclude='docs/' \
-            --exclude='generate-config.sh' \
             -e "ssh -i ~/.ssh/ovh_key" \
             ./ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/"
