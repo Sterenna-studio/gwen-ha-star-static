@@ -4,16 +4,24 @@ import { getFallbackSpeciesTree } from './lib/speciesTree.js';
 import { renderMutationTree } from './lib/mutationTree.js';
 import { loadInventory, renderInventory } from './lib/inventory.js';
 import { ensureTesters, renderTesters } from './lib/testers.js';
-import { requestNotifPermission, restorePotNotification } from './lib/notifications.js';
+import { restorePotNotification } from './lib/notifications.js';
 import { onAuthReady, getBotanicaUserId, isLoggedIn, requireAuth, getProfile } from './lib/auth.js';
 import { initAuthModal } from './lib/authModal.js';
 import { loadGarden, renderGarden, buyGardenEffect } from './lib/garden.js';
 import { loadPlayerData, renderPlayerStats } from './lib/playerData.js';
 import { QUALITY_TIERS } from './lib/quality.js';
 import { initMysterySeed } from './lib/mysterySeed.js';
-import { addXpToPlayer, computeHarvestXp } from './lib/xp.js';
-import { initPots, updatePotsSpecies, updatePotsPlayerData } from './lib/pots.js';
+import { computeHarvestXp } from './lib/xp.js';
+import {
+  initPots,
+  selectSpeciesForNextPot,
+  updatePotsGarden,
+  updatePotsInventory,
+  updatePotsPlayerData,
+  updatePotsSpecies,
+} from './lib/pots.js';
 import { initOnboarding } from './lib/onboarding.js';
+import { adjustLocalSeedQuantity, loadLocal, patchLocal } from './lib/localSave.js';
 
 export { supabase };
 export function getUserId() { return getBotanicaUserId(); }
@@ -52,12 +60,18 @@ async function loadSpecies() {
     .order('id',   { ascending: true });
 
   const userId = getUserId();
-  const { data: codexData } = await supabase
+  const { data: codexData, error: codexErr } = await supabase
     .from('botanica_player_codex')
     .select('species_id, was_first_server')
     .eq('user_id', userId);
 
-  playerCodexIds = new Set((codexData ?? []).map(r => r.species_id));
+  if (codexErr) {
+    console.warn('[app] Chargement codex cloud échoué, fallback local :', codexErr.message);
+    playerCodexIds = new Set(loadLocal()?.codexIds ?? []);
+  } else {
+    playerCodexIds = new Set((codexData ?? []).map(r => r.species_id));
+    patchLocal('codexIds', [...playerCodexIds]);
+  }
   window.__botanicaCodexIds = playerCodexIds;
 
   speciesList = (!globalErr && globalData?.length)
@@ -118,9 +132,16 @@ function renderCodex() {
 
 async function refreshInventory() {
   const seeds = await loadInventory(getUserId());
+  updatePotsInventory(seeds);
   renderInventory(
     seeds,
-    (_speciesId) => {},
+    (speciesId) => {
+      const selected = selectSpeciesForNextPot(speciesId);
+      if (!selected) {
+        console.warn('[app] Impossible de sélectionner cette graine dans un pot libre.');
+      }
+      return selected;
+    },
     (newCoins) => {
       currentPlayerData.coins = newCoins;
       renderPlayerStats(currentPlayerData);
@@ -137,6 +158,7 @@ async function refreshTesters() {
 
 async function refreshGarden() {
   currentGarden = await loadGarden(getUserId());
+  updatePotsGarden(currentGarden);
   renderGarden(currentGarden, currentPlayerData.coins, onBuyGardenEffect);
 }
 
@@ -145,12 +167,22 @@ async function onBuyGardenEffect(effectId) {
   if (result.error) { alert(result.error); return; }
   currentGarden           = result.newGarden;
   currentPlayerData.coins = result.newCoins;
+  updatePotsGarden(currentGarden);
   renderPlayerStats(currentPlayerData);
   renderGarden(currentGarden, currentPlayerData.coins, onBuyGardenEffect);
 }
 
 async function onHarvest(harvestResult, xpResult) {
-  lastHarvestedSp = harvestResult.result_species;
+  lastHarvestedSp = harvestResult.result_species
+    ? { ...harvestResult.result_species, quality_tier_id: harvestResult.quality_tier_id ?? 1 }
+    : null;
+
+  if (lastHarvestedSp?.id) {
+    adjustLocalSeedQuantity(lastHarvestedSp.id, harvestResult.seed_quantity_delta ?? 1);
+    playerCodexIds.add(lastHarvestedSp.id);
+    window.__botanicaCodexIds = playerCodexIds;
+    patchLocal('codexIds', [...playerCodexIds]);
+  }
 
   currentPlayerData = {
     ...currentPlayerData,
@@ -222,7 +254,7 @@ async function init() {
       refreshGarden(),
     ]);
 
-    await initPots(speciesList, currentPlayerData, onHarvest);
+    await initPots(speciesList, currentPlayerData, onHarvest, currentGarden, refreshInventory);
 
     await initOnboarding(getUserId(), async () => {
       await refreshInventory();

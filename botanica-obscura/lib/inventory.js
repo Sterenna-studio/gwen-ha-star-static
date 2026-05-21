@@ -1,5 +1,7 @@
 import { supabase } from '../app.js';
 import { sellSeedToNpc, computeNpcPrice } from './npcShop.js';
+import { loadLocal, patchLocalSeeds } from './localSave.js';
+import { getFallbackSpeciesTree } from './speciesTree.js';
 
 export async function loadInventory(userId) {
   const { data, error } = await supabase
@@ -7,8 +9,29 @@ export async function loadInventory(userId) {
     .select('*, botanica_species(*)')
     .eq('user_id', userId)
     .order('obtained_at', { ascending: false });
-  if (error) return [];
-  return (data || []).map(seed => ({ ...seed, species: seed.botanica_species }));
+
+  if (error) {
+    console.warn('[inventory] Chargement cloud échoué, fallback local :', error.message);
+    const fallbackSpecies = getFallbackSpeciesTree();
+    return (loadLocal()?.seeds ?? []).map(seed => {
+      const species = fallbackSpecies.find(sp => sp.id === seed.species_id) ?? {
+        id: seed.species_id,
+        name: `Espèce #${seed.species_id}`,
+        tier: 0,
+        rarity: 'common',
+      };
+      return {
+        id: `local-${seed.species_id}`,
+        species_id: seed.species_id,
+        quantity: seed.quantity,
+        species,
+      };
+    });
+  }
+
+  const seeds = (data || []).map(seed => ({ ...seed, species: seed.botanica_species }));
+  patchLocalSeeds(seeds);
+  return seeds;
 }
 
 function showToast(msg, type = 'success') {
@@ -77,7 +100,14 @@ export function renderInventory(seeds, onSelect, onSell, userId) {
   }).join('');
 
   grid.querySelectorAll('.inv-select-btn').forEach(btn => {
-    btn.addEventListener('click', e => onSelect(e.currentTarget.dataset.speciesId));
+    btn.addEventListener('click', e => {
+      const selected = onSelect(e.currentTarget.dataset.speciesId);
+      if (selected === false) {
+        showToast('Aucun pot libre ne peut utiliser cette graine.', 'error');
+      } else {
+        showToast('Graine placée dans le prochain pot libre.');
+      }
+    });
   });
 
   grid.querySelectorAll('.inv-sell-btn').forEach(btn => {
