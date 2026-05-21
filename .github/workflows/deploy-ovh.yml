@@ -34,7 +34,7 @@ jobs:
 
       - name: Ensure remote target directory exists
         run: |
-          ssh -i ~/.ssh/ovh_key "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}" "mkdir -p ~/www"
+          ssh -i ~/.ssh/ovh_key "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}" "mkdir -p ~/nitro"
 
       - name: Deploy to OVH with rsync
         run: |
@@ -48,4 +48,4 @@ jobs:
             --exclude='docs/' \
             --exclude='generate-config.sh' \
             -e "ssh -i ~/.ssh/ovh_key" \
-            ./ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/www/"
+            ./ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/"
