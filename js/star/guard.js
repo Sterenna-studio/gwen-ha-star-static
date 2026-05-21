@@ -5,6 +5,7 @@
  *         const { session, profile } = await requireAuth();
  */
 import { supabase, getSession } from '../supabase.js';
+import { getProfile }           from './profile-cache.js';
 
 export async function requireAuth() {
   const session = await getSession();
@@ -14,11 +15,7 @@ export async function requireAuth() {
     return null;
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', session.user.id)
-    .single();
+  const profile = await getProfile(supabase, session.user.id);
 
   return { session, user: session.user, profile: profile ?? {} };
 }
