@@ -1,127 +1,268 @@
-# Gwen Ha Star — Site Statique
+# Gwen Ha Star — Nitro Static Hub
 
-> Vitrine des projets de **Sterenna EI** — et portail d'accès aux Chronicles.
----
-
-## 🌌 Concept
-
-**Gwen Ha Star** (« Blanc et Étoile » en breton) est le site principal de Sterenna EI.  
-Il sert à la fois de vitrine publique des projets et de point d'entrée vers un espace membres : **les Chronicles**.
-
-Toute personne peut s'inscrire. Une fois connectée, elle devient un **Agent des Chronicles** et accède à son cockpit personnel — le sous-espace `/star`.
+> Hub public de **Sterenna EI** et portail d'identité du réseau Nitro / Chronicles.
 
 ---
 
-## 🗺️ Structure du projet
+## Concept
 
-```
+**Gwen Ha Star** est le portail central de l'écosystème Nitro.
+
+Il sert à la fois de :
+
+- vitrine publique des projets Sterenna ;
+- point d'entrée vers l'espace membre `/star/` ;
+- socle d'authentification Supabase partagé ;
+- base commune pour les apps connectées comme Botanica, TCG et les intégrations externes.
+
+Une personne connectée devient un **Agent des Chronicles** et accède à son cockpit personnel dans `/star/`.
+
+---
+
+## Architecture cible
+
+```txt
 gwen-ha-star-static/
+├── index.html                 # Hub public Nitro / Gwen Ha Star
+├── login.html                 # Connexion Supabase / Nitro
+├── reset.html                 # Réinitialisation mot de passe
+├── update-password.html       # Mise à jour mot de passe Supabase
+├── cig.html                   # CIG — profil agent connecté
 │
-├── index.html              # Page d'accueil publique — vitrine Sterenna / Gwen Ha Star
-├── login.html              # Connexion agent
-├── reset.html              # Demande de réinitialisation mot de passe
-├── update-password.html    # Mise à jour du mot de passe (lien email Supabase)
+├── star/                      # Cockpit connecté : crew, widgets, arcade, accès apps
+├── TCG/                       # App interne TCG
+├── jukebox/                   # Jukebox statique
 │
-├── cig.html                # CIG — Carte d'Identification Galactique (profil membre connecté)
+├── shared/                    # Socle commun Nitro
+│   ├── config.js              # Généré au déploiement, non versionné
+│   ├── supabase-client.js     # Client Supabase partagé
+│   ├── auth.js                # Helpers login/session/logout
+│   ├── guards.js              # requireAuth / requireGuest
+│   ├── profile.js             # Profil Agent / cache / display name
+│   ├── session-ui.js          # Widget header session
+│   ├── .htaccess              # CORS pour imports cross-domain depuis PokéGang
+│   ├── logos/
+│   └── images/
 │
-├── config.js               # Configuration Supabase (clés injectées, repo PRIVÉ)
-├── generate-config.sh      # Script bash : génère config.js depuis .env
-├── .env.example            # Template .env (sans valeurs sensibles)
+├── css/                       # Styles globaux Nitro
+├── js/                        # Logique propre au hub
+│   ├── main.js
+│   ├── data.js
+│   ├── radar.js
+│   ├── theme.js
+│   ├── auth.js                # Wrapper vers shared/session-ui.js
+│   ├── supabase.js            # Wrapper vers shared auth/client
+│   └── star/                  # Logique spécifique au cockpit Star
 │
-├── css/                    # Feuilles de style globales
-├── js/
-│   ├── auth.js             # Gestion authentification (guards, redirections)
-│   ├── supabase.js         # Client Supabase + helpers auth
-│   ├── data.js             # Requêtes données Supabase
-│   ├── main.js             # Init page principale
-│   ├── radar.js            # Composant radar (visualisation)
-│   ├── theme.js            # Toggle light/dark mode
-│   └── star/               # Scripts spécifiques à l'espace Star
-│
-├── star/                   # Espace membres connectés — "le cockpit du Gwen Ha Star"
-│   └── ...                 # Hub agents : projets, jeux, infos, crew
-│
-├── jukebox/                # Lecteur musical (JukeboxPlayer — web component autonome)
-│
-└── TCG/                    # Projet interne — Trading Card Game Sterenna (accès via /star)
-    └── ...                 # App TCG full-stack statique avec Supabase
+└── .github/workflows/
+    └── deploy-ovh.yml         # Déploiement SSH/rsync vers OVH ~/nitro/
 ```
 
 ---
 
-## 🧭 Navigation
+## Navigation
 
-| Zone | Accès | Description |
+| URL | Accès | Rôle |
 |---|---|---|
-| `index.html` | Public | Vitrine des projets Sterenna, présentation du Gwen Ha Star |
-| `login.html` | Public | Connexion / inscription agent |
-| `cig.html` | Connecté | Carte d'Identification Galactique — profil de l'agent |
-| `/star` | Connecté | Cockpit — hub membres, projets internes, crew, jeux |
-| `/TCG` | Connecté | Jeu de cartes à collectionner — projet interne au Star |
+| `/` | Public | Hub public Gwen Ha Star / Nitro |
+| `/login.html` | Public | Connexion agent |
+| `/cig.html` | Connecté | Carte d'Identification Galactique |
+| `/star/` | Connecté | Cockpit membre / crew / réseau |
+| `/TCG/` | Connecté | App TCG |
+| `/jukebox/` | Public / intégré | Lecteur musical |
+| `/shared/` | Technique | Modules communs Nitro |
+| `/botanica/` | Connecté | Déployé par le repo `botanica-obscura` sous Nitro |
 
 ---
 
-## 🛠️ Stack technique
+## Shared Nitro Core
 
-- **HTML + JS (modules ES natifs) + CSS** — stack vanilla solide, sans framework, sans bundler
-- **Architecture modulaire** — chaque fonctionnalité est un module JS importé explicitement (`import/export`)
-- **Supabase** — authentification + base de données (PostgreSQL), SDK chargé via `esm.sh`
-- **OVH Hébergement Web** — déploiement continu via webhook GitHub (auto-pull à chaque push sur `main`)
+Le dossier `/shared/` est la couche commune utilisée par les apps Nitro.
+
+### Modules principaux
+
+```txt
+/shared/supabase-client.js
+/shared/auth.js
+/shared/guards.js
+/shared/profile.js
+/shared/session-ui.js
+```
+
+Exemple d'utilisation depuis une app servie sous `nitro.sterenna.fr` :
+
+```js
+import { supabase } from '/shared/supabase-client.js';
+import { requireAuth } from '/shared/guards.js';
+
+const auth = await requireAuth();
+if (!auth) throw new Error('Not authenticated');
+
+const { user, profile } = auth;
+```
+
+### Apps sous le même domaine Nitro
+
+Les apps servies sous le même origin partagent naturellement la session Supabase :
+
+```txt
+https://nitro.sterenna.fr/star/
+https://nitro.sterenna.fr/botanica/
+https://nitro.sterenna.fr/TCG/
+```
+
+### Apps externes / sous-domaines séparés
+
+Les apps comme PokéGang restent sur :
+
+```txt
+https://pokegang.sterenna.fr
+```
+
+Elles peuvent importer les modules `/shared` grâce au CORS configuré dans `shared/.htaccess`, mais la session navigateur n'est pas automatiquement partagée entre sous-domaines.
+
+Pour PokéGang, l'intégration Nitro doit donc rester progressive : détection, liaison de compte, cloud sync, récompenses, etc.
 
 ---
 
-## 🌐 Écosystème des projets
+## Configuration Supabase
 
-Les projets Sterenna s'articulent autour du Star selon deux modèles :
+Les clés Supabase ne sont plus versionnées dans un `config.js` à la racine.
 
-### Projets internes — vivent dans le Star
-Hébergés directement dans ce repo, accessibles uniquement aux agents connectés.
+Le workflow GitHub Actions génère au déploiement :
 
-| Projet | Dossier | Description |
-|---|---|---|
-| TCG Sterenna | `/TCG` | Jeu de cartes à collectionner, collection et duels |
-| Jukebox | `/jukebox` | Lecteur musical ambiance (web component) |
+```txt
+shared/config.js
+```
 
-### Projets externes — vivent librement, enrichis par le Star
-Projets autonomes avec leur propre existence, mais dont la connexion au compte Star débloque des fonctionnalités supplémentaires.
+à partir des secrets GitHub :
 
-| Projet | Description |
-|---|---|
-| **PokeGang** | Jeu Pokemon indépendant — la connexion au Star offre bonus, synergies et profil partagé |
+```txt
+GHSTAR_SUPABASE_URL
+GHSTAR_SUPABASE_ANON
+```
 
-> D'autres projets externes pourront rejoindre cet écosystème via l'API Supabase partagée.
+`shared/config.js` est ignoré par Git et ne doit pas être commité.
+
+> La clé `anon` / `publishable` reste visible côté navigateur après déploiement, ce qui est normal pour une app front statique Supabase. La sécurité doit être assurée par les règles RLS côté Supabase.
 
 ---
 
-## 🚀 Déploiement
+## Déploiement
 
-Le repo est lié à l'hébergement OVH via un **webhook GitHub**.  
-À chaque `git push` sur `main`, OVH pull automatiquement les changements.
+Le repo est déployé avec GitHub Actions, pas via le webhook Git/VCS OVH.
 
-### Workflow local
+Flux :
+
+```txt
+git push main
+→ GitHub Actions
+→ génération shared/config.js
+→ rsync SSH
+→ OVH ~/nitro/
+→ https://nitro.sterenna.fr/
+```
+
+Secrets GitHub requis :
+
+```txt
+OVH_HOST
+OVH_USER
+OVH_SSH_KEY
+GHSTAR_SUPABASE_URL
+GHSTAR_SUPABASE_ANON
+```
+
+Le workflow actif est :
+
+```txt
+.github/workflows/deploy-ovh.yml
+```
+
+---
+
+## CORS `/shared` pour PokéGang
+
+`shared/.htaccess` autorise les imports de modules depuis :
+
+```txt
+https://pokegang.sterenna.fr
+```
+
+Headers attendus :
+
+```txt
+Access-Control-Allow-Origin: https://pokegang.sterenna.fr
+Access-Control-Allow-Methods: GET, OPTIONS
+Cross-Origin-Resource-Policy: cross-origin
+```
+
+Si PokéGang voit encore une erreur CORS, purger Cloudflare sur :
+
+```txt
+https://nitro.sterenna.fr/shared/supabase-client.js
+https://nitro.sterenna.fr/shared/auth.js
+https://nitro.sterenna.fr/shared/profile.js
+https://nitro.sterenna.fr/shared/config.js
+```
+
+---
+
+## Développement local
+
+Ce repo est une app statique vanilla : HTML, CSS, JavaScript modules ES natifs.
+
+Lancer localement :
 
 ```bash
-# 1. Cloner le repo
-git clone https://github.com/MutenRock/gwen-ha-star-static.git
-cd gwen-ha-star-static
-
-# 2. Créer le fichier .env (non versionné)
-cp .env.example .env
-# → remplir SUPABASE_URL et SUPABASE_ANON_KEY dans .env
-
-# 3. Générer config.js avec les vraies clés
-bash generate-config.sh
+python -m http.server 8080
 ```
 
-> ⚠️ **Repo PRIVÉ** — `config.js` contient les clés Supabase.  
-> Ne jamais repasser le repo en public sans avoir vidé `config.js` au préalable.
+Puis ouvrir :
+
+```txt
+http://localhost:8080/
+```
+
+Pour tester Supabase localement, créer temporairement un fichier :
+
+```txt
+shared/config.js
+```
+
+avec :
+
+```js
+export const SUPABASE_URL = 'https://...supabase.co';
+export const SUPABASE_ANON = 'sb_publishable_...';
+```
+
+Ne pas commiter ce fichier.
 
 ---
 
-## 👥 Crew
+## Sécurité
 
-Tous les agents connectés au Star font partie du Crew et sont visibles dans l'espace `/star`.
+Ne jamais commiter :
+
+- `.env` ;
+- `shared/config.js` généré ;
+- `config.js` racine contenant des clés ;
+- clé `service_role` Supabase ;
+- mot de passe database ;
+- JWT secret ;
+- clé privée SSH.
 
 ---
 
-*Sterenna EI — © 2025-2026*
+## Repos liés
+
+| Repo | Rôle | Déploiement |
+|---|---|---|
+| `gwen-ha-star-static` | Hub Nitro + shared auth | `~/nitro/` |
+| `botanica-obscura` | App Botanica connectée à Nitro | `~/nitro/botanica/` |
+| `pokegang-game` | Jeu autonome + intégration Nitro progressive | `~/pokegang/` |
+
+---
+
+*Sterenna EI — Gwen Ha Star / Nitro — 2025-2026*
