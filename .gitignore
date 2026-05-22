@@ -2,6 +2,7 @@
 .env
 .env.*
 config.js
+shared/config.js
 TCG/config.local.js
 TCG/config.js
 
