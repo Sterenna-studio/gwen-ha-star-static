@@ -1,0 +1,13 @@
+# CORS for Nitro shared ES modules.
+# Allows PokéGang to import /shared/*.js from https://nitro.sterenna.fr/shared/.
+
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "https://pokegang.sterenna.fr"
+  Header set Access-Control-Allow-Methods "GET, OPTIONS"
+  Header set Access-Control-Allow-Headers "Content-Type"
+  Header set Cross-Origin-Resource-Policy "cross-origin"
+</IfModule>
+
+<IfModule mod_mime.c>
+  AddType application/javascript .js
+</IfModule>
