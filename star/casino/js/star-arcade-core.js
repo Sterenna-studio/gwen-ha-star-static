@@ -1,28 +1,39 @@
 /**
- * star-arcade-core.js — playable Star Arcade router
- * Reconnects all mini-games from /star/casino/ with shared Nitro auth context.
+ * star-arcade-core.js — Star Arcade playable and balanced core
+ * Mini-jeux : Whack-A-Mole · Crash · Slot Machine · Neon Racer
+ * Monnaie : Chronicles (profiles.chronicles)
  */
 import { supabase } from '/shared/supabase-client.js';
 import { NeonRacer } from './neon-racer.js';
 
 const WAM_DURATION = 30;
 const WAM_HOLES = 12;
-const SLOT_SYMBOLS = [
-  { id:'sniky',  name:'SNIKY',  img:'/shared/images/pixel_pp/pixel_pp_sniky.png',  mult:20, weight:1 },
-  { id:'aligax', name:'ALIGAX', img:'/shared/images/pixel_pp/pixel_pp_aligax.png', mult:20, weight:1 },
-  { id:'cowboy', name:'COWBOY', img:'/shared/images/pixel_pp/pixel_pp_cowboy.png', mult:15, weight:2 },
-  { id:'abad',   name:'ABAD',   img:'/shared/images/pixel_pp/pixel_pp_abad.png',   mult:10, weight:3 },
-  { id:'spirit', name:'SPIRIT', img:'/shared/images/pixel_pp/pixel_pp_spirit.png', mult:5,  weight:5 },
-  { id:'star',   name:'STAR',   emoji:'⭐', mult:30, weight:1 },
-  { id:'coin',   name:'COIN',   emoji:'🪙', mult:3,  weight:8 },
+const WAM_TYPES = [
+  { emoji:'🤖', pts: 1, cls:'normal', weight:54, ttl:850 },
+  { emoji:'⚡', pts: 2, cls:'fast',   weight:23, ttl:520 },
+  { emoji:'⭐', pts: 5, cls:'golden', weight:8,  ttl:650 },
+  { emoji:'💣', pts:-4, cls:'bomb',   weight:15, ttl:900 },
 ];
 
-const el = (tag, cls, txt) => {
-  const node = document.createElement(tag);
-  if (cls) node.className = cls;
-  if (txt != null) node.textContent = txt;
-  return node;
-};
+const SLOT_ROWS = 3;
+const SLOT_COLS = 5;
+const SLOT_LINES = [
+  { id:'mid', name:'MILIEU', rows:[1,1,1,1,1], mult:1.0, color:'#00ff80' },
+  { id:'top', name:'HAUT', rows:[0,0,0,0,0], mult:.55, color:'#60a5fa' },
+  { id:'bot', name:'BAS', rows:[2,2,2,2,2], mult:.55, color:'#f97316' },
+  { id:'d1', name:'DIAG ↘', rows:[0,0,1,2,2], mult:.75, color:'#f472b6' },
+  { id:'d2', name:'DIAG ↗', rows:[2,2,1,0,0], mult:.75, color:'#c084fc' },
+];
+const SLOT_SYMBOLS = [
+  { id:'coin',   name:'COIN',   emoji:'🪙', weight:34, pay:{3:.35, 4:.9,  5:2.5} },
+  { id:'leaf',   name:'LEAF',   emoji:'🍃', weight:26, pay:{3:.45, 4:1.2, 5:4} },
+  { id:'spirit', name:'SPIRIT', img:'/shared/images/pixel_pp/pixel_pp_spirit.png', weight:18, pay:{3:.7, 4:2.2, 5:7} },
+  { id:'abad',   name:'ABAD',   img:'/shared/images/pixel_pp/pixel_pp_abad.png',   weight:11, pay:{3:1.1, 4:4,   5:14} },
+  { id:'cowboy', name:'COWBOY', img:'/shared/images/pixel_pp/pixel_pp_cowboy.png', weight:7,  pay:{3:1.7, 4:7,   5:24} },
+  { id:'aligax', name:'ALIGAX', img:'/shared/images/pixel_pp/pixel_pp_aligax.png', weight:3,  pay:{3:3.5, 4:18,  5:70} },
+  { id:'sniky',  name:'SNIKY',  img:'/shared/images/pixel_pp/pixel_pp_sniky.png',  weight:3,  pay:{3:3.5, 4:18,  5:70} },
+  { id:'star',   name:'STAR',   emoji:'⭐', weight:2, pay:{3:6, 4:35, 5:140} },
+];
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -51,8 +62,19 @@ const SFX = {
   win(){ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>this.tone(f,'triangle',.08,.12),i*80)); },
   lose(){ [330,260,180].forEach((f,i)=>setTimeout(()=>this.tone(f,'sawtooth',.06,.14),i*90)); },
   tick(){ this.tone(1300, 'square', .025, .025); },
+  jackpot(){ [523,659,784,1047,1319,1568].forEach((f,i)=>setTimeout(()=>this.tone(f,i%2?'triangle':'square',.08,.14),i*65)); },
   crash(){ this.tone(100, 'sawtooth', .12, .35); },
 };
+
+function weightedPick(items) {
+  const total = items.reduce((sum, item) => sum + item.weight, 0);
+  let roll = Math.random() * total;
+  for (const item of items) {
+    roll -= item.weight;
+    if (roll <= 0) return item;
+  }
+  return items[0];
+}
 
 export class StarArcadeCore {
   static async boot({ mount, user }) {
@@ -77,6 +99,8 @@ export class StarArcadeCore {
     this.wamRaf = null;
     this.crashRunning = false;
     this.crashRaf = null;
+    this.slotSpinning = false;
+    this.slotStats = { spins:0, wagered:0, paid:0 };
   }
 
   async loadCredits() {
@@ -99,10 +123,7 @@ export class StarArcadeCore {
   async saveCredits() {
     if (!this.userId) return;
     try {
-      await supabase
-        .from('profiles')
-        .update({ chronicles: this.credits })
-        .eq('id', this.userId);
+      await supabase.from('profiles').update({ chronicles: this.credits }).eq('id', this.userId);
     } catch (error) {
       console.warn('[Star Arcade] credits save failed:', error?.message ?? error);
     }
@@ -113,7 +134,6 @@ export class StarArcadeCore {
     this.cleanupActiveGame();
     const root = document.querySelector(this.mountSel);
     if (!root) return;
-
     root.innerHTML = `
       <div class="scanlines" aria-hidden="true"></div>
       <div class="casino-page" id="casino-page">
@@ -135,14 +155,17 @@ export class StarArcadeCore {
             <p class="lobby-hero-sub">4 MINI-JEUX · CHRONICLES · STAR</p>
             <span class="lobby-hero-line"></span>
           </div>
-
-          <div class="lobby-grid">
-            ${this.card('wam','🔨','// JEU 01','WHACK-A-MOLE','30 secondes. Frappe les entités, évite les bombes, maximise ton combo.','RÉFLEXES · COMBO')}
-            ${this.card('crash','🚀','// JEU 02','CRASH','Le multiplicateur monte. Éjecte-toi avant le crash pour encaisser.','RISQUE · AUTO-EJECT')}
-            ${this.card('slots','🎰','// JEU 03','SLOT MACHINE','Aligne les symboles du crew pour gagner des Chronicles.','CHANCE · JACKPOT')}
-            ${this.card('nr','🏁','// JEU 04','NEON RACER','Course arcade à axes alternés. Choisis ton véhicule et tes cœurs.','COURSE · SKILL')}
+          <div class="jackpot-banner" style="width:100%;max-width:620px;margin-bottom:32px">
+            <span class="jp-icon">⚖️</span>
+            <span class="jp-label">MODE ALPHA ÉQUILIBRÉ</span>
+            <span class="jp-val" id="jp-val">MISES LIMITÉES</span>
           </div>
-
+          <div class="lobby-grid">
+            ${this.card('wam','🔨','// JEU 01','WHACK-A-MOLE','30 secondes. Frappe les entités, évite les bombes, garde ton combo. Jeu plutôt skill.','RTP CIBLE ~95%')}
+            ${this.card('crash','🚀','// JEU 02','CRASH','Le multiplicateur monte. Éjecte-toi avant le crash ou utilise l’auto-eject.','RTP CIBLE ~93%')}
+            ${this.card('slots','🎰','// JEU 03','SLOT MACHINE','5 rouleaux × 3 lignes. Gains gauche → droite sur 5 lignes. Version réparée.','RTP CIBLE ~90%')}
+            ${this.card('nr','🏁','// JEU 04','NEON RACER','Course arcade à axes alternés. Choisis véhicule et cœurs. Jeu skill/risque.','SKILL · COURSE')}
+          </div>
           <div class="history-section" style="margin-top:48px;width:100%" id="history-section">
             <div class="history-head"><span>JEU</span><span>RÉSULTAT</span><span>MISE</span><span>GAIN</span><span>SOLDE</span></div>
             <div class="history-body" id="history-body"></div>
@@ -165,13 +188,17 @@ export class StarArcadeCore {
   }
 
   card(id, icon, tag, title, desc, meta) {
-    return `<button class="game-card" id="card-${id}" style="--card-color:var(--c-primary)">
+    return `<button class="game-card" id="card-${id}" style="--card-color:${this.gameColor(id)}">
       <div class="gc-icon">${icon}</div><div class="gc-tag">${tag}</div>
       <div class="gc-title">${title}</div>
       <div class="gc-desc">${desc}</div>
       <div class="gc-meta"><span class="gc-badge">${meta}</span></div>
       <div class="gc-play-btn">▶ JOUER</div>
     </button>`;
+  }
+
+  gameColor(id) {
+    return { wam:'var(--c-orange)', crash:'var(--c-pink)', slots:'var(--c-amber)', nr:'var(--c-cyan)' }[id] ?? 'var(--c-primary)';
   }
 
   showGame(name) {
@@ -199,6 +226,7 @@ export class StarArcadeCore {
     this.stopWam();
     this.stopCrash();
     this.cleanupNeonRacer();
+    this.slotSpinning = false;
   }
 
   header(title, accent='') {
@@ -209,24 +237,32 @@ export class StarArcadeCore {
   }
 
   betPanel(id, presets=[1,5,10,25,50,100]) {
+    const maxBet = Math.max(1, Math.min(100, this.credits));
+    if (this.bet > maxBet) this.bet = maxBet;
     return `<div class="bet-panel">
       <span class="bet-label">MISE</span>
       <button class="bet-btn" id="${id}-bet-down">−</button>
       <span class="bet-val" id="${id}-bet-val">${this.bet}</span>
       <button class="bet-btn" id="${id}-bet-up">+</button>
-      <div class="bet-presets">${presets.map(p=>`<button class="bet-preset${this.bet===p?' active':''}" data-preset="${p}">${p}</button>`).join('')}</div>
+      <div class="bet-presets">${presets.map(p=>`<button class="bet-preset${this.bet===p?' active':''}" data-preset="${p}" ${p>this.credits?'disabled':''}>${p}</button>`).join('')}</div>
     </div>`;
   }
 
   bindBetPanel(id) {
     const update = () => {
+      const maxBet = Math.max(1, Math.min(100, this.credits));
+      this.bet = Math.max(1, Math.min(maxBet, this.bet));
       const val = document.getElementById(`${id}-bet-val`);
       if (val) val.textContent = this.bet;
-      document.querySelectorAll('.bet-preset').forEach(btn => btn.classList.toggle('active', Number(btn.dataset.preset) === this.bet));
+      document.querySelectorAll('.bet-preset').forEach(btn => {
+        btn.classList.toggle('active', Number(btn.dataset.preset) === this.bet);
+        btn.disabled = Number(btn.dataset.preset) > this.credits;
+      });
     };
-    document.getElementById(`${id}-bet-down`)?.addEventListener('click', () => { this.bet = Math.max(1, this.bet - (this.bet > 10 ? 5 : 1)); update(); });
-    document.getElementById(`${id}-bet-up`)?.addEventListener('click', () => { this.bet = Math.min(Math.max(1, this.credits), this.bet + (this.bet >= 10 ? 5 : 1)); update(); });
-    document.querySelectorAll('.bet-preset').forEach(btn => btn.addEventListener('click', () => { this.bet = Math.min(this.credits, Number(btn.dataset.preset)); update(); }));
+    document.getElementById(`${id}-bet-down`)?.addEventListener('click', () => { SFX.click(); this.bet = Math.max(1, this.bet - (this.bet > 10 ? 5 : 1)); update(); });
+    document.getElementById(`${id}-bet-up`)?.addEventListener('click', () => { SFX.click(); this.bet = this.bet + (this.bet >= 10 ? 5 : 1); update(); });
+    document.querySelectorAll('.bet-preset').forEach(btn => btn.addEventListener('click', () => { SFX.click(); this.bet = Number(btn.dataset.preset); update(); }));
+    update();
   }
 
   async debit(amount) {
@@ -279,8 +315,9 @@ export class StarArcadeCore {
           <div class="wam-hud-block"><span class="wam-hud-label">SCORE</span><span class="wam-hud-val" id="wam-score">0</span></div>
           <div class="wam-hud-block"><span class="wam-hud-label">TEMPS</span><span class="wam-hud-val wam-timer" id="wam-timer">${WAM_DURATION}</span></div>
           <div class="wam-hud-block"><span class="wam-hud-label">COMBO</span><span class="wam-hud-val wam-combo" id="wam-combo">x1</span></div>
+          <div class="wam-hud-block"><span class="wam-hud-label">RATIO</span><span class="wam-hud-val" id="wam-target" style="color:var(--c-green);font-size:1.15rem">10 pts = mise</span></div>
         </div>
-        <div class="wam-grid" id="wam-grid">${Array.from({length: WAM_HOLES}, (_,i)=>`<button class="wam-hole" id="wam-hole-${i}"><span class="wam-mole">🤖</span></button>`).join('')}</div>
+        <div class="wam-grid" id="wam-grid">${Array.from({length: WAM_HOLES}, (_,i)=>`<button class="wam-hole" id="wam-hole-${i}" data-type="normal"><span class="wam-mole">🤖</span></button>`).join('')}</div>
         <div class="wam-timebar-wrap"><div class="wam-timebar" id="wam-timebar"></div></div>
       </div>
       <div class="game-msg" id="wam-msg">MISE ET LANCE LA PARTIE</div>
@@ -296,9 +333,10 @@ export class StarArcadeCore {
     this.wamRunning = true;
     this.wamScore = 0;
     this.wamCombo = 1;
+    this.wamHits = 0;
     this.wamStart = performance.now();
     document.getElementById('wam-start').disabled = true;
-    this.setMsg('wam-msg', 'GO !', 'win');
+    this.setMsg('wam-msg', 'GO !', 'neutral');
     this.scheduleMoles();
     this.wamRaf = requestAnimationFrame(() => this.tickWam());
   }
@@ -306,34 +344,37 @@ export class StarArcadeCore {
   scheduleMoles() {
     if (!this.wamRunning) return;
     const holes = [...document.querySelectorAll('.wam-hole:not(.active)')];
-    if (holes.length) this.popMole(holes[Math.floor(Math.random() * holes.length)]);
-    this.wamTimers.push(setTimeout(() => this.scheduleMoles(), 350 + Math.random() * 500));
+    const elapsed = (performance.now() - this.wamStart) / 1000;
+    const maxActive = elapsed < 8 ? 2 : elapsed < 20 ? 3 : 4;
+    if (holes.length && document.querySelectorAll('.wam-hole.active').length < maxActive) {
+      this.popMole(holes[Math.floor(Math.random() * holes.length)]);
+    }
+    this.wamTimers.push(setTimeout(() => this.scheduleMoles(), 320 + Math.random() * 500));
   }
 
   popMole(hole) {
-    const types = [
-      { emoji:'🤖', pts:1, cls:'normal' },
-      { emoji:'⚡', pts:2, cls:'fast' },
-      { emoji:'⭐', pts:5, cls:'golden' },
-      { emoji:'💣', pts:-3, cls:'bomb' },
-    ];
-    const type = types[Math.floor(Math.random() * types.length)];
+    const type = weightedPick(WAM_TYPES);
     hole.className = `wam-hole active ${type.cls}`;
+    hole.dataset.type = type.cls;
     hole.querySelector('.wam-mole').textContent = type.emoji;
-    const timeout = setTimeout(() => hole.className = 'wam-hole', 750);
-    const hit = () => {
+    const timeout = setTimeout(() => { hole.className = 'wam-hole'; }, type.ttl);
+    hole.onclick = () => {
       clearTimeout(timeout);
       if (!hole.classList.contains('active')) return;
-      hole.className = 'wam-hole hit';
       const pts = type.pts < 0 ? type.pts : type.pts * this.wamCombo;
       this.wamScore = Math.max(0, this.wamScore + pts);
+      this.wamHits += type.pts > 0 ? 1 : 0;
       this.wamCombo = type.pts < 0 ? 1 : Math.min(8, this.wamCombo + 1);
       document.getElementById('wam-score').textContent = this.wamScore;
       document.getElementById('wam-combo').textContent = `x${this.wamCombo}`;
-      setTimeout(() => hole.className = 'wam-hole', 200);
+      hole.className = `wam-hole ${type.pts < 0 ? 'miss' : 'hit'}`;
+      const pop = document.createElement('span');
+      pop.className = `wam-score-pop${type.pts < 0 ? ' neg' : ''}`;
+      pop.textContent = `${pts > 0 ? '+' : ''}${pts}`;
+      hole.appendChild(pop);
+      setTimeout(() => { hole.className = 'wam-hole'; pop.remove(); }, 260);
       type.pts < 0 ? SFX.lose() : SFX.tick();
     };
-    hole.onclick = hit;
   }
 
   tickWam() {
@@ -348,12 +389,12 @@ export class StarArcadeCore {
 
   async endWam() {
     this.stopWam();
-    const gain = Math.round(this.bet * this.wamScore / 10);
+    const gain = Math.max(0, Math.round(this.bet * this.wamScore / 12));
     const net = gain - this.bet;
     if (gain > 0) await this.credit(gain);
     const result = net > 0 ? 'win' : net < 0 ? 'lose' : 'push';
     this.addHistory('WHACK', this.bet, result, net);
-    this.setMsg('wam-msg', `Score ${this.wamScore} · ${net >= 0 ? '+' : ''}${net} C`, result);
+    this.setMsg('wam-msg', `Score ${this.wamScore} · ${this.wamHits} hits · ${net >= 0 ? '+' : ''}${net} C`, result);
     const btn = document.getElementById('wam-start');
     if (btn) { btn.disabled = false; btn.textContent = '↺ REJOUER'; }
     result === 'win' ? SFX.win() : SFX.lose();
@@ -364,6 +405,7 @@ export class StarArcadeCore {
     this.wamTimers.forEach(clearTimeout); this.wamTimers = [];
     if (this.wamRaf) cancelAnimationFrame(this.wamRaf);
     this.wamRaf = null;
+    document.querySelectorAll('.wam-hole.active').forEach(h => h.className = 'wam-hole');
   }
 
   // CRASH
@@ -371,9 +413,22 @@ export class StarArcadeCore {
     const game = document.getElementById('game-crash');
     if (!game) return;
     game.innerHTML = `${this.header('CRA', 'SH')}${this.betPanel('cr')}
+      <div class="crash-rules">
+        <div class="crash-rules-title">⚡ COMMENT JOUER</div>
+        <div class="crash-rules-grid">
+          <div class="crash-rule-block"><span class="crb-icon">🚀</span><span class="crb-label">DÉCOLLAGE</span><span class="crb-desc">Lance une mise. Le multiplicateur monte automatiquement.</span></div>
+          <div class="crash-rule-block"><span class="crb-icon">🛸</span><span class="crb-label">ÉJECTION</span><span class="crb-desc">Encaisse mise × multiplicateur avant le crash.</span></div>
+          <div class="crash-rule-block"><span class="crb-icon">🤖</span><span class="crb-label">AUTO-EJECT</span><span class="crb-desc">Seuil conseillé : ×1.6 à ×2.5 pour limiter le risque.</span></div>
+        </div>
+      </div>
       <div class="crash-layout">
         <div class="crash-canvas-wrap"><canvas class="crash-canvas" id="cr-canvas" width="800" height="220"></canvas><div class="crash-mult" id="cr-mult">1.00×</div></div>
-        <div class="crash-controls"><button class="action-btn primary" id="cr-start">▶ LANCER</button><button class="action-btn" id="cr-eject" disabled>🚀 ÉJECTER</button></div>
+        <div class="crash-history" id="cr-history"></div>
+        <div class="crash-controls">
+          <button class="action-btn primary" id="cr-start">▶ LANCER</button>
+          <button class="action-btn" id="cr-eject" disabled>🚀 ÉJECTER</button>
+          <div class="crash-autoeject-row">AUTO ×<input class="crash-autoeject-inp" id="cr-auto" type="number" min="1.1" max="50" step="0.1" value="2.0"></div>
+        </div>
         <div class="game-msg" id="cr-msg">MISE ET LANCE LE CRASH</div>
       </div>`;
     document.getElementById('game-back')?.addEventListener('click', () => this.backToLobby());
@@ -389,47 +444,53 @@ export class StarArcadeCore {
     this.crashRunning = true;
     this.crashCashed = false;
     this.crashTarget = this.crashPoint();
+    this.crashAuto = Number(document.getElementById('cr-auto')?.value ?? 0);
     this.crashT0 = performance.now();
     this.crashPoints = [[0, 1]];
     document.getElementById('cr-start').disabled = true;
     document.getElementById('cr-eject').disabled = false;
+    this.setMsg('cr-msg', 'EN VOL — ÉJECTE-TOI AVANT LE CRASH', 'neutral');
     this.loopCrash();
   }
 
   crashPoint() {
-    const r = Math.random();
-    if (r < .15) return 1.1 + Math.random() * .5;
-    if (r < .55) return 1.6 + Math.random() * 2.4;
-    if (r < .90) return 4 + Math.random() * 10;
-    return 14 + Math.random() * 60;
+    const houseEdge = .94;
+    const r = Math.max(.002, Math.random());
+    const point = Math.floor((houseEdge / r) * 100) / 100;
+    return Math.max(1.01, Math.min(point, 80));
   }
 
   loopCrash() {
     if (!this.crashRunning) return;
     const elapsed = (performance.now() - this.crashT0) / 1000;
-    this.crashMult = Math.round(Math.pow(1.08, elapsed * 5) * 100) / 100;
+    this.crashMult = Math.round(Math.pow(1.075, elapsed * 5) * 100) / 100;
     this.crashPoints.push([elapsed, this.crashMult]);
     document.getElementById('cr-mult').textContent = `${this.crashMult.toFixed(2)}×`;
     this.drawCrash(this.crashMult, false);
+    if (this.crashAuto > 1 && this.crashMult >= this.crashAuto && !this.crashCashed) return this.ejectCrash(true);
     if (this.crashMult >= this.crashTarget) return this.doCrash();
     this.crashRaf = requestAnimationFrame(() => this.loopCrash());
   }
 
-  async ejectCrash() {
+  async ejectCrash(auto=false) {
     if (!this.crashRunning || this.crashCashed) return;
     this.crashCashed = true;
     const gain = Math.round(this.bet * this.crashMult);
     await this.credit(gain);
     this.addHistory('CRASH', this.bet, 'win', gain - this.bet);
-    this.setMsg('cr-msg', `ÉJECTÉ ×${this.crashMult.toFixed(2)} · +${gain - this.bet} C`, 'win');
+    this.setMsg('cr-msg', `${auto ? 'AUTO ' : ''}ÉJECTÉ ×${this.crashMult.toFixed(2)} · +${gain - this.bet} C`, 'win');
     document.getElementById('cr-eject').disabled = true;
+    this.addCrashPill(this.crashMult, 'safe');
     SFX.win();
   }
 
   doCrash() {
     this.stopCrash(false);
     document.getElementById('cr-mult').textContent = `💥 ${this.crashMult.toFixed(2)}×`;
+    document.getElementById('cr-mult').classList.add('crashed');
     this.drawCrash(this.crashMult, true);
+    const cat = this.crashMult < 1.5 ? 'danger' : this.crashMult < 3 ? 'risky' : 'safe';
+    this.addCrashPill(this.crashMult, cat);
     if (!this.crashCashed) {
       this.addHistory('CRASH', this.bet, 'lose', -this.bet);
       this.setMsg('cr-msg', `CRASH ×${this.crashMult.toFixed(2)} · PERDU`, 'lose');
@@ -437,6 +498,15 @@ export class StarArcadeCore {
     }
     document.getElementById('cr-start').disabled = false;
     document.getElementById('cr-eject').disabled = true;
+  }
+
+  addCrashPill(mult, cat) {
+    const wrap = document.getElementById('cr-history'); if (!wrap) return;
+    const pill = document.createElement('span');
+    pill.className = `crash-hist-pill ${cat}`;
+    pill.textContent = `${mult.toFixed(2)}×`;
+    wrap.prepend(pill);
+    while (wrap.children.length > 12) wrap.lastElementChild.remove();
   }
 
   stopCrash(reset=true) {
@@ -464,61 +534,125 @@ export class StarArcadeCore {
     ctx.stroke();
   }
 
-  // SLOTS
+  // SLOT MACHINE
   initSlots() {
     const game = document.getElementById('game-slots');
     if (!game) return;
     game.innerHTML = `${this.header('SLOT', 'MACHINE')}${this.betPanel('sl')}
-      <div class="sl-machine">
-        <div class="sl-scoreboard"><div class="sl-score-block"><span class="sl-score-lbl">GAIN</span><span class="sl-score-val sl-score-gain" id="sl-gain">—</span></div></div>
-        <div class="sl-cabinet"><div class="sl-reels-wrap" id="slot-reels">${[0,1,2,3,4].map(i=>`<div class="sl-reel"><div class="sl-cell sl-cell--active" id="slot-cell-${i}">?</div></div>`).join('')}</div></div>
-        <div class="sl-msg" id="sl-msg">MISE ET LANCE LES ROULEAUX</div>
+      <div class="sl-machine" style="background:var(--c-surface);border:1px solid rgba(255,204,0,.25);border-radius:20px;padding:20px;box-shadow:inset 0 0 50px rgba(0,0,0,.35)">
+        <div class="sl-scoreboard" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
+          <div class="sl-score-block"><span class="sl-score-lbl">GAIN</span><span class="sl-score-val sl-score-gain" id="sl-gain">—</span></div>
+          <div class="sl-score-block"><span class="sl-score-lbl">LIGNES</span><span class="sl-score-val" style="color:var(--c-cyan)">5</span></div>
+          <div class="sl-score-block"><span class="sl-score-lbl">RÈGLE</span><span class="sl-score-val" style="font-size:.9rem;color:var(--c-text-muted)">3+ gauche → droite</span></div>
+        </div>
+        <div id="slot-grid" style="display:grid;grid-template-columns:repeat(5,minmax(56px,1fr));gap:10px;max-width:620px;margin:0 auto 14px"></div>
+        <div id="slot-lines" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px"></div>
+        <div id="slot-breakdown" style="min-height:34px;text-align:center;font-size:10px;letter-spacing:.08em;color:var(--c-text-muted);line-height:1.7"></div>
+        <div class="sl-msg" id="sl-msg">MISE TOTALE · 5 LIGNES ACTIVES · RTP ALPHA ~90%</div>
         <div class="action-row"><button class="action-btn primary" id="sl-spin">🎰 LANCER</button></div>
       </div>`;
     document.getElementById('game-back')?.addEventListener('click', () => this.backToLobby());
     document.getElementById('sl-spin')?.addEventListener('click', () => this.spinSlots());
     this.bindBetPanel('sl');
+    this.renderSlotGrid(this.randomSlotGrid());
+    this.renderSlotLineLegend();
+  }
+
+  renderSlotLineLegend(activeIds=[]) {
+    const wrap = document.getElementById('slot-lines');
+    if (!wrap) return;
+    wrap.innerHTML = SLOT_LINES.map(line => `<span style="border:1px solid ${line.color};color:${line.color};border-radius:999px;padding:3px 9px;font-size:8px;letter-spacing:.12em;background:${activeIds.includes(line.id) ? 'rgba(255,255,255,.08)' : 'transparent'}">${line.name} ×${line.mult}</span>`).join('');
+  }
+
+  renderSlotGrid(grid, wins=[]) {
+    const root = document.getElementById('slot-grid');
+    if (!root) return;
+    const winCells = new Set();
+    wins.forEach(win => {
+      for (let c=0; c<win.count; c++) winCells.add(`${win.line.rows[c]}-${c}`);
+    });
+    root.innerHTML = '';
+    for (let r=0; r<SLOT_ROWS; r++) {
+      for (let c=0; c<SLOT_COLS; c++) {
+        const sym = grid[r][c];
+        const active = winCells.has(`${r}-${c}`);
+        const cell = document.createElement('div');
+        cell.style.cssText = `min-height:78px;border-radius:14px;border:1px solid ${active ? '#00ff80' : 'rgba(255,255,255,.08)'};background:${active ? 'rgba(0,255,128,.08)' : 'rgba(255,255,255,.025)'};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:${active ? '0 0 18px rgba(0,255,128,.35)' : 'inset 0 0 20px rgba(0,0,0,.35)'};transition:all .18s`;
+        cell.innerHTML = this.slotSymbolHTML(sym);
+        root.appendChild(cell);
+      }
+    }
   }
 
   async spinSlots() {
+    if (this.slotSpinning) return;
     if (!(await this.debit(this.bet))) return this.setMsg('sl-msg', 'CRÉDITS INSUFFISANTS', 'lose');
+    this.slotSpinning = true;
     const btn = document.getElementById('sl-spin');
-    btn.disabled = true;
-    const cells = [0,1,2,3,4].map(i => document.getElementById(`slot-cell-${i}`));
-    for (let t=0;t<18;t++) {
-      cells.forEach(c => c.innerHTML = this.slotHTML(this.rollSlot()));
+    if (btn) btn.disabled = true;
+    document.getElementById('slot-breakdown').textContent = '';
+    document.getElementById('sl-gain').textContent = '—';
+    this.setMsg('sl-msg', 'LES ROULEAUX TOURNENT…', 'neutral');
+
+    let grid = this.randomSlotGrid();
+    for (let t=0; t<20; t++) {
+      grid = this.randomSlotGrid();
+      this.renderSlotGrid(grid);
       SFX.tick();
-      await sleep(55 + t * 4);
+      await sleep(48 + t * 5);
     }
-    const result = cells.map(() => this.rollSlot());
-    result.forEach((sym, i) => cells[i].innerHTML = this.slotHTML(sym));
-    const counts = result.reduce((acc, s) => (acc[s.id] = (acc[s.id] ?? 0) + 1, acc), {});
-    const bestId = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0];
-    const best = result.find(s => s.id === bestId);
-    const n = counts[bestId];
-    let gain = 0;
-    if (n >= 5) gain = Math.round(this.bet * best.mult);
-    else if (n === 4) gain = Math.round(this.bet * best.mult * .35);
-    else if (n === 3) gain = Math.round(this.bet * best.mult * .12);
+
+    grid = this.randomSlotGrid();
+    const { wins, gain } = this.evaluateSlots(grid);
+    this.renderSlotGrid(grid, wins);
+    this.renderSlotLineLegend(wins.map(w => w.line.id));
+
     if (gain > 0) await this.credit(gain);
     const net = gain - this.bet;
     const status = net > 0 ? 'win' : net < 0 ? 'lose' : 'push';
     document.getElementById('sl-gain').textContent = gain > 0 ? `+${gain}` : '—';
-    this.setMsg('sl-msg', n >= 3 ? `${n}× ${best.name} · ${net >= 0 ? '+' : ''}${net} C` : '— RIEN CETTE FOIS', status);
+    document.getElementById('slot-breakdown').innerHTML = wins.length
+      ? wins.map(w => `<span style="color:${w.line.color}">${w.line.name}</span> · ${w.count}× ${w.symbol.name} · +${w.gain} C`).join('<br>')
+      : 'Aucune ligne gagnante.';
+    this.setMsg('sl-msg', wins.length ? `${wins.length} ligne${wins.length>1?'s':''} · ${net >= 0 ? '+' : ''}${net} C` : `PERDU · -${this.bet} C`, status);
     this.addHistory('SLOTS', this.bet, status, net);
-    status === 'win' ? SFX.win() : SFX.lose();
-    btn.disabled = false;
+    this.slotStats.spins += 1;
+    this.slotStats.wagered += this.bet;
+    this.slotStats.paid += gain;
+    if (wins.some(w => w.symbol.id === 'star' && w.count >= 5)) SFX.jackpot();
+    else status === 'win' ? SFX.win() : SFX.lose();
+    this.slotSpinning = false;
+    if (btn) btn.disabled = false;
   }
 
-  rollSlot() {
-    const pool = [];
-    SLOT_SYMBOLS.forEach(s => { for (let i=0;i<s.weight;i++) pool.push(s); });
-    return pool[Math.floor(Math.random() * pool.length)];
+  randomSlotGrid() {
+    return Array.from({ length:SLOT_ROWS }, () => Array.from({ length:SLOT_COLS }, () => weightedPick(SLOT_SYMBOLS)));
   }
 
-  slotHTML(sym) {
-    if (sym.emoji) return `<div class="sl-sym"><span style="font-size:42px">${sym.emoji}</span><span class="sl-sym-name">${sym.name}</span></div>`;
-    return `<div class="sl-sym"><img src="${sym.img}" alt="${sym.name}" width="52" height="52" loading="lazy"><span class="sl-sym-name">${sym.name}</span></div>`;
+  evaluateSlots(grid) {
+    const wins = [];
+    for (const line of SLOT_LINES) {
+      const first = grid[line.rows[0]][0];
+      let count = 1;
+      for (let c=1; c<SLOT_COLS; c++) {
+        const sym = grid[line.rows[c]][c];
+        if (sym.id === first.id) count += 1;
+        else break;
+      }
+      if (count >= 3) {
+        const rawMult = first.pay[count] ?? 0;
+        const gain = Math.max(1, Math.round(this.bet * rawMult * line.mult));
+        wins.push({ line, symbol:first, count, gain });
+      }
+    }
+    const gain = wins.reduce((sum, win) => sum + win.gain, 0);
+    return { wins, gain };
+  }
+
+  slotSymbolHTML(sym) {
+    const label = `<span style="font-size:9px;letter-spacing:.08em;color:var(--c-text-muted)">${sym.name}</span>`;
+    if (sym.emoji) return `<span style="font-size:34px;line-height:1">${sym.emoji}</span>${label}`;
+    return `<img src="${sym.img}" alt="${sym.name}" width="42" height="42" loading="lazy" onerror="this.style.opacity=.12">${label}`;
   }
 
   // NEON RACER
