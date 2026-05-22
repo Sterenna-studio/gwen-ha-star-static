@@ -1,0 +1,160 @@
+import { ArcadeSFX as SFX } from '../../arcade-sfx.js';
+
+export class CrashGame {
+  constructor({ mountId, getBet, debit, credit, addHistory, backToLobby }) {
+    this.mountId = mountId;
+    this.getBet = getBet;
+    this.debit = debit;
+    this.credit = credit;
+    this.addHistory = addHistory;
+    this.backToLobby = backToLobby;
+    this.running = false;
+    this.raf = null;
+  }
+
+  mount() {
+    const game = document.getElementById(this.mountId);
+    if (!game) return;
+    game.innerHTML = `${this.header('CRA', 'SH')}
+      <div class="crash-rules">
+        <div class="crash-rules-title">⚡ COMMENT JOUER</div>
+        <div class="crash-rules-grid">
+          <div class="crash-rule-block"><span class="crb-icon">🚀</span><span class="crb-label">DÉCOLLAGE</span><span class="crb-desc">Lance une mise. Le multiplicateur monte automatiquement.</span></div>
+          <div class="crash-rule-block"><span class="crb-icon">🛸</span><span class="crb-label">ÉJECTION</span><span class="crb-desc">Encaisse mise × multiplicateur avant le crash.</span></div>
+          <div class="crash-rule-block"><span class="crb-icon">🤖</span><span class="crb-label">AUTO-EJECT</span><span class="crb-desc">Seuil conseillé : ×1.6 à ×2.5 pour limiter le risque.</span></div>
+        </div>
+      </div>
+      <div class="crash-layout">
+        <div class="crash-canvas-wrap"><canvas class="crash-canvas" id="cr-canvas" width="800" height="220"></canvas><div class="crash-mult" id="cr-mult">1.00×</div></div>
+        <div class="crash-history" id="cr-history"></div>
+        <div class="crash-controls">
+          <button class="action-btn primary" id="cr-start">▶ LANCER</button>
+          <button class="action-btn" id="cr-eject" disabled>🚀 ÉJECTER</button>
+          <div class="crash-autoeject-row">AUTO ×<input class="crash-autoeject-inp" id="cr-auto" type="number" min="1.1" max="50" step="0.1" value="2.0"></div>
+        </div>
+        <div class="game-msg" id="cr-msg">MISE ET LANCE LE CRASH</div>
+      </div>`;
+    document.getElementById('game-back')?.addEventListener('click', () => this.backToLobby());
+    document.getElementById('cr-start')?.addEventListener('click', () => this.start());
+    document.getElementById('cr-eject')?.addEventListener('click', () => this.eject());
+    this.draw(1, false);
+  }
+
+  header(title, accent = '') {
+    return `<div class="game-header">
+      <button class="game-back-btn" id="game-back">← LOBBY</button>
+      <span class="game-title">${title} ${accent ? `<span class="game-title-accent">${accent}</span>` : ''}</span>
+    </div>`;
+  }
+
+  async start() {
+    if (this.running) return;
+    const bet = this.getBet();
+    if (!(await this.debit(bet))) return this.setMsg('CRÉDITS INSUFFISANTS', 'lose');
+    this.running = true;
+    this.cashed = false;
+    this.target = this.crashPoint();
+    this.auto = Number(document.getElementById('cr-auto')?.value ?? 0);
+    this.t0 = performance.now();
+    this.points = [[0, 1]];
+    document.getElementById('cr-start').disabled = true;
+    document.getElementById('cr-eject').disabled = false;
+    this.setMsg('EN VOL — ÉJECTE-TOI AVANT LE CRASH', 'neutral');
+    this.loop();
+  }
+
+  crashPoint() {
+    const houseEdge = 0.94;
+    const r = Math.max(0.002, Math.random());
+    const point = Math.floor((houseEdge / r) * 100) / 100;
+    return Math.max(1.01, Math.min(point, 80));
+  }
+
+  loop() {
+    if (!this.running) return;
+    const elapsed = (performance.now() - this.t0) / 1000;
+    this.mult = Math.round(Math.pow(1.075, elapsed * 5) * 100) / 100;
+    this.points.push([elapsed, this.mult]);
+    document.getElementById('cr-mult').textContent = `${this.mult.toFixed(2)}×`;
+    this.draw(this.mult, false);
+    if (this.auto > 1 && this.mult >= this.auto && !this.cashed) return this.eject(true);
+    if (this.mult >= this.target) return this.crash();
+    this.raf = requestAnimationFrame(() => this.loop());
+  }
+
+  async eject(auto = false) {
+    if (!this.running || this.cashed) return;
+    this.cashed = true;
+    const bet = this.getBet();
+    const gain = Math.round(bet * this.mult);
+    await this.credit(gain);
+    this.addHistory('CRASH', bet, 'win', gain - bet);
+    this.setMsg(`${auto ? 'AUTO ' : ''}ÉJECTÉ ×${this.mult.toFixed(2)} · +${gain - bet} C`, 'win');
+    document.getElementById('cr-eject').disabled = true;
+    this.addPill(this.mult, 'safe');
+    SFX.win();
+  }
+
+  crash() {
+    this.stop(false);
+    const mult = document.getElementById('cr-mult');
+    if (mult) {
+      mult.textContent = `💥 ${this.mult.toFixed(2)}×`;
+      mult.classList.add('crashed');
+    }
+    this.draw(this.mult, true);
+    const cat = this.mult < 1.5 ? 'danger' : this.mult < 3 ? 'risky' : 'safe';
+    this.addPill(this.mult, cat);
+    if (!this.cashed) {
+      const bet = this.getBet();
+      this.addHistory('CRASH', bet, 'lose', -bet);
+      this.setMsg(`CRASH ×${this.mult.toFixed(2)} · PERDU`, 'lose');
+      SFX.crash();
+    }
+    document.getElementById('cr-start').disabled = false;
+    document.getElementById('cr-eject').disabled = true;
+  }
+
+  addPill(mult, cat) {
+    const wrap = document.getElementById('cr-history');
+    if (!wrap) return;
+    const pill = document.createElement('span');
+    pill.className = `crash-hist-pill ${cat}`;
+    pill.textContent = `${mult.toFixed(2)}×`;
+    wrap.prepend(pill);
+    while (wrap.children.length > 12) wrap.lastElementChild.remove();
+  }
+
+  stop(reset = true) {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    this.raf = null;
+    this.running = false;
+    if (reset) this.cashed = false;
+  }
+
+  draw(mult, crashed) {
+    const canvas = document.getElementById('cr-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#07080c'; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(255,255,255,.05)';
+    for (let i = 1; i < 5; i++) { ctx.beginPath(); ctx.moveTo(0, H * i / 5); ctx.lineTo(W, H * i / 5); ctx.stroke(); }
+    if (!this.points?.length) return;
+    const maxT = Math.max(this.points.at(-1)[0], 5);
+    const maxM = Math.max(mult * 1.2, 2);
+    const toX = t => (t / maxT) * W;
+    const toY = m => H - (m / maxM) * H;
+    ctx.beginPath(); ctx.strokeStyle = crashed ? '#ff4757' : '#00e5ff'; ctx.lineWidth = 3;
+    this.points.forEach(([t, m], i) => i ? ctx.lineTo(toX(t), toY(m)) : ctx.moveTo(toX(t), toY(m)));
+    ctx.stroke();
+  }
+
+  setMsg(text, type = '') {
+    const node = document.getElementById('cr-msg');
+    if (!node) return;
+    node.textContent = text;
+    node.className = 'game-msg' + (type ? ` ${type}` : '');
+  }
+}
