@@ -5,16 +5,20 @@ import { requireAuth, getProfileMeta } from './guard.js';
 import { supabase }                    from '../supabase.js';
 import { signOut }                     from '../supabase.js';
 import { VideoDay, RadioPlayer }       from './widgets.js';
+import { renderNitroHeroCardsAuto, renderNitroQuickAccess } from './nitro-app-renderer.js';
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 export async function initDashboard() {
   const auth = await requireAuth();
   if (!auth) return; // guard a redirigé vers login
-  const { session, user, profile } = auth;
+  const { user, profile } = auth;
   const meta = getProfileMeta(profile, user);
 
+  _installNitroAppStyles();
   _renderHeader(meta);
   _renderQuickAccess();
+  renderNitroHeroCardsAuto();
+  _renderPokegangFallbackInfo();
   await Promise.all([
     _loadVideo(),
     _loadActivity(),
@@ -44,6 +48,7 @@ function _renderHeader(profile) {
       <a href="/cig.html"        class="star-nav-link">MA CIG</a>
       <a href="/star/crew.html"  class="star-nav-link">CREW</a>
       <a href="/TCG/"            class="star-nav-link">TCG</a>
+      <a href="/clicker/"        class="star-nav-link">CLICKER</a>
       <a href="https://sterenna.fr"          target="_blank" rel="noopener" class="star-nav-link star-nav-ext">STERENNA ↗</a>
       <a href="https://pokegang.sterenna.fr" target="_blank" rel="noopener" class="star-nav-link star-nav-ext">POKEGANG ↗</a>
     </nav>
@@ -147,33 +152,78 @@ function _renderActivityPlaceholder(el) {
 
 // ── ACCÈS RAPIDE ─────────────────────────────────────────────────────────────
 function _renderQuickAccess() {
-  const el = document.getElementById('quick-access-grid');
-  if (!el) return;
-  const links = [
-    { label: 'MA CIG',     icon: '⬡', href: '/cig.html',                        color: '--c-primary', desc: 'Voir · éditer ma fiche' },
-    { label: 'CREW',       icon: '◈', href: '/star/crew.html',                   color: '--c-cyan',    desc: 'Membres du réseau' },
-    { label: 'TCG',        icon: '🃏', href: '/TCG/',                             color: '--c-purple',  desc: 'Cartes · Collection · Duels' },
-    { label: 'STERENNA',   icon: '▲', href: 'https://sterenna.fr',               color: '--c-amber',   desc: '3D · Gravure · Web', ext: true },
-    { label: 'POKEGANG',   icon: '◉', href: 'https://pokegang.sterenna.fr',      color: '--c-red',     desc: 'Le jeu du crew', ext: true },
-    {
-      label: 'APHALONE',
-      icon: '⚔',
-      href: 'https://www.worldanvil.com/w/aphalone-drsorn',
-      color: '--c-purple',
-      desc: 'JDR · One True King · Wiki',
-      ext: true,
-    },
-  ];
-  el.innerHTML = links.map(l => `
-    <a href="${l.href}"
-       class="qa-card"
-       style="--qa-color: var(${l.color})"
-       ${l.ext ? 'target="_blank" rel="noopener noreferrer"' : ''}
-       aria-label="${l.label}">
-      <span class="qa-icon" aria-hidden="true">${l.icon}</span>
-      <span class="qa-label">${l.label}</span>
-      <span class="qa-desc">${l.desc}</span>
-      ${l.ext ? '<span class="qa-ext" aria-hidden="true">↗</span>' : ''}
-    </a>
-  `).join('');
+  renderNitroQuickAccess('quick-access-grid');
+}
+
+// ── POKEGANG INFO ─────────────────────────────────────────────────────────────
+function _renderPokegangFallbackInfo() {
+  const status = document.getElementById('sb-pg');
+  status?.querySelector('span:last-child')?.replaceChildren(document.createTextNode('POKEGANG · SOUS-DOMAINE'));
+  status?.querySelector('.sb-dot')?.classList.remove('off');
+
+  const gang = document.getElementById('pg-gang-name');
+  const boss = document.getElementById('pg-boss-name');
+  const rep = document.getElementById('pg-rep');
+  const caught = document.getElementById('pg-caught');
+  const shinies = document.getElementById('pg-shinies');
+  const dex = document.getElementById('pg-dex');
+  const dexNat = document.getElementById('pg-dex-nat');
+  const agents = document.getElementById('pg-agents');
+  const kpiRep = document.getElementById('kpi-pg-rep');
+
+  if (gang) gang.textContent = 'TEAM BZH';
+  if (boss) boss.textContent = 'BOSS : COMPTE LOCAL PG';
+  if (rep) rep.textContent = 'SYNC';
+  if (caught) caught.textContent = 'LOCAL';
+  if (shinies) shinies.textContent = '✦ VIA POKEGANG';
+  if (dex) dex.textContent = 'GEN 1';
+  if (dexNat) dexNat.textContent = 'NATIONAL : 151 + MISSINGNO';
+  if (agents) agents.textContent = 'CREW';
+  if (kpiRep) kpiRep.textContent = 'EXTERNE';
+}
+
+// ── STYLE AUTO POUR APPS NITRO ───────────────────────────────────────────────
+function _installNitroAppStyles() {
+  if (document.getElementById('nitro-app-renderer-style')) return;
+  const style = document.createElement('style');
+  style.id = 'nitro-app-renderer-style';
+  style.textContent = `
+    .bc-nitro-hero { grid-column: span 4; padding:0; overflow:hidden; border:none; background:transparent; }
+    @media(max-width:1100px){ .bc-nitro-hero { grid-column: span 6; } }
+    @media(max-width:900px){ .bc-nitro-hero { grid-column: span 12; } }
+    .hero-card--nitro {
+      background: linear-gradient(135deg, rgba(0,20,30,.96), rgba(12,10,30,.92), rgba(8,8,12,.98));
+      border-color: rgba(0,255,204,.24);
+    }
+    .hero-card--nitro:hover {
+      border-color: rgba(0,255,204,.72);
+      box-shadow: 0 0 42px rgba(0,255,204,.18), 0 8px 32px rgba(0,0,0,.62);
+    }
+    .hero-scene--nitro { position:absolute; inset:0; overflow:hidden; }
+    .hero-scene--nitro::before {
+      content:''; position:absolute; inset:-30%;
+      background: radial-gradient(circle at 40% 45%, rgba(0,255,204,.18), transparent 28%), radial-gradient(circle at 75% 75%, rgba(255,61,242,.14), transparent 32%);
+      animation: nitroHeroAura 7s ease-in-out infinite alternate;
+    }
+    @keyframes nitroHeroAura { to { transform:scale(1.08) rotate(3deg); filter:hue-rotate(35deg); } }
+    .nitro-hero-orb {
+      position:absolute; right:22px; top:50%; transform:translateY(-50%);
+      width:82px; height:82px; display:grid; place-items:center; border-radius:24px;
+      font-size:2.25rem; background:rgba(0,255,204,.075); border:1px solid rgba(0,255,204,.26);
+      box-shadow:0 0 28px rgba(0,255,204,.18), inset 0 0 30px rgba(255,61,242,.07);
+      animation:nitroOrb 2.8s ease-in-out infinite alternate;
+    }
+    @keyframes nitroOrb { to { transform:translateY(-54%) scale(1.05); filter:brightness(1.3); } }
+    .nitro-hero-spark { position:absolute; width:5px; height:5px; border-radius:50%; background:#00ffcc; box-shadow:0 0 12px #00ffcc; animation:nitroSpark 4s ease-in-out infinite; }
+    .nitro-hero-spark-1 { left:18%; bottom:22%; animation-delay:0s; }
+    .nitro-hero-spark-2 { left:54%; bottom:68%; animation-delay:1.2s; background:#ffcc00; box-shadow:0 0 12px #ffcc00; }
+    .nitro-hero-spark-3 { left:38%; bottom:38%; animation-delay:2s; background:#ff3df2; box-shadow:0 0 12px #ff3df2; }
+    @keyframes nitroSpark { 0%,100%{opacity:.1;transform:translateY(0)} 50%{opacity:.9;transform:translateY(-18px) scale(1.4)} }
+    .hero-title--nitro { color:#00ffcc; text-shadow:0 0 12px rgba(0,255,204,.6), 0 0 42px rgba(255,61,242,.22); }
+    .hero-badge--nitro { background:rgba(0,255,204,.12); border:1px solid rgba(0,255,204,.35); color:#00ffcc; }
+    .hero-card--botanica .hero-title--nitro, .hero-card--botanica .hero-title-accent { color:#7dd87a; text-shadow:0 0 16px rgba(125,216,122,.62); }
+    .hero-card--clicker .hero-title--nitro, .hero-card--clicker .hero-title-accent { color:#ff3df2; text-shadow:0 0 16px rgba(255,61,242,.72); }
+    .hero-card--star-arcade .hero-title--nitro, .hero-card--star-arcade .hero-title-accent { color:#ffcc00; text-shadow:0 0 16px rgba(255,204,0,.72); }
+  `;
+  document.head.appendChild(style);
 }
