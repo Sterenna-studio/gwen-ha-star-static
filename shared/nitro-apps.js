@@ -1,5 +1,5 @@
 // Nitro app registry.
-// Central list used by the hub, docs and future Star dashboard widgets.
+// Central list used by the hub, docs and Star dashboard widgets.
 
 export const NITRO_APPS = [
   {
@@ -13,6 +13,10 @@ export const NITRO_APPS = [
     repo: 'MutenRock/gwen-ha-star-static',
     deployPath: '~/nitro/star/',
     description: 'Cockpit membre Nitro : crew, CIG, widgets, activité réseau et accès aux modules Star.',
+    quickAccess: true,
+    quickLabel: 'STAR',
+    quickDesc: 'Cockpit membre',
+    color: '--c-primary',
   },
   {
     id: 'star-arcade',
@@ -25,6 +29,15 @@ export const NITRO_APPS = [
     repo: 'MutenRock/gwen-ha-star-static',
     deployPath: '~/nitro/star/casino/',
     description: 'Arcade Star avec Whack-A-Mole, Crash, Slot Machine et Neon Racer.',
+    quickAccess: true,
+    hero: true,
+    heroTitle: 'ARCADE',
+    heroEyebrow: '// STAR · RÉSEAU',
+    heroSub: 'WHACK-A-MOLE · CRASH · NEON RACER · SLOTS',
+    heroBadge: '4 JEUX',
+    quickLabel: 'ARCADE',
+    quickDesc: 'Casino · mini-jeux',
+    color: '--c-amber',
   },
   {
     id: 'botanica',
@@ -37,18 +50,36 @@ export const NITRO_APPS = [
     repo: 'MutenRock/botanica-obscura',
     deployPath: '~/nitro/botanica/',
     description: 'Idle gacha botanique : mutations, pots, codex partagé, XP, jardin et découvertes serveur.',
+    quickAccess: true,
+    hero: true,
+    heroTitle: 'BOTANICA OBSCURA',
+    heroEyebrow: '// LAB · JARDIN',
+    heroSub: 'IDLE GACHA · MUTATIONS · CODEX PARTAGÉ',
+    heroBadge: 'ALPHA',
+    quickLabel: 'BOTANICA',
+    quickDesc: 'Jardin · gacha',
+    color: '--c-green',
   },
   {
     id: 'clicker',
     name: 'Nitro Clicker',
     url: '/clicker/',
     icon: '✨',
-    status: 'planned',
+    status: 'alpha',
     scope: 'nitro-app',
     auth: 'required',
     repo: 'MutenRock/nitro-clicker',
     deployPath: '~/nitro/clicker/',
-    description: 'Clicker privé connecté à Nitro : progression courte, ressources, upgrades, prestige et récompenses Star.',
+    description: 'Clicker privé local-only : noyau cyber-biopunk, énergie, upgrades, jauges, tentacules, prestige.',
+    quickAccess: true,
+    hero: true,
+    heroTitle: 'NITRO CLICKER',
+    heroEyebrow: '// CORE · ÉNERGIE',
+    heroSub: 'CLICKER · UPGRADES · PRESTIGE · BIOPUNK FX',
+    heroBadge: 'LOCAL SAVE',
+    quickLabel: 'CLICKER',
+    quickDesc: 'Core · énergie',
+    color: '--c-cyan',
   },
   {
     id: 'tcg',
@@ -61,6 +92,10 @@ export const NITRO_APPS = [
     repo: 'MutenRock/gwen-ha-star-static',
     deployPath: '~/nitro/TCG/',
     description: 'Trading Card Game communautaire lié à l’univers Star / BZH Chronicles.',
+    quickAccess: true,
+    quickLabel: 'TCG',
+    quickDesc: 'Cartes · collection',
+    color: '--c-purple',
   },
   {
     id: 'jukebox',
@@ -73,6 +108,10 @@ export const NITRO_APPS = [
     repo: 'MutenRock/gwen-ha-star-static',
     deployPath: '~/nitro/jukebox/',
     description: 'Lecteur musical communautaire et archives audio Dr.Spig / BZH Chronicles.',
+    quickAccess: true,
+    quickLabel: 'JUKEBOX',
+    quickDesc: 'Musique · archives',
+    color: '--c-green',
   },
   {
     id: 'pokegang',
@@ -85,6 +124,10 @@ export const NITRO_APPS = [
     repo: 'MutenRock/pokegang-game',
     deployPath: '~/pokegang/',
     description: 'Jeu autonome sur sous-domaine dédié, avec intégration Nitro progressive via CORS et liaison de compte.',
+    quickAccess: true,
+    quickLabel: 'POKEGANG',
+    quickDesc: 'Sous-domaine jeu',
+    color: '--c-red',
   },
 ];
 
@@ -94,4 +137,12 @@ export function getNitroApp(id) {
 
 export function getInternalNitroApps() {
   return NITRO_APPS.filter(app => app.scope !== 'external');
+}
+
+export function getQuickNitroApps() {
+  return NITRO_APPS.filter(app => app.quickAccess);
+}
+
+export function getHeroNitroApps() {
+  return NITRO_APPS.filter(app => app.hero);
 }
