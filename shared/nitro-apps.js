@@ -39,6 +39,18 @@ export const NITRO_APPS = [
     description: 'Idle gacha botanique : mutations, pots, codex partagé, XP, jardin et découvertes serveur.',
   },
   {
+    id: 'clicker',
+    name: 'Nitro Clicker',
+    url: '/clicker/',
+    icon: '✨',
+    status: 'planned',
+    scope: 'nitro-app',
+    auth: 'required',
+    repo: 'MutenRock/nitro-clicker',
+    deployPath: '~/nitro/clicker/',
+    description: 'Clicker privé connecté à Nitro : progression courte, ressources, upgrades, prestige et récompenses Star.',
+  },
+  {
     id: 'tcg',
     name: 'Nitro TCG',
     url: '/TCG/',
