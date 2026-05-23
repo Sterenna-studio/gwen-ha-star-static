@@ -25,12 +25,24 @@ export function renderNitroQuickAccess(containerId = 'quick-access-grid') {
 export function renderNitroHeroCards(containerId = 'nitro-hero-cards') {
   const el = document.getElementById(containerId);
   if (!el) return;
+  el.innerHTML = buildHeroCards();
+}
 
+export function renderNitroHeroCardsAuto() {
+  const firstHero = document.querySelector('.bc-hero');
+  if (!firstHero) return;
+  const tpl = document.createElement('template');
+  tpl.innerHTML = buildHeroCards();
+  firstHero.before(tpl.content);
+  document.querySelectorAll('.bc-hero:not([data-nitro-rendered="true"])').forEach(node => node.remove());
+}
+
+function buildHeroCards() {
   const apps = getHeroNitroApps();
-  el.innerHTML = apps.map(app => {
+  return apps.map(app => {
     const kind = app.id.replace(/[^a-z0-9-]/gi, '-');
     return `
-      <div class="bc bc-hero bc-nitro-hero" data-app="${app.id}">
+      <div class="bc bc-hero bc-nitro-hero" data-app="${app.id}" data-nitro-rendered="true">
         <a href="${app.url}" class="hero-card hero-card--nitro hero-card--${kind}" aria-label="Accéder à ${app.name}">
           <div class="hero-scene hero-scene--nitro hero-scene--${kind}" aria-hidden="true">
             <div class="hsc-grid"></div>
