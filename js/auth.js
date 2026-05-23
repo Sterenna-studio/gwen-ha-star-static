@@ -4,6 +4,7 @@
  */
 
 import { mountSessionWidget } from '../shared/session-ui.js';
+import { renderPublicNitroApps } from './hub/nitro-public-renderer.js';
 
 export async function initAuth() {
   await mountSessionWidget('header-auth', {
@@ -11,4 +12,6 @@ export async function initAuth() {
     spaceUrl: '/star/',
     spaceLabel: '⬡ MON ESPACE',
   });
+
+  renderPublicNitroApps();
 }
