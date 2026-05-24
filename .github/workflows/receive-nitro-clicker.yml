@@ -1,0 +1,39 @@
+name: Receive nitro-clicker sync
+
+on:
+  repository_dispatch:
+    types: [sync-nitro-clicker]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout gwen-ha-star-static
+        uses: actions/checkout@v4
+
+      - name: Checkout nitro-clicker
+        uses: actions/checkout@v4
+        with:
+          repository: MutenRock/nitro-clicker
+          token: ${{ secrets.SYNC_TOKEN }}
+          path: _nitro_clicker_tmp
+
+      - name: Copy files to subfolder
+        run: |
+          rm -rf nitro-clicker
+          mkdir -p nitro-clicker
+          cp -r _nitro_clicker_tmp/. nitro-clicker/
+          rm -rf nitro-clicker/.git
+          rm -f nitro-clicker/.env nitro-clicker/.env.example
+          rm -rf _nitro_clicker_tmp
+          ls -la nitro-clicker/
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add nitro-clicker/
+          git diff --staged --quiet && echo "Nothing to commit" || git commit -m "chore: sync nitro-clicker [auto]"
+          git push
