@@ -42,7 +42,7 @@ export const NITRO_APPS = [
   {
     id: 'botanica',
     name: 'Botanica Obscura',
-    url: '/botanica/landing.html',
+    url: 'https://nitro.sterenna.fr/botanica-obscura/index.html',
     icon: '🌿',
     status: 'alpha',
     scope: 'nitro-app',
@@ -91,7 +91,7 @@ export const NITRO_APPS = [
     auth: 'required',
     repo: 'MutenRock/gwen-ha-star-static',
     deployPath: '~/nitro/TCG/',
-    description: 'Trading Card Game communautaire lié à l’univers Star / BZH Chronicles.',
+    description: 'Trading Card Game communautaire lié à l'univers Star / BZH Chronicles.',
     quickAccess: true,
     quickLabel: 'TCG',
     quickDesc: 'Cartes · collection',
