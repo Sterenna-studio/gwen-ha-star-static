@@ -170,12 +170,18 @@
   <header id="star-header-user" role="banner"></header>
 
   <style>
-  /* Conteneur hero cards injectées par nitro-app-renderer */
+  /* Conteneur hero cards — layout horizontal compact (like hub tool-cards) */
   .bento-hero-row {
     grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: var(--space-3, 12px);
+  }
+  .bento-hero-row .bc-nitro-hero {
+    flex: 1 1 220px;
+    min-height: unset !important;
+    padding: var(--space-4) var(--space-5) !important;
   }
   </style>
 
