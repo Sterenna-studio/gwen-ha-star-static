@@ -10,7 +10,7 @@ import { renderNitroHeroCardsAuto, renderNitroQuickAccess } from './nitro-app-re
 // ── INIT ──────────────────────────────────────────────────────────────────────
 export async function initDashboard() {
   const auth = await requireAuth();
-  if (!auth) return; // guard a redirigé vers login
+  if (!auth) return;
   const { user, profile } = auth;
   const meta = getProfileMeta(profile, user);
 
@@ -18,10 +18,11 @@ export async function initDashboard() {
   _renderHeader(meta);
   _renderQuickAccess();
   renderNitroHeroCardsAuto();
-  _renderPokegangFallbackInfo();
+
   await Promise.all([
     _loadVideo(),
     _loadActivity(),
+    _loadPokegangFromSupabase(user.id),
   ]);
   _loadRadio();
 }
@@ -57,6 +58,69 @@ function _renderHeader(profile) {
     </button>
   `;
   document.getElementById('star-signout')?.addEventListener('click', () => signOut());
+}
+
+// ── POKEGANG (depuis Supabase → pokegang_players) ─────────────────────────────
+async function _loadPokegangFromSupabase(userId) {
+  const setEl = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
+
+  // Indicateur status bar
+  const sbPg  = document.getElementById('sb-pg');
+  const sbDot = sbPg?.querySelector('.sb-dot');
+  const sbLbl = sbPg?.querySelector('span:last-child');
+
+  try {
+    const { data, error } = await supabase
+      .from('pokegang_players')
+      .select('gang_name, boss_name, reputation, total_caught, shiny_count, dex_kanto_count, dex_national_count, agents_count')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (error || !data) {
+      _renderPokegangOffline();
+      return;
+    }
+
+    // Status bar
+    if (sbDot) { sbDot.classList.remove('off'); sbDot.classList.add('green'); }
+    if (sbLbl) sbLbl.textContent = 'POKEGANG · SYNC';
+
+    // Widget gang
+    setEl('pg-gang-name', data.gang_name  ?? 'TEAM ???');
+    setEl('pg-boss-name', `BOSS : ${data.boss_name ?? '???'}`);
+    setEl('pg-rep',       (data.reputation ?? 0).toLocaleString('fr-FR'));
+    setEl('pg-caught',    (data.total_caught ?? 0).toLocaleString('fr-FR'));
+    setEl('pg-shinies',   `✦ SHINIES : ${(data.shiny_count ?? 0).toLocaleString('fr-FR')}`);
+    setEl('pg-dex',       (data.dex_kanto_count ?? 0).toLocaleString('fr-FR'));
+    setEl('pg-dex-nat',   `NATIONAL : ${(data.dex_national_count ?? 0).toLocaleString('fr-FR')}`);
+    setEl('pg-agents',    (data.agents_count ?? 0).toLocaleString('fr-FR'));
+    setEl('kpi-pg-rep',   (data.reputation ?? 0).toLocaleString('fr-FR'));
+
+  } catch {
+    _renderPokegangOffline();
+  }
+}
+
+function _renderPokegangOffline() {
+  const sbPg  = document.getElementById('sb-pg');
+  const sbDot = sbPg?.querySelector('.sb-dot');
+  const sbLbl = sbPg?.querySelector('span:last-child');
+  if (sbDot) sbDot.classList.add('off');
+  if (sbLbl) sbLbl.textContent = 'POKEGANG · OFFLINE';
+
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('pg-gang-name', 'NON CONNECTÉ');
+  setEl('pg-boss-name', 'BOSS : —');
+  setEl('pg-rep',       '—');
+  setEl('pg-caught',    '—');
+  setEl('pg-shinies',   '✦ SHINIES : —');
+  setEl('pg-dex',       '—');
+  setEl('pg-dex-nat',   'NATIONAL : —');
+  setEl('pg-agents',    '—');
+  setEl('kpi-pg-rep',   'OFFLINE');
 }
 
 // ── VIDEO DU JOUR ─────────────────────────────────────────────────────────────
@@ -153,33 +217,6 @@ function _renderActivityPlaceholder(el) {
 // ── ACCÈS RAPIDE ─────────────────────────────────────────────────────────────
 function _renderQuickAccess() {
   renderNitroQuickAccess('quick-access-grid');
-}
-
-// ── POKEGANG INFO ─────────────────────────────────────────────────────────────
-function _renderPokegangFallbackInfo() {
-  const status = document.getElementById('sb-pg');
-  status?.querySelector('span:last-child')?.replaceChildren(document.createTextNode('POKEGANG · SOUS-DOMAINE'));
-  status?.querySelector('.sb-dot')?.classList.remove('off');
-
-  const gang = document.getElementById('pg-gang-name');
-  const boss = document.getElementById('pg-boss-name');
-  const rep = document.getElementById('pg-rep');
-  const caught = document.getElementById('pg-caught');
-  const shinies = document.getElementById('pg-shinies');
-  const dex = document.getElementById('pg-dex');
-  const dexNat = document.getElementById('pg-dex-nat');
-  const agents = document.getElementById('pg-agents');
-  const kpiRep = document.getElementById('kpi-pg-rep');
-
-  if (gang) gang.textContent = 'TEAM BZH';
-  if (boss) boss.textContent = 'BOSS : COMPTE LOCAL PG';
-  if (rep) rep.textContent = 'SYNC';
-  if (caught) caught.textContent = 'LOCAL';
-  if (shinies) shinies.textContent = '✦ VIA POKEGANG';
-  if (dex) dex.textContent = 'GEN 1';
-  if (dexNat) dexNat.textContent = 'NATIONAL : 151 + MISSINGNO';
-  if (agents) agents.textContent = 'CREW';
-  if (kpiRep) kpiRep.textContent = 'EXTERNE';
 }
 
 // ── STYLE AUTO POUR APPS NITRO ───────────────────────────────────────────────
