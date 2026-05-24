@@ -22,18 +22,18 @@ jobs:
 
       - name: Copy files to subfolder
         run: |
-          rm -rf nitro-clicker
-          mkdir -p nitro-clicker
-          cp -r _nitro_clicker_tmp/. nitro-clicker/
-          rm -rf nitro-clicker/.git
-          rm -f nitro-clicker/.env nitro-clicker/.env.example
+          rm -rf clicker
+          mkdir -p clicker
+          cp -r _nitro_clicker_tmp/. clicker/
+          rm -rf clicker/.git
+          rm -f clicker/.env clicker/.env.example
           rm -rf _nitro_clicker_tmp
-          ls -la nitro-clicker/
+          ls -la clicker/
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add nitro-clicker/
-          git diff --staged --quiet && echo "Nothing to commit" || git commit -m "chore: sync nitro-clicker [auto]"
+          git add clicker/
+          git diff --staged --quiet && echo "Nothing to commit" || git commit -m "chore: sync nitro-clicker into clicker/ [auto]"
           git push
