@@ -5,7 +5,7 @@ import { requireAuth, getProfileMeta } from './guard.js';
 import { supabase }                    from '../supabase.js';
 import { signOut }                     from '../supabase.js';
 import { VideoDay, RadioPlayer }       from './widgets.js';
-import { renderNitroHeroCardsAuto, renderNitroQuickAccess } from './nitro-app-renderer.js';
+import { renderNitroQuickAccess }      from './nitro-app-renderer.js';
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 export async function initDashboard() {
@@ -17,7 +17,7 @@ export async function initDashboard() {
   _installNitroAppStyles();
   _renderHeader(meta);
   _renderQuickAccess();
-  renderNitroHeroCardsAuto();
+  // NB: hero cards déjà injectées via renderNitroHeroCards() dans star/index.html
 
   await Promise.all([
     _loadVideo(),
@@ -345,7 +345,6 @@ function _installNitroAppStyles() {
       place-items: center;
       border-radius: 20px;
       font-size: 2.1rem;
-      /* Verre laiteux */
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.18);
       box-shadow:
@@ -380,7 +379,7 @@ function _installNitroAppStyles() {
       60%     { opacity:0; transform:translateY(-22px) scale(0.5); }
     }
 
-    /* ── SCANLINES (effet LCD léger) ──────────────────────────────────────────────── */
+    /* ── SCANLINES ─────────────────────────────────────────────────────────────────── */
     .hero-scanlines {
       position: absolute;
       inset: 0;
@@ -400,7 +399,6 @@ function _installNitroAppStyles() {
       position: relative;
       z-index: 3;
       padding: 18px 20px 16px;
-      /* Fond verre sombre sous le texte pour la lisibilité */
       background: linear-gradient(
         to top,
         rgba(0,0,0,.72) 0%,
@@ -477,29 +475,21 @@ function _installNitroAppStyles() {
 
     /* ── COULEURS PAR APP ──────────────────────────────────────────────────────────── */
 
-    /* PokéGang — ambre */
-    .hero-card--pok-gang .hero-eyebrow,
-    .hero-card--pok-gang .hero-cta { color: rgba(255,200,50,.9); }
-    .hero-card--pok-gang .hero-scene--nitro::before {
+    /* Star Arcade — or */
+    .hero-card--star-arcade .hero-eyebrow,
+    .hero-card--star-arcade .hero-cta { color: rgba(255,210,0,.9); }
+    .hero-card--star-arcade .hero-scene--nitro::before {
       background:
         radial-gradient(ellipse 120% 60% at 20% 20%, rgba(255,255,255,.07), transparent 55%),
-        radial-gradient(ellipse 60% 80% at 80% 80%, rgba(255,180,0,.12), transparent 50%);
+        radial-gradient(ellipse 60% 80% at 80% 80%, rgba(255,200,0,.12), transparent 50%);
     }
-    .hero-card--pok-gang .hsc-grid {
+    .hero-card--star-arcade .hsc-grid {
       background-image:
-        linear-gradient(rgba(255,180,0,.07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,180,0,.07) 1px, transparent 1px);
+        linear-gradient(rgba(255,200,0,.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,200,0,.07) 1px, transparent 1px);
     }
-    .hero-card--pok-gang .hero-title--nitro {
-      text-shadow: 0 1px 3px rgba(0,0,0,.8), 0 0 18px rgba(255,180,0,.35);
-    }
-    .hero-card--pok-gang .hero-title-accent { color: rgba(255,200,50,.95); }
-    .hero-card--pok-gang .nitro-hero-orb {
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.2),
-        0 4px 24px rgba(0,0,0,.4),
-        0 0 20px rgba(255,180,0,.14);
-    }
+    .hero-card--star-arcade .hero-title--nitro { text-shadow: 0 1px 3px rgba(0,0,0,.8), 0 0 18px rgba(255,200,0,.35); }
+    .hero-card--star-arcade .hero-title-accent { color: rgba(255,210,0,.95); }
 
     /* Botanica — vert */
     .hero-card--botanica .hero-eyebrow,
@@ -532,22 +522,6 @@ function _installNitroAppStyles() {
     }
     .hero-card--clicker .hero-title--nitro { text-shadow: 0 1px 3px rgba(0,0,0,.8), 0 0 18px rgba(255,61,242,.35); }
     .hero-card--clicker .hero-title-accent { color: rgba(255,80,240,.95); }
-
-    /* Star Arcade — or */
-    .hero-card--star-arcade .hero-eyebrow,
-    .hero-card--star-arcade .hero-cta { color: rgba(255,210,0,.9); }
-    .hero-card--star-arcade .hero-scene--nitro::before {
-      background:
-        radial-gradient(ellipse 120% 60% at 20% 20%, rgba(255,255,255,.07), transparent 55%),
-        radial-gradient(ellipse 60% 80% at 80% 80%, rgba(255,200,0,.12), transparent 50%);
-    }
-    .hero-card--star-arcade .hsc-grid {
-      background-image:
-        linear-gradient(rgba(255,200,0,.07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,200,0,.07) 1px, transparent 1px);
-    }
-    .hero-card--star-arcade .hero-title--nitro { text-shadow: 0 1px 3px rgba(0,0,0,.8), 0 0 18px rgba(255,200,0,.35); }
-    .hero-card--star-arcade .hero-title-accent { color: rgba(255,210,0,.95); }
 
   `;
   document.head.appendChild(style);
