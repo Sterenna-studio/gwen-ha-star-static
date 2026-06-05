@@ -1,0 +1,3 @@
+[submodule "skill-arena"]
+	path = skill-arena
+	url = https://github.com/MutenRock/skill-arena.git
