@@ -70,5 +70,8 @@ jobs:
             --exclude='README.md' \
             --exclude='LICENSE' \
             --exclude='docs/' \
+            --exclude='arena/' \
+            --exclude='skill-arena/' \
+            --exclude='ARCHITECTURE.md' \
             -e "ssh -i ~/.ssh/ovh_key" \
             ./ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/"

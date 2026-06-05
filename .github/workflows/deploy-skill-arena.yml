@@ -50,11 +50,11 @@ jobs:
 
       - name: Ensure remote directory exists
         run: |
-          ssh -i ~/.ssh/ovh_key "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}" "mkdir -p ~/nitro"
+          ssh -i ~/.ssh/ovh_key "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}" "mkdir -p ~/nitro/arena"
 
-      - name: Deploy out/ to OVH ~/nitro/
+      - name: Deploy out/ to OVH ~/nitro/arena/
         run: |
           rsync -avz --delete \
             --exclude='.git/' \
             -e "ssh -i ~/.ssh/ovh_key" \
-            _skill_arena_tmp/out/ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/"
+            _skill_arena_tmp/out/ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/arena/"
