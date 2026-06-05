@@ -1,0 +1,60 @@
+name: Deploy skill-arena to OVH
+
+on:
+  repository_dispatch:
+    types: [skill-arena-updated]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-skill-arena-ovh
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout skill-arena
+        uses: actions/checkout@v4
+        with:
+          repository: MutenRock/skill-arena
+          token: ${{ secrets.GH_PAT }}
+          path: _skill_arena_tmp
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: _skill_arena_tmp/package-lock.json
+
+      - name: Install dependencies
+        working-directory: _skill_arena_tmp
+        run: npm ci
+
+      - name: Inject Supabase config
+        working-directory: _skill_arena_tmp
+        run: |
+          echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.GHSTAR_SUPABASE_URL }}" > .env.local
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.GHSTAR_SUPABASE_ANON }}" >> .env.local
+
+      - name: Build static export
+        working-directory: _skill_arena_tmp
+        run: npm run build
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.OVH_SSH_KEY }}" > ~/.ssh/ovh_key
+          chmod 600 ~/.ssh/ovh_key
+          ssh-keyscan -H "${{ secrets.OVH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Ensure remote directory exists
+        run: |
+          ssh -i ~/.ssh/ovh_key "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}" "mkdir -p ~/nitro"
+
+      - name: Deploy out/ to OVH ~/nitro/
+        run: |
+          rsync -avz --delete \
+            --exclude='.git/' \
+            -e "ssh -i ~/.ssh/ovh_key" \
+            _skill_arena_tmp/out/ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/"
