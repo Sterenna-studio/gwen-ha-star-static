@@ -1,0 +1,56 @@
+name: Receive titan-rocket-run sync
+
+on:
+  repository_dispatch:
+    types: [sync-titan-rocket-run]
+  workflow_dispatch:
+
+concurrency:
+  group: gwen-static-main-write
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout gwen-ha-star-static
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.SYNC_TOKEN }}
+
+      - name: Checkout titan-rocket-run
+        uses: actions/checkout@v4
+        with:
+          repository: MutenRock/titan-rocket-run
+          token: ${{ secrets.SYNC_TOKEN }}
+          path: _titan_tmp
+
+      - name: Copy files to subfolder
+        run: |
+          rm -rf titan-rocket-run
+          mkdir -p titan-rocket-run
+          cp -r _titan_tmp/. titan-rocket-run/
+          rm -rf titan-rocket-run/.git
+          rm -rf titan-rocket-run/.github
+          rm -f titan-rocket-run/.env titan-rocket-run/.env.example
+          rm -rf _titan_tmp
+          ls -la titan-rocket-run/
+
+      - name: Commit and push (retry rebase)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add titan-rocket-run/
+          if git diff --staged --quiet; then
+            echo "Nothing to commit"
+            exit 0
+          fi
+          git commit -m "chore: sync titan-rocket-run [auto]"
+          for i in 1 2 3 4 5; do
+            if git push; then echo "Push OK (tentative $i)"; exit 0; fi
+            echo "Push rejeté (tentative $i) — rebase..."
+            git pull --rebase origin main
+          done
+          exit 1
