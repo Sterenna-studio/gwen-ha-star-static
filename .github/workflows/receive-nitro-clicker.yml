@@ -17,10 +17,8 @@ jobs:
     steps:
       - name: Checkout gwen-ha-star-static
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_PAT }}
 
-      - name: Checkout nitro-clicker
+      - name: Checkout nitro-clicker (public)
         uses: actions/checkout@v4
         with:
           repository: sterenna-studio/nitro-clicker
