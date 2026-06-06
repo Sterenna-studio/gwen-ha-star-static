@@ -16,7 +16,7 @@ jobs:
       - name: Checkout botanica-obscura
         uses: actions/checkout@v4
         with:
-          repository: MutenRock/botanica-obscura
+          repository: sterenna-studio/botanica-obscura
           token: ${{ secrets.SYNC_TOKEN }}
           path: _botanica_tmp
 

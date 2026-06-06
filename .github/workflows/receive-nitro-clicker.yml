@@ -16,7 +16,7 @@ jobs:
       - name: Checkout nitro-clicker
         uses: actions/checkout@v4
         with:
-          repository: MutenRock/nitro-clicker
+          repository: sterenna-studio/nitro-clicker
           token: ${{ secrets.SYNC_TOKEN }}
           path: _nitro_clicker_tmp
 

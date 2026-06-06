@@ -16,7 +16,7 @@ jobs:
       - name: Checkout skill-arena
         uses: actions/checkout@v4
         with:
-          repository: MutenRock/skill-arena
+          repository: sterenna-studio/skill-arena
           token: ${{ secrets.GH_PAT }}
           path: _skill_arena_tmp
 

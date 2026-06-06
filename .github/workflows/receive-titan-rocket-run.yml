@@ -23,7 +23,7 @@ jobs:
       - name: Checkout titan-rocket-run
         uses: actions/checkout@v4
         with:
-          repository: MutenRock/titan-rocket-run
+          repository: sterenna-studio/titan-rocket-run
           token: ${{ secrets.SYNC_TOKEN }}
           path: _titan_tmp
 
