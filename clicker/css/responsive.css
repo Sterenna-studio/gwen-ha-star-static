@@ -1,0 +1,417 @@
+/* Nitro Clicker — viewport scaling and responsive layout pass */
+
+:root {
+  --nc-page-pad: clamp(10px, 2vw, 28px);
+  --nc-gap: clamp(10px, 1.4vw, 18px);
+  --nc-card-pad: clamp(12px, 1.5vw, 20px);
+  --nc-radius: clamp(14px, 1.6vw, 22px);
+  --nc-core-size: clamp(170px, 18vw, 260px);
+  --nc-core-min-h: clamp(460px, 66vh, 760px);
+  --nc-stat-min: minmax(132px, 1fr);
+}
+
+html,
+body {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.clicker-shell {
+  width: min(100%, 1680px);
+  max-width: 1680px;
+  padding: var(--nc-page-pad) var(--nc-page-pad) clamp(26px, 4vh, 56px);
+}
+
+.topbar {
+  gap: var(--nc-gap);
+  margin-bottom: clamp(14px, 2vh, 24px);
+}
+
+.brand-title {
+  font-size: clamp(2rem, 4.2vw, 4.25rem);
+}
+
+.brand-sub {
+  max-width: min(70vw, 760px);
+  line-height: 1.45;
+}
+
+.top-actions {
+  gap: clamp(6px, .8vw, 10px);
+}
+
+.nav-btn,
+.action-btn,
+.nc-action {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.stats-grid,
+.stats-grid-extended {
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: clamp(8px, 1vw, 12px);
+  margin-bottom: var(--nc-gap);
+}
+
+.stat-card,
+.panel {
+  border-radius: var(--nc-radius);
+}
+
+.stat-card {
+  padding: clamp(10px, 1.2vw, 15px);
+  min-width: 0;
+}
+
+.stat-label {
+  font-size: clamp(7px, .62vw, 9px);
+  letter-spacing: clamp(.1em, .9vw, .18em);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-value {
+  font-size: clamp(1.18rem, 2vw, 2.2rem);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.game-grid,
+.game-grid-wide {
+  display: grid;
+  gap: var(--nc-gap);
+  grid-template-columns: minmax(520px, 1.55fr) minmax(280px, .62fr) minmax(280px, .62fr);
+  align-items: start;
+}
+
+.panel {
+  padding: var(--nc-card-pad);
+  min-width: 0;
+}
+
+.core-panel {
+  min-height: var(--nc-core-min-h);
+  container-type: inline-size;
+}
+
+.progression-panel,
+.meta-panel {
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+  scrollbar-width: thin;
+}
+
+.upgrade-list,
+.milestone-list {
+  overflow: visible;
+  max-height: none;
+}
+
+.click-core {
+  width: var(--nc-core-size);
+  max-width: min(46cqw, 48vh, 280px);
+  font-size: clamp(44px, 5vw, 72px);
+}
+
+.click-core small {
+  font-size: clamp(8px, .7vw, 10px);
+  letter-spacing: clamp(.12em, .8vw, .25em);
+}
+
+.layer-caption {
+  left: clamp(14px, 2vw, 28px);
+  right: clamp(14px, 2vw, 28px);
+  top: clamp(14px, 2vw, 28px);
+}
+
+.reactor-gauges {
+  left: clamp(14px, 2vw, 26px);
+  right: clamp(14px, 2vw, 26px);
+  bottom: clamp(14px, 2vw, 28px);
+}
+
+.scale-radar::before {
+  width: min(560px, 88cqw);
+  height: min(560px, 88cqw);
+  margin: calc(min(560px, 88cqw) / -2) 0 0 calc(min(560px, 88cqw) / -2);
+}
+
+.scale-radar::after {
+  width: min(740px, 118cqw);
+  height: min(740px, 118cqw);
+  margin: calc(min(740px, 118cqw) / -2) 0 0 calc(min(740px, 118cqw) / -2);
+}
+
+.spawned-module {
+  width: clamp(26px, 2.4vw, 34px);
+  height: clamp(26px, 2.4vw, 34px);
+  border-radius: clamp(9px, 1vw, 12px);
+}
+
+.upgrade-list {
+  gap: clamp(8px, .85vw, 10px);
+}
+
+.upgrade-btn,
+.prestige-card {
+  padding: clamp(11px, 1vw, 14px);
+  border-radius: clamp(13px, 1.1vw, 16px);
+}
+
+.upgrade-head {
+  min-width: 0;
+}
+
+.upgrade-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.upgrade-cost {
+  font-size: clamp(8px, .62vw, 10px);
+  flex: 0 0 auto;
+}
+
+.upgrade-desc,
+.upgrade-buy-meta,
+.scale-card-main p,
+.milestone small,
+.current-goal-panel p,
+.nc-current-goal p {
+  font-size: clamp(8px, .72vw, 10px);
+}
+
+.current-goal-panel,
+.scale-card,
+.milestone,
+.nc-current-goal {
+  padding: clamp(10px, 1vw, 14px);
+}
+
+.nc-panel {
+  width: min(1080px, calc(100vw - 20px));
+  max-height: calc(100dvh - 20px);
+  border-radius: clamp(18px, 2vw, 28px);
+}
+
+.nc-panel-head {
+  padding: clamp(14px, 2vw, 22px) clamp(16px, 2vw, 24px) clamp(10px, 1.3vw, 14px);
+}
+
+.nc-tabs {
+  padding: 10px clamp(14px, 2vw, 24px);
+}
+
+.nc-panel-body {
+  padding: clamp(14px, 2vw, 24px);
+  max-height: calc(100dvh - 168px);
+}
+
+.nc-mini-grid,
+.nc-mini-grid.wide,
+.nc-action-grid,
+.nc-save-grid,
+.nc-guide-grid {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.nc-metric strong {
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  overflow-wrap: anywhere;
+}
+
+.nc-save-textarea {
+  min-height: clamp(180px, 28vh, 280px);
+}
+
+.peripheral-ring span {
+  transform: rotate(var(--a)) translateX(min(330px, 44cqw)) rotate(calc(-1 * var(--a)));
+}
+
+.toast {
+  right: clamp(10px, 2vw, 18px);
+  bottom: clamp(10px, 2vw, 18px);
+  max-width: min(360px, calc(100vw - 20px));
+}
+
+@media (min-width: 1360px) {
+  :root { --nc-core-size: clamp(190px, 15vw, 275px); }
+  .game-grid-wide { grid-template-columns: minmax(620px, 1.7fr) minmax(320px, .62fr) minmax(320px, .62fr); }
+  .core-panel { min-height: clamp(560px, 68vh, 820px); }
+}
+
+@media (max-width: 1180px) {
+  .game-grid,
+  .game-grid-wide {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, .86fr);
+  }
+  .core-panel { grid-column: 1 / -1; min-height: clamp(460px, 58vh, 660px); }
+  .click-core { max-width: min(42cqw, 44vh, 260px); }
+}
+
+@media (max-width: 820px) {
+  :root {
+    --nc-page-pad: 12px;
+    --nc-core-size: clamp(170px, 52vw, 250px);
+    --nc-core-min-h: clamp(380px, 58vh, 520px);
+  }
+
+  .topbar {
+    align-items: stretch;
+  }
+
+  .top-actions {
+    justify-content: flex-start;
+  }
+
+  .nav-btn {
+    flex: 1 1 auto;
+    padding-inline: 10px;
+  }
+
+  .game-grid,
+  .game-grid-wide {
+    grid-template-columns: 1fr;
+  }
+
+  .layer-caption {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    z-index: 5;
+    margin-bottom: 12px;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .layer-caption span {
+    max-width: 100%;
+  }
+
+  .upgrade-title-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .buy-mult-row {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .buy-mult-btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    --nc-card-pad: 12px;
+    --nc-core-min-h: 350px;
+  }
+
+  .brand-title {
+    font-size: clamp(2rem, 12vw, 3.1rem);
+  }
+
+  .brand-sub {
+    max-width: 100%;
+    font-size: 8px;
+  }
+
+  .stats-grid,
+  .stats-grid-extended {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat-card {
+    padding: 10px;
+  }
+
+  .stat-value {
+    font-size: clamp(1.05rem, 8vw, 1.65rem);
+  }
+
+  .click-core {
+    width: min(205px, 58vw);
+    max-width: min(205px, 58vw);
+    font-size: 50px;
+  }
+
+  .reactor-gauges {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .upgrade-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .upgrade-cost {
+    white-space: normal;
+  }
+
+  .milestone {
+    grid-template-columns: 20px 1fr;
+  }
+
+  .milestone em {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .nc-panel-body {
+    max-height: calc(100dvh - 156px);
+  }
+
+  .nc-unlock-list > div,
+  .nc-upgrade-stats > div {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .nc-unlock-list small {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 390px) {
+  .stats-grid,
+  .stats-grid-extended {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-btn {
+    flex-basis: 100%;
+  }
+
+  .core-panel {
+    min-height: 320px;
+  }
+
+  .click-core {
+    width: min(180px, 56vw);
+    max-width: min(180px, 56vw);
+    font-size: 44px;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 1181px) {
+  :root {
+    --nc-core-min-h: calc(100vh - 190px);
+    --nc-core-size: min(220px, 32vh);
+  }
+
+  .milestone-list {
+    max-height: none;
+  }
+}

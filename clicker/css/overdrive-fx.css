@@ -1,0 +1,222 @@
+/* Nitro Clicker — Overdrive core fracture / reform impact */
+
+.overdrive-shard-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 95;
+  overflow: visible;
+}
+
+.core-panel.overdrive-window-blast {
+  overflow: visible;
+  animation: overdrivePanelImpact 1.15s cubic-bezier(.15,.85,.2,1) both;
+}
+
+.click-core.overdrive-fracture {
+  animation: overdriveCoreFracture 1.25s cubic-bezier(.12,.9,.18,1) both;
+}
+
+.click-core.overdrive-fracture .core-glyph,
+.click-core.overdrive-fracture .core-rings,
+.click-core.overdrive-fracture::before,
+.click-core.overdrive-fracture::after,
+.click-core.overdrive-fracture .shared-core-center-asset {
+  animation: overdriveCoreInnerBreak 1.1s cubic-bezier(.12,.9,.18,1) both;
+}
+
+.overdrive-core-splinter,
+.overdrive-energy-shard,
+.overdrive-shock-ring,
+.overdrive-window-flash,
+.overdrive-core-nova,
+.overdrive-nova-beam {
+  position: fixed;
+  pointer-events: none;
+  left: 0;
+  top: 0;
+}
+
+.overdrive-core-nova {
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.95) 0 8%, rgba(0,255,204,.76) 18%, rgba(255,61,242,.36) 42%, transparent 74%);
+  box-shadow:
+    0 0 28px rgba(255,255,255,.78),
+    0 0 70px rgba(0,255,204,.72),
+    0 0 140px rgba(255,61,242,.42);
+  animation: overdriveCoreNova .76s cubic-bezier(.08,.82,.16,1) forwards;
+}
+
+.overdrive-nova-beam {
+  width: var(--len);
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(255,204,0,.86), rgba(0,255,204,.52), transparent);
+  box-shadow:
+    0 0 12px rgba(255,255,255,.72),
+    0 0 28px rgba(0,255,204,.72),
+    0 0 58px rgba(255,61,242,.36);
+  transform-origin: left center;
+  transform: translate(-50%, -50%) rotate(var(--rot)) scaleX(.02);
+  animation: overdriveNovaBeam .95s cubic-bezier(.06,.82,.12,1) forwards;
+  animation-delay: var(--delay);
+}
+
+.overdrive-core-splinter {
+  width: 18px;
+  height: 12px;
+  border-radius: 45% 55% 52% 48%;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,.95), transparent 18%),
+    linear-gradient(135deg, rgba(0,255,204,.95), rgba(255,61,242,.78) 58%, rgba(255,204,0,.75));
+  clip-path: polygon(0 35%, 62% 0, 100% 44%, 68% 100%, 18% 86%);
+  box-shadow:
+    0 0 16px rgba(0,255,204,.86),
+    0 0 34px rgba(255,61,242,.42),
+    inset 0 0 10px rgba(255,255,255,.28);
+  transform: translate(-50%, -50%) scale(.3) rotate(0deg);
+  animation: coreSplinterFly 1.05s cubic-bezier(.08,.82,.16,1) forwards;
+  animation-delay: var(--delay);
+}
+
+.overdrive-energy-shard {
+  width: var(--len);
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(0,255,204,.88), rgba(255,61,242,.22), transparent);
+  box-shadow:
+    0 0 16px rgba(0,255,204,.95),
+    0 0 36px rgba(255,61,242,.5),
+    0 0 56px rgba(255,204,0,.22);
+  transform: translate(-50%, -50%) rotate(var(--rot)) scaleX(.1);
+  animation: energyShardEscape 1.26s cubic-bezier(.06,.78,.12,1) forwards;
+  animation-delay: var(--delay);
+}
+
+.overdrive-energy-shard::after {
+  content: '';
+  position: absolute;
+  inset: -9px -12px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(0,255,204,.18), rgba(255,61,242,.12), transparent);
+  filter: blur(6px);
+}
+
+.overdrive-shock-ring {
+  width: var(--size);
+  height: var(--size);
+  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+  border-radius: 50%;
+  border: 2px solid rgba(0,255,204,.62);
+  box-shadow:
+    0 0 22px rgba(0,255,204,.36),
+    inset 0 0 28px rgba(255,61,242,.18);
+  transform: scale(.05);
+  opacity: 0;
+  animation: overdriveShockRing 1.05s ease-out forwards;
+  animation-delay: var(--delay);
+}
+
+.overdrive-window-flash {
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.72), rgba(0,255,204,.22) 18%, rgba(255,61,242,.16) 42%, transparent 70%),
+    linear-gradient(135deg, rgba(0,255,204,.16), rgba(255,204,0,.10), rgba(255,61,242,.14));
+  mix-blend-mode: screen;
+  animation: overdriveWindowFlash .78s ease-out forwards;
+}
+
+@keyframes overdriveCoreFracture {
+  0% { transform: scale(1); filter: brightness(1) saturate(1); }
+  10% { transform: scale(1.08); filter: brightness(1.75) saturate(1.9); }
+  22% { transform: scale(.68) rotate(-3deg); filter: brightness(2.8) saturate(3) hue-rotate(20deg); opacity: .74; }
+  34% { transform: scale(.36) rotate(7deg); filter: brightness(3.4) saturate(3.2); opacity: .28; }
+  48% { transform: scale(.12) rotate(-12deg); filter: brightness(3.8) saturate(3.4); opacity: .04; }
+  62% { transform: scale(.62) rotate(5deg); opacity: .58; }
+  78% { transform: scale(1.24) rotate(-2deg); opacity: 1; filter: brightness(2.4) saturate(2.2); }
+  100% { transform: scale(1); filter: brightness(1) saturate(1); opacity: 1; }
+}
+
+@keyframes overdriveCoreInnerBreak {
+  0% { transform: scale(1); opacity: 1; filter: blur(0); }
+  25% { transform: scale(1.45) rotate(8deg); opacity: .82; filter: blur(1px); }
+  42% { transform: scale(.16) rotate(-22deg); opacity: .08; filter: blur(5px); }
+  72% { transform: scale(1.32) rotate(4deg); opacity: 1; filter: blur(0); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes overdrivePanelImpact {
+  0% { transform: translate3d(0,0,0); filter: brightness(1); }
+  10% { transform: translate3d(5px,-4px,0) scale(1.006); filter: brightness(1.75); }
+  18% { transform: translate3d(-6px,3px,0) scale(1.01); }
+  27% { transform: translate3d(3px,2px,0) scale(1.004); }
+  44% { transform: translate3d(-2px,-1px,0); filter: brightness(1.22); }
+  100% { transform: translate3d(0,0,0); filter: brightness(1); }
+}
+
+@keyframes overdriveCoreNova {
+  0% { opacity: 0; transform: scale(.08); }
+  18% { opacity: 1; transform: scale(1.8); }
+  100% { opacity: 0; transform: scale(18); }
+}
+
+@keyframes overdriveNovaBeam {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--rot)) scaleX(.02); }
+  10% { opacity: 1; }
+  72% { opacity: .9; transform: translate(calc(-50% + var(--dx) * .8), calc(-50% + var(--dy) * .8)) rotate(var(--rot)) scaleX(1); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scaleX(.12); }
+}
+
+@keyframes coreSplinterFly {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.2) rotate(0deg); }
+  12% { opacity: 1; }
+  48% { opacity: 1; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(var(--scale)) rotate(var(--rot)); }
+  72% { opacity: .76; transform: translate(calc(-50% + var(--dx) * .52), calc(-50% + var(--dy) * .52)) scale(.72) rotate(calc(var(--rot) * -.45)); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(.15) rotate(0deg); }
+}
+
+@keyframes energyShardEscape {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--rot)) scaleX(.04); }
+  7% { opacity: 1; }
+  55% { opacity: 1; transform: translate(calc(-50% + var(--dx) * .76), calc(-50% + var(--dy) * .76)) rotate(var(--rot)) scaleX(1); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scaleX(.18); }
+}
+
+@keyframes overdriveShockRing {
+  0% { opacity: 0; transform: scale(.04); }
+  14% { opacity: .95; }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+@keyframes overdriveWindowFlash {
+  0% { opacity: 0; transform: scale(.94); filter: blur(0); }
+  12% { opacity: .92; }
+  100% { opacity: 0; transform: scale(1.12); filter: blur(10px); }
+}
+
+.fx-disabled .overdrive-shard-layer,
+.fx-disabled .overdrive-core-splinter,
+.fx-disabled .overdrive-energy-shard,
+.fx-disabled .overdrive-shock-ring,
+.fx-disabled .overdrive-window-flash,
+.fx-disabled .overdrive-core-nova,
+.fx-disabled .overdrive-nova-beam {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overdrive-core-splinter,
+  .overdrive-energy-shard,
+  .overdrive-shock-ring,
+  .overdrive-window-flash,
+  .overdrive-core-nova,
+  .overdrive-nova-beam,
+  .click-core.overdrive-fracture,
+  .core-panel.overdrive-window-blast {
+    animation-duration: .001ms !important;
+  }
+}

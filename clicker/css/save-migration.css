@@ -1,0 +1,99 @@
+.save-migration-notice {
+  position: fixed;
+  left: 50%;
+  top: clamp(86px, 10vh, 132px);
+  z-index: 185;
+  width: min(520px, calc(100vw - 28px));
+  transform: translateX(-50%);
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(255,204,0,.32);
+  background:
+    radial-gradient(circle at 8% 8%, rgba(255,204,0,.16), transparent 36%),
+    radial-gradient(circle at 100% 100%, rgba(0,255,204,.12), transparent 42%),
+    rgba(3,8,16,.96);
+  box-shadow: 0 0 38px rgba(255,204,0,.13), 0 26px 80px rgba(0,0,0,.52);
+  backdrop-filter: blur(14px);
+  animation: saveMigrationIn .3s cubic-bezier(.12,.82,.18,1);
+}
+
+.save-migration-kicker {
+  color: var(--nc-accent);
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 9px;
+  letter-spacing: .18em;
+  margin-bottom: 7px;
+}
+
+.save-migration-notice strong {
+  display: block;
+  color: #fff;
+  font-family: var(--font-display, 'Exo 2', sans-serif);
+  font-size: clamp(1.25rem, 1.4vw, 1.65rem);
+  margin-bottom: 7px;
+}
+
+.save-migration-notice p {
+  margin: 0 0 13px;
+  color: rgba(232,250,255,.76);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.save-migration-reward {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.save-migration-reward span,
+.save-migration-reward b,
+.save-migration-notice button {
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  letter-spacing: .12em;
+}
+
+.save-migration-reward span {
+  color: rgba(168,230,255,.6);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.save-migration-reward b {
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #02050a;
+  background: linear-gradient(90deg, var(--nc-primary), var(--nc-accent));
+  font-size: 10px;
+}
+
+.save-migration-notice button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 15px;
+  color: #02050a;
+  background: linear-gradient(90deg, var(--nc-primary), var(--nc-accent));
+  font-size: 10px;
+  cursor: pointer;
+}
+
+@keyframes saveMigrationIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-14px) scale(.96); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+@media (max-width: 820px) {
+  .save-migration-notice {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    transform: none;
+  }
+
+  @keyframes saveMigrationIn {
+    from { opacity: 0; transform: translateY(-14px) scale(.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+}

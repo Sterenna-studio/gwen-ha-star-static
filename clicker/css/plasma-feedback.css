@@ -1,0 +1,148 @@
+/* Nitro Clicker — plasma lamp arcs and dopamine feedback */
+
+.plasma-arc-layer {
+  position: absolute;
+  inset: -18%;
+  z-index: 11;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.plasma-arc-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: plasmaArcFade .48s ease-out forwards;
+}
+
+.plasma-arc-main,
+.plasma-arc-glow {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.plasma-arc-main {
+  stroke: rgba(235,255,255,.96);
+  stroke-width: 1.7;
+  filter: drop-shadow(0 0 4px rgba(0,255,204,.95));
+}
+
+.plasma-arc-glow {
+  stroke: rgba(255,61,242,.44);
+  stroke-width: 7;
+  filter: blur(5px) drop-shadow(0 0 12px rgba(255,61,242,.7));
+}
+
+.core-panel.plasma-click-hit .click-core {
+  box-shadow:
+    inset -38px -44px 72px rgba(0,0,0,.72),
+    inset 22px 22px 42px rgba(255,255,255,.12),
+    inset 0 0 70px rgba(0,255,204,.38),
+    0 0 0 1px rgba(255,255,255,.62),
+    0 0 58px rgba(0,255,204,.58),
+    0 0 122px rgba(255,61,242,.30),
+    0 36px 64px rgba(0,0,0,.52);
+}
+
+@keyframes plasmaArcFade {
+  0% { opacity: 0; transform: scale(.96); }
+  12% { opacity: 1; }
+  55% { opacity: .8; }
+  100% { opacity: 0; transform: scale(1.025); }
+}
+
+.dopamine-burst-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.dopamine-badge {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,204,0,.92), rgba(0,255,204,.92));
+  color: #020308;
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 9px;
+  letter-spacing: .14em;
+  font-weight: 800;
+  box-shadow: 0 0 20px rgba(255,204,0,.36), 0 0 36px rgba(0,255,204,.22);
+  animation: dopamineBadgePop .85s cubic-bezier(.1,.9,.2,1) forwards;
+}
+
+.dopamine-spark {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff, var(--nc-accent) 36%, var(--nc-primary) 72%, transparent);
+  box-shadow: 0 0 12px rgba(255,204,0,.7), 0 0 24px rgba(0,255,204,.4);
+  transform: translate(-50%, -50%);
+  animation: dopamineSparkFly .78s cubic-bezier(.12,.8,.16,1) forwards;
+  animation-delay: var(--delay);
+}
+
+.dopamine-meter-pulse {
+  animation: dopamineMeterPulse .62s ease-out;
+}
+
+.dopamine-meter-pulse span,
+.dopamine-meter-pulse i {
+  filter: brightness(1.55) saturate(1.55) drop-shadow(0 0 10px rgba(255,204,0,.6));
+}
+
+.dopamine-stat-pop {
+  animation: dopamineCardPop .62s ease-out;
+}
+
+.dopamine-ready-pop {
+  animation: dopamineReadyPop .68s ease-out;
+}
+
+@keyframes dopamineBadgePop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
+  18% { opacity: 1; transform: translate(-50%, -58%) scale(1.12); }
+  100% { opacity: 0; transform: translate(-50%, -110%) scale(.9); }
+}
+
+@keyframes dopamineSparkFly {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.5); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.2); }
+}
+
+@keyframes dopamineMeterPulse {
+  0% { box-shadow: 0 0 0 rgba(255,204,0,0); }
+  38% { box-shadow: 0 0 26px rgba(255,204,0,.38), 0 0 42px rgba(0,255,204,.18); transform: scaleY(1.45); }
+  100% { box-shadow: 0 0 0 rgba(255,204,0,0); transform: scaleY(1); }
+}
+
+@keyframes dopamineCardPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.025); filter: brightness(1.35) saturate(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes dopamineReadyPop {
+  0% { transform: scale(1); }
+  32% { transform: scale(1.025); box-shadow: 0 0 28px rgba(255,204,0,.24), inset 0 0 22px rgba(0,255,204,.08); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plasma-arc-svg,
+  .dopamine-badge,
+  .dopamine-spark,
+  .dopamine-meter-pulse,
+  .dopamine-stat-pop,
+  .dopamine-ready-pop {
+    animation-duration: .001ms !important;
+  }
+}

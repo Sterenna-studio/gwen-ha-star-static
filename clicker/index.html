@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nitro Clicker — Gwen Ha Star</title>
+  <link rel="icon" href="/shared/logos/star_logo/star_logo_color_set/star_logo_white_silver.png" type="image/png" />
+  <script>
+    (function(){
+      var t = sessionStorage.getItem('ghs-theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/theme.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="./css/nitro.css" />
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <main id="app" class="clicker-shell">
+    <section class="loading-panel">
+      <div class="loading-orb">⬡</div>
+      <p>// INITIALISATION NITRO CLICKER</p>
+    </section>
+  </main>
+
+  <script type="module" src="./js/bootstrap.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+/* Nitro Clicker — current objective panel */
+
+.current-objective-card {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 16px;
+  padding: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,204,0,.22);
+  background:
+    radial-gradient(circle at 8% 8%, rgba(255,204,0,.14), transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(0,255,204,.10), transparent 44%),
+    rgba(255,255,255,.035);
+  box-shadow:
+    inset 0 0 22px rgba(255,204,0,.035),
+    0 0 24px rgba(255,204,0,.07);
+}
+
+.current-objective-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.11), transparent);
+  pointer-events: none;
+}
+
+.current-objective-card.objective-changed::before {
+  animation: objectiveScan .82s ease-out;
+}
+
+.current-objective-kicker {
+  color: var(--nc-accent);
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 8px;
+  letter-spacing: .18em;
+  margin-bottom: 7px;
+}
+
+.current-objective-main strong {
+  display: block;
+  color: #fff;
+  font-family: var(--font-display, 'Exo 2', sans-serif);
+  font-size: clamp(1rem, 1.25vw, 1.35rem);
+  letter-spacing: .035em;
+  margin-bottom: 5px;
+  text-shadow: 0 0 14px rgba(255,204,0,.18);
+}
+
+.current-objective-main p {
+  margin: 0 0 11px;
+  color: rgba(232,250,255,.73);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.current-objective-meter {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.current-objective-meter span {
+  display: block;
+  height: 100%;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--nc-accent), var(--nc-primary), var(--nc-pink));
+  box-shadow: 0 0 18px rgba(255,204,0,.24);
+  transition: transform .35s ease-out;
+}
+
+#current-objective-progress {
+  display: block;
+  margin-top: 6px;
+  color: rgba(168,230,255,.58);
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 8px;
+  letter-spacing: .12em;
+}
+
+@keyframes objectiveScan {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(120%); }
+}
+
+@media (max-width: 820px) {
+  .current-objective-card {
+    padding: 13px;
+  }
+
+  .current-objective-main p {
+    font-size: 10px;
+  }
+}

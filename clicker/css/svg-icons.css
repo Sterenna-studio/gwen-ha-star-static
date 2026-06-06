@@ -1,0 +1,170 @@
+/* Nitro Clicker — inline SVG icon styling */
+
+.nc-svg-icon {
+  width: 1.2em;
+  height: 1.2em;
+  display: inline-block;
+  vertical-align: -0.18em;
+  overflow: visible;
+  flex: 0 0 auto;
+  color: currentColor;
+}
+
+.nc-svg-icon .svg-stroke {
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nc-svg-icon .svg-stroke.thin {
+  stroke-width: 1.6;
+  opacity: .72;
+}
+
+.nc-svg-icon .svg-fill {
+  fill: currentColor;
+  opacity: .16;
+}
+
+.nc-svg-icon .svg-fill-alt {
+  fill: currentColor;
+}
+
+.nc-svg-icon .svg-glow {
+  fill: currentColor;
+  opacity: .08;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.nc-svg-core {
+  width: 1.35em;
+  height: 1.35em;
+  color: var(--nc-primary);
+  filter: drop-shadow(0 0 18px rgba(0,255,204,.75)) drop-shadow(0 0 38px rgba(255,61,242,.28));
+}
+
+.core-glyph .nc-svg-core {
+  width: min(58%, 140px);
+  height: min(58%, 140px);
+  margin: 0 auto;
+  animation: svgCoreBreathe 1.7s ease-in-out infinite alternate;
+}
+
+@keyframes svgCoreBreathe {
+  from { transform: scale(.98) rotate(-1deg); }
+  to { transform: scale(1.05) rotate(1deg); }
+}
+
+.loading-orb .nc-svg-core {
+  width: 56px;
+  height: 56px;
+}
+
+.upgrade-name-svg {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.upgrade-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.nc-svg-upgrade {
+  width: 22px;
+  height: 22px;
+  color: var(--nc-primary);
+  filter: drop-shadow(0 0 9px rgba(0,255,204,.45));
+}
+
+.upgrade-btn.can-buy .nc-svg-upgrade,
+.upgrade-btn.can-buy-bulk .nc-svg-upgrade {
+  color: var(--nc-accent);
+  filter: drop-shadow(0 0 12px rgba(255,204,0,.62));
+  animation: svgIconReady 1s ease-in-out infinite alternate;
+}
+
+.upgrade-btn.locked .nc-svg-upgrade,
+.locked-svg {
+  color: rgba(168,230,255,.38);
+  filter: none;
+}
+
+@keyframes svgIconReady {
+  to { transform: scale(1.08) rotate(2deg); }
+}
+
+.nc-svg-module {
+  width: 22px;
+  height: 22px;
+  color: var(--nc-primary);
+  filter: drop-shadow(0 0 10px rgba(0,255,204,.48));
+}
+
+.nc-svg-factory {
+  width: 18px;
+  height: 18px;
+  color: var(--nc-green);
+  filter: drop-shadow(0 0 8px rgba(0,255,128,.5));
+}
+
+.nc-svg-milestone {
+  width: 18px;
+  height: 18px;
+  color: var(--nc-primary);
+  filter: drop-shadow(0 0 8px rgba(0,255,204,.48));
+}
+
+.milestone.done .nc-svg-milestone {
+  color: var(--nc-green);
+}
+
+.nc-svg-inline {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+}
+
+.stat-card {
+  position: relative;
+}
+
+.stat-icon-bg {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  opacity: .16;
+  pointer-events: none;
+}
+
+.nc-svg-stat-bg {
+  width: 36px;
+  height: 36px;
+  color: currentColor;
+  filter: drop-shadow(0 0 14px currentColor);
+}
+
+.spawned-module,
+.factory-node {
+  font-size: 0;
+}
+
+.spawned-module .nc-svg-icon,
+.factory-node .nc-svg-icon {
+  font-size: 16px;
+}
+
+.system-wave .nc-svg-icon,
+.toast .nc-svg-icon {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 560px) {
+  .nc-svg-upgrade { width: 20px; height: 20px; }
+  .upgrade-name-svg { gap: 7px; }
+  .core-glyph .nc-svg-core { width: min(54%, 110px); height: min(54%, 110px); }
+}

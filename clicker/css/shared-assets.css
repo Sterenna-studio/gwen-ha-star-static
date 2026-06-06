@@ -1,0 +1,129 @@
+/* Nitro Clicker — Gwen Ha Star shared assets integration */
+
+:root {
+  --shared-star-logo: none;
+}
+
+.shared-brand-mark,
+.shared-reactor-watermark,
+.shared-bg-sigil,
+.shared-core-center-asset {
+  background-image: var(--shared-star-logo);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
+}
+
+.shared-brand-mark {
+  position: relative;
+  width: clamp(30px, 3.2vw, 44px);
+  height: clamp(30px, 3.2vw, 44px);
+  margin-bottom: 6px;
+  opacity: .88;
+  filter:
+    drop-shadow(0 0 10px rgba(0,255,204,.32))
+    drop-shadow(0 0 22px rgba(255,61,242,.18));
+  animation: sharedBrandFloat 4s ease-in-out infinite alternate;
+}
+
+.shared-bg-sigil {
+  position: fixed;
+  right: clamp(-140px, -7vw, -70px);
+  top: clamp(80px, 12vh, 170px);
+  width: clamp(240px, 25vw, 470px);
+  height: clamp(240px, 25vw, 470px);
+  z-index: -1;
+  opacity: .032;
+  filter:
+    blur(.4px)
+    drop-shadow(0 0 42px rgba(0,255,204,.32));
+  transform: rotate(-12deg);
+  animation: sharedSigilDrift 18s ease-in-out infinite alternate;
+}
+
+.shared-reactor-watermark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(62cqw, 520px);
+  height: min(62cqw, 520px);
+  transform: translate(-50%, -50%) rotate(-10deg);
+  opacity: .035;
+  z-index: 0;
+  mix-blend-mode: screen;
+  filter:
+    drop-shadow(0 0 34px rgba(0,255,204,.22))
+    drop-shadow(0 0 70px rgba(255,61,242,.11));
+  animation: sharedWatermarkBreathe 9s ease-in-out infinite alternate;
+}
+
+.shared-core-center-asset {
+  position: absolute;
+  left: 50%;
+  top: 43%;
+  width: 42%;
+  height: 42%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  opacity: .32;
+  mix-blend-mode: screen;
+  filter:
+    drop-shadow(0 0 12px rgba(0,255,204,.55))
+    drop-shadow(0 0 30px rgba(255,61,242,.26));
+  animation: sharedCoreSigilPulse 2.8s ease-in-out infinite alternate;
+}
+
+.click-core .core-glyph {
+  position: relative;
+  z-index: 5;
+}
+
+.shared-brand-mark[data-shared-asset-ready='true']::after,
+.shared-reactor-watermark[data-shared-asset-ready='true']::after,
+.shared-bg-sigil[data-shared-asset-ready='true']::after,
+.shared-core-center-asset[data-shared-asset-ready='true']::after {
+  content: '';
+  position: absolute;
+  inset: -10%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,255,204,.11), transparent 64%);
+  opacity: .48;
+}
+
+@keyframes sharedBrandFloat {
+  from { transform: translateY(0) rotate(-2deg); }
+  to { transform: translateY(-3px) rotate(2deg); }
+}
+
+@keyframes sharedSigilDrift {
+  from { transform: rotate(-12deg) translate3d(0,0,0) scale(1); }
+  to { transform: rotate(-6deg) translate3d(-20px,18px,0) scale(1.05); }
+}
+
+@keyframes sharedWatermarkBreathe {
+  from { opacity: .025; transform: translate(-50%, -50%) rotate(-10deg) scale(.98); }
+  to { opacity: .052; transform: translate(-50%, -50%) rotate(-4deg) scale(1.04); }
+}
+
+@keyframes sharedCoreSigilPulse {
+  from { opacity: .22; transform: translate(-50%, -50%) scale(.96) rotate(-3deg); }
+  to { opacity: .42; transform: translate(-50%, -50%) scale(1.05) rotate(3deg); }
+}
+
+@media (max-width: 820px) {
+  .shared-brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .shared-bg-sigil {
+    opacity: .025;
+    right: -150px;
+  }
+
+  .shared-reactor-watermark {
+    width: min(76cqw, 380px);
+    height: min(76cqw, 380px);
+  }
+}

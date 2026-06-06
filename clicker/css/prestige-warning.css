@@ -1,0 +1,479 @@
+/* ============================================================
+   PRESTIGE WARNING — overcharge-driven intensity system
+   --overcharge: 0 (threshold reached) → 1 (200%+ beyond)
+   JS must set --overcharge on .prestige-warn-block directly.
+   ============================================================ */
+
+/* ── @property: register --overcharge as animatable number ─── */
+/* Allows calc() inside @keyframes to be dynamic per-frame     */
+@property --overcharge {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --pw-glow-opacity {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0.25;
+}
+
+/* ── KEYFRAMES ─────────────────────────────────────────────── */
+
+/* Halo breathe — uses registered --pw-glow-opacity, driven by JS */
+@keyframes pw-halo-pulse {
+  0%,100% { --pw-glow-opacity: 0.28; transform: scale(1);    }
+  50%      { --pw-glow-opacity: 0.62; transform: scale(1.03); }
+}
+
+@keyframes pw-scan-line {
+  0%   { top: -3px;  opacity: 0;   }
+  5%   {             opacity: 1;   }
+  92%  {             opacity: 1;   }
+  100% { top: 100%;  opacity: 0;   }
+}
+
+@keyframes pw-scan-line-2 {
+  0%   { top: -3px;  opacity: 0;   }
+  5%   {             opacity: 0.6; }
+  92%  {             opacity: 0.6; }
+  100% { top: 100%;  opacity: 0;   }
+}
+
+/* btn overcharge — static alpha values; dynamic intensity via --overcharge on element */
+@keyframes pw-btn-overcharge {
+  0% {
+    box-shadow:
+      0 0 10px  rgba(255,30,10,0.1),
+      inset 0 0 6px rgba(255,10,5,0.04);
+    border-color: rgba(255,60,40,0.35);
+  }
+  100% {
+    box-shadow:
+      0 0 var(--_glow-size, 32px) rgba(255,30,10, var(--_glow-alpha, 0.3)),
+      0 0 var(--_glow-far,  64px) rgba(200,0,0,   var(--_glow-far-alpha, 0.08)),
+      inset 0 0 var(--_inner-glow, 16px) rgba(255,10,5, var(--_inner-alpha, 0.1));
+    border-color: rgba(255,80,50, var(--_border-alpha, 0.65));
+  }
+}
+
+@keyframes pw-badge-pulse {
+  0%   { opacity: 0.6;  transform: scale(0.95); box-shadow: none; }
+  100% { opacity: 1;    transform: scale(1.06); box-shadow: 0 0 var(--_badge-glow,10px) rgba(255,20,10,0.55); }
+}
+
+@keyframes pw-title-shake {
+  0%,100% { transform: translateX(0); }
+  15%     { transform: translateX(var(--_shake-neg, -1px)); }
+  30%     { transform: translateX(var(--_shake-pos,  2px)); }
+  45%     { transform: translateX(var(--_shake-neg, -1px)); }
+  60%     { transform: translateX(var(--_shake-pos2, 1px)); }
+  75%     { transform: translateX(0); }
+}
+
+@keyframes pw-icon-wobble {
+  0%   { transform: rotate(0deg)   scale(1); }
+  40%  { transform: rotate(var(--_icon-neg, -8deg))  scale(var(--_icon-scale, 1.08)); }
+  70%  { transform: rotate(var(--_icon-pos,  6deg))  scale(var(--_icon-scale2,1.05)); }
+  100% { transform: rotate(0deg)   scale(1); }
+}
+
+@keyframes pw-flicker {
+  0%,100% { opacity: 1;    }
+  50%     { opacity: 0.78; }
+}
+
+@keyframes pw-vignette-breathe {
+  0%,100% { opacity: var(--_vignette-lo, 0.35); }
+  50%     { opacity: var(--_vignette-hi, 0.65); }
+}
+
+@keyframes pw-surface-flare {
+  0%,100% { opacity: 0; }
+  50%     { opacity: var(--_flare-alpha, 0.06); }
+}
+
+/* ── COMPUTED INTENSITY PROPS (set via JS alongside --overcharge) ── */
+/* JS should also set these derived props for @keyframes targets:
+   --_spd            : calc(1.6s  - overcharge * 0.7s)
+   --_glow-size      : calc(28px  + overcharge * 30px)
+   --_glow-alpha     : calc(0.22  + overcharge * 0.55)
+   --_glow-far       : calc(60px  + overcharge * 40px)
+   --_glow-far-alpha : calc(0.05  + overcharge * 0.2)
+   --_inner-glow     : calc(14px  + overcharge * 16px)
+   --_inner-alpha    : calc(0.06  + overcharge * 0.18)
+   --_border-alpha   : calc(0.55  + overcharge * 0.45)
+   --_badge-glow     : calc(8px   + overcharge * 14px)
+   --_shake-neg      : calc(-1px  - overcharge * 2px)
+   --_shake-pos      : calc(2px   + overcharge * 3px)
+   --_shake-pos2     : calc(1px   + overcharge * 2px)
+   --_icon-neg       : calc(-8deg - overcharge * 12deg)
+   --_icon-pos       : calc(6deg  + overcharge * 10deg)
+   --_icon-scale     : calc(1     + overcharge * 0.15)
+   --_icon-scale2    : calc(1     + overcharge * 0.1)
+   --_vignette-lo    : calc(0.3   + overcharge * 0.45)
+   --_vignette-hi    : calc(0.55  + overcharge * 0.45)
+   --_flare-alpha    : calc(0.04  + overcharge * 0.12)
+*/
+
+/* ── BLOCK CONTAINER ──────────────────────────────────────── */
+
+.prestige-warn-block {
+  position: relative;
+  border-radius: 18px;
+  /* overflow: hidden removed — was clipping the halo ::before with negative inset */
+  margin-bottom: 10px;
+  isolation: isolate;
+  --_spd: 1.6s; /* overridden by JS */
+  /* Outer halo lives on box-shadow so it's not clipped by overflow */
+  box-shadow:
+    0 0 calc(12px + var(--overcharge,0) * 28px) rgba(255,20,0, calc(0.08 + var(--overcharge,0) * 0.38)),
+    0 0 calc(30px + var(--overcharge,0) * 50px) rgba(180,0,0,  calc(0.03 + var(--overcharge,0) * 0.14));
+  transition: box-shadow 0.5s ease;
+}
+
+/* Inner ambient fill — radial, no overflow issue */
+.prestige-warn-block::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background:
+    radial-gradient(
+      ellipse 80% 70% at 50% 65%,
+      rgba(255,20,0, calc(0.1 + var(--overcharge,0) * 0.35)) 0%,
+      rgba(180,0,0,  calc(0.04 + var(--overcharge,0) * 0.14)) 40%,
+      transparent 72%
+    );
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--pw-glow-opacity, 0.28);
+  transition: background 0.6s ease;
+}
+.prestige-warn-block[data-overloaded="true"]::before {
+  animation: pw-vignette-breathe var(--_spd, 1.6s) ease-in-out infinite;
+}
+
+/* Primary scan line */
+.prestige-warn-block[data-overloaded="true"]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: calc(2px + var(--overcharge,0) * 2px);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,80,30, calc(0.4 + var(--overcharge,0) * 0.6)) 30%,
+    rgba(255,200,180, calc(0.6 + var(--overcharge,0) * 0.4)) 50%,
+    rgba(255,80,30, calc(0.4 + var(--overcharge,0) * 0.6)) 70%,
+    transparent 100%
+  );
+  filter: blur(0.5px);
+  animation: pw-scan-line calc(var(--_spd, 1.6s) * 1.1) linear infinite;
+  z-index: 10;
+  pointer-events: none;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+/* ── SCAN LINES OVERLAY (CRT) ────────────────────────────── */
+
+.prestige-warn-scanlines {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+  display: none;
+}
+.prestige-warn-block[data-overloaded="true"] .prestige-warn-scanlines {
+  display: block;
+}
+.prestige-warn-scanlines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent calc(3px + var(--overcharge,0) * 1px),
+    rgba(0,0,0, calc(0.04 + var(--overcharge,0) * 0.09)) calc(3px + var(--overcharge,0) * 1px),
+    rgba(0,0,0, calc(0.04 + var(--overcharge,0) * 0.09)) calc(4px + var(--overcharge,0) * 1px)
+  );
+  opacity: calc(0.4 + var(--overcharge,0) * 0.6);
+  animation: pw-surface-flare calc(var(--_spd,1.6s) * 0.7) ease-in-out infinite;
+}
+.prestige-warn-scanlines::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(255,50,10, calc(0.2 + var(--overcharge,0) * 0.45));
+  animation: pw-scan-line-2 calc(var(--_spd,1.6s) * 1.6) linear infinite;
+  animation-delay: calc(var(--_spd,1.6s) * 0.5);
+  z-index: 11;
+  pointer-events: none;
+}
+
+/* ── INFO ROW ─────────────────────────────────────────────── */
+
+.prestige-warn-info {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px 8px;
+  border: 1px solid oklch(from var(--pw-accent, oklch(0.55 0.22 30)) l c h / calc(0.18 + var(--overcharge,0) * 0.62));
+  border-bottom: none;
+  border-radius: 18px 18px 0 0;
+  background: rgba(30,5,5, calc(0.28 + var(--overcharge,0) * 0.32));
+  transition: border-color 0.5s ease, background 0.5s ease;
+}
+
+.prestige-warn-info-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prestige-warn-label {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,140,100, calc(0.65 + var(--overcharge,0) * 0.35));
+  transition: color 0.4s ease;
+}
+
+.prestige-warn-reward {
+  font-family: var(--font-display, 'Exo 2', sans-serif);
+  font-size: 1.05rem;
+  color: #e8faff;
+  line-height: 1;
+}
+.prestige-warn-reward em {
+  color: rgba(255,180,80,1);
+  font-style: normal;
+}
+
+/* ── METER ────────────────────────────────────────────────── */
+
+.prestige-warn-meter-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  min-width: 100px;
+}
+
+.prestige-warn-meter {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.07);
+  overflow: hidden;
+}
+
+.prestige-warn-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  transform-origin: left center;
+  background: linear-gradient(
+    90deg,
+    rgba(255,200,60,1) 0%,
+    rgba(255,80,30, calc(0.6 + var(--overcharge,0) * 0.4)) 55%,
+    rgba(255,0,0,   calc(0.5 + var(--overcharge,0) * 0.5)) 100%
+  );
+  box-shadow: 0 0 calc(6px + var(--overcharge,0) * 12px) rgba(255,50,10, calc(0.3 + var(--overcharge,0) * 0.55));
+  transition: transform 0.3s ease, box-shadow 0.4s ease;
+}
+.prestige-warn-block[data-overloaded="true"] .prestige-warn-meter-fill {
+  animation: pw-flicker calc(var(--_spd,1.6s) * 0.5) ease-in-out infinite;
+}
+
+.prestige-warn-pct {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: rgba(255,160,80, calc(0.6 + var(--overcharge,0) * 0.4));
+  transition: color 0.4s ease;
+}
+
+/* ── BUTTON ───────────────────────────────────────────────── */
+
+.prestige-warn-btn {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border: 1px solid oklch(from var(--pw-accent, oklch(0.55 0.22 30)) l c h / calc(0.32 + var(--overcharge,0) * 0.6));
+  border-top: none;
+  border-radius: 0 0 18px 18px;
+  background:
+    rgba(255,30,10, calc(0.07 + var(--overcharge,0) * 0.17)),
+    radial-gradient(ellipse 70% 80% at 50% 110%,
+      rgba(255,10,0, calc(0.05 + var(--overcharge,0) * 0.18)) 0%,
+      transparent 70%
+    );
+  color: rgba(255,160,120, calc(0.85 + var(--overcharge,0) * 0.15));
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.15s ease;
+  outline: none;
+}
+
+.prestige-warn-btn:hover {
+  background: rgba(255,40,20, calc(0.14 + var(--overcharge,0) * 0.22));
+  border-color: oklch(from var(--pw-accent, oklch(0.55 0.22 30)) l c h / calc(0.6 + var(--overcharge,0) * 0.4));
+  color: #fff;
+  box-shadow:
+    0 0 calc(20px + var(--overcharge,0) * 24px) rgba(255,40,10, calc(0.2  + var(--overcharge,0) * 0.35)),
+    0 0 calc(50px + var(--overcharge,0) * 40px) rgba(200,0,0,   calc(0.04 + var(--overcharge,0) * 0.14)),
+    inset 0 0 calc(10px + var(--overcharge,0) * 14px) rgba(255,20,5, calc(0.05 + var(--overcharge,0) * 0.12));
+  transform: translateY(-2px);
+}
+.prestige-warn-btn:active {
+  transform: scale(0.97);
+}
+
+.prestige-warn-block[data-overloaded="true"] .prestige-warn-btn {
+  animation: pw-btn-overcharge var(--_spd, 1.6s) ease-in-out infinite alternate;
+}
+
+/* ── BUTTON CONTENT ───────────────────────────────────────── */
+
+.prestige-warn-btn-icon {
+  font-size: 20px;
+  line-height: 1;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 0 calc(4px + var(--overcharge,0)*8px) oklch(from var(--pw-accent, oklch(0.55 0.22 30)) l c h / calc(0.4 + var(--overcharge,0)*0.6)));
+}
+.prestige-warn-btn:hover .prestige-warn-btn-icon {
+  transform: scale(1.25) rotate(-6deg);
+}
+.prestige-warn-block[data-overloaded="true"] .prestige-warn-btn-icon {
+  animation: pw-icon-wobble calc(var(--_spd,1.6s) * 2) ease-in-out infinite;
+}
+
+.prestige-warn-btn-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+}
+
+/* Title color: oklch lightness fixed, chroma driven by overcharge */
+/* okl(0.75) = bright readable, hue 30=orange→20=red as chroma rises */
+.prestige-warn-btn-title {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: oklch(0.78 calc(0.12 + var(--overcharge,0) * 0.22) calc(30 - var(--overcharge,0) * 20));
+  transition: color 0.5s ease;
+}
+.prestige-warn-block[data-overloaded="true"] .prestige-warn-btn-title {
+  animation:
+    pw-title-shake calc(var(--_spd,1.6s) * 0.8) ease-in-out infinite,
+    pw-flicker      calc(var(--_spd,1.6s) * 1.2) ease-in-out infinite;
+  text-shadow: 0 0 calc(4px + var(--overcharge,0)*10px) oklch(0.45 0.28 20 / calc(0.3 + var(--overcharge,0)*0.7));
+}
+
+.prestige-warn-btn-sub {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  opacity: 0.72;
+}
+
+/* ── BADGE SURCHARGE ─────────────────────────────────────── */
+
+.prestige-warn-badge {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  background: oklch(from var(--pw-accent, oklch(0.55 0.22 30)) calc(l - 0.1) c h / calc(0.22 + var(--overcharge,0) * 0.5));
+  border: 1px solid oklch(from var(--pw-accent, oklch(0.55 0.22 30)) l c h / calc(0.45 + var(--overcharge,0) * 0.55));
+  color: rgba(255,210,180,1);
+  text-shadow: 0 0 6px rgba(255,40,10,0.6);
+  display: none;
+  animation: pw-badge-pulse calc(var(--_spd,1.6s) * 0.6) ease-in-out infinite alternate;
+}
+.prestige-warn-block[data-overloaded="true"] .prestige-warn-badge {
+  display: inline-block;
+}
+
+/* ── PROGRESSIVE TIERS — wire --pw-accent + speed props ──── */
+/* Tier 1 — overcharge 0.0→0.33: warm orange-red */
+.prestige-warn-block[data-tier="1"] {
+  --pw-accent: oklch(0.58 0.20 32);
+  --_vignette-lo: 0.28;
+  --_vignette-hi: 0.52;
+}
+/* Tier 2 — overcharge 0.33→0.66: mid red */
+.prestige-warn-block[data-tier="2"] {
+  --pw-accent: oklch(0.50 0.24 22);
+  --_vignette-lo: 0.36;
+  --_vignette-hi: 0.68;
+  --_shake-neg: -2px;
+  --_shake-pos: 3px;
+}
+/* Tier 3 — overcharge 0.66→1: deep crimson */
+.prestige-warn-block[data-tier="3"] {
+  --pw-accent: oklch(0.42 0.28 15);
+  --_vignette-lo: 0.50;
+  --_vignette-hi: 0.90;
+  --_shake-neg: -3px;
+  --_shake-pos: 4px;
+  --_shake-pos2: 2px;
+  --_badge-glow: 18px;
+}
+
+/* ── CRITICAL STATE ───────────────────────────────────────── */
+.prestige-warn-block[data-critical="true"] {
+  box-shadow:
+    0 0 0 1px oklch(0.42 0.28 15 / 0.6),
+    0 0 32px  oklch(0.42 0.28 15 / 0.25),
+    0 0 80px  oklch(0.42 0.28 15 / 0.10);
+  transition: box-shadow 0.4s ease;
+}
+
+/* ── NOT READY ────────────────────────────────────────────── */
+.prestige-warn-block[data-ready="false"] .prestige-warn-btn {
+  opacity: 0.42;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.prestige-warn-block[data-ready="false"] .prestige-warn-info {
+  border-color: rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.02);
+}
+
+/* ── REDUCED MOTION ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .prestige-warn-block *,
+  .prestige-warn-block::before,
+  .prestige-warn-block::after,
+  .prestige-warn-scanlines::before,
+  .prestige-warn-scanlines::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
