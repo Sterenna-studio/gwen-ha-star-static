@@ -5,7 +5,6 @@ on:
     types: [skill-arena-updated]
   workflow_dispatch:
 
-# Sérialise toutes les écritures git sur main pour éviter les races de push
 concurrency:
   group: gwen-static-main-write
   cancel-in-progress: false
@@ -19,11 +18,11 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
 
-      - name: Configurer git avec PAT pour les submodules
+      - name: Configurer git avec PAT pour push
         run: |
-          git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/".insteadOf "https://github.com/"
+          git remote set-url origin "https://x-access-token:${{ secrets.GH_PAT }}@github.com/sterenna-studio/gwen-ha-star-static.git"
 
-      - name: Init et update submodule skill-arena
+      - name: Init et update submodule skill-arena (public, pas besoin de token)
         run: |
           git submodule update --init --remote skill-arena
 
@@ -37,7 +36,6 @@ jobs:
             exit 0
           fi
           git commit -m "chore: sync skill-arena submodule [auto]"
-          # Retry jusqu'à 5 fois en cas de push concurrent
           for i in 1 2 3 4 5; do
             if git push; then
               echo "Push réussi à la tentative $i"
