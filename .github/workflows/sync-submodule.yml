@@ -12,17 +12,13 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout sans submodules
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_PAT }}
 
-      - name: Configurer git avec PAT pour push
-        run: |
-          git remote set-url origin "https://x-access-token:${{ secrets.GH_PAT }}@github.com/sterenna-studio/gwen-ha-star-static.git"
-
-      - name: Init et update submodule skill-arena (public, pas besoin de token)
+      - name: Init et update submodule skill-arena (public)
         run: |
           git submodule update --init --remote skill-arena
 
