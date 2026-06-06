@@ -3,6 +3,11 @@ name: Receive nitro-clicker sync
 on:
   repository_dispatch:
     types: [sync-nitro-clicker]
+  workflow_dispatch:
+
+concurrency:
+  group: gwen-static-main-write
+  cancel-in-progress: false
 
 jobs:
   sync:
@@ -12,12 +17,13 @@ jobs:
     steps:
       - name: Checkout gwen-ha-star-static
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
 
       - name: Checkout nitro-clicker
         uses: actions/checkout@v4
         with:
           repository: sterenna-studio/nitro-clicker
-          token: ${{ secrets.SYNC_TOKEN }}
           path: _nitro_clicker_tmp
 
       - name: Copy files to subfolder
@@ -26,14 +32,24 @@ jobs:
           mkdir -p clicker
           cp -r _nitro_clicker_tmp/. clicker/
           rm -rf clicker/.git
+          rm -rf clicker/.github
           rm -f clicker/.env clicker/.env.example
           rm -rf _nitro_clicker_tmp
           ls -la clicker/
 
-      - name: Commit and push
+      - name: Commit + push avec retry rebase
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add clicker/
-          git diff --staged --quiet && echo "Nothing to commit" || git commit -m "chore: sync nitro-clicker into clicker/ [auto]"
-          git push
+          if git diff --staged --quiet; then
+            echo "Nothing to commit"
+            exit 0
+          fi
+          git commit -m "chore: sync nitro-clicker into clicker/ [auto]"
+          for i in 1 2 3 4 5; do
+            if git push; then echo "Push OK (tentative $i)"; exit 0; fi
+            echo "Push rejeté (tentative $i) — rebase..."
+            git pull --rebase origin main
+          done
+          exit 1
