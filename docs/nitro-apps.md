@@ -42,7 +42,7 @@ repo-name
 Exemple actuel :
 
 ```txt
-MutenRock/botanica-obscura
+sterenna-studio/botanica-obscura
 → ~/nitro/botanica/
 → https://nitro.sterenna.fr/botanica/
 ```
@@ -86,7 +86,7 @@ Ajouter une entrée :
   status: 'alpha',
   scope: 'nitro-app',
   auth: 'required',
-  repo: 'MutenRock/my-app',
+  repo: 'sterenna-studio/my-app',
   deployPath: '~/nitro/my-app/',
   description: 'Description courte.'
 }

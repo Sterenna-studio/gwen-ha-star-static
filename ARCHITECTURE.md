@@ -30,8 +30,8 @@ push sur le repo enfant
 
 | Projet | Repo | Sous-dossier | Workflow |
 |---|---|---|---|
-| Botanica Obscura | `MutenRock/botanica-obscura` | `botanica-obscura/` | `receive-botanica-obscura.yml` |
-| Nitro Clicker | `MutenRock/nitro-clicker` | `clicker/` | `receive-nitro-clicker.yml` |
+| Botanica Obscura | `sterenna-studio/botanica-obscura` | `botanica-obscura/` | `receive-botanica-obscura.yml` |
+| Nitro Clicker | `sterenna-studio/nitro-clicker` | `clicker/` | `receive-nitro-clicker.yml` |
 
 ### 🔵 Modèle B — Submodule + build (apps Next.js)
 
@@ -51,7 +51,7 @@ push sur le repo enfant
 
 | Projet | Repo | Submodule | basePath | Déploie vers |
 |---|---|---|---|---|
-| Skill Arena | `MutenRock/skill-arena` | `skill-arena/` | `/arena` | `~/nitro/arena/` |
+| Skill Arena | `sterenna-studio/skill-arena` | `skill-arena/` | `/arena` | `~/nitro/arena/` |
 
 ---
 
