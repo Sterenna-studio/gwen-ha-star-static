@@ -370,6 +370,60 @@
     rgba(9,13,24,.78);
 }
 
+/* ── Meta-panel sectioning ──────────────────────────────────────────────────── */
+
+.meta-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.meta-section + .meta-section:not(.meta-section--prestige) {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+/* Prestige : carte autonome avec sa propre bordure colorée */
+.meta-section--prestige {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,61,242,.18);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255,61,242,.09), transparent 42%),
+    rgba(255,255,255,.028);
+}
+
+.meta-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: .2em;
+  color: rgba(168,230,255,.52);
+  text-transform: uppercase;
+}
+
+.meta-title::before {
+  content: '';
+  display: block;
+  flex-shrink: 0;
+  width: 2px;
+  height: 10px;
+  border-radius: 1px;
+  background: var(--nc-primary);
+  opacity: .75;
+}
+
+.meta-section--shell .meta-title::before { background: var(--nc-accent); }
+.meta-section--prestige .meta-title::before { background: var(--nc-pink); opacity: 1; }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+
 @media (max-width: 1180px) {
   .game-grid-wide { grid-template-columns: 1fr 1fr; }
   .core-panel { grid-column: 1 / -1; }

@@ -55,8 +55,7 @@ function readSnapshot() {
 // ── FIX DEBUG : liveText log en dev si l'ID est absent ───────────────────────
 function liveText(id, fallback = '0') {
   const el = document.getElementById(id);
-  if (!el && typeof process === 'undefined') {
-    // Avertissement non-bloquant uniquement hors production
+  if (!el && location.hostname === 'localhost') {
     console.warn(`[ui-panels] liveText: élément #${id} introuvable, fallback utilisé.`);
   }
   return el?.textContent?.trim() || fallback;

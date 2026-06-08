@@ -337,7 +337,7 @@ body {
   border-color: rgba(0,255,204,.48);
   box-shadow: 0 0 20px rgba(0,255,204,.09), inset 0 0 22px rgba(0,255,204,.035);
 }
-.upgrade-btn.can-buy::after {
+.upgrade-btn.can-buy:not(:disabled)::after {
   content: 'READY';
   position:absolute;
   top:8px;
