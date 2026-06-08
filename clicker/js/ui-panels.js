@@ -234,7 +234,6 @@ function renderPausePanel() {
       <button class="nc-action primary" type="button" onclick="document.getElementById('nc-overlay').classList.remove('open');document.body.classList.remove('nc-paused')">▶ Reprendre</button>
       <button class="nc-action" type="button" onclick="document.getElementById('save-btn')?.click()">💾 Sauver local</button>
       <button class="nc-action" type="button" onclick="document.querySelector('[data-panel-tab=save]')?.click()">📦 Export / Import</button>
-      <button class="nc-action danger" type="button" onclick="document.getElementById('reset-btn')?.click()">⚠ Reset local</button>
     </div>
     ${renderPrestigeWarningBlock()}
     <div class="nc-mini-grid">

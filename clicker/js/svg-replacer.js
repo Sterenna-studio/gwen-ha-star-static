@@ -113,12 +113,6 @@ function replaceActionIcons(root) {
     save.innerHTML = `${svgIcon('save', 'nc-svg-icon nc-svg-inline')} SAUVER LOCAL`;
   }
 
-  const reset = root.querySelector('#reset-btn');
-  if (reset && reset.dataset.svgReady !== 'true') {
-    reset.dataset.svgReady = 'true';
-    reset.innerHTML = `${svgIcon('reset', 'nc-svg-icon nc-svg-inline')} RESET LOCAL`;
-  }
-
   root.querySelectorAll('.stat-value.fragment:not([data-svg-stat])').forEach(node => {
     node.dataset.svgStat = 'true';
     node.insertAdjacentHTML('beforebegin', `<div class="stat-icon-bg">${svgIcon('fragment', 'nc-svg-icon nc-svg-stat-bg')}</div>`);

@@ -182,7 +182,8 @@ function injectBeacon() {
 
   document.getElementById('pb-btn').addEventListener('click', () => {
     openPrestigeModal(() => {
-      document.getElementById('reset-btn')?.click();
+      // Vrai prestige (conserve les fragments) — PAS un wipe de save.
+      document.getElementById('prestige-btn')?.click();
     });
   });
 }

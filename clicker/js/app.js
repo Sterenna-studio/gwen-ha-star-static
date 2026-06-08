@@ -20,7 +20,7 @@ import {
   upgradeBulkCost,
   upgradeCost,
 } from './clicker-state.js';
-import { deleteLocalSave, loadSave, saveAll } from './clicker-save.js';
+import { loadSave, saveAll } from './clicker-save.js';
 import { setClassToggle, setHtml, setText, setTransformScaleX } from './ui/render-cache.js';
 
 const app = document.getElementById('app');
@@ -192,7 +192,6 @@ function renderShell() {
           </button>
           <div class="save-row">
             <button class="action-btn" id="save-btn">💾 SAUVER LOCAL</button>
-            <button class="action-btn danger" id="reset-btn">⚠ RESET LOCAL</button>
           </div>
         </section>
       </aside>
@@ -276,12 +275,6 @@ function bindStaticEvents() {
   document.getElementById('save-btn').addEventListener('click', () => {
     const ok = saveAll(userId, state);
     toast(ok ? 'Sauvegarde locale OK.' : 'Sauvegarde locale impossible.');
-  });
-
-  document.getElementById('reset-btn').addEventListener('click', () => {
-    if (!confirm('Reset la sauvegarde locale de Nitro Clicker ?')) return;
-    deleteLocalSave(userId);
-    location.reload();
   });
 
   document.getElementById('prestige-btn').addEventListener('click', () => {
