@@ -1,0 +1,1282 @@
+{
+  "generated_on": "2026-05-20",
+  "count": 45,
+  "records": [
+    {
+      "id": 1,
+      "date": "2024-04-02",
+      "title": "Titan — opening d’anime BZH Power",
+      "topics": [
+        "musique",
+        "Titan",
+        "lyrics",
+        "BZH Power"
+      ],
+      "recovery": "résumé fiable avec éléments substantiels",
+      "quotes": [],
+      "summary": [
+        "Pierre demande un opening d’anime autour de Titan, présenté comme aide / figure de BZH Power.",
+        "Une première version est écrite en anglais, puis une version mixte japonais/anglais est produite."
+      ],
+      "deliverables": [
+        "Paroles complètes en anglais",
+        "Paroles complètes en japonais/anglais"
+      ],
+      "repo_links": [
+        "docs/media/paroles-scripts-et-chansons.md"
+      ],
+      "file": "docs/conversations/records/2024-04-02_titan-opening-d-anime-bzh-power.md"
+    },
+    {
+      "id": 2,
+      "date": "2024-05-17",
+      "title": "Aligax — chanson de personnage",
+      "topics": [
+        "musique",
+        "Aligax",
+        "lyrics",
+        "Suno"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Pierre demande une chanson pour Aligax, seule femme du groupe.",
+        "Le récit demandé : une nouvelle venue qui se lie à un artefact, gagne en puissance et devient redoutée par ses ennemis.",
+        "Les paroles sont produites en anglais pour usage dans Suno."
+      ],
+      "deliverables": [
+        "Lyrics anglaises pour Aligax"
+      ],
+      "repo_links": [
+        "docs/media/paroles-scripts-et-chansons.md"
+      ],
+      "file": "docs/conversations/records/2024-05-17_aligax-chanson-de-personnage.md"
+    },
+    {
+      "id": 3,
+      "date": "2024-05-20",
+      "title": "BZH Chronicles — album cover, personnages et convention BZ Ash",
+      "topics": [
+        "album",
+        "cover",
+        "personnages",
+        "naming"
+      ],
+      "recovery": "résumé fiable + règle de formulation",
+      "quotes": [],
+      "summary": [
+        "Plusieurs échanges définissent des descriptions de membres pour une cover BZH Chronicles.",
+        "Sniky est décrit comme furtif et mystérieux, Aligax comme guerrière solitaire liée à un artefact lumineux, Titan comme chien héroïque, Spirit comme tacticien avec motif cannabis discret.",
+        "MutenRock doit apparaître comme homme.",
+        "Règle de formulation retrouvée : utiliser « BZH » dans les titres, mais « BZ Ash » à l’intérieur des lyrics pour guider la prononciation."
+      ],
+      "deliverables": [
+        "Brief de cover BZH Chronicles",
+        "Règle de prononciation pour lyrics"
+      ],
+      "repo_links": [
+        "docs/universe/personnages.md",
+        "docs/media/paroles-scripts-et-chansons.md"
+      ],
+      "file": "docs/conversations/records/2024-05-20_bzh-chronicles-album-cover-personnages-et-convention-bz-ash.md"
+    },
+    {
+      "id": 4,
+      "date": "2024-05-24",
+      "title": "Kit de presse BZH Chronicles",
+      "topics": [
+        "communication",
+        "musique",
+        "press kit"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Un kit de presse est produit pour BZH Chronicles.",
+        "Il présente le projet comme une fusion de musique électronique et d’univers inspiré du jeu vidéo.",
+        "Il cite les membres et met en avant le single « Sniky: The Frager » avec un extrait de paroles.",
+        "Des ressources de collaboration sont prévues : cover, miniature YouTube, goodies.",
+        "Hashtags évoqués : #BZHChronicles, #SnikyTheFrager, #BZHPower."
+      ],
+      "deliverables": [
+        "Kit de presse BZH Chronicles"
+      ],
+      "repo_links": [
+        "docs/media/communication-et-annonces.md"
+      ],
+      "file": "docs/conversations/records/2024-05-24_kit-de-presse-bzh-chronicles.md"
+    },
+    {
+      "id": 5,
+      "date": "2024-06-03",
+      "title": "Suno 3.5, structure des prompts et tableau d’avancement",
+      "topics": [
+        "Suno",
+        "musique",
+        "workflow"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Pierre précise l’usage de Suno 3.5.",
+        "Il demande d’utiliser la ponctuation et des instructions entre crochets pour donner de la couleur aux prompts.",
+        "Un principe de suivi est acté : un « tableau d’avancement » du projet musical est maintenu, mais il ne doit être renvoyé que lorsqu’il est explicitement demandé.",
+        "Des suggestions de styles sont proposées : Dark Electro-Synthwave, Cyberpunk Rock, Industrial Synthwave."
+      ],
+      "deliverables": [
+        "Guidelines Suno",
+        "Structure type de morceau avec [Intro], [Verse], etc."
+      ],
+      "repo_links": [
+        "docs/media/plan-ep-et-publication.md"
+      ],
+      "file": "docs/conversations/records/2024-06-03_suno-3-5-structure-des-prompts-et-tableau-d-avancement.md"
+    },
+    {
+      "id": 6,
+      "date": "2024-06-10",
+      "title": "Premières reviews fictives / analyses de BZH Chronicles",
+      "topics": [
+        "communication",
+        "reviews",
+        "musique"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Trois reviews de première écoute sont produites, avec des notes autour de 9/10, 8.5/10 et 8/10.",
+        "Les textes saluent l’immersion cyberpunk et la production.",
+        "Une piste d’amélioration ressort : renforcer les dynamiques sur Spirit’s Rage et intégrer plus profondément les éléments narratifs via interludes ou effets."
+      ],
+      "deliverables": [
+        "Trois textes de reviews"
+      ],
+      "repo_links": [
+        "docs/media/communication-et-annonces.md"
+      ],
+      "file": "docs/conversations/records/2024-06-10_premieres-reviews-fictives-analyses-de-bzh-chronicles.md"
+    },
+    {
+      "id": 7,
+      "date": "2024-07-12",
+      "title": "Page web BZH Chronicles — album, musique et présentation",
+      "topics": [
+        "web",
+        "album",
+        "mini-site",
+        "HTML"
+      ],
+      "recovery": "citations partielles + résumé fiable",
+      "quotes": [
+        "Bienvenue dans l’univers épique de « BZH Chronicles »... Découvrez les héros de BZH Power : MutenRock, Sniky, Aligax, Spirit, Dr. Sorn.",
+        "incorpore ce texte supplémentaire de manière dynamique"
+      ],
+      "summary": [
+        "Une page HTML/CSS/JS complète pour « BZH Chronicles - Album » est produite.",
+        "Elle intègre un header parallaxe, un bloc musical, une présentation immersive et des pistes audio/images hébergées sur sterenna.fr.",
+        "Les informations de footer exactes sont retrouvées : contact@sterenna.fr, +33 6 08 92 25 92, logo `logo_chronicles.png`, copyright © 2024 BZH Chronicles.",
+        "Le bloc musique utilise notamment `track-1.mp3`, `track-2.mp3`, `track-3.mp3`, ainsi que des covers du site."
+      ],
+      "deliverables": [
+        "Page HTML/CSS/JS BZH Chronicles",
+        "Intégration WordPress guidée"
+      ],
+      "repo_links": [
+        "docs/web/mini-site-bzh-power.md",
+        "docs/media/communication-et-annonces.md"
+      ],
+      "file": "docs/conversations/records/2024-07-12_page-web-bzh-chronicles-album-musique-et-presentation.md"
+    },
+    {
+      "id": 8,
+      "date": "2024-09-04",
+      "title": "Artwork BZH animé — prompt image-to-video",
+      "topics": [
+        "visuel",
+        "animation",
+        "logo"
+      ],
+      "recovery": "citation exacte + résumé fiable",
+      "quotes": [
+        "can you make a descprition of this artwork as if it where animated and all the colourous clouds are waving over he sphere"
+      ],
+      "summary": [
+        "Une description image-to-video est produite pour animer un artwork BZH.",
+        "Le prompt évoque un logo BZH lumineux au centre, des couleurs bleu/violet/rose, des nuages cosmiques ondulants autour d’une sphère, des rays lumineux et des traînées d’étoiles."
+      ],
+      "deliverables": [
+        "Prompt d’animation vidéo pour artwork BZH"
+      ],
+      "repo_links": [
+        "docs/prompts/prompts-visuels.md"
+      ],
+      "file": "docs/conversations/records/2024-09-04_artwork-bzh-anime-prompt-image-to-video.md"
+    },
+    {
+      "id": 9,
+      "date": "2024-09-11",
+      "title": "Vidéos YouTube Lethal Company avec BZH_PW",
+      "topics": [
+        "communication",
+        "YouTube",
+        "BZH_PW",
+        "Twitch"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Pierre prépare trois vidéos YouTube best-of d’une soirée Lethal Company avec les amis du groupe BZH_PW sur Twitch et le viewer ZEDfr.",
+        "Le canal concerné est MutenRock.",
+        "Des titres, descriptions et tags sont proposés pour les publications."
+      ],
+      "deliverables": [
+        "Titres YouTube",
+        "Descriptions",
+        "Tags"
+      ],
+      "repo_links": [
+        "docs/media/communication-et-annonces.md"
+      ],
+      "file": "docs/conversations/records/2024-09-11_videos-youtube-lethal-company-avec-bzh-pw.md"
+    },
+    {
+      "id": 10,
+      "date": "2024-12-02",
+      "title": "Historique des conversations annotées [SORN] / [ALIGAX]",
+      "topics": [
+        "meta",
+        "conversations",
+        "Sorn",
+        "Aligax"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "fais moi une liste de toutes les conversation dont le titre comment par une annotation [ ] et trie les en fonction de ces annontations (il peut y avoir d'autres que sorn ou aligax)",
+        "quand je parle des 'historiques de conversation' je ne parle pas des mémoires, mais bien des différentes nouvelles conversations faite avec des gpt sur ce compte"
+      ],
+      "summary": [
+        "Un classement des conversations annotées est demandé.",
+        "Les catégories [SORN] et [ALIGAX] sont reliées à des éléments de l’univers BZH : Dr. Sorn, Aligax, MutenRock et leurs interactions.",
+        "Le point important pour le HUB : Pierre distingue explicitement les mémoires des historiques de conversations complets."
+      ],
+      "deliverables": [
+        "Liste catégorisée des conversations annotées"
+      ],
+      "repo_links": [
+        "docs/sources/00-methodologie-citations.md"
+      ],
+      "file": "docs/conversations/records/2024-12-02_historique-des-conversations-annotees-sorn-aligax.md"
+    },
+    {
+      "id": 11,
+      "date": "2025-01-07",
+      "title": "Extraction BZH d’un texte + fiches Sniky et MutenRock",
+      "topics": [
+        "lore",
+        "extraction",
+        "fiches personnage",
+        "Sniky",
+        "MutenRock"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "Analyse ce texte et tire uniquement les parties traitant de bzh power/ bzh chronicles",
+        "I want you to analyse the whole text and extract all the part mentionning BZH or BZH CRHONCILES or BZH POWER",
+        "Fais moi une fiche de description pour Sniky en analysant toute les conversations et le site sterenna.fr",
+        "Le même travail après des recherches pour MutenRock, et ajoute une rubrique lien avec les autres membres"
+      ],
+      "summary": [
+        "Un texte source est filtré pour extraire tout ce qui mentionne BZH, BZH Chronicles ou BZH Power.",
+        "Une fiche Sniky détaillée est créée : rôle, équipement, compétences, histoire, relations, citations.",
+        "Une fiche MutenRock est ensuite demandée, avec ajout explicite d’une section de liens avec les autres membres."
+      ],
+      "deliverables": [
+        "Document d’extraction BZH",
+        "Sniky_BZH_Chronicles.html",
+        "Fiche MutenRock"
+      ],
+      "repo_links": [
+        "docs/universe/personnages/sniky-dossier.md",
+        "docs/universe/personnages/mutenrock-dossier.md"
+      ],
+      "file": "docs/conversations/records/2025-01-07_extraction-bzh-d-un-texte-fiches-sniky-et-mutenrock.md"
+    },
+    {
+      "id": 12,
+      "date": "2025-01-28",
+      "title": "Analyse du projet musical BZH Chronicles, playlists et YouTube",
+      "topics": [
+        "musique",
+        "playlist",
+        "Suno",
+        "YouTube"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "peux tu les analyser toi même ?",
+        "a qui appartient la playlist bzh chronicles ?"
+      ],
+      "summary": [
+        "Pierre demande une analyse du projet musical BZH Chronicles et des créations Suno de MutenRock.",
+        "La playlist Suno « BZH Chronicles by @mutenrock » est identifiée.",
+        "Une playlist YouTube BZH CHRONICLES est recensée avec : BZH Power Anthem, Aligax : The Lone Maiden, Aligax : The Lone Maiden Alter, Spirit’s Rage.",
+        "Les publications YouTube sous MutenRock sont listées ; aucune publication n’est trouvée sous BZH Power / BZH PW."
+      ],
+      "deliverables": [
+        "Analyse playlists",
+        "Recensement YouTube"
+      ],
+      "repo_links": [
+        "docs/media/musique-et-albums.md",
+        "docs/media/plan-ep-et-publication.md"
+      ],
+      "file": "docs/conversations/records/2025-01-28_analyse-du-projet-musical-bzh-chronicles-playlists-et-youtube.md"
+    },
+    {
+      "id": 13,
+      "date": "2025-02-05",
+      "title": "L’Heure du Combat et Glitched Warcry",
+      "topics": [
+        "musique",
+        "script vocal",
+        "DnB",
+        "MutenRock",
+        "Aligax",
+        "Sniky"
+      ],
+      "recovery": "résumé fiable avec citations déjà centralisées",
+      "quotes": [],
+      "summary": [
+        "Pierre demande de réutiliser une structure radio/interférences/alarme sourde pour créer un discours inspirant de MutenRock avant un gros combat.",
+        "Il demande plusieurs voix : MutenRock (male1), Sniky (male2), Aligax (woman1).",
+        "Le résultat prend la forme de « L’Heure du Combat ».",
+        "Pierre demande ensuite que la piste parte en D’n’B avec répétitions glitchées du nom de l’équipe ; cela donne « Glitched Warcry »."
+      ],
+      "deliverables": [
+        "Script L’Heure du Combat",
+        "Piste conceptuelle Glitched Warcry"
+      ],
+      "repo_links": [
+        "docs/media/paroles-scripts-et-chansons.md"
+      ],
+      "file": "docs/conversations/records/2025-02-05_l-heure-du-combat-et-glitched-warcry.md"
+    },
+    {
+      "id": 14,
+      "date": "2025-02-27",
+      "title": "Organigramme / logigramme cyberpunk BZH",
+      "topics": [
+        "visuel",
+        "organigramme",
+        "cyberpunk",
+        "large format"
+      ],
+      "recovery": "citation partielle + résumé fiable",
+      "quotes": [
+        "dans un style cyber punk, format large"
+      ],
+      "summary": [
+        "Pierre demande une version large et cyberpunk d’un logigramme / organigramme lié à BZH.",
+        "Cette demande préfigure les travaux d’avril 2025 sur les schémas BZH Chronicles avec logos et bordures."
+      ],
+      "deliverables": [
+        "Direction de composition pour organigramme"
+      ],
+      "repo_links": [
+        "docs/identity/direction-artistique.md"
+      ],
+      "file": "docs/conversations/records/2025-02-27_organigramme-logigramme-cyberpunk-bzh.md"
+    },
+    {
+      "id": 15,
+      "date": "2025-04-04",
+      "title": "DA BZH Chronicles complète + organigramme avec logos",
+      "topics": [
+        "direction artistique",
+        "visuel",
+        "organigramme",
+        "logos"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "utilise la da de bzh chronicles et créer une image d'un logigramme en format large, avec un style cyberpunk de l'organigrame du groupe"
+      ],
+      "summary": [
+        "La direction artistique complète de BZH Chronicles est consolidée : cyberpunk sombre, néo-breton, palette spécifique, matières et symboles.",
+        "Pierre demande ensuite un grand organigramme cyberpunk du groupe.",
+        "Des follow-ups ajoutent les logos BZH Chronicles et BZH Power ainsi qu’une bordure."
+      ],
+      "deliverables": [
+        "DA BZH Chronicles",
+        "Brief d’organigramme large"
+      ],
+      "repo_links": [
+        "docs/identity/direction-artistique.md",
+        "docs/identity/principes-de-coherence.md"
+      ],
+      "file": "docs/conversations/records/2025-04-04_da-bzh-chronicles-complete-organigramme-avec-logos.md"
+    },
+    {
+      "id": 16,
+      "date": "2025-04-07",
+      "title": "Organisation du projet musical : publication plutôt que création infinie",
+      "topics": [
+        "musique",
+        "publication",
+        "gestion de projet"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Pierre explique avoir déjà créé beaucoup de musiques pour BZH PW / BZH Chronicles, notamment via Suno.",
+        "Il souhaite publier l’existant plutôt que continuer à produire sans sortie.",
+        "Il demande à l’assistant d’agir comme une « secrétaire » du projet."
+      ],
+      "deliverables": [
+        "Plan d’organisation de publication"
+      ],
+      "repo_links": [
+        "docs/media/plan-ep-et-publication.md"
+      ],
+      "file": "docs/conversations/records/2025-04-07_organisation-du-projet-musical-publication-plutot-que-creation-infinie.md"
+    },
+    {
+      "id": 17,
+      "date": "2025-04-08",
+      "title": "Liste simple des morceaux BZH déjà créés",
+      "topics": [
+        "musique",
+        "catalogue",
+        "tracks"
+      ],
+      "recovery": "citation exacte + données précises",
+      "quotes": [
+        "envoi moi la liste simple des sons que j'ai crée"
+      ],
+      "summary": [
+        "La liste simple des morceaux créés est envoyée.",
+        "Titres recensés : Sniky: The Frager ; Aligax: Digital Maiden ; BZH Power: United Legends ; MutenRock: The Digital Commander ; Titan: The Guardian Hound ; Spirit’s Rage ; Void Echoes ; Aligax: Digital Maiden (Remix)."
+      ],
+      "deliverables": [
+        "Liste simple des sons"
+      ],
+      "repo_links": [
+        "docs/media/tracklist-provisoire.md",
+        "data/tracks.json"
+      ],
+      "file": "docs/conversations/records/2025-04-08_liste-simple-des-morceaux-bzh-deja-crees.md"
+    },
+    {
+      "id": 18,
+      "date": "2025-04-08",
+      "title": "Slideshow web BZH Chronicles + musique de fond",
+      "topics": [
+        "web",
+        "slideshow",
+        "images",
+        "audio"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "ajoute une musique de fond, l'une de mes musiques (déjà utilisé sur sterenna) http://sterenna.fr/wp-content/uploads/2024/07/track-1.mp3 (les suivantes s'appelle track-2 3 4"
+      ],
+      "summary": [
+        "Pierre fournit plusieurs URLs d’images BZH : bzh-shadows-alternate, bzh-chronicles-64, bzh-chronicles-64-full, bzh-chronicles-play-full, sniky-amp-titan-full, bzh-shadows-full, bzh-shadows, bzh-journey-full, bzh-journey.",
+        "Il demande une page HTML cyberpunk avec police dédiée, slideshow et contrôles interactifs.",
+        "Une mise à jour ajoute la musique de fond issue de sterenna.fr."
+      ],
+      "deliverables": [
+        "Page HTML slideshow BZH",
+        "Version avec musique de fond"
+      ],
+      "repo_links": [
+        "docs/web/mini-site-bzh-power.md"
+      ],
+      "file": "docs/conversations/records/2025-04-08_slideshow-web-bzh-chronicles-musique-de-fond.md"
+    },
+    {
+      "id": 19,
+      "date": "2025-04-08",
+      "title": "BZH CARD GAME — liste provisoire de 60 cartes",
+      "topics": [
+        "card game",
+        "BZH01",
+        "cartes",
+        "liste"
+      ],
+      "recovery": "résumé fiable et données partielles retrouvées",
+      "quotes": [],
+      "summary": [
+        "Pierre fournit une liste provisoire de 60 cartes pour BZH CARD GAME: Power Your Hand, réparties en Champions, Companions, Terrains, Objects, Events, Specials, Duos/Teams, Mythical/Legendary.",
+        "Les Champions incluent : The Cyber Assassin (Sniky), The Iron Maiden (Aligax), The Nature Owner (MutenRock), The Cooker (Spirit), The Story Doctor (Dr. Sorn), The Naturalist (Gabilone).",
+        "Les Companions récupérés incluent : Titan, Spike, Feather, Code Wolf, BZH Bot Mk I, Wyrm of Plélan.",
+        "Des exemples de Terrains retrouvés : The Lost Temple, Verdant Nexus, Rusted City Ruins, Cyberpunk Docks, Neon Forest, Glacier of Code, Floating Monastery, Shadow Citadel.",
+        "Les règles plus récentes consolideront ensuite le format : 15 HP, deck 20 cartes, 1 Champion, pas d’affinités."
+      ],
+      "deliverables": [
+        "Liste de 60 cartes",
+        "Base de validation du set"
+      ],
+      "repo_links": [
+        "docs/projects/bzh-card-game/README.md",
+        "data/card-game.json"
+      ],
+      "file": "docs/conversations/records/2025-04-08_bzh-card-game-liste-provisoire-de-60-cartes.md"
+    },
+    {
+      "id": 20,
+      "date": "2025-04-21",
+      "title": "Les Dieux Debout — structure [ ] en anglais",
+      "topics": [
+        "lyrics",
+        "structure",
+        "Suno"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Pierre demande que les parties structurelles entre crochets `[ ]` soient rédigées en anglais.",
+        "Une chanson intitulée « Les Dieux Debout » est fournie en français avec ces marqueurs structurels traduits."
+      ],
+      "deliverables": [
+        "Lyrics avec balises structurelles en anglais"
+      ],
+      "repo_links": [
+        "docs/media/paroles-scripts-et-chansons.md"
+      ],
+      "file": "docs/conversations/records/2025-04-21_les-dieux-debout-structure-en-anglais.md"
+    },
+    {
+      "id": 21,
+      "date": "2025-04-22",
+      "title": "Vérification du lore, bible BZH Chronicles et extraction personnages",
+      "topics": [
+        "lore",
+        "bible",
+        "personnages",
+        "documents"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "verifie en analysant ce doc que tu as toute les infos importantes sur le lore de BZH chronicles",
+        "Oui j'aimerais bien avoir un document relatant tout les éléments importants, une bible serait parfait !",
+        "extraire tout les parties du doc qui parle des personnages"
+      ],
+      "summary": [
+        "Pierre demande de vérifier un document censé résumer le lore.",
+        "L’analyse conclut que le document ne contient pas encore assez de lore détaillé, mais surtout des éléments musicaux et de personnages.",
+        "Une Bible officielle de l’univers BZH Chronicles est alors produite.",
+        "Un travail d’extraction structuré des personnages suit, avec notation par lettres et numéros : A=MutenRock, B=Sniky, C=Aligax, D=Spirit, E=Dr. Sorn, F=Gabilone, G=Titan, H=Spike."
+      ],
+      "deliverables": [
+        "Bible officielle BZH Chronicles",
+        "Extraction structurée personnages"
+      ],
+      "repo_links": [
+        "docs/universe/00-vision-globale.md",
+        "docs/universe/personnages.md"
+      ],
+      "file": "docs/conversations/records/2025-04-22_verification-du-lore-bible-bzh-chronicles-et-extraction-personnages.md"
+    },
+    {
+      "id": 22,
+      "date": "2025-04-25",
+      "title": "Pack opening BZH POWER — règles de booster et prototype web",
+      "topics": [
+        "card game",
+        "booster",
+        "pack opening",
+        "HTML"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Pierre propose des boosters avec plusieurs types de cartes et souhaite un drop fun, par exemple une Epic garantie.",
+        "Une proposition de règles de pack est produite : 6 cartes (Terrain, Object, Event, Special, Team, Mythical), raretés indicatives, garantie d’au moins une Epic.",
+        "Un prototype HTML/CSS/JS de pack opening BZH POWER est ensuite fourni avec collection tracking, animations, filtres et logique de raretés."
+      ],
+      "deliverables": [
+        "Règles de booster",
+        "Prototype pack opening BZH POWER"
+      ],
+      "repo_links": [
+        "docs/projects/bzh-card-game/README.md"
+      ],
+      "file": "docs/conversations/records/2025-04-25_pack-opening-bzh-power-regles-de-booster-et-prototype-web.md"
+    },
+    {
+      "id": 23,
+      "date": "2025-04-28",
+      "title": "Spot publicitaire BZH CARD GAME",
+      "topics": [
+        "card game",
+        "trailer",
+        "voice-over",
+        "slogans"
+      ],
+      "recovery": "citation exacte + résumé fiable",
+      "quotes": [
+        "j'aimerais faire un spot pub pour le jeu BZH CARD GAME (un tcg, du monde bzh chronicle)"
+      ],
+      "summary": [
+        "Un spot publicitaire de 30–45 secondes est préparé, dans un style dark-electro épique.",
+        "Pierre demande ensuite un texte de voix off propre avec les mentions structurelles en anglais `[short pause]`, `[long pause]`, et plusieurs slogans.",
+        "Le slogan existant `BZH CARD GAME — POWER YOUR HAND` est rappelé.",
+        "Un storyboard de 6 scènes est livré."
+      ],
+      "deliverables": [
+        "Script de spot pub",
+        "Voix off",
+        "8 slogans",
+        "Storyboard 6 scènes"
+      ],
+      "repo_links": [
+        "docs/projects/bzh-card-game/trailer.md"
+      ],
+      "file": "docs/conversations/records/2025-04-28_spot-publicitaire-bzh-card-game.md"
+    },
+    {
+      "id": 24,
+      "date": "2025-04-28",
+      "title": "Dos de carte, box art et règles visuelles BZH CARD GAME",
+      "topics": [
+        "card game",
+        "visuel",
+        "box art",
+        "card back"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "Je veux faire le fond d'une carte BZH power, voici les artworks que j'ai déjà : créer une image format portrait du dos des cartes du jeu BZH CARD GAME avec le logo BZH PW au centre, une bordure au effet cyberpunk wavepunk",
+        "represente uniquement le fond des cartes et la bordure, j'appliquerais le logo moi même",
+        "les bordures extérieurs doivent être doré, ajoute plus d'effet sur l'illustration de la carte, cyberpunk celtic vaporwave",
+        "inspire toi de ça, pas de personnage sur l'artwork de la boite du jeu de carte, format portrait",
+        "mets plutôt le logo bzh pw plutôt que l'hermine",
+        "travaillons mtn sur l'édition des regles..."
+      ],
+      "summary": [
+        "La DA du dos de carte est explicitement cadrée.",
+        "Des demandes de box art précisent : format portrait, pas de personnage, logo BZH PW à privilégier.",
+        "Le travail s’oriente ensuite vers l’édition des règles du jeu."
+      ],
+      "deliverables": [
+        "Brief dos de carte",
+        "Brief box art",
+        "Début d’édition des règles"
+      ],
+      "repo_links": [
+        "docs/projects/bzh-card-game/README.md",
+        "docs/prompts/prompts-logos-merch.md"
+      ],
+      "file": "docs/conversations/records/2025-04-28_dos-de-carte-box-art-et-regles-visuelles-bzh-card-game.md"
+    },
+    {
+      "id": 25,
+      "date": "2025-04-30",
+      "title": "Nouvelles cartes dans le même style + consolidation du set",
+      "topics": [
+        "card game",
+        "cartes",
+        "illustration",
+        "set"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Pierre demande la création de nouvelles cartes dans le même style que les cartes déjà uploadées, de type dark techno-fantasy / cyber-celtic TCG.",
+        "Des listes supplémentaires de Terrains, Objets, Events, Specials, Teams et Mythicals sont produites.",
+        "Le set de 60 cartes est présenté comme entièrement complété sur le plan des catégories."
+      ],
+      "deliverables": [
+        "Listes de cartes supplémentaires",
+        "Consolidation du set"
+      ],
+      "repo_links": [
+        "docs/projects/bzh-card-game/README.md"
+      ],
+      "file": "docs/conversations/records/2025-04-30_nouvelles-cartes-dans-le-meme-style-consolidation-du-set.md"
+    },
+    {
+      "id": 26,
+      "date": "2025-04-30",
+      "title": "CardExtractorApp — traitement rapide des artworks de cartes",
+      "topics": [
+        "card game",
+        "outil",
+        "Python",
+        "OCR",
+        "CSV"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "j'ai crée de nombreux artwork de carte, problème elles sont pas toutes vraiment égale, mais j'aimerais les traités rapidement",
+        "j'ai tout les noms dans un csv"
+      ],
+      "summary": [
+        "Pierre transmet un script Tkinter CardExtractorApp.",
+        "Le besoin : détecter, découper et renommer rapidement des artworks de cartes inégaux.",
+        "Le CSV contient 60 lignes, avec colonnes Name et Type ; seul Name est nécessaire.",
+        "Des pistes OCR + fuzzy matching et batch export sont proposées."
+      ],
+      "deliverables": [
+        "Audit CardExtractorApp",
+        "Pistes d’amélioration workflow cartes"
+      ],
+      "repo_links": [
+        "docs/projects/bzh-card-game/README.md"
+      ],
+      "file": "docs/conversations/records/2025-04-30_cardextractorapp-traitement-rapide-des-artworks-de-cartes.md"
+    },
+    {
+      "id": 27,
+      "date": "2025-05-15",
+      "title": "Vaisseau BZH PW en LEGO",
+      "topics": [
+        "visuel",
+        "LEGO",
+        "BZH PW"
+      ],
+      "recovery": "citation exacte + prompt récupéré",
+      "quotes": [
+        "tu pourrais me faire un prompt pour un vaisseau BZH PW en lego stp"
+      ],
+      "summary": [
+        "Un prompt détaillé est produit pour générer un vaisseau LEGO cyberpunk inspiré de BZH Chronicles.",
+        "Le prompt combine néo-breton, triskelions lumineux, plaques blindées modulaires, lianes biomécaniques, turbines néon et antennes.",
+        "Palette : dark gray, copper, black, neon green."
+      ],
+      "deliverables": [
+        "Prompt image vaisseau LEGO BZH PW"
+      ],
+      "repo_links": [
+        "docs/prompts/prompts-visuels.md"
+      ],
+      "file": "docs/conversations/records/2025-05-15_vaisseau-bzh-pw-en-lego.md"
+    },
+    {
+      "id": 28,
+      "date": "2025-06-20",
+      "title": "Artwork pour le CD BZH CHRONICLES",
+      "topics": [
+        "musique",
+        "cover",
+        "CD",
+        "artwork"
+      ],
+      "recovery": "citation exacte",
+      "quotes": [
+        "j'aimerais réaliser l'artwork pour le CD BZH CHRONICLES"
+      ],
+      "summary": [
+        "Pierre initie un travail spécifique autour de l’artwork physique du CD BZH CHRONICLES.",
+        "Ce point complète l’axe vinyle / objet-album déjà discuté dans les conversations musicales."
+      ],
+      "deliverables": [
+        "Brief CD artwork"
+      ],
+      "repo_links": [
+        "docs/media/plan-ep-et-publication.md",
+        "media/catalog/media-catalog.md"
+      ],
+      "file": "docs/conversations/records/2025-06-20_artwork-pour-le-cd-bzh-chronicles.md"
+    },
+    {
+      "id": 29,
+      "date": "2025-06-27",
+      "title": "CHECK-LIST SNIKY / ALIGAX — BZH PW TRIP",
+      "topics": [
+        "BZH PW",
+        "humour",
+        "checklist",
+        "objets"
+      ],
+      "recovery": "citation exacte + résumé fiable",
+      "quotes": [
+        "renomme les different objet dans l'esprit bzh power (Arme a elimination bactérienne buccal)"
+      ],
+      "summary": [
+        "Pierre demande de renommer les objets d’une checklist dans l’esprit BZH Power.",
+        "Une CHECK-LIST SNIKY - BZH PW TRIP - ÉDITION ÉQUIPEMENT STRATÉGIQUE est produite.",
+        "Une variante CHECK-LIST ALIGAX - BZH PW TRIP - KIT ÉQUIPEMENT NOMADE est également réalisée."
+      ],
+      "deliverables": [
+        "Checklist Sniky",
+        "Checklist Aligax"
+      ],
+      "repo_links": [
+        "docs/merch/objets-et-formats.md"
+      ],
+      "file": "docs/conversations/records/2025-06-27_check-list-sniky-aligax-bzh-pw-trip.md"
+    },
+    {
+      "id": 30,
+      "date": "2025-08-08",
+      "title": "Analyse globale des fichiers BZH Power / BZH Chronicles",
+      "topics": [
+        "audit",
+        "lore",
+        "musique",
+        "archives"
+      ],
+      "recovery": "citation exacte + résumé fiable",
+      "quotes": [
+        "analyse moi tout ça"
+      ],
+      "summary": [
+        "Pierre envoie un ensemble de matériaux BZH.",
+        "L’analyse est organisée en quatre blocs : paroles & univers musicaux ; discussions et évaluations des morceaux ; éléments narratifs BZH Chronicles ; annexes (Discord bot, pack opening, traces BZH Card Game).",
+        "Une carte stratégique est ensuite proposée, reliant personnages et styles musicaux : Sniky Eurobeat/Synthwave, Aligax Power Ballad, MutenRock Rock prog/electro-organic, Dr. Sorn Jazz/Trip-Hop, Spirit Drum’n’Bass, Gabilone registre plus spécifique."
+      ],
+      "deliverables": [
+        "Audit global de corpus BZH",
+        "Carte stratégique"
+      ],
+      "repo_links": [
+        "docs/archives/livrables-historiques.md",
+        "docs/media/musique-et-albums.md"
+      ],
+      "file": "docs/conversations/records/2025-08-08_analyse-globale-des-fichiers-bzh-power-bzh-chronicles.md"
+    },
+    {
+      "id": 31,
+      "date": "2025-08-08",
+      "title": "Mini-jeu navigateur BZH Chronicles — roguelite",
+      "topics": [
+        "jeu",
+        "roguelite",
+        "web",
+        "zip"
+      ],
+      "recovery": "citation partielle + résumé fiable",
+      "quotes": [
+        "mini jeu pour navigateur",
+        "bzh chronicles",
+        "rogue lite"
+      ],
+      "summary": [
+        "Pierre demande un mini-jeu navigateur BZH Chronicles de type roguelite avec ZIP complet.",
+        "Une première version est livrée avec index.html, game.js, style.css, README.md.",
+        "La v2 ajoute Auto-fire, menu Pause, leaderboard à initiales arcade et Top10.",
+        "La v3 ajoute boss toutes les 3 salles, armes secondaires, Meta Shards, Gamepad API."
+      ],
+      "deliverables": [
+        "bzh-chronicles-roguelite.zip",
+        "bzh-chronicles-roguelite-v2.zip",
+        "bzh-chronicles-roguelite-v3.zip"
+      ],
+      "repo_links": [
+        "docs/projects/roguelite/README.md"
+      ],
+      "file": "docs/conversations/records/2025-08-08_mini-jeu-navigateur-bzh-chronicles-roguelite.md"
+    },
+    {
+      "id": 32,
+      "date": "2025-08-31 / 2025-09-16",
+      "title": "Lampe relief puis modèle BZH Chronicles / BZH PW",
+      "topics": [
+        "objet",
+        "lampe",
+        "relief",
+        "BZH"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "j'aimerais décomposer cette image pour en faire une lampe relief",
+        "j'aimerais que tu me fasses un model que je pourrais transformer facilement en lampe au theme de bzh chronicles, et bzh pw",
+        "Une unique planche stp, format portrait",
+        "De léquipe qui s'amuse dans un champs en gardant le style de cette image stp"
+      ],
+      "summary": [
+        "Une première conversation porte sur la décomposition d’un visuel en couches pour lampe relief.",
+        "Plus tard, Pierre demande un modèle directement transformable en lampe, sur le thème BZH Chronicles / BZH PW.",
+        "Le cadrage final demande une unique planche portrait et une scène d’équipe dans un champ."
+      ],
+      "deliverables": [
+        "Plan de découpe multicouches",
+        "Brief lampe BZH"
+      ],
+      "repo_links": [
+        "docs/merch/objets-et-formats.md"
+      ],
+      "file": "docs/conversations/records/2025-08-31_2025-09-16_lampe-relief-puis-modele-bzh-chronicles-bzh-pw.md"
+    },
+    {
+      "id": 33,
+      "date": "2025-09-17",
+      "title": "Inventaire gr4ve — place du BZH Card Game dans les objets physiques",
+      "topics": [
+        "inventaire",
+        "gr4ve",
+        "objets physiques",
+        "BZH Card Game"
+      ],
+      "recovery": "citations partielles + résumé fiable",
+      "quotes": [
+        "combien de piece ont été imaginé dans ce projet ?",
+        "un tableau de tout ce qui a été creer"
+      ],
+      "summary": [
+        "Pierre demande combien de pièces / objets ont été imaginés dans le projet gr4ve.",
+        "Le BZH Card Game Set BZH01 (~60 cartes) est compté parmi les objets physiques du projet.",
+        "L’inventaire total approche environ 80 pièces physiques, réparties entre gravures, porte-clés, impressions 3D, posters/fresques et cartes."
+      ],
+      "deliverables": [
+        "Inventaire détaillé gr4ve",
+        "Tableau des créations"
+      ],
+      "repo_links": [
+        "docs/archives/livrables-historiques.md"
+      ],
+      "file": "docs/conversations/records/2025-09-17_inventaire-gr4ve-place-du-bzh-card-game-dans-les-objets-physiques.md"
+    },
+    {
+      "id": 34,
+      "date": "2025-10-02",
+      "title": "Build TCG v2.2.0 Supabase-ready",
+      "topics": [
+        "TCG",
+        "web app",
+        "Supabase",
+        "pack opening"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Un build complet v2.2.0 du TCG est décrit : boosters, animation tear-left, pile de cartes face cachée, flip 3D, halo de rareté, SFX, shockwave légendaire, album, shop, cart.",
+        "Le build prévoit Supabase via des globals `window.tcg_supaRaw_*` et `window.tcgSupabaseData`.",
+        "Assets requis : `assets/packs/*.jpg`, `assets/card_back.png`, `artworks/<card_id>.jpg`, `sounds/*.mp3`, datasets JSON BZH sets."
+      ],
+      "deliverables": [
+        "Spécification complète build v2.2.0"
+      ],
+      "repo_links": [
+        "docs/projects/bzh-card-game/README.md"
+      ],
+      "file": "docs/conversations/records/2025-10-02_build-tcg-v2-2-0-supabase-ready.md"
+    },
+    {
+      "id": 35,
+      "date": "2025-11-12",
+      "title": "Export localStorage du TCG BZH",
+      "topics": [
+        "TCG",
+        "saves",
+        "localStorage",
+        "data"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Un export localStorage révèle l’état du TCG : player cache, inventaire cartes, boosters, cartes révélées, préférences FX.",
+        "Exemples récupérés : username MutenRock, gold 110679, boosters_opened=26, cards_obtained=158, gold_spent=7100.",
+        "Des codes de cartes BZH01/BZH02 sont présents."
+      ],
+      "deliverables": [
+        "Analyse d’état localStorage TCG"
+      ],
+      "repo_links": [
+        "docs/projects/bzh-card-game/README.md"
+      ],
+      "file": "docs/conversations/records/2025-11-12_export-localstorage-du-tcg-bzh.md"
+    },
+    {
+      "id": 36,
+      "date": "2025-11-19",
+      "title": "YouTube — Credits Song to BZH Empire Rising.Ɛqm",
+      "topics": [
+        "musique",
+        "YouTube",
+        "publication"
+      ],
+      "recovery": "citation exacte + résumé fiable",
+      "quotes": [
+        "Je vais publier un le son Credits Song to BZH Empire Rising.Ɛqm"
+      ],
+      "summary": [
+        "Pierre prépare la publication YouTube de « Credits Song to BZH Empire Rising.Ɛqm ».",
+        "Les crédits mentionnent Prod: Dr.Spig et Music visualizer: Oscillody.",
+        "Une description YouTube est rédigée."
+      ],
+      "deliverables": [
+        "Description YouTube"
+      ],
+      "repo_links": [
+        "docs/media/communication-et-annonces.md"
+      ],
+      "file": "docs/conversations/records/2025-11-19_youtube-credits-song-to-bzh-empire-rising-qm.md"
+    },
+    {
+      "id": 37,
+      "date": "2025-12-12",
+      "title": "MINI-STAR, Minitel Hub et PC HUB 3D BZH PW",
+      "topics": [
+        "Minitel",
+        "hub",
+        "BZH PW",
+        "zip",
+        "3D"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "bah un dossier zip contenant les éléments du projet",
+        "renvoi moi le zip complet du projet mis a jour",
+        "reanalyse et ameliore en v2 le projet, puis fournit un lien pour le dl",
+        "reanalyse et projet v3 avec un hub pour pc en 3d version bzh pw",
+        "go v1.1"
+      ],
+      "summary": [
+        "Le projet MINI-STAR est livré sous forme de ZIP avec GUI, archives VDT et assets de hub.",
+        "Une branche Minitel Hub évolue de Beta à v2 puis v3.",
+        "La v3 devient un PC HUB 3D BZH PW avec Three.js et client `clients/hub3d/`.",
+        "Les livrables historiques incluent `MINI-STAR_project.zip`, `minitel_hub_beta_updated.zip`, `minitel_hub_v2.zip`, `minitel_hub_v3.zip`, `MINI-STAR_v1.1.zip`."
+      ],
+      "deliverables": [
+        "MINI-STAR ZIPs",
+        "Minitel Hub Beta/V2/V3",
+        "PC HUB 3D BZH PW"
+      ],
+      "repo_links": [
+        "docs/projects/minitel-hub-3d/README.md",
+        "docs/archives/livrables-historiques.md"
+      ],
+      "file": "docs/conversations/records/2025-12-12_mini-star-minitel-hub-et-pc-hub-3d-bzh-pw.md"
+    },
+    {
+      "id": 38,
+      "date": "2025-12-17",
+      "title": "convert_img_to_vdt et Clavicula Salomonis — branche technique adjacente",
+      "topics": [
+        "Minitel",
+        "VDT",
+        "Clavicula Salomonis",
+        "outillage"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Un outil standalone `convert_img_to_vdt_tool.zip` avec GUI est livré.",
+        "Des échanges conduisent vers un projet plus vaste, Clavicula Salomonis, pensé comme hub/orchestrateur avec vues Admin / Operator / Minitel et plugins.",
+        "Cette branche est adjacente au corpus BZH car elle prolonge les travaux Minitel / cockpit / hub."
+      ],
+      "deliverables": [
+        "convert_img_to_vdt_tool.zip",
+        "Spécifications Clavicula Salomonis"
+      ],
+      "repo_links": [
+        "docs/projects/minitel-hub-3d/README.md",
+        "docs/archives/livrables-historiques.md"
+      ],
+      "file": "docs/conversations/records/2025-12-17_convert-img-to-vdt-et-clavicula-salomonis-branche-technique-adjacente.md"
+    },
+    {
+      "id": 39,
+      "date": "2025-12-31",
+      "title": "Consolidation mémoire BZH Card Game et DA BZH Chronicles",
+      "topics": [
+        "mémoire",
+        "card game",
+        "DA",
+        "synthèse"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Un récapitulatif mémoire confirme le set BZH01, la nomenclature des IDs, la face avant minimaliste et la logique inspirée de Hearthstone.",
+        "La direction artistique BZH Chronicles reste consolidée comme cyberpunk sombre + symboles celtiques modernisés."
+      ],
+      "deliverables": [
+        "Récap mémoire consolidé"
+      ],
+      "repo_links": [
+        "docs/projects/bzh-card-game/README.md",
+        "docs/identity/direction-artistique.md"
+      ],
+      "file": "docs/conversations/records/2025-12-31_consolidation-memoire-bzh-card-game-et-da-bzh-chronicles.md"
+    },
+    {
+      "id": 40,
+      "date": "2026-01-16",
+      "title": "Nouveau mini-jeu web : adaptation 2D de HASTE dans BZH Chronicles",
+      "topics": [
+        "jeu",
+        "HASTE",
+        "BZH Chronicles",
+        "web"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "Nouveau mini jeu / Le lore de BZH POWER / format web html (js + css)",
+        "Je voulais faire une adaptation 2d du gameplay du jeu HASTE adapté au monde BZH CHRONICLES"
+      ],
+      "summary": [
+        "Pierre demande d’abord de s’assurer de la compréhension du jeu souhaité avant de coder.",
+        "L’idée retenue : adaptation 2D du gameplay de HASTE dans l’univers BZH Chronicles.",
+        "Le concept inclut jump, dash/boost, momentum, perfect landing, terrain procédural et une Vague du Code poursuivant le joueur.",
+        "Un visualizer audio à base de FFT est envisagé."
+      ],
+      "deliverables": [
+        "Concept de mini-jeu HASTE x BZH Chronicles"
+      ],
+      "repo_links": [
+        "docs/projects/runner-haste/README.md"
+      ],
+      "file": "docs/conversations/records/2026-01-16_nouveau-mini-jeu-web-adaptation-2d-de-haste-dans-bzh-chronicles.md"
+    },
+    {
+      "id": 41,
+      "date": "2026-02-09",
+      "title": "Minitel / VDT : analyse du hub et problème de mode Vidéotex",
+      "topics": [
+        "Minitel",
+        "VDT",
+        "hub",
+        "technique"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Pierre signale un bug : après l’envoi d’une image `.VDT`, le terminal reste en mode Vidéotex et l’ASCII brut ne s’affiche plus.",
+        "Une analyse de MinitDev_Files.zip identifie l’architecture : `hub_ws.py`, `telnet_ws_bridge.py`, clients panel et hub3d, duplication de `vdt_archive`, packaging à rationaliser.",
+        "Même si cette conversation est surtout technique, elle prolonge directement le fil du BZH PC HUB 3D."
+      ],
+      "deliverables": [
+        "Diagnostic VDT",
+        "ZIP WebSocket Vidéotex complet"
+      ],
+      "repo_links": [
+        "docs/projects/minitel-hub-3d/README.md"
+      ],
+      "file": "docs/conversations/records/2026-02-09_minitel-vdt-analyse-du-hub-et-probleme-de-mode-videotex.md"
+    },
+    {
+      "id": 42,
+      "date": "2026-02-13 / 2026-02-15",
+      "title": "Classement BZH PW — Heures Steam et illustration podium",
+      "topics": [
+        "événement",
+        "Steam",
+        "classement",
+        "illustration"
+      ],
+      "recovery": "citation exacte + résumé fiable",
+      "quotes": [
+        "osef du wasted ... et illustration épic",
+        "osef du wasted car ce sont plutôt des heures \"gagnés\" dans les chronicles tmtc"
+      ],
+      "summary": [
+        "Trois PDFs sont préparés : classement, statistiques globales, profils masqués.",
+        "Un podium BZH PW est proposé avec DrSorn, bzh_spirit et Sniky.",
+        "Pierre rejette le ton « WASTED » au profit d’une illustration épique.",
+        "La formulation « heures gagnées dans les Chronicles » devient la bonne lecture."
+      ],
+      "deliverables": [
+        "BZH_PW_Classement.pdf",
+        "BZH_PW_Stats.pdf",
+        "BZH_PW_Profils_masques.pdf",
+        "Concept d’illustration podium"
+      ],
+      "repo_links": [
+        "docs/events/classement-heures-steam.md"
+      ],
+      "file": "docs/conversations/records/2026-02-13_2026-02-15_classement-bzh-pw-heures-steam-et-illustration-podium.md"
+    },
+    {
+      "id": 43,
+      "date": "2026-04-28",
+      "title": "Export mémoire et consolidation du corpus BZH",
+      "topics": [
+        "mémoire",
+        "synthèse",
+        "BZH"
+      ],
+      "recovery": "résumé fiable",
+      "quotes": [],
+      "summary": [
+        "Pierre demande un export de ses mémoires stockées par catégories.",
+        "Les éléments BZH sont réaffirmés : groupe, roster, card game Power Your Hand, BZH01, règles, symboles et DA.",
+        "Cette conversation sert de point de consolidation avant la création du HUB de mai 2026."
+      ],
+      "deliverables": [
+        "Export mémoire structuré"
+      ],
+      "repo_links": [
+        "docs/01-inventaire-source.md"
+      ],
+      "file": "docs/conversations/records/2026-04-28_export-memoire-et-consolidation-du-corpus-bzh.md"
+    },
+    {
+      "id": 44,
+      "date": "2026-05-15",
+      "title": "Merch BZH POWER / logo BZH CHRONICLES / tenture",
+      "topics": [
+        "merch",
+        "tshirt",
+        "hoodie",
+        "tenture",
+        "logo"
+      ],
+      "recovery": "citations exactes + résumé fiable",
+      "quotes": [
+        "un tshirt de la team BZH PW",
+        "Plutôt BZH POWER",
+        "et aussi un logo BZH CHRONICLES",
+        "version femme",
+        "en mode image de présentation avec les tshirt quetu m'as proposé",
+        "A more minimal background",
+        "un peu chargé qqch de plus simple",
+        "pas de personnages"
+      ],
+      "summary": [
+        "Pierre initie une série de visuels merch : t-shirt, version femme, image de présentation, puis hoodie, casquette et chaises gaming.",
+        "Un logo BZH CHRONICLES est demandé.",
+        "Une tenture BZH CHRONICLES est ensuite travaillée puis simplifiée, avec demande explicite de ne pas mettre de personnages."
+      ],
+      "deliverables": [
+        "Visuels merch",
+        "Logo BZH CHRONICLES",
+        "Tenture BZH CHRONICLES"
+      ],
+      "repo_links": [
+        "docs/merch/merchandising.md",
+        "media/catalog/media-catalog.md"
+      ],
+      "file": "docs/conversations/records/2026-05-15_merch-bzh-power-logo-bzh-chronicles-tenture.md"
+    },
+    {
+      "id": 45,
+      "date": "2026-05-20",
+      "title": "Création du HUB Git / ZIP de centralisation BZH",
+      "topics": [
+        "repo",
+        "hub",
+        "centralisation",
+        "archive"
+      ],
+      "recovery": "verbatim exact sur les messages de cette conversation",
+      "quotes": [
+        "J'aimerais centraliser toutes mes infos lié à BZH PW et BZH CHRONICLES au sein d'un repo git, en partant de cette conversation et de ce que tu peux tirer des mémoires",
+        "D'abord liste moi tout les points en mémoire et conversation mentionnant bzh pw, bzh power, bzh chronicles",
+        "Très bien, fournis moi un nouveau repo mise à jour, contenant tout ce que tu peux ! Prend ton temps pour le construire, ajoute aussi les medias si possible",
+        "reprendre avec ce que tu m'as données et envoi moi un zip HUB complet avec toutes les données que tu as rassemblés sur BZH",
+        "Et tu as vraimennt tout tout ajouté ? ajoute aussi tout mes messages explicitement pour avoir les citations origanales",
+        "Il ne reste plus qu'a ajçuter tout les convs"
+      ],
+      "summary": [
+        "Cette conversation donne naissance au HUB BZH versionné : V0, HUB complet, V2 enrichie, V3 avec citations, puis V4 avec archive de conversations.",
+        "Le besoin évolue d’une centralisation documentaire vers une archive quasi-historique du projet."
+      ],
+      "deliverables": [
+        "bzh-universe-hub.zip",
+        "bzh-hub-complet-2026-05-20.zip",
+        "bzh-hub-complet-v2-2026-05-20.zip",
+        "bzh-hub-complet-v3-archive-citations-2026-05-20.zip",
+        "bzh-hub-complet-v4-conversations-2026-05-20.zip"
+      ],
+      "repo_links": [
+        "README.md",
+        "docs/conversations/README.md"
+      ],
+      "file": "docs/conversations/records/2026-05-20_creation-du-hub-git-zip-de-centralisation-bzh.md"
+    }
+  ]
+}

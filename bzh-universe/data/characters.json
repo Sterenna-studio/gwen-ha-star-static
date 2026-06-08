@@ -1,0 +1,55 @@
+{
+  "generated_on": "2026-05-20",
+  "characters": [
+    {
+      "name": "MutenRock",
+      "status": "core",
+      "titles": [
+        "The Nature Owner",
+        "The Digital Commander (à confirmer)"
+      ]
+    },
+    {
+      "name": "Aligax",
+      "status": "core",
+      "titles": [
+        "The Iron Maiden",
+        "Digital Maiden"
+      ]
+    },
+    {
+      "name": "Sniky",
+      "status": "core",
+      "titles": [
+        "The Cyber Assassin",
+        "The Frager"
+      ]
+    },
+    {
+      "name": "Spirit",
+      "status": "core",
+      "titles": [
+        "The Cooker"
+      ]
+    },
+    {
+      "name": "Spike",
+      "status": "core-linked"
+    },
+    {
+      "name": "Dr. Sorn",
+      "status": "core"
+    },
+    {
+      "name": "Gabilone / Gabylon",
+      "status": "core"
+    },
+    {
+      "name": "Titan",
+      "status": "to-confirm",
+      "titles": [
+        "The Guardian Hound"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "hero_background": "chronicles_city.webp",
+  "hero_title": "BZH POWER",
+  "features": [
+    "pixel title with black outline",
+    "scroll parallax",
+    "mousemove translation",
+    "music player block with fixed background"
+  ],
+  "legacy_media_examples": [
+    "album_cover_2.png",
+    "music-5-.jpg",
+    "track-1.mp3",
+    "track-2.mp3",
+    "track-3.mp3"
+  ]
+}

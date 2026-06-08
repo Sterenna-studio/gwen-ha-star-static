@@ -1,0 +1,10 @@
+{
+  "name": "BZH CARD GAME: Power Your Hand",
+  "starting_hp": 15,
+  "deck_size": 20,
+  "champions_per_deck": 1,
+  "mana": "+1 par tour",
+  "affinities": false,
+  "set": "BZH01",
+  "id_pattern": "BZH01_<R><C><NNN>"
+}

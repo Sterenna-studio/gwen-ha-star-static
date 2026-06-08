@@ -1,0 +1,35 @@
+{
+  "scope": "BZH PW / BZH POWER / BZH CHRONICLES",
+  "note": "Only quotes recovered with enough fidelity are marked as verbatim. Others are tagged as fragments or synthesis.",
+  "topics": {
+    "repo_centralization": [
+      "J'aimerais centraliser toutes mes infos lié à BZH PW et BZH CHRONICLES au sein d'un repo git, en partant de cette conversation et de ce que tu peux tirer des mémoires",
+      "D'abord liste moi tout les points en mémoire et conversation mentionnant bzh pw, bzh power, bzh chronicles",
+      "Très bien, fournis moi un nouveau repo mise à jour, contenant tout ce que tu peux ! Prend ton temps pour le construire, ajoute aussi les medias si possible",
+      "reprendre avec ce que tu m'as données et envoi moi un zip HUB complet avec toutes les données que tu as rassemblés sur BZH"
+    ],
+    "card_game": [
+      "j'aimerais faire un spot pub pour le jeu BZH CARD GAME (un tcg, du monde bzh chronicle)",
+      "represente uniquement le fond des cartes et la bordure, j'appliquerais le logo moi même",
+      "les bordures extérieurs doivent être doré, ajoute plus d'effet sur l'illustration de la carte, cyberpunk celtic vaporwave"
+    ],
+    "music": [
+      "je crée beaucoup en MAO... j'ai un univers etendu appelé BZH chronicles avec notamment un album",
+      "Sniky: The Frager; Aligax: Digital Maiden; BZH Power: United Legends; MutenRock: The Digital Commander (titre à venir); Titan: The Guardian Hound; Aligax: Digital Maiden (Riddim/Dubstep Remix)",
+      "utilise les logo et la da de bzh chronicles et bzh pw",
+      "GODS - League of Legends (BZH Chronicles Vers.)"
+    ],
+    "steam_event": [
+      "osef du wasted car ce sont plutôt des heures \"gagnés\" dans les chronicles tmtc"
+    ],
+    "tech": [
+      "reanalyse et projet v3 avec un hub pour pc en 3d version bzh pw",
+      "fais une version alternative focus “BZH PW”",
+      "popour la suite penses a ajoute un fichier bat pour directement lancer les différents script"
+    ],
+    "lore": [
+      "Titan est le chien de Sniky, Spike est le chien de Spirit, MutenRock et Sorn sont frères, Gabilone est le frère d'aligax.",
+      "Plutôt le lore de bzh power et bzh chronicles"
+    ]
+  }
+}

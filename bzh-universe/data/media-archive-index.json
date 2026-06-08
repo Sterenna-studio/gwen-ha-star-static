@@ -1,0 +1,21 @@
+{
+  "zips": [
+    "bzh-chronicles-roguelite-v3_1.zip",
+    "minitel_hub_beta.zip",
+    "MINI-STAR_v1.1.zip",
+    "convert_img_to_vdt_tool.zip",
+    "BZH_cyber_gravure_set_56x30mm.zip"
+  ],
+  "pdfs": [
+    "BZH_PW_Classement.pdf",
+    "BZH_PW_Stats.pdf",
+    "BZH_PW_Profils_masques.pdf",
+    "attestation_bzhpw_docteur_leo_giosa.pdf"
+  ],
+  "svg": [
+    "attestation_bzhpw_docteur_leo_giosa.svg"
+  ],
+  "html": [
+    "attestation_bzhpw_docteur_leo_giosa.html"
+  ]
+}

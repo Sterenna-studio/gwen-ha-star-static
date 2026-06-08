@@ -1,0 +1,51 @@
+# Index des conversations BZH
+
+Nombre d’entrées archivées dans cette V4 : **45**.
+
+| Date | Conversation | Récupération |
+|---|---|---|
+| 2024-04-02 | [Titan — opening d’anime BZH Power](records/2024-04-02_titan-opening-d-anime-bzh-power.md) | résumé fiable avec éléments substantiels |
+| 2024-05-17 | [Aligax — chanson de personnage](records/2024-05-17_aligax-chanson-de-personnage.md) | résumé fiable |
+| 2024-05-20 | [BZH Chronicles — album cover, personnages et convention BZ Ash](records/2024-05-20_bzh-chronicles-album-cover-personnages-et-convention-bz-ash.md) | résumé fiable + règle de formulation |
+| 2024-05-24 | [Kit de presse BZH Chronicles](records/2024-05-24_kit-de-presse-bzh-chronicles.md) | résumé fiable |
+| 2024-06-03 | [Suno 3.5, structure des prompts et tableau d’avancement](records/2024-06-03_suno-3-5-structure-des-prompts-et-tableau-d-avancement.md) | résumé fiable |
+| 2024-06-10 | [Premières reviews fictives / analyses de BZH Chronicles](records/2024-06-10_premieres-reviews-fictives-analyses-de-bzh-chronicles.md) | résumé fiable |
+| 2024-07-12 | [Page web BZH Chronicles — album, musique et présentation](records/2024-07-12_page-web-bzh-chronicles-album-musique-et-presentation.md) | citations partielles + résumé fiable |
+| 2024-09-04 | [Artwork BZH animé — prompt image-to-video](records/2024-09-04_artwork-bzh-anime-prompt-image-to-video.md) | citation exacte + résumé fiable |
+| 2024-09-11 | [Vidéos YouTube Lethal Company avec BZH_PW](records/2024-09-11_videos-youtube-lethal-company-avec-bzh-pw.md) | résumé fiable |
+| 2024-12-02 | [Historique des conversations annotées [SORN] / [ALIGAX]](records/2024-12-02_historique-des-conversations-annotees-sorn-aligax.md) | citations exactes + résumé fiable |
+| 2025-01-07 | [Extraction BZH d’un texte + fiches Sniky et MutenRock](records/2025-01-07_extraction-bzh-d-un-texte-fiches-sniky-et-mutenrock.md) | citations exactes + résumé fiable |
+| 2025-01-28 | [Analyse du projet musical BZH Chronicles, playlists et YouTube](records/2025-01-28_analyse-du-projet-musical-bzh-chronicles-playlists-et-youtube.md) | citations exactes + résumé fiable |
+| 2025-02-05 | [L’Heure du Combat et Glitched Warcry](records/2025-02-05_l-heure-du-combat-et-glitched-warcry.md) | résumé fiable avec citations déjà centralisées |
+| 2025-02-27 | [Organigramme / logigramme cyberpunk BZH](records/2025-02-27_organigramme-logigramme-cyberpunk-bzh.md) | citation partielle + résumé fiable |
+| 2025-04-04 | [DA BZH Chronicles complète + organigramme avec logos](records/2025-04-04_da-bzh-chronicles-complete-organigramme-avec-logos.md) | citations exactes + résumé fiable |
+| 2025-04-07 | [Organisation du projet musical : publication plutôt que création infinie](records/2025-04-07_organisation-du-projet-musical-publication-plutot-que-creation-infinie.md) | résumé fiable |
+| 2025-04-08 | [Liste simple des morceaux BZH déjà créés](records/2025-04-08_liste-simple-des-morceaux-bzh-deja-crees.md) | citation exacte + données précises |
+| 2025-04-08 | [Slideshow web BZH Chronicles + musique de fond](records/2025-04-08_slideshow-web-bzh-chronicles-musique-de-fond.md) | citations exactes + résumé fiable |
+| 2025-04-08 | [BZH CARD GAME — liste provisoire de 60 cartes](records/2025-04-08_bzh-card-game-liste-provisoire-de-60-cartes.md) | résumé fiable et données partielles retrouvées |
+| 2025-04-21 | [Les Dieux Debout — structure [ ] en anglais](records/2025-04-21_les-dieux-debout-structure-en-anglais.md) | résumé fiable |
+| 2025-04-22 | [Vérification du lore, bible BZH Chronicles et extraction personnages](records/2025-04-22_verification-du-lore-bible-bzh-chronicles-et-extraction-personnages.md) | citations exactes + résumé fiable |
+| 2025-04-25 | [Pack opening BZH POWER — règles de booster et prototype web](records/2025-04-25_pack-opening-bzh-power-regles-de-booster-et-prototype-web.md) | résumé fiable |
+| 2025-04-28 | [Spot publicitaire BZH CARD GAME](records/2025-04-28_spot-publicitaire-bzh-card-game.md) | citation exacte + résumé fiable |
+| 2025-04-28 | [Dos de carte, box art et règles visuelles BZH CARD GAME](records/2025-04-28_dos-de-carte-box-art-et-regles-visuelles-bzh-card-game.md) | citations exactes + résumé fiable |
+| 2025-04-30 | [Nouvelles cartes dans le même style + consolidation du set](records/2025-04-30_nouvelles-cartes-dans-le-meme-style-consolidation-du-set.md) | résumé fiable |
+| 2025-04-30 | [CardExtractorApp — traitement rapide des artworks de cartes](records/2025-04-30_cardextractorapp-traitement-rapide-des-artworks-de-cartes.md) | citations exactes + résumé fiable |
+| 2025-05-15 | [Vaisseau BZH PW en LEGO](records/2025-05-15_vaisseau-bzh-pw-en-lego.md) | citation exacte + prompt récupéré |
+| 2025-06-20 | [Artwork pour le CD BZH CHRONICLES](records/2025-06-20_artwork-pour-le-cd-bzh-chronicles.md) | citation exacte |
+| 2025-06-27 | [CHECK-LIST SNIKY / ALIGAX — BZH PW TRIP](records/2025-06-27_check-list-sniky-aligax-bzh-pw-trip.md) | citation exacte + résumé fiable |
+| 2025-08-08 | [Analyse globale des fichiers BZH Power / BZH Chronicles](records/2025-08-08_analyse-globale-des-fichiers-bzh-power-bzh-chronicles.md) | citation exacte + résumé fiable |
+| 2025-08-08 | [Mini-jeu navigateur BZH Chronicles — roguelite](records/2025-08-08_mini-jeu-navigateur-bzh-chronicles-roguelite.md) | citation partielle + résumé fiable |
+| 2025-08-31 / 2025-09-16 | [Lampe relief puis modèle BZH Chronicles / BZH PW](records/2025-08-31_2025-09-16_lampe-relief-puis-modele-bzh-chronicles-bzh-pw.md) | citations exactes + résumé fiable |
+| 2025-09-17 | [Inventaire gr4ve — place du BZH Card Game dans les objets physiques](records/2025-09-17_inventaire-gr4ve-place-du-bzh-card-game-dans-les-objets-physiques.md) | citations partielles + résumé fiable |
+| 2025-10-02 | [Build TCG v2.2.0 Supabase-ready](records/2025-10-02_build-tcg-v2-2-0-supabase-ready.md) | résumé fiable |
+| 2025-11-12 | [Export localStorage du TCG BZH](records/2025-11-12_export-localstorage-du-tcg-bzh.md) | résumé fiable |
+| 2025-11-19 | [YouTube — Credits Song to BZH Empire Rising.Ɛqm](records/2025-11-19_youtube-credits-song-to-bzh-empire-rising-qm.md) | citation exacte + résumé fiable |
+| 2025-12-12 | [MINI-STAR, Minitel Hub et PC HUB 3D BZH PW](records/2025-12-12_mini-star-minitel-hub-et-pc-hub-3d-bzh-pw.md) | citations exactes + résumé fiable |
+| 2025-12-17 | [convert_img_to_vdt et Clavicula Salomonis — branche technique adjacente](records/2025-12-17_convert-img-to-vdt-et-clavicula-salomonis-branche-technique-adjacente.md) | résumé fiable |
+| 2025-12-31 | [Consolidation mémoire BZH Card Game et DA BZH Chronicles](records/2025-12-31_consolidation-memoire-bzh-card-game-et-da-bzh-chronicles.md) | résumé fiable |
+| 2026-01-16 | [Nouveau mini-jeu web : adaptation 2D de HASTE dans BZH Chronicles](records/2026-01-16_nouveau-mini-jeu-web-adaptation-2d-de-haste-dans-bzh-chronicles.md) | citations exactes + résumé fiable |
+| 2026-02-09 | [Minitel / VDT : analyse du hub et problème de mode Vidéotex](records/2026-02-09_minitel-vdt-analyse-du-hub-et-probleme-de-mode-videotex.md) | résumé fiable |
+| 2026-02-13 / 2026-02-15 | [Classement BZH PW — Heures Steam et illustration podium](records/2026-02-13_2026-02-15_classement-bzh-pw-heures-steam-et-illustration-podium.md) | citation exacte + résumé fiable |
+| 2026-04-28 | [Export mémoire et consolidation du corpus BZH](records/2026-04-28_export-memoire-et-consolidation-du-corpus-bzh.md) | résumé fiable |
+| 2026-05-15 | [Merch BZH POWER / logo BZH CHRONICLES / tenture](records/2026-05-15_merch-bzh-power-logo-bzh-chronicles-tenture.md) | citations exactes + résumé fiable |
+| 2026-05-20 | [Création du HUB Git / ZIP de centralisation BZH](records/2026-05-20_creation-du-hub-git-zip-de-centralisation-bzh.md) | verbatim exact sur les messages de cette conversation |

@@ -1,0 +1,36 @@
+{
+  "characters": [
+    {
+      "name": "MutenRock",
+      "status": "core"
+    },
+    {
+      "name": "Aligax",
+      "status": "core"
+    },
+    {
+      "name": "Sniky",
+      "status": "core"
+    },
+    {
+      "name": "Spirit",
+      "status": "core"
+    },
+    {
+      "name": "Spike",
+      "status": "core"
+    },
+    {
+      "name": "Dr. Sorn",
+      "status": "core"
+    },
+    {
+      "name": "Gabilone / Gabylon",
+      "status": "core"
+    },
+    {
+      "name": "Titan",
+      "status": "to-confirm"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "steam_hours_event": {
+    "pdfs": [
+      "BZH_PW_Classement.pdf",
+      "BZH_PW_Stats.pdf",
+      "BZH_PW_Profils_masques.pdf"
+    ],
+    "podium_top3": [
+      "DrSorn",
+      "bzh_spirit",
+      "Sniky"
+    ],
+    "tone": "epic, not WASTED",
+    "preferred_phrase": "heures gagnées dans les Chronicles",
+    "formats": [
+      "A4/A3 poster",
+      "Instagram 4:5 or 1:1",
+      "Wallpaper 16:9"
+    ]
+  }
+}
