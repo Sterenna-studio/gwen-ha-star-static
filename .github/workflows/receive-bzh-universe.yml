@@ -1,0 +1,53 @@
+name: Receive bzh-universe sync
+
+on:
+  repository_dispatch:
+    types: [sync-bzh-universe]
+  workflow_dispatch:
+
+concurrency:
+  group: gwen-static-main-write
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout gwen-ha-star-static
+        uses: actions/checkout@v4
+
+      - name: Checkout bzh-universe (public)
+        uses: actions/checkout@v4
+        with:
+          repository: sterenna-studio/bzh-universe
+          path: _bzh_universe_tmp
+
+      - name: Copy files to subfolder
+        run: |
+          rm -rf bzh-universe
+          mkdir -p bzh-universe
+          cp -r _bzh_universe_tmp/. bzh-universe/
+          rm -rf bzh-universe/.git
+          rm -rf bzh-universe/.github
+          rm -f bzh-universe/.env bzh-universe/.env.example
+          rm -rf _bzh_universe_tmp
+          ls -la bzh-universe/
+
+      - name: Commit + push avec retry rebase
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add bzh-universe/
+          if git diff --staged --quiet; then
+            echo "Nothing to commit"
+            exit 0
+          fi
+          git commit -m "chore: sync bzh-universe into bzh-universe/ [auto]"
+          for i in 1 2 3 4 5; do
+            if git push; then echo "Push OK (tentative $i)"; exit 0; fi
+            echo "Push rejeté (tentative $i) — rebase..."
+            git pull --rebase origin main
+          done
+          exit 1
