@@ -27,6 +27,8 @@ const app = document.getElementById('app');
 const FX_KEY = 'nitro-clicker.fx.enabled';
 const BUY_MULT_KEY = 'nitro-clicker.buy.multiplier';
 const BUY_MULTIPLIERS = [1, 5, 10];
+const LAYOUT_KEY = 'nitro-clicker.layout';
+const LAYOUTS = ['nexus', 'orbital', 'command', 'mono'];
 
 let auth;
 let profile;
@@ -45,6 +47,9 @@ let lastShellSignature = '';
 let fxEnabled = localStorage.getItem(FX_KEY) !== 'false';
 let buyMultiplier = Number(localStorage.getItem(BUY_MULT_KEY) || 1);
 if (!BUY_MULTIPLIERS.includes(buyMultiplier)) buyMultiplier = 1;
+let currentLayout = localStorage.getItem(LAYOUT_KEY) ?? 'nexus';
+if (!LAYOUTS.includes(currentLayout)) currentLayout = 'nexus';
+let lastSubCoreCount = -1;
 let audioCtx = null;
 let lastEnergyPulse = 0;
 
@@ -116,6 +121,9 @@ function renderShell() {
       </div>
       <nav class="top-actions">
         <button class="nav-btn" id="fx-toggle" type="button">${fxEnabled ? '✨ FX ON' : 'FX OFF'}</button>
+        <div class="layout-switcher" role="group" aria-label="Disposition des panels">
+          ${LAYOUTS.map(l => `<button class="layout-btn${currentLayout === l ? ' active' : ''}" data-layout-btn="${l}" type="button">${l.toUpperCase()}</button>`).join('')}
+        </div>
         <a href="/star/" class="nav-btn">⬡ STAR</a>
         <a href="/" class="nav-btn">← HUB</a>
       </nav>
@@ -134,11 +142,12 @@ function renderShell() {
       <article class="stat-card"><div class="stat-label">USINES</div><div class="stat-value factory" id="stat-factory">0</div><div class="stat-meter factory"><span id="meter-factory"></span></div></article>
     </section>
 
-    <section class="game-grid game-grid-wide">
+    <section class="game-grid game-grid-wide" id="game-grid" data-layout="${currentLayout}">
       <article class="panel core-panel" id="core-panel">
         <div class="scale-radar" id="scale-radar" aria-hidden="true"></div>
         <div class="factory-field" id="factory-field" aria-hidden="true"></div>
         <div class="tendril-layer" id="tendril-layer" aria-hidden="true"></div>
+        <div class="sub-core-field" id="sub-core-field" aria-hidden="true"></div>
         <div class="energy-field" id="energy-field" aria-hidden="true"></div>
         <div class="module-orbit" id="module-orbit" aria-hidden="true"></div>
         <div class="core-shell-visual" id="core-shell-visual" aria-hidden="true"><span></span><i></i><b></b></div>
@@ -244,6 +253,7 @@ function bindStaticEvents() {
     spawnPop(event.clientX, event.clientY, `+${fmt(gain)}`);
     spawnEnergyBurst(event.clientX, event.clientY, Math.min(14, 4 + Math.floor(gain / Math.max(1, state.clickPower / 3))));
     pulseReactor();
+    pulseSubCores();
     sparkTendrils();
 
     if (result?.overdrive) {
@@ -287,6 +297,16 @@ function bindStaticEvents() {
     claimMilestonesAndRender();
     scheduleSave();
     toast(`Fragments libérés : +${result.released}F${result.forced ? ' · rupture forcée par fissures' : ''}`);
+  });
+
+  document.querySelectorAll('[data-layout-btn]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentLayout = btn.dataset.layoutBtn;
+      localStorage.setItem(LAYOUT_KEY, currentLayout);
+      const grid = document.getElementById('game-grid');
+      if (grid) grid.dataset.layout = currentLayout;
+      document.querySelectorAll('[data-layout-btn]').forEach(b => setClassToggle(b, 'active', b.dataset.layoutBtn === currentLayout));
+    });
   });
 
   document.getElementById('save-btn').addEventListener('click', () => {
@@ -408,6 +428,36 @@ function spawnScaleShift() {
   setTimeout(() => app.classList.remove('scale-shift'), 1800);
 }
 
+function renderSubCores() {
+  const field = document.getElementById('sub-core-field');
+  if (!field) return;
+  const lvl = state.upgrades?.nitroFactory ?? 0;
+  const coreCount = Math.floor(lvl / 10);
+  if (coreCount === lastSubCoreCount) return;
+  lastSubCoreCount = coreCount;
+  field.innerHTML = '';
+  for (let i = 1; i <= coreCount; i++) {
+    const eff = Math.min(0.80, i * 0.10);
+    const angle = -90 + ((i - 1) / coreCount) * 360;
+    const div = document.createElement('div');
+    div.className = 'sub-core';
+    div.style.setProperty('--angle', `${angle}deg`);
+    div.style.setProperty('--eff', String(eff));
+    div.title = `Noyau ×${i} · ${Math.round(eff * 100)}% du principal`;
+    div.innerHTML = `<div class="sub-core-inner"><span class="sub-core-glyph">⬡</span><span class="sub-core-eff">${Math.round(eff * 100)}%</span></div>`;
+    field.appendChild(div);
+  }
+}
+
+function pulseSubCores() {
+  if (!fxEnabled) return;
+  document.querySelectorAll('.sub-core-inner').forEach(inner => {
+    inner.classList.remove('pulse-hit');
+    void inner.offsetWidth;
+    inner.classList.add('pulse-hit');
+  });
+}
+
 function getCoreCenter() {
   const core = document.getElementById('click-core');
   const rect = core?.getBoundingClientRect();
@@ -476,6 +526,7 @@ function renderAll(force = false) {
   renderModules(force);
   renderTendrils(force);
   renderFactories(force);
+  renderSubCores();
 }
 
 function renderLive() {
