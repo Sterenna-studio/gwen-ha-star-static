@@ -164,6 +164,13 @@ function renderShell() {
         </div>
         <div class="upgrade-sync-hint" id="upgrade-sync-hint">SYNC LIVE · ACHAT ×${buyMultiplier}</div>
         <div class="upgrade-list" id="upgrade-list"></div>
+        <div class="prestige-upgrade-footer">
+          <button class="upgrade-btn prestige-card" id="prestige-btn" type="button">
+            <span class="upgrade-fill" id="prestige-fill"></span>
+            <div class="upgrade-head"><span class="upgrade-name">✦ Surcharge contrôlée</span><span class="upgrade-cost" id="prestige-cost"></span></div>
+            <div class="upgrade-desc">Reset le run, conserve tes fragments, augmente l'échelle et débloque des systèmes.</div>
+          </button>
+        </div>
       </aside>
 
       <aside class="panel meta-panel">
@@ -204,19 +211,6 @@ function renderShell() {
           </button>
         </section>
 
-        <section class="meta-section meta-section--prestige">
-          <div class="meta-section-header">
-            <span class="meta-section-accent"></span>
-            <span class="meta-section-icon">✦</span>
-            <h2 class="meta-title">PRESTIGE</h2>
-            <span class="meta-section-rule"></span>
-          </div>
-          <button class="prestige-card" id="prestige-btn">
-            <span class="upgrade-fill" id="prestige-fill"></span>
-            <div class="upgrade-head"><span class="upgrade-name">✦ Surcharge contrôlée</span><span class="upgrade-cost" id="prestige-cost"></span></div>
-            <div class="upgrade-desc">Reset le run, conserve tes fragments, augmente l'échelle et débloque des systèmes.</div>
-          </button>
-        </section>
       </aside>
     </section>
   `;
@@ -541,7 +535,7 @@ function renderStats() {
   setMeter('meter-shell', shell.unlocked ? Math.max(shell.fillRatio, shell.crackRatio * 0.35) : 0);
 
   const req = prestigeRequirement(state);
-  const prestigeRatio = Math.min(1, state.totalEnergy / Math.max(1, req));
+  const prestigeRatio = Math.min(1, state.energy / Math.max(1, req));
   setMeter('meter-prestige', prestigeRatio);
   setMeter('prestige-fill', prestigeRatio);
   setMeter('reactor-a', Math.min(1, state.surcharge / Math.max(1, state.maxSurcharge)));
@@ -549,10 +543,10 @@ function renderStats() {
   setMeter('reactor-c', prestigeRatio);
 
   const btn = document.getElementById('prestige-btn');
-  setText('prestige-cost', `${fmt(state.totalEnergy)} / ${fmt(req)}`);
+  setText('prestige-cost', `${fmt(state.energy)} / ${fmt(req)}`);
   if (btn) {
-    btn.disabled = state.totalEnergy < req;
-    setClassToggle(btn, 'can-buy', state.totalEnergy >= req);
+    btn.disabled = state.energy < req;
+    setClassToggle(btn, 'can-buy', state.energy >= req);
   }
 
   setHtml('layer-caption', `<strong>${layer.name}</strong><span>${layer.desc}</span>`);

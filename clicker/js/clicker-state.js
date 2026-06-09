@@ -566,8 +566,7 @@ function visibleSoon(state, milestone) {
 }
 
 export function canPrestige(state) {
-  // FIX #1/#2 : le prestige se débloque sur totalEnergy (cohérent avec l'UI)
-  return Number(state.totalEnergy ?? 0) >= prestigeRequirement(state);
+  return Number(state.energy ?? 0) >= prestigeRequirement(state);
 }
 
 export function prestigeRequirement(state) {

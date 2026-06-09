@@ -132,8 +132,42 @@
   outline: 1px solid rgba(255,204,0,.3);
 }
 
+/* ── Prestige button — intégré dans le panel upgrades ───────────────────── */
+
+.prestige-upgrade-footer {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+
 .prestige-card {
-  min-height: 92px;
+  min-height: 84px;
+}
+
+.prestige-card .upgrade-fill {
+  background: linear-gradient(90deg, rgba(255,61,242,.10), rgba(255,71,87,.05));
+}
+
+/* État PRÊT : rouge */
+.prestige-card.can-buy {
+  border-color: rgba(255,71,87,.45);
+  box-shadow: 0 0 20px rgba(255,71,87,.1), inset 0 0 22px rgba(255,71,87,.035);
+}
+
+.prestige-card.can-buy .upgrade-fill {
+  background: linear-gradient(90deg, rgba(255,71,87,.18), rgba(255,100,50,.07));
+}
+
+/* Remplace le badge READY par PRESTIGE en rouge */
+.prestige-card.can-buy:not(:disabled)::after {
+  content: 'PRESTIGE';
+  color: var(--nc-danger);
+}
+
+/* Hover rouge au lieu de cyan */
+.prestige-card:hover:not(:disabled) {
+  border-color: rgba(255,71,87,.6);
+  background: rgba(255,71,87,.07);
 }
 
 .scale-card {
@@ -469,8 +503,7 @@
   opacity: .8;
 }
 
-.meta-section--shell   .meta-section-accent { background: var(--nc-accent); }
-.meta-section--prestige .meta-section-accent { background: var(--nc-pink); opacity: 1; }
+.meta-section--shell .meta-section-accent { background: var(--nc-accent); }
 
 .meta-section-icon {
   flex-shrink: 0;
@@ -479,8 +512,7 @@
   color: rgba(184,140,255,.44);
 }
 
-.meta-section--shell   .meta-section-icon { color: rgba(255,204,0,.46); }
-.meta-section--prestige .meta-section-icon { color: rgba(255,61,242,.58); }
+.meta-section--shell .meta-section-icon { color: rgba(255,204,0,.46); }
 
 .meta-title {
   margin: 0;
@@ -493,8 +525,7 @@
   white-space: nowrap;
 }
 
-.meta-section--shell   .meta-title { color: rgba(255,204,0,.72); }
-.meta-section--prestige .meta-title { color: rgba(255,61,242,.8); }
+.meta-section--shell .meta-title { color: rgba(255,204,0,.72); }
 
 .meta-section-rule {
   display: block;
@@ -503,19 +534,7 @@
   background: linear-gradient(90deg, rgba(184,140,255,.16), transparent);
 }
 
-.meta-section--shell   .meta-section-rule { background: linear-gradient(90deg, rgba(255,204,0,.16), transparent); }
-.meta-section--prestige .meta-section-rule { background: linear-gradient(90deg, rgba(255,61,242,.18), transparent); }
-
-/* Prestige : carte autonome avec sa propre bordure colorée */
-.meta-section--prestige {
-  margin-top: 18px;
-  padding: 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,61,242,.16);
-  background:
-    radial-gradient(circle at 8% 12%, rgba(255,61,242,.08), transparent 42%),
-    rgba(255,255,255,.022);
-}
+.meta-section--shell .meta-section-rule { background: linear-gradient(90deg, rgba(255,204,0,.16), transparent); }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 

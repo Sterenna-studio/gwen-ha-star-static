@@ -12,8 +12,6 @@ import './ui/svg-replacer.js';
 import './ui/shared-assets.js';
 import './ui/upgrade-ux.js';
 import './ui/current-objective.js';
-import './ui/prestige-current-energy.js';
-import './ui/prestige-button-fix.js';
 import './ui/save-migration-notice.js';
 import './audio/sound-panel.js';
 
