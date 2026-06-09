@@ -1,0 +1,11 @@
+# bzh-universe — réglages locaux
+# Ré-autorise README.html : l'hébergeur bloque par défaut les fichiers README*.
+<Files "README.html">
+  <IfModule mod_authz_core.c>
+    Require all granted
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
+  </IfModule>
+</Files>
