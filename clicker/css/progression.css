@@ -54,6 +54,11 @@
   min-height: 450px;
 }
 
+.meta-panel {
+  display: flex;
+  flex-direction: column;
+}
+
 .upgrade-title-row {
   display: flex;
   justify-content: space-between;
@@ -370,57 +375,147 @@
     rgba(9,13,24,.78);
 }
 
+/* ── Meta-panel header ──────────────────────────────────────────────────── */
+
+.meta-panel-head {
+  order: -10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+.meta-panel-kicker {
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 8px;
+  letter-spacing: .24em;
+  color: rgba(168,230,255,.38);
+  margin-bottom: 4px;
+}
+
+.meta-panel-title {
+  margin: 0;
+  font-family: var(--font-display, 'Exo 2', sans-serif);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: #e8faff;
+  text-shadow: 0 0 18px rgba(0,255,204,.18);
+}
+
+.meta-panel-head .meta-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,255,204,.22);
+  background: rgba(0,255,204,.055);
+  color: var(--nc-primary);
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 9px;
+  letter-spacing: .14em;
+  cursor: pointer;
+  transition: background .18s, border-color .18s, box-shadow .18s;
+  flex-shrink: 0;
+}
+
+.meta-panel-head .meta-save-btn:hover {
+  background: rgba(0,255,204,.12);
+  border-color: rgba(0,255,204,.44);
+  box-shadow: 0 0 16px rgba(0,255,204,.18);
+}
+
+/* ── Injected cards: sit between panel head and static sections ─ */
+.meta-panel > .current-objective-card,
+.meta-panel > .current-goal-panel,
+.meta-panel > .lemegeton-status {
+  order: 0;
+}
+
 /* ── Meta-panel sectioning ──────────────────────────────────────────────────── */
 
 .meta-section {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  order: 1;
 }
 
 .meta-section + .meta-section:not(.meta-section--prestige) {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255,255,255,.08);
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,.06);
 }
 
-/* Prestige : carte autonome avec sa propre bordure colorée */
-.meta-section--prestige {
-  margin-top: 16px;
-  padding: 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,61,242,.18);
-  background:
-    radial-gradient(circle at 8% 12%, rgba(255,61,242,.09), transparent 42%),
-    rgba(255,255,255,.028);
-}
-
-.meta-title {
+/* Section header row: accent bar + icon + title + rule */
+.meta-section-header {
   display: flex;
   align-items: center;
   gap: 7px;
-  margin: 0;
-  font-family: var(--font-mono, 'Share Tech Mono', monospace);
-  font-size: 8px;
-  font-weight: 400;
-  letter-spacing: .2em;
-  color: rgba(168,230,255,.52);
-  text-transform: uppercase;
+  margin-bottom: 2px;
 }
 
-.meta-title::before {
-  content: '';
+.meta-section-accent {
   display: block;
   flex-shrink: 0;
-  width: 2px;
-  height: 10px;
-  border-radius: 1px;
-  background: var(--nc-primary);
-  opacity: .75;
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  background: #b88cff;
+  opacity: .8;
 }
 
-.meta-section--shell .meta-title::before { background: var(--nc-accent); }
-.meta-section--prestige .meta-title::before { background: var(--nc-pink); opacity: 1; }
+.meta-section--shell   .meta-section-accent { background: var(--nc-accent); }
+.meta-section--prestige .meta-section-accent { background: var(--nc-pink); opacity: 1; }
+
+.meta-section-icon {
+  flex-shrink: 0;
+  font-size: 11px;
+  line-height: 1;
+  color: rgba(184,140,255,.44);
+}
+
+.meta-section--shell   .meta-section-icon { color: rgba(255,204,0,.46); }
+.meta-section--prestige .meta-section-icon { color: rgba(255,61,242,.58); }
+
+.meta-title {
+  margin: 0;
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: .2em;
+  color: rgba(184,140,255,.72);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.meta-section--shell   .meta-title { color: rgba(255,204,0,.72); }
+.meta-section--prestige .meta-title { color: rgba(255,61,242,.8); }
+
+.meta-section-rule {
+  display: block;
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(184,140,255,.16), transparent);
+}
+
+.meta-section--shell   .meta-section-rule { background: linear-gradient(90deg, rgba(255,204,0,.16), transparent); }
+.meta-section--prestige .meta-section-rule { background: linear-gradient(90deg, rgba(255,61,242,.18), transparent); }
+
+/* Prestige : carte autonome avec sa propre bordure colorée */
+.meta-section--prestige {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,61,242,.16);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255,61,242,.08), transparent 42%),
+    rgba(255,255,255,.022);
+}
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 

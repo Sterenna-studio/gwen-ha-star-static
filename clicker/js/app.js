@@ -167,14 +167,35 @@ function renderShell() {
       </aside>
 
       <aside class="panel meta-panel">
-        <section class="meta-section">
-          <h2 class="meta-title">ÉCHELLE & MILESTONES</h2>
+        <div class="meta-panel-head">
+          <div>
+            <div class="meta-panel-kicker">SYS · META</div>
+            <h2 class="meta-panel-title">NEXUS</h2>
+          </div>
+          <button class="action-btn meta-save-btn" id="save-btn" type="button">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 1v7M3 5l3 3 3-3M1 11h10"/></svg>
+            SAVE
+          </button>
+        </div>
+
+        <section class="meta-section meta-section--scale">
+          <div class="meta-section-header">
+            <span class="meta-section-accent"></span>
+            <span class="meta-section-icon">◈</span>
+            <h2 class="meta-title">ÉCHELLE & MILESTONES</h2>
+            <span class="meta-section-rule"></span>
+          </div>
           <div class="scale-card" id="scale-card"></div>
           <div class="milestone-list" id="milestone-list"></div>
         </section>
 
         <section class="meta-section meta-section--shell">
-          <h2 class="meta-title">COQUE DU NOYAU</h2>
+          <div class="meta-section-header">
+            <span class="meta-section-accent"></span>
+            <span class="meta-section-icon">◇</span>
+            <h2 class="meta-title">COQUE DU NOYAU</h2>
+            <span class="meta-section-rule"></span>
+          </div>
           <div class="core-shell-card" id="core-shell-card"></div>
           <button class="upgrade-btn shell-break-card" id="shell-break-btn" type="button">
             <span class="upgrade-fill" id="shell-break-fill"></span>
@@ -184,15 +205,17 @@ function renderShell() {
         </section>
 
         <section class="meta-section meta-section--prestige">
-          <h2 class="meta-title">PRESTIGE</h2>
+          <div class="meta-section-header">
+            <span class="meta-section-accent"></span>
+            <span class="meta-section-icon">✦</span>
+            <h2 class="meta-title">PRESTIGE</h2>
+            <span class="meta-section-rule"></span>
+          </div>
           <button class="prestige-card" id="prestige-btn">
             <span class="upgrade-fill" id="prestige-fill"></span>
             <div class="upgrade-head"><span class="upgrade-name">✦ Surcharge contrôlée</span><span class="upgrade-cost" id="prestige-cost"></span></div>
             <div class="upgrade-desc">Reset le run, conserve tes fragments, augmente l'échelle et débloque des systèmes.</div>
           </button>
-          <div class="save-row">
-            <button class="action-btn" id="save-btn">💾 SAUVER LOCAL</button>
-          </div>
         </section>
       </aside>
     </section>
