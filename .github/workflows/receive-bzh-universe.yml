@@ -35,6 +35,14 @@ jobs:
           rm -rf _bzh_universe_tmp
           ls -la bzh-universe/
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Régénère le HTML depuis les .md
+        run: node bzh-universe/tools/md-to-html.mjs
+
       - name: Commit + push avec retry rebase
         run: |
           git config user.name "github-actions[bot]"
