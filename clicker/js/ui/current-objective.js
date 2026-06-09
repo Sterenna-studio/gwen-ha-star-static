@@ -123,7 +123,7 @@ function getObjective(state) {
   }
 
   if ((upgrades.nitroFactory ?? 0) < 1) {
-    return objective('first_factory', 'Construire la première usine Nitro', 'Achète Usine de moteurs Nitro pour entrer dans la progression industrielle.', energy / cost(62000, 1.42, upgrades.nitroFactory ?? 0), `${format(energy)} E · coût ${format(cost(62000, 1.42, upgrades.nitroFactory ?? 0))}`);
+    return objective('first_factory', 'Activer le multiplicateur de noyau', 'Achète Multiplicateur de noyau pour dupliquer ton noyau et démultiplier la production.', energy / cost(62000, 1.42, upgrades.nitroFactory ?? 0), `${format(energy)} E · coût ${format(cost(62000, 1.42, upgrades.nitroFactory ?? 0))}`);
   }
 
   if (prestige < 25) {

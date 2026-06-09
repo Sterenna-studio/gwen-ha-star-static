@@ -253,7 +253,7 @@ function renderStatsPanel() {
     <div class="nc-mini-grid wide">
       ${metric('Énergie actuelle', liveText('stat-energy', fmt(s.energy)))}${metric('Énergie totale', fmt(s.totalEnergy))}${metric('Fragments Nitro', liveText('stat-fragments', fmt(s.fragments)))}${metric('Fragments gagnés', fmt(s.totalFragments))}
       ${metric('Puissance clic', liveText('stat-click', fmt(s.clickPower)))}${metric('Auto / sec', liveText('stat-passive', Number(s.passiveRate ?? 0).toFixed(2)))}${metric('Clics totaux', fmt(s.totalClicks))}${metric('Upgrades achetés', fmt(upgradesTotal))}
-      ${metric('Milestones', `${milestonesDone}/${MILESTONES.length}`)}${metric('Prestige', liveText('stat-prestige', fmt(s.prestige)))}${metric('Échelle', layer.name)}${metric('Usines', liveText('stat-factory', fmt(s.factoryRate)))}
+      ${metric('Milestones', `${milestonesDone}/${MILESTONES.length}`)}${metric('Prestige', liveText('stat-prestige', fmt(s.prestige)))}${metric('Échelle', layer.name)}${metric('Noyaux ×', ((s.coreMultiplier ?? 1).toFixed(2)))}
     </div>
     <h3 class="nc-subtitle">Niveaux d'upgrades</h3>
     <div class="nc-upgrade-stats">${UPGRADES.map(up => `<div><span>${up.icon} ${up.name}</span><strong>Lv.${s.upgrades?.[up.id] ?? 0}</strong></div>`).join('')}</div>`;

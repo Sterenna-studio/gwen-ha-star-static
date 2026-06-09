@@ -648,7 +648,7 @@ function renderUpgradeButton(upgrade) {
         <span class="upgrade-name">${upgrade.icon} ${upgrade.name} <small data-upgrade-level="${upgrade.id}">Lv.${level}</small></span>
         <span class="upgrade-cost" data-upgrade-cost="${upgrade.id}">${fmt(bulkCost)} ${currencyLabel(currency)}</span>
       </div>
-      <div class="upgrade-desc">${upgrade.desc}</div>
+      <div class="upgrade-desc">${typeof upgrade.desc === 'function' ? upgrade.desc(state) : upgrade.desc}</div>
       <div class="upgrade-buy-meta" data-upgrade-meta="${upgrade.id}">Achat ×${buyMultiplier} · unité ${fmt(singleCost)} ${currencyLabel(currency)}</div>
     </button>`;
 }

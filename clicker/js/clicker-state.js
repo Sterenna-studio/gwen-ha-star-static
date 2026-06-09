@@ -26,7 +26,7 @@ export const BALANCE = {
 export const SCALING_LAYERS = [
   { id: 'core', prestige: 0, name: 'Noyau unique', short: 'CORE', desc: 'Tu stabilises un seul réacteur Nitro vivant.', mult: 1 },
   { id: 'engine_bay', prestige: 3, name: 'Baie moteur', short: 'BAY', desc: 'Plusieurs modules commencent à tourner autour du noyau.', mult: 1.32 },
-  { id: 'factory', prestige: 10, name: 'Usine de moteurs Nitro', short: 'FACTORY', desc: 'Dézoom : tu ne gères plus un noyau, mais une ligne de moteurs.', mult: 2.15 },
+  { id: 'factory', prestige: 10, name: 'Multiplicateur de noyau', short: 'CORE×', desc: 'Le noyau se duplique. Copies à 10%→80% du noyau principal.', mult: 2.15 },
   { id: 'district', prestige: 25, name: 'District énergétique', short: 'DISTRICT', desc: 'Le réseau alimente un quartier entier du hub Star.', mult: 4.55 },
   { id: 'orbital', prestige: 50, name: 'Anneau orbital', short: 'ORBITAL', desc: 'Production à échelle orbitale : les usines deviennent un essaim.', mult: 10.2 },
 ];
@@ -173,11 +173,18 @@ export const UPGRADES = [
     apply(state) { state.permanentMultiplier += 0.065; },
   },
   {
-    id: 'nitroFactory', name: 'Usine de moteurs Nitro', icon: '🏭', baseCost: 62000, scale: 1.42, currency: 'energy', tier: 4,
-    desc: 'Dézoom Prestige 10 : +34 clic, +48/s, +1 usine.',
+    id: 'nitroFactory', name: 'Multiplicateur de noyau', icon: '⚛️', baseCost: 62000, scale: 1.42, currency: 'energy', tier: 4,
+    desc(state) {
+      const lvl = state?.upgrades?.nitroFactory ?? 0;
+      const cores = Math.floor(lvl / 10);
+      if (cores === 0) return '+1 noyau dupliqué tous les 10 niveaux · copies à 10%→80% du noyau principal.';
+      const mult = state?.coreMultiplier ?? 1;
+      const nextIn = lvl % 10 === 0 ? 10 : 10 - (lvl % 10);
+      return `${cores} noyau${cores > 1 ? 'x' : ''} actif${cores > 1 ? 's' : ''} · ×${mult.toFixed(2)} puissance · prochain dans ${nextIn} niveaux.`;
+    },
     unlock: state => state.prestige >= 10,
-    lockedText: 'Débloqué au Prestige 10 : changement d\'échelle.',
-    apply(state) { state.clickPower += 34; state.passiveRate += 48; state.factoryRate += 1; },
+    lockedText: 'Débloqué au Prestige 10 : le noyau devient multiplicable.',
+    apply(_state) { /* effet géré dans recalcDerivedStats via coreMultiplier */ },
   },
   {
     id: 'enginePlant', name: 'Chaîne de production moteur', icon: '⚙️', baseCost: 900000, scale: 1.38, currency: 'energy', tier: 5,
@@ -311,12 +318,20 @@ export function recalcDerivedStats(state) {
     for (let i = 0; i < level; i++) upgrade.apply(state);
   }
 
+  // ── Multiplicateur de noyau (nitroFactory) ──────────────────────────────
+  // +1 noyau par tranche de 10 niveaux. Noyau i : min(i×10%, 80%) du principal.
+  const nitroLvl = state.upgrades?.nitroFactory ?? 0;
+  let coreMult = 1;
+  for (let i = 10; i <= nitroLvl; i += 10) {
+    coreMult += Math.min(0.80, (i / 10) * 0.10);
+  }
+  state.coreMultiplier = coreMult;
+
   const reflectMultiplier = 1 + Math.min(1.35, state.coreShellReflect ?? 0);
-  state.clickPower *= state.permanentMultiplier * reflectMultiplier;
-  state.passiveRate *= state.permanentMultiplier * reflectMultiplier;
+  state.clickPower  *= state.permanentMultiplier * reflectMultiplier * coreMult;
+  state.passiveRate *= state.permanentMultiplier * reflectMultiplier * coreMult;
   state.autoClickRate *= state.permanentMultiplier;
-  // FIX #5 : factoryRate doit aussi bénéficier du multiplicateur permanent
-  state.factoryRate *= state.permanentMultiplier;
+  state.factoryRate   *= state.permanentMultiplier;
   state.surcharge = Math.min(state.surcharge ?? 0, state.maxSurcharge);
 }
 

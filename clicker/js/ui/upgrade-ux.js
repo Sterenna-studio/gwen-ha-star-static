@@ -7,7 +7,7 @@ const GROUPS = [
   { id: 'overdrive', title: 'OVERDRIVE', subtitle: 'Surcharge et explosions énergétiques.', upgrades: ['surchargeCoil'] },
   { id: 'automation', title: 'AUTO', subtitle: 'Clics automatiques, surcharge et LEMEGETON.', upgrades: ['autoClicker'] },
   { id: 'fragments', title: 'FRAGMENTS', subtitle: 'Bonus permanents et rupture de coque.', upgrades: ['fragmentCatalyst', 'fractureTuning'] },
-  { id: 'infrastructure', title: 'INFRA', subtitle: 'Usines, chaînes moteur et réseau orbital.', upgrades: ['nitroFactory', 'enginePlant', 'orbitalHive'] },
+  { id: 'infrastructure', title: 'INFRA', subtitle: 'Noyaux dupliqués, production et réseau orbital.', upgrades: ['nitroFactory', 'enginePlant', 'orbitalHive'] },
 ];
 
 const UPGRADE_INFO = {
@@ -24,7 +24,7 @@ const UPGRADE_INFO = {
   bioConduit: { tip: 'Renforce les conduits organiques autour du noyau. Gros gain passif.', stat: '+ passif + stabilité' },
   fractureTuning: { tip: 'Permanent : améliore les chances de rupture et réduit les coups nécessaires.', stat: '+ rupture de coque' },
   fragmentCatalyst: { tip: 'Permanent : multiplicateur global conservé après prestige.', stat: '+ multiplicateur permanent' },
-  nitroFactory: { tip: 'Premier vrai dézoom industriel : tu gères une usine.', stat: '+ usine + production' },
+  nitroFactory: { tip: '+1 noyau tous les 10 niveaux. Copies à 10%→80% du noyau principal — puissant mais plafonné.', stat: '× noyaux dupliqués' },
   enginePlant: { tip: 'Transforme la production en chaîne moteur massive.', stat: '+ production industrielle' },
   orbitalHive: { tip: 'Réseau orbital pour préparer les paliers très hauts.', stat: '+ réseau orbital' },
 };

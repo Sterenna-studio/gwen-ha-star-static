@@ -86,7 +86,7 @@ function replaceFactoryIcons(root) {
   root.querySelectorAll('.factory-node:not([data-svg-ready])').forEach((node, index) => {
     const raw = node.textContent.trim();
     node.dataset.svgReady = 'true';
-    const icon = raw.includes('🏭') ? 'nitroFactory' : raw.includes('⚙') ? 'enginePlant' : index % 3 === 2 ? 'core' : 'nitroFactory';
+    const icon = raw.includes('🏭') ? 'nitroFactory' : raw.includes('⚛️') ? 'core' : raw.includes('⚙') ? 'enginePlant' : index % 3 === 2 ? 'core' : 'nitroFactory';
     node.innerHTML = svgIcon(icon, 'nc-svg-icon nc-svg-factory');
   });
 }
