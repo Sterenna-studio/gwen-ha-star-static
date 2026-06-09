@@ -222,6 +222,12 @@
 .fx-disabled .sub-core-field { animation: none; }
 .fx-disabled .sub-core-inner { animation: none; }
 
+/* Float-pop contained inside click-core (override body inheritance) */
+.float-pop { font-size: clamp(13px, 1.5vw, 19px); }
+
+/* Bounce canvas is already styled inline; this reinforces clip */
+.bounce-canvas { border-radius: 50%; overflow: hidden; }
+
 .progression-panel,
 .meta-panel {
   min-height: 450px;

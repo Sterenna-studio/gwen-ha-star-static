@@ -52,6 +52,10 @@ if (!LAYOUTS.includes(currentLayout)) currentLayout = 'nexus';
 let lastSubCoreCount = -1;
 let audioCtx = null;
 let lastEnergyPulse = 0;
+const bounceParticles = [];
+let bounceLoop = null;
+let bounceCanvas = null;
+let bounceCtx = null;
 
 const FX = {
   ctx() {
@@ -251,7 +255,7 @@ function bindStaticEvents() {
     const gain = typeof result === 'number' ? result : result.gain;
     FX.click();
     spawnPop(event.clientX, event.clientY, `+${fmt(gain)}`);
-    spawnEnergyBurst(event.clientX, event.clientY, Math.min(14, 4 + Math.floor(gain / Math.max(1, state.clickPower / 3))));
+    spawnBouncingBurst(event.clientX, event.clientY, Math.min(14, 4 + Math.floor(gain / Math.max(1, state.clickPower / 3))));
     pulseReactor();
     pulseSubCores();
     sparkTendrils();
@@ -346,32 +350,115 @@ function claimMilestonesAndRender() {
 }
 
 function spawnPop(x, y, text) {
+  const core = document.getElementById('click-core');
+  if (!core) return;
+  const rect = core.getBoundingClientRect();
+  if (!rect.width) return;
   const pop = document.createElement('div');
   pop.className = 'float-pop';
-  pop.style.left = `${x}px`;
-  pop.style.top = `${y}px`;
+  pop.style.left = `${x - rect.left}px`;
+  pop.style.top = `${y - rect.top}px`;
   pop.textContent = text;
-  document.body.appendChild(pop);
+  core.appendChild(pop);
   setTimeout(() => pop.remove(), 900);
 }
 
-function spawnEnergyBurst(x, y, count = 5) {
+function ensureBounceCanvas() {
+  if (bounceCanvas?.isConnected) return true;
+  if (bounceLoop) { cancelAnimationFrame(bounceLoop); bounceLoop = null; }
+  bounceParticles.length = 0;
+  bounceCanvas = null;
+  bounceCtx = null;
+  const core = document.getElementById('click-core');
+  if (!core) return false;
+  bounceCanvas = document.createElement('canvas');
+  bounceCanvas.className = 'bounce-canvas';
+  bounceCanvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;border-radius:50%;';
+  core.appendChild(bounceCanvas);
+  const rect = core.getBoundingClientRect();
+  bounceCanvas.width = Math.round(rect.width) || 240;
+  bounceCanvas.height = Math.round(rect.height) || 240;
+  bounceCtx = bounceCanvas.getContext('2d');
+  return true;
+}
+
+function spawnBouncingBurst(clientX, clientY, count = 8) {
   if (!fxEnabled) return;
-  const field = document.getElementById('energy-field');
-  const panel = document.getElementById('core-panel');
-  if (!field || !panel) return;
-  const rect = panel.getBoundingClientRect();
-  for (let i = 0; i < count; i++) {
-    const p = document.createElement('span');
-    p.className = 'energy-particle';
-    p.style.left = `${x - rect.left}px`;
-    p.style.top = `${y - rect.top}px`;
-    p.style.setProperty('--dx', `${(Math.random() * 2 - 1) * 190}px`);
-    p.style.setProperty('--dy', `${-80 - Math.random() * 170}px`);
-    p.style.setProperty('--delay', `${Math.random() * 90}ms`);
-    field.appendChild(p);
-    setTimeout(() => p.remove(), 950);
+  if (!ensureBounceCanvas()) return;
+  const core = document.getElementById('click-core');
+  const rect = core.getBoundingClientRect();
+  const w = Math.round(rect.width) || 240;
+  const h = Math.round(rect.height) || 240;
+  if (bounceCanvas.width !== w || bounceCanvas.height !== h) {
+    bounceCanvas.width = w;
+    bounceCanvas.height = h;
+    bounceCtx = bounceCanvas.getContext('2d');
   }
+  const cx = w / 2;
+  const cy = h / 2;
+  const R = cx - 4;
+  const px0 = (clientX - rect.left) - cx;
+  const py0 = (clientY - rect.top) - cy;
+  const COLORS = [
+    { fill: '#00ffcc', glow: 'rgba(0,255,204,.9)' },
+    { fill: '#ffcc00', glow: 'rgba(255,204,0,.9)' },
+    { fill: '#ff3df2', glow: 'rgba(255,61,242,.9)' },
+  ];
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 160 + Math.random() * 230;
+    const col = COLORS[Math.floor(Math.random() * COLORS.length)];
+    bounceParticles.push({
+      x: px0, y: py0,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      r: 2.5 + Math.random() * 2.5,
+      life: 1,
+      decay: 0.65 + Math.random() * 0.5,
+      fill: col.fill, glow: col.glow,
+    });
+  }
+  if (bounceLoop) return;
+  let lastTime = performance.now();
+  function tick(now) {
+    if (!bounceCanvas?.isConnected) { bounceLoop = null; bounceParticles.length = 0; return; }
+    const dt = Math.min((now - lastTime) / 1000, 0.05);
+    lastTime = now;
+    const bw = bounceCanvas.width, bh = bounceCanvas.height;
+    const bcx = bw / 2, bcy = bh / 2, bR = bcx - 4;
+    bounceCtx.clearRect(0, 0, bw, bh);
+    const friction = Math.pow(0.28, dt);
+    for (let i = bounceParticles.length - 1; i >= 0; i--) {
+      const p = bounceParticles[i];
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.vx *= friction;
+      p.vy *= friction;
+      p.life -= p.decay * dt;
+      // Bounce off sphere wall
+      const d = Math.sqrt(p.x * p.x + p.y * p.y);
+      if (d > 0 && d + p.r > bR) {
+        const nx = p.x / d, ny = p.y / d;
+        const dot = p.vx * nx + p.vy * ny;
+        if (dot > 0) { p.vx = (p.vx - 2 * dot * nx) * 0.70; p.vy = (p.vy - 2 * dot * ny) * 0.70; }
+        const push = bR - p.r - 1;
+        p.x = nx * push; p.y = ny * push;
+      }
+      if (p.life <= 0) { bounceParticles.splice(i, 1); continue; }
+      bounceCtx.save();
+      bounceCtx.globalAlpha = Math.max(0, p.life);
+      bounceCtx.shadowColor = p.glow;
+      bounceCtx.shadowBlur = 9;
+      bounceCtx.beginPath();
+      bounceCtx.arc(bcx + p.x, bcy + p.y, p.r, 0, Math.PI * 2);
+      bounceCtx.fillStyle = p.fill;
+      bounceCtx.fill();
+      bounceCtx.restore();
+    }
+    bounceLoop = bounceParticles.length > 0 ? requestAnimationFrame(tick) : null;
+    if (!bounceLoop) bounceCtx.clearRect(0, 0, bw, bh);
+  }
+  bounceLoop = requestAnimationFrame(tick);
 }
 
 function pulseReactor() {
