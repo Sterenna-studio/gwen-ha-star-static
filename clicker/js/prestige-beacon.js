@@ -181,9 +181,9 @@ function injectBeacon() {
   `);
 
   document.getElementById('pb-btn').addEventListener('click', () => {
+    if (window.NitroPrestige && !window.NitroPrestige.canDo()) return;
     openPrestigeModal(() => {
-      // Vrai prestige (conserve les fragments) — PAS un wipe de save.
-      document.getElementById('prestige-btn')?.click();
+      window.NitroPrestige?.exec?.();
     });
   });
 }
@@ -193,17 +193,24 @@ function updateBeacon() {
   const beacon = document.getElementById('prestige-beacon');
   if (!beacon) return;
 
-  const raw   = readSnapshot();
-  const state = safeState(raw);
-  const req   = prestigeRequirement(state);
-  const total = state.totalEnergy ?? 0;
-  const rawP  = Math.min(total / Math.max(1, req), 2);
+  let energy, totalEnergy, req;
+  if (window.NitroPrestige?.info) {
+    ({ energy, totalEnergy, req } = window.NitroPrestige.info());
+  } else {
+    const raw   = readSnapshot();
+    const state = safeState(raw);
+    req         = prestigeRequirement(state);
+    energy      = Number(state.energy ?? 0);
+    totalEnergy = Number(state.totalEnergy ?? 0);
+  }
+
+  const rawP  = Math.min(energy / Math.max(1, req), 2);
   const isReady      = rawP >= 1;
   const overcharge   = isReady ? Math.min(rawP - 1, 1) : 0;
   const isOverloaded = isReady && overcharge > 0.05;
   const isCritical   = isReady && overcharge > 0.70;
   const pct      = Math.round(rawP * 100);
-  const nextFrag = Math.max(1, Math.floor(Math.sqrt(total / 1000)));
+  const nextFrag = Math.max(1, Math.floor(Math.sqrt(totalEnergy / 1000)));
 
   beacon.classList.toggle('visible', isReady);
   beacon.dataset.overloaded = String(isOverloaded);
@@ -223,7 +230,7 @@ function updateBeacon() {
   if (fill) fill.style.transform = `scaleX(${Math.min(rawP, 1).toFixed(4)})`;
 
   const label = document.getElementById('pb-meter-label');
-  if (label) label.textContent = `${fmt(total)} / ${fmt(req)} · ${pct}%`;
+  if (label) label.textContent = `${fmt(energy)} / ${fmt(req)} · ${pct}%`;
 
   const icon  = document.getElementById('pb-icon');
   const title = document.getElementById('pb-title');

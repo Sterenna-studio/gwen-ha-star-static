@@ -14,6 +14,7 @@ import {
   getCurrency,
   getScalingLayer,
   getVisibleMilestones,
+  canPrestige,
   isUpgradeUnlocked,
   prestigeRequirement,
   tickPassive,
@@ -959,7 +960,7 @@ function startLoop() {
     if (fxEnabled && now - lastEnergyPulse > 1800) {
       lastEnergyPulse = now;
       const panel = document.getElementById('core-panel')?.getBoundingClientRect();
-      if (panel && state.passiveRate > 0) spawnEnergyBurst(panel.left + panel.width * 0.5, panel.top + panel.height * 0.5, Math.min(8, Math.ceil(state.passiveRate / 4)));
+      if (panel && state.passiveRate > 0) spawnBouncingBurst(panel.left + panel.width * 0.5, panel.top + panel.height * 0.5, Math.min(8, Math.ceil(state.passiveRate / 4)));
       if (Math.random() > 0.35) zapToRandomModule();
     }
   }, 250);
@@ -983,6 +984,16 @@ async function init() {
 
   renderShell();
   startLoop();
+
+  window.NitroPrestige = {
+    canDo: () => canPrestige(state),
+    info: () => ({ energy: state.energy, totalEnergy: state.totalEnergy, req: prestigeRequirement(state) }),
+    exec() {
+      const btn = document.getElementById('prestige-btn');
+      if (btn) btn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    },
+  };
+
   claimMilestonesAndRender();
   if (offlineGain > 0) toast(`Progression hors-ligne : +${fmt(offlineGain)} énergie.`);
 }
