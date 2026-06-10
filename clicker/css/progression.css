@@ -127,6 +127,21 @@
   text-shadow: 0 0 10px rgba(0,255,204,.4);
 }
 
+/* ── Deploy badge (topbar) ───────────────────────────────────────────────── */
+
+.deploy-badge {
+  font-family: var(--font-mono, 'Share Tech Mono', monospace) !important;
+  font-size: 9px !important;
+  letter-spacing: .12em;
+  opacity: .45;
+  transition: opacity .2s;
+}
+
+.deploy-badge:hover {
+  opacity: 1;
+  color: var(--nc-primary);
+}
+
 /* ── Sub-core field (nitroFactory duplicates) ─────────────────────────────── */
 
 .sub-core-field {

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="30">
+  <title>Deploy Status · Nitro Clicker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --nc-bg: #06060f;
+      --nc-surface: rgba(255,255,255,.04);
+      --nc-border: rgba(0,255,204,.12);
+      --nc-primary: #00ffcc;
+      --nc-accent: #ffcc00;
+      --nc-muted: rgba(200,220,255,.45);
+      --nc-text: rgba(232,250,255,.88);
+      --font-display: 'Exo 2', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--nc-bg);
+      color: var(--nc-text);
+      font-family: var(--font-mono);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      gap: 16px;
+    }
+    .card {
+      width: min(560px, 100%);
+      border: 1px solid var(--nc-border);
+      border-radius: 20px;
+      background:
+        radial-gradient(ellipse at 30% 0%, rgba(0,255,204,.06), transparent 55%),
+        var(--nc-surface);
+      padding: 32px 28px;
+    }
+    .kicker {
+      font-size: 9px;
+      letter-spacing: .22em;
+      color: var(--nc-muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: .06em;
+      color: #fff;
+      margin-bottom: 24px;
+    }
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+      background: var(--nc-primary);
+      box-shadow: 0 0 8px var(--nc-primary);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .dot.stale  { background: var(--nc-accent);  box-shadow: 0 0 8px var(--nc-accent); }
+    .dot.error  { background: #ff4747; box-shadow: 0 0 8px #ff4747; animation: none; }
+    .dot.loading { background: var(--nc-muted); box-shadow: none; opacity: .4; animation: none; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+    .status-label {
+      font-size: 11px;
+      letter-spacing: .14em;
+      color: var(--nc-primary);
+      text-transform: uppercase;
+    }
+    .status-label.stale  { color: var(--nc-accent); }
+    .status-label.error  { color: #ff4747; }
+    .status-label.loading { color: var(--nc-muted); }
+    .ago {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--nc-muted);
+    }
+    .divider { height: 1px; background: var(--nc-border); margin: 20px 0; }
+    .fields {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 12px 24px;
+      margin-bottom: 24px;
+    }
+    .fk {
+      font-size: 8px;
+      letter-spacing: .2em;
+      color: var(--nc-muted);
+      text-transform: uppercase;
+      align-self: center;
+      white-space: nowrap;
+    }
+    .fv {
+      font-size: 12px;
+      color: var(--nc-text);
+      overflow-wrap: anywhere;
+      line-height: 1.4;
+    }
+    .hash { color: var(--nc-primary); font-weight: 700; }
+    .skeleton {
+      height: 12px; border-radius: 4px;
+      background: rgba(255,255,255,.07);
+      animation: shimmer 1.4s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid var(--nc-border);
+      background: rgba(0,255,204,.05);
+      color: var(--nc-primary);
+      transition: background .15s, border-color .15s;
+      cursor: pointer;
+    }
+    .btn:hover { background: rgba(0,255,204,.12); border-color: rgba(0,255,204,.3); }
+    .btn-back {
+      border-color: rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      color: var(--nc-muted);
+    }
+    .btn-back:hover { background: rgba(255,255,255,.08); color: var(--nc-text); }
+    .footer {
+      font-size: 9px;
+      color: rgba(200,220,255,.2);
+      letter-spacing: .1em;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="kicker">// STERENNA STUDIO · NITRO CLICKER</div>
+    <div class="title">DEPLOY STATUS</div>
+
+    <div id="status-row" class="status-row">
+      <div class="dot loading"></div>
+      <span class="status-label loading">CHARGEMENT...</span>
+    </div>
+
+    <div id="fields" class="fields">
+      <div class="fk">COMMIT</div><div class="fv skeleton" style="width:140px"></div>
+      <div class="fk">MESSAGE</div><div class="fv skeleton"></div>
+      <div class="fk">BRANCHE</div><div class="fv skeleton" style="width:60px"></div>
+      <div class="fk">RUN</div><div class="fv skeleton" style="width:40px"></div>
+      <div class="fk">DÉPLOYÉ</div><div class="fv skeleton" style="width:200px"></div>
+    </div>
+
+    <div class="divider"></div>
+    <div id="actions" class="actions">
+      <a href="/nitro/" class="btn btn-back">← RETOUR AU JEU</a>
+    </div>
+  </div>
+
+  <div class="footer" id="footer">auto-refresh toutes les 30s</div>
+
+  <script>
+    function timeAgo(iso) {
+      const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+      if (s < 60)   return `${s}s`;
+      if (s < 3600) return `${Math.floor(s / 60)}min`;
+      if (s < 86400)return `${Math.floor(s / 3600)}h`;
+      return `${Math.floor(s / 86400)}j`;
+    }
+
+    function fmtDate(iso) {
+      const d = new Date(iso);
+      return d.toLocaleDateString('fr-FR') + ' · ' +
+             d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' UTC';
+    }
+
+    async function load() {
+      try {
+        const r = await fetch('/deploy-info.json?t=' + Date.now());
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const d = await r.json();
+
+        const ageDiff = Date.now() - new Date(d.deployedAt);
+        const isRecent = ageDiff < 3_600_000;
+        const isOld    = ageDiff > 86_400_000;
+        const cls      = isOld ? 'stale' : '';
+        const label    = isRecent ? 'LIVE · RÉCENT' : isOld ? 'LIVE · ANCIEN' : 'LIVE';
+
+        document.getElementById('status-row').innerHTML = `
+          <div class="dot ${cls}"></div>
+          <span class="status-label ${cls}">${label}</span>
+          <span class="ago">il y a ${timeAgo(d.deployedAt)}</span>
+        `;
+
+        document.getElementById('fields').innerHTML = `
+          <div class="fk">COMMIT</div>
+          <div class="fv"><span class="hash">${d.commit}</span></div>
+          <div class="fk">MESSAGE</div>
+          <div class="fv">${d.message}</div>
+          <div class="fk">BRANCHE</div>
+          <div class="fv">${d.branch}</div>
+          <div class="fk">RUN</div>
+          <div class="fv">#${d.runNumber}</div>
+          <div class="fk">DÉPLOYÉ</div>
+          <div class="fv">${fmtDate(d.deployedAt)}</div>
+        `;
+
+        document.getElementById('actions').innerHTML = `
+          <a class="btn" href="https://github.com/Sterenna-studio/nitro-clicker/actions/runs/${d.runId}" target="_blank" rel="noopener">↗ GITHUB ACTIONS</a>
+          <a class="btn" href="https://github.com/Sterenna-studio/nitro-clicker/commit/${d.commitFull}" target="_blank" rel="noopener">↗ COMMIT</a>
+          <a href="/nitro/" class="btn btn-back">← JEU</a>
+        `;
+
+        document.getElementById('footer').textContent =
+          `auto-refresh · 30s · ${new Date().toLocaleTimeString('fr-FR')}`;
+      } catch (e) {
+        document.getElementById('status-row').innerHTML = `
+          <div class="dot error"></div>
+          <span class="status-label error">ERREUR · ${e.message}</span>
+        `;
+        document.getElementById('fields').innerHTML = '';
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>

@@ -131,6 +131,7 @@ function renderShell() {
         </div>
         <a href="/star/" class="nav-btn">⬡ STAR</a>
         <a href="/" class="nav-btn">← HUB</a>
+        <a href="/nitro/deploy.html" class="nav-btn deploy-badge" id="deploy-badge" title="Deploy status">BUILD</a>
       </nav>
     </header>
 
@@ -973,6 +974,16 @@ function startLoop() {
   setInterval(() => saveAll(userId, state), 15000);
 }
 
+async function fetchDeployBadge() {
+  try {
+    const r = await fetch('/nitro/deploy-info.json?t=' + Date.now());
+    if (!r.ok) return;
+    const d = await r.json();
+    const badge = document.getElementById('deploy-badge');
+    if (badge) badge.textContent = `#${d.commit}`;
+  } catch {}
+}
+
 async function init() {
   auth = await requireAuth({ redirectTo: '/login.html' });
   if (!auth) return;
@@ -983,6 +994,7 @@ async function init() {
   const { gained: offlineGain = 0 } = applyOfflineProgress(state);
 
   renderShell();
+  fetchDeployBadge();
   startLoop();
 
   window.NitroPrestige = {
