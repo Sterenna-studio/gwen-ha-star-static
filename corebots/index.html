@@ -1,1 +1,206 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Corebots: Red Protocol</title><link rel="icon" href="/shared/logos/star_logo/star_logo_color_set/star_logo_white_silver.png"><style>:root{--b:#070b14;--p:#111a2d;--i:#eef2ff;--m:#9aa8ca;--c:#58dbe6;--r:#ef4444;--g:#f6c451;--l:rgba(255,255,255,.12)}*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:radial-gradient(circle at top,#172747,#070b14);color:var(--i);font-family:Segoe UI,Arial,sans-serif}.shell{height:100vh;display:grid;grid-template-rows:auto 1fr;gap:12px;padding:14px}.top,.bar{display:flex;justify-content:space-between;align-items:center;gap:12px}.k{font:900 11px monospace;letter-spacing:.16em;color:var(--c);text-transform:uppercase}h1{margin:3px 0;font-size:clamp(24px,4vw,40px)}p,li{color:var(--m);font:12px/1.5 monospace}.btn{border:1px solid var(--l);background:rgba(255,255,255,.06);color:var(--i);border-radius:11px;padding:10px 13px;font-weight:900;cursor:pointer}.btn.p{background:linear-gradient(#78f2ff,#39c3d1);color:#061018;border:0}.layout{min-height:0;display:grid;grid-template-columns:290px 1fr 260px;gap:12px}.card,.win{background:linear-gradient(rgba(255,255,255,.07),rgba(255,255,255,.025));border:1px solid var(--l);border-radius:17px;box-shadow:0 20px 50px #0008}.card{padding:14px}.kv{display:flex;justify-content:space-between;border-bottom:1px dashed #fff2;padding:6px 0;color:var(--m);font:12px monospace}.kv b{color:var(--i)}.win{display:grid;grid-template-rows:auto 1fr;overflow:hidden}.bar{padding:10px 12px;border-bottom:1px solid rgba(88,219,230,.25);background:rgba(8,13,24,.9)}.pill{font:900 11px monospace;color:#c8fbff;border:1px solid rgba(88,219,230,.25);border-radius:999px;padding:6px 9px}.wrap{position:relative;min-height:0}#game{width:100%;height:100%;display:block;background:radial-gradient(circle at 50% 30%,#24375f,#070b14)}#mini{width:100%;border-radius:12px;border:1px solid rgba(88,219,230,.2);background:#050812}.ov{position:absolute;inset:0;display:grid;place-items:center;background:rgba(7,11,20,.75);backdrop-filter:blur(5px);padding:18px}.hide{display:none!important}.panel{max-width:900px;background:linear-gradient(#18243c,#101827);border:1px solid var(--l);border-radius:20px;padding:22px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.mod{min-height:105px;text-align:left}.mod small{display:inline-block;color:#c8fbff;margin-bottom:5px}.sel{border-color:var(--c);box-shadow:0 0 0 1px #58dbe688 inset}@media(max-width:1100px){body{overflow:auto}.shell{height:auto}.layout{grid-template-columns:1fr}.wrap{height:72vh}.grid{grid-template-columns:1fr 1fr}}</style></head><body><div class="shell"><header class="top"><div><div class="k">Nitro / Gwen Ha Star / full game</div><h1>Corebots: Red Protocol</h1><p>Jeu complet standalone : hub, modules, drones, minimap, sons, boss, vagues, murs génératifs et score local.</p></div><div><a class="btn" href="/">← Hub</a> <button id="mute" class="btn">Son</button> <button id="pause" class="btn">Pause</button></div></header><main class="layout"><aside class="card"><h2>Mission</h2><div id="stats"></div><h3>Contrôles</h3><ul><li>WASD/flèches : mouvement</li><li>Espace : vague d'énergie</li><li>Shift : dash</li><li>P : pause</li></ul></aside><section class="win"><div class="bar"><div class="k" id="state">HUB</div><div><span class="pill" id="coreR">CORE --</span> <span class="pill" id="thR">THREATS --</span> <span class="pill" id="bossR">BOSS --</span></div></div><div class="wrap"><canvas id="game" width="1024" height="640"></canvas><div id="menu" class="ov"><div class="panel"><div class="k">Launch Hub</div><h2>Préparation du protocole</h2><p>Choisis un module de départ puis défends le noyau cyan contre les robots rouges.</p><div class="grid" id="mods"><button class="btn mod sel" data-m="wave"><small>guardian</small><b>Vague amplifiée</b><br>Portée + largeur</button><button class="btn mod" data-m="drone"><small>drone</small><b>Mini-drone</b><br>Drone allié dès le départ</button><button class="btn mod" data-m="core"><small>core</small><b>Noyau renforcé</b><br>PV du core +90</button><button class="btn mod" data-m="dash"><small>mobility</small><b>Dash instable</b><br>Dash plus puissant</button></div><p><button id="start" class="btn p">Lancer la défense</button></p></div></div><div id="up" class="ov hide"><div class="panel"><div class="k">Inter-vague</div><h2>Choisis une amélioration</h2><div class="grid" id="ups"></div></div></div><div id="end" class="ov hide"><div class="panel"><div class="k" id="endK">Fin</div><h2 id="endT"></h2><p id="endP"></p><button id="again" class="btn p">Rejouer</button> <button id="hub" class="btn">Hub</button></div></div></div></section><aside class="card"><h2>Mini-map</h2><canvas id="mini" width="240" height="170"></canvas><p>Blanc = joueur · cyan = noyau · rouge = ennemis · or = boss.</p><h3>Objectif</h3><p>Survis aux vagues, améliore ton build et détruis le boss final.</p></aside></main></div><script>const C=game,x=C.getContext('2d'),M=mini,mx=M.getContext('2d'),$=i=>document.getElementById(i),R=(a,b)=>Math.random()*(b-a)+a,CL=(v,a,b)=>Math.max(a,Math.min(b,v)),D=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);let keys=new Set(),press=new Set(),muted=localStorage.cb_mute==='1',AC=null;function aud(){if(muted)return;if(!AC&&AudioContext)AC=new AudioContext();if(AC?.state==='suspended')AC.resume();return AC}function tone(f,d=.08,t='sine',g=.035,s=0){let a=aud();if(!a)return;let o=a.createOscillator(),v=a.createGain(),n=a.currentTime;o.type=t;o.frequency.setValueAtTime(f,n);if(s)o.frequency.exponentialRampToValueAtTime(Math.max(40,f+s),n+d);v.gain.setValueAtTime(.0001,n);v.gain.exponentialRampToValueAtTime(g,n+.01);v.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(v).connect(a.destination);o.start(n);o.stop(n+d+.02)}function sfx(k){if(k==='atk'){tone(160,.08,'sawtooth',.035,180);tone(520,.1,'triangle',.02,-120)}else if(k==='hit')tone(95,.06,'square',.035,70);else if(k==='core')tone(70,.15,'sawtooth',.05,40);else if(k==='up')tone(520,.12,'triangle',.04,160);else if(k==='shoot')tone(720,.04,'triangle',.018,-110);else if(k==='boss')tone(55,.25,'sawtooth',.055,35);else if(k==='win')tone(760,.25,'triangle',.045,120);else tone(160,.25,'sawtooth',.045,-60)}mute.textContent=muted?'Son : OFF':'Son : ON';mute.onclick=()=>{muted=!muted;localStorage.cb_mute=muted?'1':'0';mute.textContent=muted?'Son : OFF':'Son : ON';if(!muted)sfx('up')};addEventListener('keydown',e=>{if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();if(!keys.has(e.code))press.add(e.code);keys.add(e.code);if(e.code==='KeyP')pause()});addEventListener('keyup',e=>keys.delete(e.code));const G={mode:'menu',w:{l:-720,r:720,t:-520,b:520},cam:{x:0,y:0},p:null,core:null,en:[],bul:[],fx:[],walls:[],wave:-1,q:[],timer:0,score:0,best:+localStorage.cb_best||0,mod:'wave',time:0,shake:0,freeze:0,alert:0};const waves=[[['d'],['d'],['d']],[['d'],['d'],['d'],['d'],['g']],[['d'],['d'],['d'],['d'],['d'],['g']],[['d'],['d'],['g'],['g'],['d'],['g']],[['d'],['d'],['d'],['g'],['g'],['boss']]];const upgrades=[['guardian','Dégâts +10','Vague plus forte',g=>g.p.dmg+=10],['guardian','Vitesse +25','Plus mobile',g=>g.p.sp+=25],['guardian','Vague +','Portée et largeur +',g=>{g.p.range+=80;g.p.width+=12}],['guardian','Cooldown -16%','Attaque plus rapide',g=>g.p.cdMax=Math.max(.18,g.p.cdMax*.84)],['drone','Mini-drone','Ajoute un drone',g=>g.p.drones++],['drone','Cadence drones','Tirs plus rapides',g=>g.p.droneCd=Math.max(.28,g.p.droneCd*.75)],['drone','Drones +6','Plus de dégâts',g=>g.p.droneDmg+=6],['drone','Ralentisseur','Les drones ralentissent',g=>g.p.slow=Math.min(.55,g.p.slow+.18)],['core','Réparation','Core +80 PV',g=>g.core.hp=Math.min(g.core.max,g.core.hp+80)],['core','Core renforcé','PV max +90',g=>{g.core.max+=90;g.core.hp+=90}],['core','Pulse core','Onde défensive',g=>g.core.pulseD+=12],['core','Auto-réparation','Régénération lente',g=>g.core.regen+=1.1]];mods.onclick=e=>{let b=e.target.closest('button');if(!b)return;G.mod=b.dataset.m;document.querySelectorAll('.mod').forEach(n=>n.classList.toggle('sel',n===b))};start.onclick=startGame;again.onclick=startGame;hub.onclick=()=>{G.mode='menu';menu.classList.remove('hide');end.classList.add('hide')};pause.onclick=pause;function startGame(){aud();G.p={x:0,y:185,r:36,hp:165,max:165,sp:190,dmg:34,cd:0,cdMax:.46,dash:0,drones:0,droneT:0,droneCd:.72,droneDmg:16,slow:0,range:245,width:62,inv:0};G.core={x:0,y:0,r:48,hp:330,max:330,pulseD:0,pulseT:4,regen:0};if(G.mod==='wave'){G.p.range+=80;G.p.width+=12}else if(G.mod==='drone')G.p.drones=1;else if(G.mod==='core'){G.core.max+=90;G.core.hp+=90}else if(G.mod==='dash'){G.p.sp+=20}G.en=[];G.bul=[];G.fx=[];G.wave=-1;G.score=0;G.walls=walls();G.alert=0;menu.classList.add('hide');end.classList.add('hide');next();G.mode='play'}function walls(){let a=[[-220,-150,140,34],[160,-170,150,34],[-280,120,150,34],[220,145,130,34],[-70,-270,40,140],[90,255,40,130],[-430,-30,120,34],[400,70,120,34],[-70,380,170,36],[20,-390,170,36],[-520,250,44,170],[520,-230,44,160]].sort(()=>Math.random()-.5);return a.slice(0,7).map(w=>({x:w[0],y:w[1],w:w[2],h:w[3]}))}function next(){G.wave++;if(G.wave>=waves.length)return over(true);G.q=waves[G.wave].map(v=>v[0]);G.timer=.5;up.classList.add('hide');burst(0,0,22,'#58dbe6',2)}function spawn(t){let e=Math.floor(R(0,4)),x,y,p=80;if(e==0){x=R(G.w.l,G.w.r);y=G.w.t-p}else if(e==1){x=G.w.r+p;y=R(G.w.t,G.w.b)}else if(e==2){x=R(G.w.l,G.w.r);y=G.w.b+p}else{x=G.w.l-p;y=R(G.w.t,G.w.b)}let boss=t==='boss',dr=t==='d';G.en.push({type:dr?'d':'g',boss,x,y,r:boss?66:dr?25:39,hp:boss?560:dr?72:150,max:boss?560:dr?72:150,sp:boss?118:dr?205:150,atk:boss?38:dr?11:21,cd:0,bt:boss?2.4:99,slowT:0,slowF:1,dead:0});if(boss)sfx('boss')}function pause(){if(G.mode==='play'){G.mode='pause';state.textContent='PAUSE'}else if(G.mode==='pause')G.mode='play'}function over(win){if(G.mode==='end')return;G.mode='end';G.best=Math.max(G.best,G.score);localStorage.cb_best=G.best;sfx(win?'win':'lose');endK.textContent=win?'Victoire':'Défaite';endT.textContent=win?'Noyau sécurisé':'Protocole rompu';endP.textContent='Score : '+G.score+' · Record : '+G.best;end.classList.remove('hide')}function hit(e,n){e.hp-=n;text(e.x,e.y-e.r-10,'-'+n,e.boss?'#fbbf24':'#bff8ff',e.boss?24:18);spark(e.x,e.y);G.shake=Math.max(G.shake,.8);G.freeze=Math.max(G.freeze,e.boss?.06:.035);sfx(e.boss?'boss':'hit');if(e.hp<=0){G.score+=e.boss?900:e.type==='g'?90:45;G.fx.push({k:'boom',x:e.x,y:e.y,r:e.r,t:.45,tt:.45});e.dead=1}}function text(x,y,s,c,z=18){G.fx.push({k:'txt',x,y,s,c,z,t:.8,tt:.8})}function spark(x,y){for(let i=0;i<10;i++)G.fx.push({k:'p',x,y,vx:R(-140,140),vy:R(-140,80),t:R(.25,.6),tt:.6,c:'#58dbe6'})}function burst(x,y,n,c,p=1){for(let i=0;i<n;i++){let a=R(0,Math.PI*2),sp=R(50,150)*p;G.fx.push({k:'p',x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,t:R(.25,.7),tt:.7,c})}}function attack(){let p=G.p;if(p.cd>0)return;p.cd=p.cdMax;sfx('atk');let ax=0,ay=1;if(keys.has('ArrowLeft')||keys.has('KeyA'))ax=-1;if(keys.has('ArrowRight')||keys.has('KeyD'))ax=1;if(keys.has('ArrowUp')||keys.has('KeyW'))ay=-1;if(keys.has('ArrowDown')||keys.has('KeyS'))ay=1;let n=Math.hypot(ax,ay)||1;ax/=n;ay/=n;G.fx.push({k:'wave',x:p.x+ax*60,y:p.y+ay*60,ax,ay,range:p.range,w:p.width,travel:0,t:.52,tt:.52,hit:new Set()});line(p.x,p.y,p.x+ax*p.range,p.y+ay*p.range,'#bff8ff',.18,5);G.shake=Math.max(G.shake,.45)}function line(x1,y1,x2,y2,c,t,w){G.fx.push({k:'line',x1,y1,x2,y2,c,t,tt:t,w})}function upd(dt){if(G.mode!=='play')return;if(G.freeze>0){G.freeze-=dt;dt*=.18}G.time+=dt;let p=G.p,dx=0,dy=0;if(keys.has('ArrowLeft')||keys.has('KeyA'))dx--;if(keys.has('ArrowRight')||keys.has('KeyD'))dx++;if(keys.has('ArrowUp')||keys.has('KeyW'))dy--;if(keys.has('ArrowDown')||keys.has('KeyS'))dy++;if(press.has('Space'))attack();if(press.has('ShiftLeft')||press.has('ShiftRight'))p.dash=.13;let n=Math.hypot(dx,dy)||1,sp=p.dash>0?540:p.sp;p.x=CL(p.x+dx/n*sp*dt,G.w.l,G.w.r);p.y=CL(p.y+dy/n*sp*dt,G.w.t,G.w.b);p.dash-=dt;p.cd-=dt;p.inv-=dt;solid(p);if(p.drones){p.droneT-=dt;if(p.droneT<=0){p.droneT=p.droneCd;let target=G.en.filter(e=>!e.dead).sort((a,b)=>D(a,p)-D(b,p))[0];if(target&&D(target,p)<480){let a=Math.atan2(target.y-p.y,target.x-p.x);G.bul.push({owner:'drone',x:p.x,y:p.y,vx:Math.cos(a)*470,vy:Math.sin(a)*470,r:7,dmg:p.droneDmg,t:1.2});sfx('shoot')}}}G.core.hp=Math.min(G.core.max,G.core.hp+(G.core.regen||0)*dt);if(G.core.pulseD){G.core.pulseT-=dt;if(G.core.pulseT<0){G.core.pulseT=4;G.fx.push({k:'pulse',x:0,y:0,r:40,t:.45,tt:.45,hit:new Set()});burst(0,0,18,'#58dbe6',1.7)}}if(G.q.length){G.timer-=dt;if(G.timer<0){spawn(G.q.shift());G.timer=Math.max(.34,.72-G.wave*.06)}}for(let e of G.en){if(e.dead)continue;e.slowT-=dt;e.slowF=e.slowT>0?Math.max(.45,e.slowF):1;let tx=Math.random()<.003?p.x:0,ty=Math.random()<.003?p.y:0,a=Math.atan2(ty-e.y,tx-e.x);e.x+=Math.cos(a)*e.sp*e.slowF*dt;e.y+=Math.sin(a)*e.sp*e.slowF*dt;if(e.type!=='d')solid(e);e.cd-=dt;if(D(e,G.core)<e.r+G.core.r&&e.cd<0){G.core.hp-=e.atk;e.cd=.82;G.alert=1.4;text(0,-85,'CORE -'+e.atk,'#ef4444',20);burst(0,0,14,'#ef4444',1.4);G.shake=1.2;sfx('core');if(G.core.hp<=0)over(false)}if(D(e,p)<e.r+p.r&&e.cd<0&&p.inv<0){p.hp-=e.atk;p.inv=.35;e.cd=.8;text(p.x,p.y-p.r-15,'-'+e.atk,'#fecaca',20);G.shake=1;if(p.hp<=0)over(false)}if(e.boss){e.bt-=dt;if(e.bt<0){e.bt=2.7;let a=Math.atan2(-e.y,-e.x);G.fx.push({k:'enemywave',x:e.x,y:e.y,ax:Math.cos(a),ay:Math.sin(a),range:285,w:46,travel:0,t:.72,tt:.72,hit:0});line(e.x,e.y,e.x+Math.cos(a)*280,e.y+Math.sin(a)*280,'#ef4444',.2,5);sfx('boss')}}}for(let b of G.bul){b.x+=b.vx*dt;b.y+=b.vy*dt;b.t-=dt;for(let e of G.en)if(!e.dead&&D(e,b)<e.r+b.r){hit(e,b.dmg);if(b.owner==='drone'&&p.slow){e.slowT=.85;e.slowF=1-p.slow}b.t=-1;break}}G.bul=G.bul.filter(b=>b.t>0);for(let f of G.fx){f.t-=dt;if(f.k==='wave'||f.k==='enemywave'){let speed=f.k==='wave'?650:370;f.x+=f.ax*speed*dt;f.y+=f.ay*speed*dt;f.travel+=speed*dt;if(f.k==='wave')for(let e of G.en){if(e.dead||f.hit.has(e))continue;let px=e.x-f.x,py=e.y-f.y,fw=px*f.ax+py*f.ay,side=Math.abs(px*(-f.ay)+py*f.ax);if(fw>-30&&fw<90&&side<f.w+e.r){f.hit.add(e);hit(e,p.dmg)}}else{if(!f.hit&&D(f,G.core)<f.w+G.core.r){f.hit=1;G.core.hp-=18;G.alert=1.4;text(0,-85,'CORE -18','#ef4444',20);sfx('core')}if(!f.hitp&&D(f,p)<f.w+p.r){f.hitp=1;p.hp-=18;text(p.x,p.y-p.r,'-18','#fecaca',20)}}if(f.travel>f.range)f.t=-1}if(f.k==='pulse'){for(let e of G.en){if(e.dead||f.hit.has(e))continue;if(D(e,f)<f.r+e.r){f.hit.add(e);hit(e,G.core.pulseD);let a=Math.atan2(e.y,e.x);e.x+=Math.cos(a)*42;e.y+=Math.sin(a)*42}}f.r+=360*dt}if(f.k==='p'){f.x+=f.vx*dt;f.y+=f.vy*dt}}G.fx=G.fx.filter(f=>f.t>0);G.en=G.en.filter(e=>!e.dead);if(!G.q.length&&!G.en.length){if(G.wave>=waves.length-1)over(true);else choose()}G.cam.x+=(p.x-G.cam.x)*dt*5;G.cam.y+=(p.y-G.cam.y)*dt*5;G.shake=Math.max(0,G.shake-dt*4);G.alert=Math.max(0,G.alert-dt)}function solid(o){for(let w of G.walls){let cx=CL(o.x,w.x-w.w/2,w.x+w.w/2),cy=CL(o.y,w.y-w.h/2,w.y+w.h/2);if(Math.hypot(o.x-cx,o.y-cy)<o.r){let a=Math.atan2(o.y-w.y,o.x-w.x);o.x+=Math.cos(a)*7;o.y+=Math.sin(a)*7}}}function choose(){G.mode='upgrade';ups.innerHTML='';[...upgrades].sort(()=>Math.random()-.5).slice(0,4).forEach(u=>{let b=document.createElement('button');b.className='btn mod';b.innerHTML='<small>'+u[0]+'</small><b>'+u[1]+'</b><br>'+u[2];b.onclick=()=>{u[3](G);sfx('up');up.classList.add('hide');next();G.mode='play'};ups.appendChild(b)});up.classList.remove('hide')}function draw(){x.clearRect(0,0,C.width,C.height);let sx=C.width/2-G.cam.x+R(-G.shake*6,G.shake*6),sy=C.height/2-G.cam.y+R(-G.shake*6,G.shake*6);x.save();x.translate(sx,sy);grid();for(let w of G.walls){x.fillStyle='rgba(88,219,230,.14)';x.strokeStyle='rgba(88,219,230,.35)';x.lineWidth=2;round(w.x-w.w/2,w.y-w.h/2,w.w,w.h,10);x.fill();x.stroke();x.strokeStyle='rgba(191,248,255,.18)';x.beginPath();x.moveTo(w.x-w.w/2+10,w.y);x.lineTo(w.x+w.w/2-10,w.y);x.stroke()}core();for(let b of G.bul){x.strokeStyle='#60a5fa';x.lineWidth=3;x.beginPath();x.moveTo(b.x-b.vx*.04,b.y-b.vy*.04);x.lineTo(b.x,b.y);x.stroke();x.fillStyle='#60a5fa';circ(b.x,b.y,b.r)}for(let f of G.fx)drawFx(f);for(let e of [...G.en].sort((a,b)=>a.y-b.y))robot(e.x,e.y,e.r,e.boss?'#fbbf24':'#ef4444',e.type,e.hp/e.max,e.boss);if(G.p){robot(G.p.x,G.p.y,G.p.r,'#58dbe6','g',G.p.hp/G.p.max);for(let i=0;i<G.p.drones;i++){let a=G.time*2+i*Math.PI*2/G.p.drones;robot(G.p.x+Math.cos(a)*78,G.p.y+Math.sin(a)*78,15,'#60a5fa','d',1)}}x.restore();off();hud();mini();press.clear();requestAnimationFrame(loop)}function grid(){x.strokeStyle='rgba(88,219,230,.07)';x.lineWidth=1;for(let i=G.w.l;i<G.w.r;i+=64){x.beginPath();x.moveTo(i,G.w.t);x.lineTo(i,G.w.b);x.stroke()}for(let i=G.w.t;i<G.w.b;i+=64){x.beginPath();x.moveTo(G.w.l,i);x.lineTo(G.w.r,i);x.stroke()}x.strokeStyle='rgba(88,219,230,.16)';x.lineWidth=2;for(let y=G.w.t+(G.time*90%256);y<G.w.b;y+=256){x.beginPath();x.moveTo(G.w.l,y);x.lineTo(G.w.r,y);x.stroke()}x.strokeStyle='rgba(88,219,230,.3)';x.lineWidth=3;x.strokeRect(G.w.l,G.w.t,G.w.r-G.w.l,G.w.b-G.w.t)}function core(){let c=G.core;if(!c)return;let q=c.hp/c.max;x.globalAlpha=.18+Math.sin(G.time*4)*.04;x.fillStyle='#58dbe6';circ(0,0,120+Math.sin(G.time*4)*8);x.globalAlpha=1;x.fillStyle=q<.35?'#fecaca':'#bff8ff';circ(0,0,36);x.strokeStyle=q<.35?'#ef4444':'#58dbe6';x.lineWidth=5;circ(0,0,58,1);if(q<.32){x.globalAlpha=.35;x.strokeStyle='#ef4444';x.lineWidth=7;circ(0,0,86+Math.sin(G.time*10)*6,1);x.globalAlpha=1}bar(-80,70,160,9,q,q<.35?'#ef4444':'#58dbe6')}function robot(x0,y0,r0,col,type,hp,boss){x.save();x.translate(x0,y0);x.strokeStyle=col;x.shadowBlur=boss?28:18;x.shadowColor=col;x.lineWidth=boss?4:3;if(type==='d'){circ(0,0,r0,1);x.beginPath();x.moveTo(-r0-10,0);x.lineTo(-r0*1.7,-8);x.moveTo(r0+10,0);x.lineTo(r0*1.7,-8);x.stroke();x.fillStyle=col;circ(0,0,4)}else{circ(0,-8,r0,1);circ(-r0*.95,4,r0*.38,1);circ(r0*.95,4,r0*.38,1);x.fillStyle=col;circ(0,-8,5);x.beginPath();x.moveTo(-r0*.4,-r0*.65);x.lineTo(0,-r0-18);x.lineTo(r0*.4,-r0*.65);x.stroke()}x.shadowBlur=0;bar(-r0,-r0-24,r0*2,5,hp,col);x.restore()}function drawFx(f){let q=Math.max(0,f.t/(f.tt||.7));if(f.k==='txt'){x.globalAlpha=q;x.fillStyle=f.c;x.font='900 '+(f.z||18)+'px monospace';x.textAlign='center';x.strokeStyle='rgba(0,0,0,.55)';x.lineWidth=4;x.strokeText(f.s,f.x,f.y-(1-q)*28);x.fillText(f.s,f.x,f.y-(1-q)*28);x.globalAlpha=1}else if(f.k==='p'){x.globalAlpha=q;x.fillStyle=f.c;circ(f.x,f.y,3);x.globalAlpha=1}else if(f.k==='line'){x.globalAlpha=q;x.strokeStyle=f.c;x.lineWidth=f.w;x.shadowBlur=18;x.shadowColor=f.c;x.beginPath();x.moveTo(f.x1,f.y1);x.lineTo(f.x2,f.y2);x.stroke();x.shadowBlur=0;x.globalAlpha=1}else if(f.k==='wave'||f.k==='enemywave'){x.save();x.translate(f.x,f.y);x.rotate(Math.atan2(f.ay,f.ax));x.globalCompositeOperation='screen';let red=f.k==='enemywave';let grad=x.createRadialGradient(0,0,4,0,0,f.w*2);grad.addColorStop(0,red?'rgba(254,202,202,.28)':'rgba(190,248,255,.28)');grad.addColorStop(.5,red?'rgba(239,68,68,.18)':'rgba(88,219,230,.18)');grad.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=grad;x.beginPath();x.ellipse(0,0,86,f.w*1.08,0,0,Math.PI*2);x.fill();x.strokeStyle=red?'#fecaca':'#e6fdff';x.lineWidth=2;x.setLineDash([10,9]);x.lineDashOffset=(red?1:-1)*G.time*55;x.beginPath();x.ellipse(0,0,98,f.w*1.25,0,0,Math.PI*2);x.stroke();x.restore()}else if(f.k==='pulse'){x.globalAlpha=q;x.strokeStyle='#58dbe6';x.shadowBlur=22;x.shadowColor='#58dbe6';x.lineWidth=6;circ(f.x,f.y,f.r,1);x.shadowBlur=0;x.globalAlpha=1}else if(f.k==='boom'){x.globalAlpha=q*.5;x.fillStyle='rgba(88,219,230,.35)';circ(f.x,f.y,f.r+(1-q)*80);x.globalAlpha=1}}function off(){if(!G.p)return;let targets=[];for(let e of G.en){let s=screen(e.x,e.y);if(s.x<-30||s.x>C.width+30||s.y<-30||s.y>C.height+30)targets.push({x:e.x,y:e.y,c:e.boss?'#fbbf24':'#ef4444',l:e.boss?'BOSS':'!'})}for(let t of targets.slice(0,10)){let s=screen(t.x,t.y),cx=C.width/2,cy=C.height/2,a=Math.atan2(s.y-cy,s.x-cx),px=CL(cx+Math.cos(a)*(C.width/2-34),28,C.width-28),py=CL(cy+Math.sin(a)*(C.height/2-34),28,C.height-28);x.save();x.translate(px,py);x.rotate(a);x.fillStyle=t.c;x.shadowBlur=14;x.shadowColor=t.c;x.beginPath();x.moveTo(16,0);x.lineTo(-10,-9);x.lineTo(-6,0);x.lineTo(-10,9);x.closePath();x.fill();x.restore();x.fillStyle=t.c;x.font='900 12px monospace';x.textAlign='center';x.fillText(t.l,px,py-14)}if(G.alert>0){x.save();x.globalAlpha=Math.min(1,G.alert);x.fillStyle='rgba(239,68,68,.14)';x.fillRect(0,0,C.width,C.height);x.fillStyle='#fecaca';x.font='900 22px monospace';x.textAlign='center';x.fillText('CORE UNDER ATTACK',C.width/2,68);x.restore()}}function screen(a,b){return{x:a-G.cam.x+C.width/2,y:b-G.cam.y+C.height/2}}function hud(){stats.innerHTML='<div class="kv">Vague <b>'+G.wave+'/'+waves.length+'</b></div><div class="kv">Noyau <b>'+(G.core?Math.ceil(G.core.hp)+'/'+G.core.max:'-')+'</b></div><div class="kv">PV joueur <b>'+(G.p?Math.ceil(G.p.hp)+'/'+G.p.max:'-')+'</b></div><div class="kv">Menaces <b>'+(G.en.length+G.q.length)+'</b></div><div class="kv">Drones <b>'+(G.p?G.p.drones:0)+'</b></div><div class="kv">Score <b>'+G.score+'</b></div><div class="kv">Record <b>'+G.best+'</b></div>';coreR.textContent='CORE '+(G.core?Math.max(0,Math.round(G.core.hp/G.core.max*100)):'--')+'%';thR.textContent='THREATS '+(G.en.length+G.q.length);bossR.textContent=G.en.some(e=>e.boss)?'BOSS ACTIVE':'BOSS --';state.textContent=G.mode.toUpperCase()}function mini(){mx.clearRect(0,0,M.width,M.height);mx.fillStyle='#050812';mx.fillRect(0,0,M.width,M.height);let sx=M.width/(G.w.r-G.w.l),sy=M.height/(G.w.b-G.w.t),X=v=>(v-G.w.l)*sx,Y=v=>(v-G.w.t)*sy;mx.strokeStyle='rgba(88,219,230,.35)';mx.strokeRect(1,1,M.width-2,M.height-2);mx.fillStyle='rgba(88,219,230,.25)';for(let w of G.walls)mx.fillRect(X(w.x-w.w/2),Y(w.y-w.h/2),w.w*sx,w.h*sy);if(G.core){mx.fillStyle=G.alert>0?'#ef4444':'#58dbe6';circM(X(0),Y(0),5)}if(G.p){mx.fillStyle='#fff';circM(X(G.p.x),Y(G.p.y),4);mx.strokeStyle='rgba(255,255,255,.25)';mx.strokeRect(X(G.cam.x-C.width/2),Y(G.cam.y-C.height/2),C.width*sx,C.height*sy)}for(let e of G.en){mx.fillStyle=e.boss?'#fbbf24':'#ef4444';circM(X(e.x),Y(e.y),e.boss?5:3)}}function bar(a,b,w,h,q,c){x.fillStyle='rgba(255,255,255,.18)';x.fillRect(a,b,w,h);x.fillStyle=c;x.fillRect(a,b,w*CL(q,0,1),h)}function circ(a,b,r,s){x.beginPath();x.arc(a,b,r,0,Math.PI*2);s?x.stroke():x.fill()}function circM(a,b,r){mx.beginPath();mx.arc(a,b,r,0,Math.PI*2);mx.fill()}function round(a,b,w,h,r){x.beginPath();x.roundRect(a,b,w,h,r)}function loop(){upd(.016);draw()}requestAnimationFrame(loop);</script></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Corebots: Red Protocol V5</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="kicker">Prototype V5</div>
+        <h1>Corebots: Red Protocol</h1>
+        <p>Hub de lancement, module de départ, et écran de jeu dans une fenêtre de contrôle.</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="pauseBtn" class="ghost">Pause</button>
+        <button id="backToMenuBtn" class="ghost">Hub</button>
+      </div>
+    </header>
+
+    <div class="game-layout">
+      <aside class="side-panel">
+        <section class="card compact-status">
+          <h2>Mission</h2>
+          <div class="kv"><span>Vague</span><strong id="waveLabel">-</strong></div>
+          <div class="kv"><span>Menaces</span><strong id="enemiesLabel">-</strong></div>
+          <div class="kv"><span>Noyau</span><strong id="coreLabel">-</strong></div>
+          <div class="kv"><span>Châssis</span><strong id="robotLabel">-</strong></div>
+          <div class="kv"><span>Couleur</span><strong id="colorLabel">-</strong></div>
+          <div class="kv"><span>Dégâts</span><strong id="damageLabel">-</strong></div>
+          <div class="kv"><span>Vitesse</span><strong id="speedLabel">-</strong></div>
+          <div class="kv"><span>Score</span><strong id="scoreLabel">-</strong></div>
+        </section>
+
+        <section class="card">
+          <h2>Contrôles</h2>
+          <ul>
+            <li><strong>WASD / Flèches</strong> : déplacement</li>
+            <li><strong>Espace</strong> : coup + vague d’énergie</li>
+            <li><strong>Shift</strong> : dash</li>
+            <li><strong>R</strong> : animation d’apparition</li>
+            <li><strong>P</strong> : pause</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Lecture rapide</h2>
+          <p class="muted">Le noyau cyan est au centre. Les murs changent à chaque run. Les drones alliés ne sont plus un personnage jouable : ce sont des modules de build.</p>
+        </section>
+      </aside>
+
+      <main class="game-main">
+        <section class="window-shell">
+          <div class="window-titlebar">
+            <div class="window-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="window-title">
+              <strong>COREBOT DEFENSE TERMINAL</strong>
+              <small id="windowSubtitle">HUB / préparation</small>
+            </div>
+            <div class="window-readout">
+              <span id="windowCoreReadout">CORE --%</span>
+              <span id="windowThreatReadout">THREATS --</span>
+            </div>
+          </div>
+
+          <div class="window-content">
+            <div class="canvas-wrap">
+              <canvas id="game" width="1024" height="640"></canvas>
+
+              <div id="menuOverlay" class="overlay show">
+                <div class="hub-panel">
+                  <div class="hub-hero">
+                    <div class="kicker">Launch Hub</div>
+                    <h2>Préparation du protocole</h2>
+                    <p>Choisis ta couleur, ta difficulté et un module de départ. Tu contrôles uniquement le Stone Guardian ; les drones sont des upgrades qui t’accompagnent en tir automatique.</p>
+                  </div>
+
+                  <div class="hub-grid">
+                    <section class="hub-card">
+                      <h3>1. Châssis</h3>
+                      <label>Robot principal
+                        <select id="characterSelect">
+                          <option value="stone_guardian">Stone Guardian</option>
+                        </select>
+                      </label>
+                      <label>Couleur du joueur
+                        <select id="colorSelect">
+                          <option value="original">Original cyan</option>
+                          <option value="blue">Bleu</option>
+                          <option value="green">Vert</option>
+                          <option value="gold">Or</option>
+                          <option value="purple">Violet</option>
+                        </select>
+                      </label>
+                      <label>Difficulté
+                        <select id="difficultySelect">
+                          <option value="normal">Normal</option>
+                          <option value="easy">Tranquille</option>
+                          <option value="hard">Hardcore</option>
+                        </select>
+                      </label>
+                    </section>
+
+                    <section class="hub-card wide">
+                      <h3>2. Module de départ</h3>
+                      <div id="starterModuleGrid" class="starter-grid">
+                        <button class="starter-card selected" data-module="wave">
+                          <strong>Vague amplifiée</strong>
+                          <span>+70 portée et +10 largeur sur l’attaque d’énergie.</span>
+                        </button>
+                        <button class="starter-card" data-module="drone">
+                          <strong>Mini drone allié</strong>
+                          <span>Commence avec un drone bleu en tir automatique.</span>
+                        </button>
+                        <button class="starter-card" data-module="core">
+                          <strong>Noyau renforcé</strong>
+                          <span>+70 PV max au noyau cyan.</span>
+                        </button>
+                        <button class="starter-card" data-module="dash">
+                          <strong>Dash instable</strong>
+                          <span>Dash plus court en cooldown et plus puissant.</span>
+                        </button>
+                      </div>
+                    </section>
+
+                    <section class="hub-card launch-card">
+                      <h3>3. Lancement</h3>
+                      <p class="muted">Objectif : protéger le noyau jusqu’à la fin du Red Protocol.</p>
+                      <button id="startBtn" class="primary">Lancer la défense</button>
+                      <button id="menuStartBtn" class="ghost full">Démarrage rapide</button>
+                    </section>
+                  </div>
+                </div>
+              </div>
+
+              <div id="betweenOverlay" class="overlay hidden">
+                <div class="overlay-card">
+                  <div class="kicker">Inter-vague</div>
+                  <h2 id="upgradeTitle">Amélioration disponible</h2>
+                  <p id="upgradeText">Choisis un module avant la prochaine vague.</p>
+                  <div id="upgradeButtons" class="upgrade-grid"></div>
+                </div>
+              </div>
+
+              <div id="pauseOverlay" class="overlay hidden">
+                <div class="overlay-card">
+                  <div class="kicker">Pause</div>
+                  <h2>Protocol suspendu</h2>
+                  <p>Respire, vérifie tes stats, puis reprends la défense.</p>
+                  <div class="button-row">
+                    <button id="resumeBtn" class="primary">Reprendre</button>
+                    <button id="pauseMenuBtn" class="ghost">Retour hub</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="endOverlay" class="overlay hidden">
+                <div class="overlay-card">
+                  <div id="endKicker" class="kicker">Fin de partie</div>
+                  <h2 id="endTitle">Résultat</h2>
+                  <p id="endText">-</p>
+                  <div class="button-row">
+                    <button id="replayBtn" class="primary">Rejouer</button>
+                    <button id="endMenuBtn" class="ghost">Retour hub</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <aside class="window-side">
+              <div class="terminal-block">
+                <h3>Objectif</h3>
+                <p>Défendre le noyau cyan. Les robots rouges peuvent viser le noyau ou te poursuivre.</p>
+              </div>
+              <div class="terminal-block">
+                <h3>Stone Guardian</h3>
+                <p>Attaque au poing + vague d’énergie frontale. Excellent pour tenir une ligne autour du noyau.</p>
+              </div>
+              <div class="terminal-block">
+                <h3>Modules</h3>
+                <p>Les drones alliés, la vague amplifiée et les réparations transforment ton build pendant la run.</p>
+              </div>
+              <div class="terminal-block">
+                <h3>Mini-map</h3>
+                <canvas id="minimap" width="220" height="160"></canvas>
+              </div>
+              <div class="terminal-block">
+                <h3>Record local</h3>
+                <p class="scoreline"><span>Best score</span><strong id="bestScoreLabel">0</strong></p>
+                <button id="muteBtn" class="ghost full">Son : ON</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="manifest.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
