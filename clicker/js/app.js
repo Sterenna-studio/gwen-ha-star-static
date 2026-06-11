@@ -976,7 +976,7 @@ function startLoop() {
 
 async function fetchDeployBadge() {
   try {
-    const r = await fetch('/nitro/deploy-info.json?t=' + Date.now());
+    const r = await fetch('deploy-info.json?t=' + Date.now());
     if (!r.ok) return;
     const d = await r.json();
     const badge = document.getElementById('deploy-badge');
