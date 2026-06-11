@@ -1,10 +1,12 @@
-// lab/tcg/pages/openingRenderer.js — v4.1.0 (rarity halos ++, z-index focus, legendary/mythical celebration, Supabase save)
-import { openOnePack, commitOpenedCards } from '../../shared/packsRepo.js';
+// lab/tcg/pages/openingRenderer.js — v4.2.0 (auto-save + decrement pack)
+import { openOnePack } from '../../shared/packsRepo.js';
+import { decrementPlayerPack } from '../data/packsRepo.js';
 import { getSettings } from '../app/ui-settings.js';
 import { cardArtworkUrl } from '../../shared/assetHelpers.js';
 import { burstParticles, celebrateCard } from '../../shared/effects/animations.js';
 import { saveCards } from '../data/cardsRepo.js';
 import { syncStatsAfterPack } from '../data/playersRepo.js';
+import { getClient, getUser } from '../logic/supaRaw.js';
 
 const SFX = {
   common: 'common.mp3',
@@ -22,25 +24,36 @@ const HALO = {
   mythical: 'conic-gradient(from var(--spin,0deg), rgba(70,140,255,.9), rgba(60,220,160,.9), rgba(170,120,255,.9), rgba(70,140,255,.9))'
 };
 
-function playOnceFactory(volume=1.0){
+function playOnceFactory(volume = 1.0) {
   const base = '/lab/shared/assets/sounds/';
   return (rarity) => {
-    const key = String(rarity||'common').toLowerCase();
+    const key = String(rarity || 'common').toLowerCase();
     const file = SFX[key] || SFX.common;
-    const a=new Audio(base+file); a.volume=volume; a.play().catch(()=>{});
+    const a = new Audio(base + file); a.volume = volume; a.play().catch(() => {});
   };
 }
 
-export async function runOpeningFlow(root, { setId='SET', packTypeId, imageName=null, supabase=null, userId=null }){
-  const overlay=document.createElement('div'); Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:9998,display:'grid',placeItems:'center',background:'#070b11cc'});
-  const wrap=document.createElement('div'); Object.assign(wrap.style,{width:'min(1200px,96vw)',userSelect:'none'}); overlay.appendChild(wrap); document.body.appendChild(overlay);
+export async function runOpeningFlow(root, { setId = 'SET', packTypeId, imageName = null }) {
+  // Récupère supabase + userId automatiquement — plus besoin de les passer en paramètre
+  const supabase = await getClient();
+  const user = await getUser();
+  const userId = user?.id ?? null;
 
-  const s=getSettings(); const volume=Math.max(0,Math.min(100,('volume' in s?s.volume:80)))/100; const playSfx=playOnceFactory(volume);
-  const backUrl='/lab/shared/assets/ui/card_back.png'; const packUrl=imageName?`/lab/shared/assets/packs/${imageName}`:`/lab/shared/assets/packs/${setId}-default.jpg`;
+  const overlay = document.createElement('div');
+  Object.assign(overlay.style, { position: 'fixed', inset: '0', zIndex: 9998, display: 'grid', placeItems: 'center', background: '#070b11cc' });
+  const wrap = document.createElement('div');
+  Object.assign(wrap.style, { width: 'min(1200px,96vw)', userSelect: 'none' });
+  overlay.appendChild(wrap);
+  document.body.appendChild(overlay);
+
+  const s = getSettings();
+  const volume = Math.max(0, Math.min(100, ('volume' in s ? s.volume : 80))) / 100;
+  const playSfx = playOnceFactory(volume);
+  const packUrl = imageName ? `/lab/shared/assets/packs/${imageName}` : `/lab/shared/assets/packs/${setId}-default.jpg`;
 
   let _lastResults = [];
 
-  wrap.innerHTML=`
+  wrap.innerHTML = `
   <style>
     @keyframes wobble{0%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}100%{transform:rotate(-1.5deg)}}
     @keyframes wobbleStrong{0%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}100%{transform:rotate(-6deg)}}
@@ -59,7 +72,6 @@ export async function runOpeningFlow(root, { setId='SET', packTypeId, imageName=
     .halo{position:absolute;inset:-12px;border-radius:14px;filter:blur(12px);opacity:.9;transition:opacity .2s,transform .2s; mix-blend-mode:screen}
     .halo.mythical{ animation: spin 2.4s linear infinite; }
     .flip:hover .halo{opacity:1;transform:scale(1.10);}
-    .savebar{display:none;text-align:center;margin-top:12px;}
     .active { outline:2px solid #8df; outline-offset:3px; border-radius:14px; }
   </style>
   <div style="text-align:center;color:#bcd;margin-bottom:8px;font-size:18px;">Ouvrir un booster <b>${setId}</b> — Maintiens <b>clic</b> ou <b>Entrée</b></div>
@@ -69,129 +81,159 @@ export async function runOpeningFlow(root, { setId='SET', packTypeId, imageName=
     </div>
     <div id="hint" class="dragHint">Maintiens pour ouvrir…</div>
     <div id="cards" class="halfoval" style="display:none;"></div>
-  </div>
-  <div class="savebar"><button id="btn-save" class="btn">Ranger mes cartes</button></div>`;
+  </div>`;
 
-  const packEl=wrap.querySelector('#pack'); const cardsEl=wrap.querySelector('#cards'); const saveBar=wrap.querySelector('.savebar'); const hint=wrap.querySelector('#hint');
-  let holdTimer=null, holding=false;
-  const HOLD_MS=900;
+  const packEl = wrap.querySelector('#pack');
+  const cardsEl = wrap.querySelector('#cards');
+  const hint = wrap.querySelector('#hint');
+  let holdTimer = null, holding = false;
+  const HOLD_MS = 900;
 
-  function explode(target){
-    const rect=target.getBoundingClientRect();
-    burstParticles(document.body, { x: rect.left + rect.width/2, y: rect.top + rect.height/2 });
+  function explode(target) {
+    const rect = target.getBoundingClientRect();
+    burstParticles(document.body, { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
   }
 
-  function finishOpen(){
+  async function finishOpen() {
     explode(packEl);
-    packEl.style.display='none'; hint.style.display='none';
-    return openOnePack({packTypeId});
+    packEl.style.display = 'none';
+    hint.style.display = 'none';
+    // Décrémente le pack AVANT d'afficher les cartes
+    if (packTypeId) {
+      try { await decrementPlayerPack(packTypeId); } catch(e) { console.warn('decrement pack error:', e); }
+    }
+    return openOnePack({ packTypeId });
   }
 
-  function onHoldStart(){
+  function onHoldStart() {
     if (holding) return;
-    holding=true; packEl.classList.add('hold');
-    holdTimer=setTimeout(async()=>{
-      try{
-        const payload=await finishOpen();
+    holding = true;
+    packEl.classList.add('hold');
+    holdTimer = setTimeout(async () => {
+      try {
+        const payload = await finishOpen();
         _lastResults = payload.results;
         renderCards(payload.results);
+      } catch(e) {
+        hint.textContent = e?.message || 'Erreur ouverture pack';
+        packEl.style.display = '';
       }
-      catch(e){ hint.textContent=e?.message||'Erreur ouverture pack'; packEl.style.display=''; }
     }, HOLD_MS);
   }
-  function onHoldEnd(){
+  function onHoldEnd() {
     if (!holding) return;
-    holding=false; packEl.classList.remove('hold');
-    if (holdTimer){ clearTimeout(holdTimer); holdTimer=null; }
+    holding = false;
+    packEl.classList.remove('hold');
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
   }
 
   packEl.addEventListener('pointerdown', onHoldStart);
   packEl.addEventListener('pointerup', onHoldEnd);
   packEl.addEventListener('pointercancel', onHoldEnd);
-  document.addEventListener('keydown', (e)=>{ if(e.key==='Enter') onHoldStart(); });
-  document.addEventListener('keyup',   (e)=>{ if(e.key==='Enter') onHoldEnd(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Enter') onHoldStart(); });
+  document.addEventListener('keyup',   (e) => { if (e.key === 'Enter') onHoldEnd(); });
 
-  function renderCards(results){
-    cardsEl.style.display='block'; cardsEl.innerHTML='';
-    const rect=wrap.querySelector('#stage').getBoundingClientRect(); const W=rect.width,H=rect.height;
-    const N=results.length;
-    const estCardW = Math.min(180, Math.max(120, Math.min(W*0.16, W / Math.max(3, Math.min(N+1, 8)) )));
+  function renderCards(results) {
+    cardsEl.style.display = 'block';
+    cardsEl.innerHTML = '';
+    const rect = wrap.querySelector('#stage').getBoundingClientRect();
+    const W = rect.width, H = rect.height;
+    const N = results.length;
+    const estCardW = Math.min(180, Math.max(120, Math.min(W * 0.16, W / Math.max(3, Math.min(N + 1, 8)))));
     const estCardH = estCardW * 1.4;
-    const Rx = Math.max(W*0.34, Math.min(W*0.46, estCardW * 4.2));
-    const Ry = Math.min( Math.max(H*0.24, estCardH*0.8), H*0.4 );
-    const start = Math.PI, end = 2*Math.PI;
+    const Rx = Math.max(W * 0.34, Math.min(W * 0.46, estCardW * 4.2));
+    const Ry = Math.min(Math.max(H * 0.24, estCardH * 0.8), H * 0.4);
+    const start = Math.PI, end = 2 * Math.PI;
     let flippedCount = 0;
     let activeIndex = 0;
 
-    results.forEach((card,i)=>{
-      const t = i/(Math.max(1,N-1));
+    results.forEach((card, i) => {
+      const t = i / (Math.max(1, N - 1));
       const angle = start + t * (end - start);
-      const x = W/2 + Math.cos(angle)*Rx;
-      const y = H*0.62 + Math.sin(angle)*Ry;
-      const rarity = String(card.rarity||'common').toLowerCase();
+      const x = W / 2 + Math.cos(angle) * Rx;
+      const y = H * 0.62 + Math.sin(angle) * Ry;
+      const rarity = String(card.rarity || 'common').toLowerCase();
       const halo = HALO[rarity] || HALO.common;
-      const cell=document.createElement('div'); cell.className='flip';
-      cell.style.width = estCardW+'px'; cell.style.height = estCardH+'px';
-      cell.style.left=(x - estCardW/2)+'px'; cell.style.top=(y - estCardH/2)+'px'; cell.style.position='absolute';
+      const cell = document.createElement('div');
+      cell.className = 'flip';
+      cell.style.width = estCardW + 'px';
+      cell.style.height = estCardH + 'px';
+      cell.style.left = (x - estCardW / 2) + 'px';
+      cell.style.top = (y - estCardH / 2) + 'px';
+      cell.style.position = 'absolute';
       cell.style.zIndex = String(100 + i);
       cell.setAttribute('data-index', String(i));
-      cell.innerHTML=`
-        <div class="halo ${rarity==='mythical'?'mythical':''}" style="background:${halo}; box-shadow:0 0 24px rgba(140,160,255,.28) inset;"></div>
+      cell.innerHTML = `
+        <div class="halo ${rarity === 'mythical' ? 'mythical' : ''}" style="background:${halo}; box-shadow:0 0 24px rgba(140,160,255,.28) inset;"></div>
         <div class="flip-inner">
           <div class="face front"><img src="/lab/shared/assets/ui/card_back.png" alt="back" style="width:100%;height:100%;object-fit:cover"/></div>
           <div class="face back"><img src="${cardArtworkUrl(card.id)}" alt="${card.id}" style="width:100%;height:100%;object-fit:cover"/></div>
         </div>`;
-      let revealed=false;
-      const flip = async ()=>{
-        if(cell.classList.contains('flipped')) return;
+      let revealed = false;
+      const flip = async () => {
+        if (cell.classList.contains('flipped')) return;
         cell.style.zIndex = '9997';
         cell.classList.add('flipped');
-        if(!revealed){
-          const r=rarity;
-          playSfx(r);
-          revealed=true; flippedCount++;
-          if (r==='legendary' || r==='mythical'){
-            const imgUrl = cardArtworkUrl(card.id);
-            await celebrateCard(document.body, { img: imgUrl, rarity: r, duration: 900 });
+        if (!revealed) {
+          playSfx(rarity);
+          revealed = true;
+          flippedCount++;
+          if (rarity === 'legendary' || rarity === 'mythical') {
+            await celebrateCard(document.body, { img: cardArtworkUrl(card.id), rarity, duration: 900 });
           }
-          if(flippedCount>=N){ saveBar.style.display='block'; }
+          // Auto-save dès la dernière carte retournée
+          if (flippedCount >= N) {
+            await _doSave();
+          }
         }
       };
       cell.addEventListener('click', flip);
       cardsEl.appendChild(cell);
     });
 
-    const setActive = (idx)=>{
-      const prev = cardsEl.querySelector('.active'); if (prev) prev.classList.remove('active');
-      activeIndex = (idx+N)%N;
+    const setActive = (idx) => {
+      const prev = cardsEl.querySelector('.active');
+      if (prev) prev.classList.remove('active');
+      activeIndex = (idx + N) % N;
       const el = cardsEl.querySelector(`.flip[data-index="${activeIndex}"]`);
-      if (el){ el.classList.add('active'); el.style.zIndex='9998'; }
+      if (el) { el.classList.add('active'); el.style.zIndex = '9998'; }
     };
     setActive(0);
 
-    function onKey(e){
-      if (cardsEl.style.display==='none') return;
-      if (e.key==='ArrowLeft')  setActive(activeIndex-1);
-      if (e.key==='ArrowRight') setActive(activeIndex+1);
-      if (e.key==='Enter'){
+    function onKey(e) {
+      if (cardsEl.style.display === 'none') return;
+      if (e.key === 'ArrowLeft')  setActive(activeIndex - 1);
+      if (e.key === 'ArrowRight') setActive(activeIndex + 1);
+      if (e.key === 'Enter') {
         const el = cardsEl.querySelector(`.flip[data-index="${activeIndex}"]`);
         el?.click();
       }
     }
-    document.addEventListener('keydown', onKey, { capture:true });
+    document.addEventListener('keydown', onKey, { capture: true });
 
-    document.querySelector('#btn-save')?.addEventListener('click', async ()=>{
-      const ids=[...cardsEl.querySelectorAll('.back img')].map(img=>({id:img.alt,rarity:''}));
-      try{
-        await commitOpenedCards({results:ids});
-        if (supabase && userId) {
-          await saveCards(supabase, userId, _lastResults);
-          await syncStatsAfterPack(supabase, userId, _lastResults);
-        }
-        document.body.removeChild(overlay);
-        window.dispatchEvent(new Event('tcg:refresh'));
-      } catch(e){ alert('Erreur enregistrement: '+(e?.message||e)); }
-      document.removeEventListener('keydown', onKey, { capture:true });
+    // Bouton de fermeture après save automatique
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'btn';
+    closeBtn.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:none;';
+    closeBtn.textContent = '✓ Fermer';
+    closeBtn.addEventListener('click', () => {
+      document.body.removeChild(overlay);
+      document.removeEventListener('keydown', onKey, { capture: true });
+      window.dispatchEvent(new Event('tcg:refresh'));
     });
+    overlay.appendChild(closeBtn);
+
+    async function _doSave() {
+      if (!supabase || !userId) return;
+      try {
+        await saveCards(supabase, userId, _lastResults);
+        await syncStatsAfterPack(supabase, userId, _lastResults);
+        closeBtn.style.display = 'inline-flex';
+      } catch(e) {
+        console.error('save error:', e);
+        closeBtn.textContent = '⚠ Erreur save — Fermer quand même';
+        closeBtn.style.display = 'inline-flex';
+      }
+    }
   }
 }
