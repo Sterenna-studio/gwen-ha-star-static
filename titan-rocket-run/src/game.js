@@ -41,6 +41,7 @@
   let particles = [];
   let pickups   = [];
   let obstacles = [];
+  let springs   = [];
   let floats    = [];
   let state = "ready";
   let runInput = { lastKey: null, combo: 0, spamHeat: 0 };
@@ -181,6 +182,7 @@
     particles = [];
     pickups   = [];
     obstacles = [];
+    springs   = [];
     floats    = [];
     runInput = { lastKey: null, combo: 0, spamHeat: 0 };
     state = "ready";
@@ -429,7 +431,11 @@
 
     updateAnim(dt);
     updateParticles(dt);
-    if (state === 'flight' && !titan.grounded) checkFlightObjects();
+    updateSprings(dt);
+    if (state === 'flight' && !titan.grounded) {
+      checkFlightObjects();
+      checkSprings();
+    }
     updateFloats(dt);
     updateMeters();
   }
@@ -469,6 +475,7 @@
     drawBackground();
     drawTrack();
     drawPickups();
+    drawSprings();
     drawParticles(true);
     drawTitan();
     drawParticles(false);
@@ -668,6 +675,15 @@
         w: 68, h: 50, hit: false,
       });
     });
+
+    // 2 tremplins de rebond (timing ring)
+    [rx + 1050, rx + 1850].forEach(bx => {
+      springs.push({
+        x: bx + Math.random() * 180,
+        y: config.groundY - 140 - Math.random() * 200,
+        r: 24, phase: Math.random(), period: 1.7, hit: false,
+      });
+    });
   }
 
   function checkFlightObjects() {
@@ -707,6 +723,89 @@
   function updateFloats(dt) {
     floats.forEach(f => { f.y += f.vy * dt; f.life -= dt; });
     floats = floats.filter(f => f.life > 0);
+  }
+
+  // ── Springs (timing rebond) ───────────────────────────────────────────────────
+  function updateSprings(dt) {
+    for (const s of springs) {
+      if (!s.hit) s.phase = (s.phase + dt / s.period) % 1;
+    }
+  }
+
+  function checkSprings() {
+    const tx = titan.x;
+    const ty = titan.y - 88;
+    for (const s of springs) {
+      if (s.hit) continue;
+      const dx = tx - s.x, dy = ty - s.y;
+      if (Math.sqrt(dx * dx + dy * dy) > s.r + 32) continue;
+      s.hit = true;
+      // quality 0..1 : peak quand phase ≈ 0.5 (anneau le plus petit)
+      const quality = Math.sin(s.phase * Math.PI);
+      const power   = 240 + quality * 440;
+      titan.vy = -power;
+      titan.vx *= 1.0 + quality * 0.10;
+      titan.anim = 'jump';
+      titan.frame = 0;
+      burst(s.x, s.y, 8 + Math.floor(quality * 22));
+      if (quality > 0.72) {
+        floats.push({ x: s.x, y: s.y - 20, text: 'PARFAIT !', life: 1.2, max: 1.2, vy: -65, color: '#62ff52' });
+      } else if (quality > 0.35) {
+        floats.push({ x: s.x, y: s.y - 20, text: 'BON !',     life: 1.0, max: 1.0, vy: -55, color: '#aaff77' });
+      } else {
+        floats.push({ x: s.x, y: s.y - 20, text: 'RATÉ…',     life: 0.9, max: 0.9, vy: -40, color: '#ff8844' });
+      }
+    }
+  }
+
+  function drawSprings() {
+    ctx.save();
+    ctx.translate(-cameraX, 0);
+    for (const s of springs) {
+      if (s.hit) {
+        // pad grisé après utilisation
+        ctx.globalAlpha = 0.18;
+        ctx.fillStyle = '#888';
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1;
+        continue;
+      }
+      // quality signal
+      const q   = Math.sin(s.phase * Math.PI); // 0→1, pic à phase=0.5
+      const ringR = s.r + (1 - q) * 58;
+      // couleur : rouge quand anneau large, vert quand anneau serré
+      const rv  = Math.round(255 * (1 - q));
+      const gv  = Math.round(180 * q + 75);
+      const col = `rgb(${rv},${gv},60)`;
+
+      // anneau de timing
+      ctx.globalAlpha = 0.35 + q * 0.45;
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 3 + q * 2;
+      ctx.beginPath(); ctx.arc(s.x, s.y, ringR, 0, Math.PI * 2); ctx.stroke();
+
+      // deuxième anneau plus fin
+      ctx.globalAlpha = 0.15 + q * 0.2;
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(s.x, s.y, ringR * 1.35, 0, Math.PI * 2); ctx.stroke();
+
+      // pad central
+      ctx.globalAlpha = 1;
+      const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r);
+      grad.addColorStop(0, `rgb(${rv},${gv},80)`);
+      grad.addColorStop(1, `rgba(${rv},${gv},40,.6)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = '#07150d';
+      ctx.font = `800 ${s.r}px system-ui`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('↑', s.x, s.y);
+    }
+    ctx.globalAlpha = 1;
+    ctx.textBaseline = 'alphabetic';
+    ctx.restore();
   }
 
   // ── Draw flight objects ───────────────────────────────────────────────────────
