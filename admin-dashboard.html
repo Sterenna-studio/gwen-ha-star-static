@@ -96,6 +96,30 @@
     #log .warn { color: var(--warn); }
     #log .err  { color: var(--err); }
 
+    /* ── Projects grid ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .proj-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 6px;
+      transition: border-color .2s;
+    }
+    .proj-card.online  { border-color: rgba(34,197,94,.35); }
+    .proj-card.offline { border-color: rgba(255,78,106,.35); }
+    .proj-name { font-size: .88em; color: var(--accent2); font-weight: 600; }
+    .proj-url  { font-size: .72em; color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .proj-meta { display:flex; align-items:center; justify-content:space-between; margin-top:2px; }
+    .proj-ms   { font-size: .72em; color: var(--muted); }
+    .status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
+    .status-dot.ok      { background: var(--ok);   box-shadow: 0 0 6px var(--ok); }
+    .status-dot.err     { background: var(--err);  box-shadow: 0 0 6px var(--err); }
+    .status-dot.pending { background: var(--muted); animation: pulse-dot .9s ease-in-out infinite alternate; }
+    @keyframes pulse-dot { to { opacity: .25; } }
+
     /* ── Spinner ── */
     .spin {
       display: inline-block; width: 14px; height: 14px;
@@ -134,12 +158,41 @@
     <section>
       <div class="section-title">Vue globale</div>
       <div class="kpi-row" id="kpi-row">
+        <div class="kpi"><div class="val" id="kpi-projects"><span class="spin"></span></div><div class="lbl">Projets en ligne</div></div>
         <div class="kpi"><div class="val" id="kpi-users"><span class="spin"></span></div><div class="lbl">Utilisateurs inscrits</div></div>
         <div class="kpi"><div class="val" id="kpi-players"><span class="spin"></span></div><div class="lbl">Joueurs TCG actifs</div></div>
         <div class="kpi"><div class="val" id="kpi-cards"><span class="spin"></span></div><div class="lbl">Cartes en collection</div></div>
         <div class="kpi"><div class="val" id="kpi-packs"><span class="spin"></span></div><div class="lbl">Packs ouverts (total)</div></div>
         <div class="kpi"><div class="val" id="kpi-gold"><span class="spin"></span></div><div class="lbl">Gold total en circulation</div></div>
       </div>
+    </section>
+
+    <!-- Projets OVH -->
+    <section>
+      <div class="section-title">Projets déployés — OVH</div>
+      <div class="projects-grid" id="projects-grid">
+        <div style="color:var(--muted)"><span class="spin"></span> Ping en cours…</div>
+      </div>
+    </section>
+
+    <!-- CI/CD GitHub Actions -->
+    <section>
+      <details open>
+        <summary>CI/CD — GitHub Actions · <code>gwen-ha-star-static</code> (10 derniers runs)</summary>
+        <div class="table-wrap" style="border-top:none;border-radius:0 0 8px 8px">
+          <table>
+            <thead><tr>
+              <th>Workflow</th>
+              <th>Statut</th>
+              <th>Branche</th>
+              <th>Déclencheur</th>
+              <th>Durée</th>
+              <th>Lancé le</th>
+            </tr></thead>
+            <tbody id="tbl-actions"><tr><td colspan="6"><span class="spin"></span> Chargement…</td></tr></tbody>
+          </table>
+        </div>
+      </details>
     </section>
 
     <!-- Joueurs TCG -->

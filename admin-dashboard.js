@@ -45,11 +45,104 @@ function empty(tbodyId, cols, msg = 'Aucune donnée') {
     `<tr><td colspan="${cols}" style="color:var(--muted);text-align:center;padding:14px">${msg}</td></tr>`;
 }
 
+// ── Projects / OVH ───────────────────────────────────────────────────────────
+const PROJECTS = [
+  { name: 'Accueil',          url: '/' },
+  { name: 'Login',            url: '/login.html' },
+  { name: 'CIG',              url: '/cig.html' },
+  { name: 'Skill Arena',      url: '/arena/' },
+  { name: 'Nitro Clicker',    url: '/clicker/' },
+  { name: 'BZH Universe',     url: '/bzh-universe/' },
+  { name: 'Corebots',         url: '/corebots/' },
+  { name: 'Titan Rocket Run', url: '/titan-rocket-run/' },
+  { name: 'Botanica Obscura', url: '/botanica-obscura/' },
+  { name: 'TCG',              url: '/TCG/' },
+  { name: 'Jukebox',          url: '/jukebox/' },
+  { name: 'Star Crew',        url: '/star/' },
+];
+
+async function pingUrl(url) {
+  const t0 = performance.now();
+  try {
+    const r = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+    return { ok: r.ok, status: r.status, ms: Math.round(performance.now() - t0) };
+  } catch { return { ok: false, status: 0, ms: null }; }
+}
+
+async function loadProjectStatus() {
+  const grid = document.getElementById('projects-grid');
+  grid.innerHTML = PROJECTS.map((p, i) => `
+    <div class="proj-card" id="proj-${i}">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="status-dot pending" id="dot-${i}"></span>
+        <span class="proj-name">${p.name}</span>
+      </div>
+      <div class="proj-url">${p.url}</div>
+      <div class="proj-meta">
+        <span class="proj-ms" id="ms-${i}">…</span>
+        <span class="badge info" id="st-${i}">…</span>
+      </div>
+    </div>`).join('');
+
+  let up = 0;
+  await Promise.all(PROJECTS.map(async (p, i) => {
+    const r = await pingUrl(p.url);
+    document.getElementById(`dot-${i}`).className = 'status-dot ' + (r.ok ? 'ok' : 'err');
+    document.getElementById(`proj-${i}`).classList.add(r.ok ? 'online' : 'offline');
+    document.getElementById(`ms-${i}`).textContent = r.ms != null ? r.ms + ' ms' : '—';
+    const stEl = document.getElementById(`st-${i}`);
+    stEl.className  = 'badge ' + (r.ok ? 'ok' : 'err');
+    stEl.textContent = r.ok ? (r.status || 'OK') : (r.status || 'ERR');
+    if (r.ok) up++;
+  }));
+
+  kpi('kpi-projects', `${up}/${PROJECTS.length}`, up === PROJECTS.length ? 'var(--ok)' : 'var(--warn)');
+  log(`✓ Ping: ${up}/${PROJECTS.length} projets en ligne`, up === PROJECTS.length ? 'ok' : 'warn');
+}
+
+// ── GitHub Actions ────────────────────────────────────────────────────────────
+async function loadGHActions() {
+  try {
+    const res = await fetch(
+      'https://api.github.com/repos/sterenna-studio/gwen-ha-star-static/actions/runs?per_page=10',
+      { headers: { Accept: 'application/vnd.github+json' } }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const { workflow_runs: runs } = await res.json();
+    if (!runs?.length) { empty('tbl-actions', 6, 'Aucun run'); return; }
+
+    const rows = runs.map(r => {
+      const conclusion = r.conclusion ?? r.status ?? '?';
+      const btype = conclusion === 'success' ? 'ok'
+                  : conclusion === 'failure' ? 'err'
+                  : conclusion === 'in_progress' ? 'warn' : 'info';
+      const dur = (r.run_started_at && r.updated_at)
+        ? Math.round((new Date(r.updated_at) - new Date(r.run_started_at)) / 1000) + 's'
+        : '—';
+      return `<tr>
+        <td class="name">${r.name}</td>
+        <td>${badge(conclusion, btype)}</td>
+        <td class="mono">${r.head_branch}</td>
+        <td class="mono">${r.event}</td>
+        <td class="mono">${dur}</td>
+        <td class="mono">${fmtDate(r.run_started_at)}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('tbl-actions').innerHTML = rows;
+    log(`✓ ${runs.length} GH Actions runs chargés`, 'ok');
+  } catch(e) {
+    log('⚠ GitHub Actions: ' + e.message, 'warn');
+    empty('tbl-actions', 6, '⚠ ' + e.message);
+  }
+}
+
 // ── Load all ──────────────────────────────────────────────────────────────────
 async function loadAll() {
   document.getElementById('last-refresh').textContent = 'Chargement…';
   log('→ Rafraîchissement en cours…', 'ok');
   await Promise.allSettled([
+    loadProjectStatus(),
+    loadGHActions(),
     loadPlayers(),
     loadPackTypes(),
     loadTopCards(),
