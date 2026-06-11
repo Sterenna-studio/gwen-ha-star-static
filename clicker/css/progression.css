@@ -127,6 +127,59 @@
   text-shadow: 0 0 10px rgba(0,255,204,.4);
 }
 
+/* ── Core viewport (dezoom container) ───────────────────────────────────── */
+
+.core-viewport {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform-origin: center;
+  transform: scale(var(--panel-zoom, 1));
+  transition: transform 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 3;
+}
+
+/* ── Core scale indicator ────────────────────────────────────────────────── */
+
+.core-scale-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(58px, 8%, 82px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  z-index: 12;
+  pointer-events: none;
+}
+
+.core-scale-indicator::before {
+  content: '';
+  display: block;
+  width: clamp(36px, 4vw, 56px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,255,204,.45), transparent);
+  margin-bottom: 2px;
+}
+
+#core-scale-value {
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: clamp(10px, 1.1vw, 13px);
+  color: rgba(0,255,204,.8);
+  letter-spacing: .14em;
+  text-shadow: 0 0 8px rgba(0,255,204,.35);
+}
+
+.core-scale-unit {
+  font-size: 7px;
+  letter-spacing: .22em;
+  color: rgba(200,220,255,.32);
+  text-transform: uppercase;
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+}
+
 /* ── Deploy badge (topbar) ───────────────────────────────────────────────── */
 
 .deploy-badge {

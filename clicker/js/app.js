@@ -153,15 +153,21 @@ function renderShell() {
         <div class="scale-radar" id="scale-radar" aria-hidden="true"></div>
         <div class="factory-field" id="factory-field" aria-hidden="true"></div>
         <div class="tendril-layer" id="tendril-layer" aria-hidden="true"></div>
-        <div class="sub-core-field" id="sub-core-field" aria-hidden="true"></div>
+        <div class="core-viewport" id="core-viewport">
+          <div class="sub-core-field" id="sub-core-field" aria-hidden="true"></div>
+          <div class="core-shell-visual" id="core-shell-visual" aria-hidden="true"><span></span><i></i><b></b></div>
+          <button class="click-core" id="click-core" aria-label="Cliquer le noyau Nitro">
+            <span class="core-rings"></span>
+            <span class="core-glyph">⬡</span>
+            <small id="core-label">CLICK CORE</small>
+          </button>
+        </div>
         <div class="energy-field" id="energy-field" aria-hidden="true"></div>
         <div class="module-orbit" id="module-orbit" aria-hidden="true"></div>
-        <div class="core-shell-visual" id="core-shell-visual" aria-hidden="true"><span></span><i></i><b></b></div>
-        <button class="click-core" id="click-core" aria-label="Cliquer le noyau Nitro">
-          <span class="core-rings"></span>
-          <span class="core-glyph">⬡</span>
-          <small id="core-label">CLICK CORE</small>
-        </button>
+        <div class="core-scale-indicator" id="core-scale-indicator">
+          <span id="core-scale-value">0.001 pm</span>
+          <span class="core-scale-unit">ÉCHELLE</span>
+        </div>
         <div class="layer-caption" id="layer-caption"></div>
         <div class="reactor-gauges" aria-hidden="true">
           <div class="reactor-gauge"><span id="reactor-a"></span></div>
@@ -566,6 +572,13 @@ function spawnScaleShift() {
   setTimeout(() => app.classList.remove('scale-shift'), 1800);
 }
 
+function formatCoreScale(coreCount) {
+  if (coreCount === 0) return '0.001 pm';
+  const pm = 0.001 * Math.pow(1 + coreCount * 0.5, 1.5);
+  if (pm >= 1000) return `${(pm / 1000).toPrecision(3)} nm`;
+  return `${pm.toPrecision(3)} pm`;
+}
+
 function renderSubCores() {
   const field = document.getElementById('sub-core-field');
   if (!field) return;
@@ -573,6 +586,12 @@ function renderSubCores() {
   const coreCount = Math.floor(lvl / 10);
   if (coreCount === lastSubCoreCount) return;
   lastSubCoreCount = coreCount;
+
+  const zoom = coreCount === 0 ? 1 : Math.max(0.38, 1 / Math.sqrt(1 + coreCount * 0.48));
+  document.getElementById('core-panel')?.style.setProperty('--panel-zoom', zoom.toFixed(4));
+  const scaleEl = document.getElementById('core-scale-value');
+  if (scaleEl) scaleEl.textContent = formatCoreScale(coreCount);
+
   field.innerHTML = '';
   for (let i = 1; i <= coreCount; i++) {
     const eff = Math.min(0.80, i * 0.10);
