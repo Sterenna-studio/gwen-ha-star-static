@@ -38,6 +38,9 @@
   let last = performance.now();
   let time = 0;
   let particles = [];
+  let pickups   = [];
+  let obstacles = [];
+  let floats    = [];
   let state = "ready";
   let runInput = { lastKey: null, combo: 0, spamHeat: 0 };
   let attempt = {};
@@ -153,6 +156,9 @@
     });
     cameraX = 0;
     particles = [];
+    pickups   = [];
+    obstacles = [];
+    floats    = [];
     runInput = { lastKey: null, combo: 0, spamHeat: 0 };
     state = "ready";
     attempt = {
@@ -164,6 +170,7 @@
       rocketUsed: 0,
       distance: 0,
       reward: 0,
+      bonusCoins: 0,
     };
     message("Prêt ?", "Alterne A / D pour courir. Appuie sur Espace dans la zone verte de la rampe.");
   }
@@ -192,6 +199,7 @@
     attempt.jumpQuality = quality;
     attempt.jumped = true;
     state = "flight";
+    spawnFlightObjects();
     titan.grounded = false;
     titan.anim = "jump";
     titan.vy = -(520 + save.upgrades.ramp * 28 + quality * 260);
@@ -233,14 +241,15 @@
     titan.anim = "sit_rest";
     const dist = Math.max(0, (titan.x - config.startX) * config.worldScale);
     attempt.distance = dist;
-    const reward = Math.max(1, Math.floor(dist * 0.8 + attempt.maxSpeed * 0.02 + attempt.jumpQuality * 20));
-    attempt.reward = reward;
-    save.coins += reward;
+    const baseReward = Math.max(1, Math.floor(dist * 0.8 + attempt.maxSpeed * 0.02 + attempt.jumpQuality * 20));
+    attempt.reward = baseReward + attempt.bonusCoins;
+    save.coins += attempt.reward;
     if (dist > save.best) save.best = dist;
     writeSave();
+    const bonusPart = attempt.bonusCoins > 0 ? ` (+${attempt.bonusCoins} ramassés)` : '';
     message(
       `${dist.toFixed(1)} m !`,
-      `+${reward} os. Appuie sur R pour relancer ou améliore Titan dans la boutique.`
+      `+${attempt.reward} os${bonusPart}. Appuie sur R pour relancer.`
     );
   }
 
@@ -335,6 +344,8 @@
 
     updateAnim(dt);
     updateParticles(dt);
+    if (state === 'flight' && !titan.grounded) checkFlightObjects();
+    updateFloats(dt);
     updateMeters();
   }
 
@@ -372,9 +383,11 @@
     ctx.clearRect(0, 0, W, H);
     drawBackground();
     drawTrack();
+    drawPickups();
     drawParticles(true);
     drawTitan();
     drawParticles(false);
+    drawFloats();
     drawForegroundText();
   }
 
@@ -527,6 +540,171 @@
         color: "rgba(98,255,82,"
       });
     }
+  }
+
+  // ── Flight objects ───────────────────────────────────────────────────────────
+  function spawnFlightObjects() {
+    const rx = config.rampX + config.rampW;
+    // Os sur 3 niveaux de hauteur (valeur croissante)
+    const tiers = [
+      { yBase: config.groundY - 95,  value: 3,  count: 4 },
+      { yBase: config.groundY - 230, value: 7,  count: 4 },
+      { yBase: config.groundY - 390, value: 15, count: 3 },
+    ];
+    let xCursor = rx + 180;
+    tiers.forEach(tier => {
+      for (let i = 0; i < tier.count; i++) {
+        pickups.push({
+          x: xCursor + Math.random() * 60,
+          y: tier.yBase + (Math.random() - .5) * 70,
+          type: 'bone', value: tier.value, r: 22,
+          collected: false, pulse: Math.random() * Math.PI * 2,
+        });
+        xCursor += 220 + Math.random() * 80;
+      }
+      xCursor += 100;
+    });
+
+    // 2 canisters de carburant
+    [rx + 550, rx + 1450].forEach(bx => {
+      pickups.push({
+        x: bx + Math.random() * 120,
+        y: config.groundY - 180 - Math.random() * 100,
+        type: 'fuel', value: 20, r: 20,
+        collected: false, pulse: Math.random() * Math.PI * 2,
+      });
+    });
+
+    // 3 rochers (obstacles)
+    [rx + 650, rx + 1250, rx + 2000].forEach(bx => {
+      obstacles.push({
+        x: bx + Math.random() * 100,
+        y: config.groundY - 130 - Math.random() * 140,
+        w: 68, h: 50, hit: false,
+      });
+    });
+  }
+
+  function checkFlightObjects() {
+    const tx = titan.x;
+    const ty = titan.y - 88; // centre approximatif de Titan
+
+    for (const p of pickups) {
+      if (p.collected) continue;
+      const dx = tx - p.x, dy = ty - p.y;
+      if (Math.sqrt(dx * dx + dy * dy) < p.r + 26) {
+        p.collected = true;
+        if (p.type === 'bone') {
+          attempt.bonusCoins += p.value;
+          floats.push({ x: p.x, y: p.y - 10, text: `+${p.value} os`, life: 1.1, max: 1.1, vy: -55, color: '#f5e8c8' });
+          burst(p.x, p.y, 7);
+        } else {
+          const fuelMax = 55 + save.upgrades.rocket * 16;
+          attempt.rocket = Math.min(attempt.rocket + p.value, fuelMax);
+          floats.push({ x: p.x, y: p.y - 10, text: '+fuel', life: 1.1, max: 1.1, vy: -55, color: '#62ff52' });
+          burst(p.x, p.y, 10);
+        }
+      }
+    }
+
+    for (const o of obstacles) {
+      if (o.hit) continue;
+      if (tx > o.x - o.w / 2 - 20 && tx < o.x + o.w / 2 + 20 &&
+          ty > o.y - o.h / 2 - 20 && ty < o.y + o.h / 2 + 20) {
+        o.hit = true;
+        titan.vx *= 0.62;
+        burst(titan.x, titan.y - 80, 16);
+        floats.push({ x: o.x, y: o.y - 30, text: 'IMPACT !', life: 1.2, max: 1.2, vy: -45, color: '#ff4b4b' });
+      }
+    }
+  }
+
+  function updateFloats(dt) {
+    floats.forEach(f => { f.y += f.vy * dt; f.life -= dt; });
+    floats = floats.filter(f => f.life > 0);
+  }
+
+  // ── Draw flight objects ───────────────────────────────────────────────────────
+  function drawPickups() {
+    ctx.save();
+    ctx.translate(-cameraX, 0);
+    const t = time * 3;
+
+    for (const p of pickups) {
+      if (p.collected) continue;
+      const pulse = 0.88 + Math.sin(t + p.pulse) * 0.12;
+      const r = p.r * pulse;
+
+      if (p.type === 'bone') {
+        // halo
+        ctx.globalAlpha = 0.2;
+        ctx.fillStyle = '#f5e8c8';
+        ctx.beginPath(); ctx.arc(p.x, p.y, r * 1.8, 0, Math.PI * 2); ctx.fill();
+        // circle
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#f0dea0';
+        ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+        // value
+        ctx.fillStyle = '#152017';
+        ctx.font = `800 ${Math.round(r * .85)}px system-ui`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(p.value, p.x, p.y);
+        // label
+        ctx.globalAlpha = 0.65; ctx.fillStyle = '#f5e8c8';
+        ctx.font = '700 10px system-ui';
+        ctx.fillText('OS', p.x, p.y + r + 11);
+      } else {
+        // fuel canister
+        ctx.globalAlpha = 0.28;
+        ctx.fillStyle = '#62ff52';
+        ctx.beginPath(); ctx.arc(p.x, p.y, r * 1.9, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#1fb83a';
+        ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ecfff0';
+        ctx.font = `800 ${Math.round(r * .9)}px system-ui`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('⚡', p.x, p.y);
+        ctx.globalAlpha = 0.65; ctx.fillStyle = '#62ff52';
+        ctx.font = '700 10px system-ui';
+        ctx.fillText('FUEL', p.x, p.y + r + 11);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    for (const o of obstacles) {
+      ctx.globalAlpha = o.hit ? 0.28 : 1;
+      ctx.fillStyle = '#200a0a';
+      ctx.strokeStyle = o.hit ? 'rgba(255,75,75,.3)' : 'rgba(255,75,75,.8)';
+      ctx.lineWidth = 3;
+      roundRect(ctx, o.x - o.w / 2, o.y - o.h / 2, o.w, o.h, 10);
+      ctx.fill(); ctx.stroke();
+      if (!o.hit) {
+        ctx.fillStyle = 'rgba(255,75,75,.9)';
+        ctx.font = '700 22px system-ui';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('✕', o.x, o.y);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.restore();
+  }
+
+  function drawFloats() {
+    ctx.save();
+    ctx.translate(-cameraX, 0);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const f of floats) {
+      const alpha = clamp(f.life / f.max, 0, 1);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = f.color;
+      ctx.font = '800 18px system-ui';
+      ctx.fillText(f.text, f.x, f.y);
+    }
+    ctx.globalAlpha = 1;
+    ctx.textBaseline = 'alphabetic';
+    ctx.restore();
   }
 
   function updateParticles(dt) {
