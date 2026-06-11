@@ -213,14 +213,13 @@
 }
 
 .sub-core {
-  --sub-size: max(28px, calc(var(--eff) * var(--nc-core-size, 220px)));
   position: absolute;
-  width: var(--sub-size);
-  height: var(--sub-size);
+  width: var(--sub-size, 46px);
+  height: var(--sub-size, 46px);
   transform:
     translate(-50%, -50%)
     rotate(var(--angle))
-    translateX(calc(var(--nc-core-size, 220px) * 0.52 + var(--sub-size) * 0.56))
+    translateX(var(--orbit-r, 155px))
     rotate(calc(-1 * var(--angle)));
 }
 

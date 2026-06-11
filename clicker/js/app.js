@@ -587,19 +587,53 @@ function renderSubCores() {
   if (coreCount === lastSubCoreCount) return;
   lastSubCoreCount = coreCount;
 
-  const zoom = coreCount === 0 ? 1 : Math.max(0.38, 1 / Math.sqrt(1 + coreCount * 0.48));
-  document.getElementById('core-panel')?.style.setProperty('--panel-zoom', zoom.toFixed(4));
+  const panel = document.getElementById('core-panel');
+  const coreEl = document.getElementById('click-core');
+  const coreRect = coreEl?.getBoundingClientRect();
+  const panelRect = panel?.getBoundingClientRect();
+
+  // Use actual measured core radius for precise geometry
+  const R_main = coreRect ? coreRect.width / 2 : 110;
+  const panelShort = panelRect ? Math.min(panelRect.width, panelRect.height) : 520;
+
+  // Petri-dish layout: each sub-core placed tangent to main core,
+  // orbit radius computed so no two sub-cores overlap each other.
+  // Constraint: chord between adjacent sub-cores ≥ 2 × maxR_sub
+  //   chord = 2 × orbitR × sin(π / N)  →  orbitR ≥ maxR_sub / sin(π/N)
+  let orbitR = 0;
+  let systemExtent = R_main;
+  if (coreCount > 0) {
+    const maxEff    = Math.min(0.80, coreCount * 0.10);
+    const maxR_sub  = Math.max(14, maxEff * R_main);
+    const minTangential = R_main + maxR_sub + 8;               // touch main core
+    const minPacking    = coreCount > 1
+      ? maxR_sub / Math.sin(Math.PI / coreCount) + 6           // touch each other
+      : 0;
+    orbitR      = Math.max(minTangential, minPacking);
+    systemExtent = orbitR + maxR_sub;
+  }
+
+  // Dezoom so the whole system fits comfortably in the panel
+  const zoom = coreCount > 0
+    ? Math.min(1, (panelShort * 0.80) / (systemExtent * 2))
+    : 1;
+  panel?.style.setProperty('--panel-zoom', zoom.toFixed(4));
+
   const scaleEl = document.getElementById('core-scale-value');
   if (scaleEl) scaleEl.textContent = formatCoreScale(coreCount);
 
+  // Build sub-core DOM elements
   field.innerHTML = '';
   for (let i = 1; i <= coreCount; i++) {
-    const eff = Math.min(0.80, i * 0.10);
-    const angle = -90 + ((i - 1) / coreCount) * 360;
+    const eff     = Math.min(0.80, i * 0.10);
+    const subSize = Math.max(28, eff * R_main * 2);
+    const angle   = -90 + ((i - 1) / coreCount) * 360;
     const div = document.createElement('div');
     div.className = 'sub-core';
-    div.style.setProperty('--angle', `${angle}deg`);
-    div.style.setProperty('--eff', String(eff));
+    div.style.setProperty('--angle',   `${angle}deg`);
+    div.style.setProperty('--eff',     String(eff));
+    div.style.setProperty('--orbit-r', `${orbitR}px`);
+    div.style.setProperty('--sub-size',`${subSize}px`);
     div.title = `Noyau ×${i} · ${Math.round(eff * 100)}% du principal`;
     div.innerHTML = `<div class="sub-core-inner"><span class="sub-core-glyph">⬡</span><span class="sub-core-eff">${Math.round(eff * 100)}%</span></div>`;
     field.appendChild(div);
