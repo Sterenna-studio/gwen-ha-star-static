@@ -1,3 +1,4 @@
+// data/packsRepo.js — v2 (tcg_player_packs)
 import { getClient, getUser } from '../logic/supaRaw.js';
 
 const PACK_IMAGE_MAP = {
@@ -21,33 +22,40 @@ function normalizePack(pack){
 }
 
 export async function loadPackTypes(){
-  const sb=await getClient();
-  const { data,error }=await sb.from('pack_types').select('*').order('created_at',{ascending:true});
-  if(error)throw error;
-  return (data||[]).map(normalizePack);
+  const sb = await getClient();
+  const { data, error } = await sb.from('pack_types').select('*').order('created_at', { ascending: true });
+  if (error) throw error;
+  return (data || []).map(normalizePack);
 }
 
 export async function loadPlayerPacks(){
-  const sb=await getClient();
-  const user=await getUser();
-  const [{ data:types, error: typesErr },{ data:inv, error: invErr }]=await Promise.all([
+  const sb = await getClient();
+  const user = await getUser();
+  const [{ data: types, error: typesErr }, { data: inv, error: invErr }] = await Promise.all([
     sb.from('pack_types').select('*'),
-    sb.from('player_packs').select('pack_type_id, quantity').eq('player_id',user.id)
+    sb.from('tcg_player_packs').select('pack_type_id, quantity').eq('player_id', user.id)
   ]);
   if (typesErr) throw typesErr;
   if (invErr) throw invErr;
-  const qty=Object.fromEntries((inv||[]).map(r=>[r.pack_type_id,r.quantity||0]));
-  return (types||[]).map(t=>normalizePack({...t,quantity:qty[t.id]||0}));
+  const qty = Object.fromEntries((inv || []).map(r => [r.pack_type_id, r.quantity || 0]));
+  return (types || []).map(t => normalizePack({ ...t, quantity: qty[t.id] || 0 }));
 }
 
-export async function decrementPlayerPack(pack_type_id,count=1){
-  const sb=await getClient();
-  const user=await getUser();
-  const { data:row, error: rowErr }=await sb.from('player_packs').select('quantity').eq('player_id',user.id).eq('pack_type_id',pack_type_id).maybeSingle();
+export async function decrementPlayerPack(pack_type_id, count = 1){
+  const sb = await getClient();
+  const user = await getUser();
+  const { data: row, error: rowErr } = await sb
+    .from('tcg_player_packs')
+    .select('quantity')
+    .eq('player_id', user.id)
+    .eq('pack_type_id', pack_type_id)
+    .maybeSingle();
   if (rowErr) throw rowErr;
-  const current=row?.quantity||0;
-  const next=Math.max(0,current-count);
-  const { error: upsertErr } = await sb.from('player_packs').upsert({player_id:user.id,pack_type_id,quantity:next},{onConflict:'player_id,pack_type_id'});
+  const current = row?.quantity || 0;
+  const next = Math.max(0, current - count);
+  const { error: upsertErr } = await sb
+    .from('tcg_player_packs')
+    .upsert({ player_id: user.id, pack_type_id, quantity: next }, { onConflict: 'player_id,pack_type_id' });
   if (upsertErr) throw upsertErr;
   return next;
 }

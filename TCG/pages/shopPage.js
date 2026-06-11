@@ -1,4 +1,4 @@
-// lab/tcg/pages/shopPage.js — v3.9.3 (compact, gold badge, guarded purchase, server-first fetch)
+// lab/tcg/pages/shopPage.js — v3.9.4 (tcg_players + tcg_player_packs)
 import { getClient } from '../../shared/supaRaw.js';
 import { getCachedPlayer, refreshPlayer, updateCachedPlayer } from '../../shared/supabaseData.js';
 
@@ -34,11 +34,10 @@ export async function render(root){
   `;
 
   const sb = await getClient();
-  // server-first to avoid stale cache
   let player = await refreshPlayer();
   if (!player) player = getCachedPlayer();
   const goldVal = root.querySelector('#gold-val');
-  const setGold = (v)=>{ goldVal.textContent = String(v|0); };
+  const setGold = (v) => { goldVal.textContent = String(v | 0); };
   setGold(player?.gold ?? 0);
 
   const { data: types, error } = await sb
@@ -73,36 +72,36 @@ export async function render(root){
     const btn = card.querySelector('.btn-buy');
     const warn = card.querySelector('.warn');
     btn.addEventListener('click', async () => {
-      btn.disabled = true; warn.style.display='none'; warn.textContent='';
-      try{
+      btn.disabled = true; warn.style.display = 'none'; warn.textContent = '';
+      try {
         player = await refreshPlayer();
-        const price = Number(btn.dataset.price||0);
-        if ((player?.gold||0) < price){
+        const price = Number(btn.dataset.price || 0);
+        if ((player?.gold || 0) < price){
           warn.textContent = "Pas assez d'or.";
           warn.style.display = 'block';
           return;
         }
         await buyPack({ packTypeId: btn.dataset.id, price });
         const newGold = (player.gold - price);
-        updateCachedPlayer({ gold: newGold, pack_count: (player.pack_count||0)+1 });
+        updateCachedPlayer({ gold: newGold, pack_count: (player.pack_count || 0) + 1 });
         setGold(newGold);
         if (window.tcgForceRefresh){ await window.tcgForceRefresh(); }
-      }catch(e){
+      } catch(e) {
         warn.textContent = 'Achat impossible: ' + (e?.message || e);
         warn.style.display = 'block';
-      }finally{
+      } finally {
         btn.disabled = false;
       }
     });
     grid.appendChild(card);
   });
 
-  const onGold = async ()=>{
+  const onGold = async () => {
     const p = await refreshPlayer();
     setGold(p?.gold ?? 0);
   };
   window.addEventListener('tcg:gold', onGold);
-  root.addEventListener('removed', ()=>{
+  root.addEventListener('removed', () => {
     window.removeEventListener('tcg:gold', onGold);
   });
 }
@@ -111,20 +110,22 @@ async function buyPack({ packTypeId, price }){
   const sb = await getClient();
   const player = getCachedPlayer();
 
+  // Débit gold sur tcg_players avec guard
   const { data: afterDebit, error: debitErr } = await sb
-    .from('players')
-    .update({ gold: (player.gold - price), pack_count: (player.pack_count||0) + 1 })
+    .from('tcg_players')
+    .update({ gold: (player.gold - price) })
     .eq('id', player.id)
     .gte('gold', price)
-    .select('id, gold, pack_count')
+    .select('id, gold')
     .single();
 
   if (debitErr || !afterDebit){
     throw new Error('Solde insuffisant ou erreur débit.');
   }
 
+  // Upsert tcg_player_packs
   const { data: existing } = await sb
-    .from('player_packs')
+    .from('tcg_player_packs')
     .select('quantity')
     .eq('player_id', player.id)
     .eq('pack_type_id', packTypeId)
@@ -132,12 +133,12 @@ async function buyPack({ packTypeId, price }){
 
   if (!existing){
     const { error: insErr } = await sb
-      .from('player_packs')
+      .from('tcg_player_packs')
       .insert({ player_id: player.id, pack_type_id: packTypeId, quantity: 1 });
     if (insErr) throw insErr;
   } else {
     const { error: upErr } = await sb
-      .from('player_packs')
+      .from('tcg_player_packs')
       .update({ quantity: existing.quantity + 1 })
       .eq('player_id', player.id)
       .eq('pack_type_id', packTypeId);

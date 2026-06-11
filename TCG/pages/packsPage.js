@@ -1,4 +1,4 @@
-// lab/tcg/pages/packsPage.js — v3.7.1 (quantitative list, keyboard, no Tab hijack)
+// lab/tcg/pages/packsPage.js — v3.8.0 (tcg_player_packs)
 import { getClient } from '../../shared/supaRaw.js';
 import { getCachedPlayer } from '../../shared/supabaseData.js';
 import { runOpeningFlow } from './openingRenderer.js';
@@ -21,7 +21,7 @@ export async function render(root){
 
   const sb = await getClient();
   const player = getCachedPlayer();
-  const { data: owned } = await sb.from('player_packs')
+  const { data: owned } = await sb.from('tcg_player_packs')
     .select('pack_type_id, quantity')
     .eq('player_id', player.id);
 
@@ -37,66 +37,69 @@ export async function render(root){
     .select('id, name, set_id, image_name')
     .in('id', ids);
 
-  const map = new Map((types||[]).map(t => [t.id, t]));
+  const map = new Map((types || []).map(t => [t.id, t]));
   const tiles = [];
   for (const row of owned){
     const t = map.get(row.pack_type_id);
     if (!t) continue;
     const img = t.image_name ? `/lab/shared/assets/packs/${t.image_name}` : `/lab/shared/assets/packs/${t.set_id}-default.jpg`;
-    const count = Math.max(0, row.quantity|0);
-    for (let i=0;i<count;i++){
+    const count = Math.max(0, row.quantity | 0);
+    for (let i = 0; i < count; i++){
       tiles.push({ img, set: t.set_id, packTypeId: t.id });
     }
   }
-  for (let i=tiles.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [tiles[i], tiles[j]]=[tiles[j], tiles[i]]; }
+  for (let i = tiles.length - 1; i > 0; i--){
+    const j = (Math.random() * (i + 1)) | 0;
+    [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+  }
 
-  tiles.forEach((t, idx)=>{
+  tiles.forEach((t, idx) => {
     const img = document.createElement('img');
     img.className = 'pack-img';
     img.src = t.img;
     img.dataset.index = String(idx);
-    img.style.animationDelay = (Math.random()*0.8).toFixed(2)+'s';
+    img.style.animationDelay = (Math.random() * 0.8).toFixed(2) + 's';
     img.addEventListener('click', () => {
       runOpeningFlow(document.body, { setId: t.set, packTypeId: t.packTypeId, imageName: null });
     });
     grid.appendChild(img);
   });
 
-  let active = 0, hold=null;
-  const items = ()=>Array.from(grid.querySelectorAll('.pack-img'));
-  const setActive = (i)=>{
+  let active = 0, hold = null;
+  const items = () => Array.from(grid.querySelectorAll('.pack-img'));
+  const setActive = (i) => {
     const arr = items();
     if (!arr.length) return;
     active = (i + arr.length) % arr.length;
-    arr.forEach(el=>el.classList.remove('active'));
+    arr.forEach(el => el.classList.remove('active'));
     arr[active].classList.add('active');
-    arr[active].scrollIntoView({ block:'nearest', inline:'nearest' });
+    arr[active].scrollIntoView({ block: 'nearest', inline: 'nearest' });
   };
   setActive(0);
 
   function openAtActive(){
     const arr = items(); if (!arr.length) return;
-    const i = active; const t = tiles[i];
-    if (t) runOpeningFlow(document.body, { setId: t.set, packTypeId: t.packTypeId, imageName: null });
+    const tile = tiles[active];
+    if (tile) runOpeningFlow(document.body, { setId: tile.set, packTypeId: tile.packTypeId, imageName: null });
   }
 
   function onKey(e){
-    if (e.key==='ArrowRight') setActive(active+1);
-    if (e.key==='ArrowLeft')  setActive(active-1);
-    if (e.key==='Enter'){
-      if (!hold){ hold=setTimeout(()=>{ openAtActive(); hold=null; }, 800); }
+    if (e.key === 'ArrowRight') setActive(active + 1);
+    if (e.key === 'ArrowLeft')  setActive(active - 1);
+    if (e.key === 'Enter'){
+      if (!hold){ hold = setTimeout(() => { openAtActive(); hold = null; }, 800); }
     }
   }
   function onKeyUp(e){
-    if (e.key==='Enter' && hold){ clearTimeout(hold); hold=null; }
+    if (e.key === 'Enter' && hold){ clearTimeout(hold); hold = null; }
   }
   document.addEventListener('keydown', onKey);
   document.addEventListener('keyup', onKeyUp);
-  root.addEventListener('removed', ()=>{
+  root.addEventListener('removed', () => {
     document.removeEventListener('keydown', onKey);
     document.removeEventListener('keyup', onKeyUp);
   });
 
   function onRefresh(){ render(root); }
-  window.addEventListener('tcg:refresh', onRefresh, { once:true });
+  window.addEventListener('tcg:refresh', onRefresh, { once: true });
 }
