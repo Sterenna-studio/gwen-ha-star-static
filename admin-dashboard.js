@@ -6,10 +6,22 @@ const SUPER_ID = 'c496aac4-7ed3-4173-9666-a4f30098cac7';
 // ── Auth guard ────────────────────────────────────────────────────────────────
 const { data: { session } } = await supabase.auth.getSession();
 if (!session || session.user.id !== SUPER_ID) {
-  document.getElementById('guard').innerHTML = '⛔ Accès refusé';
+  const uid   = session?.user?.id    ?? '(aucune session)';
+  const email = session?.user?.email ?? '—';
+  document.getElementById('guard').innerHTML = `
+    <div style="text-align:center;line-height:2">
+      <div style="font-size:1.4em;margin-bottom:8px">⛔ Accès refusé</div>
+      <div style="font-size:.78em;color:#2a4060">
+        <div>Email&nbsp;&nbsp;: <span style="color:#4a6880">${email}</span></div>
+        <div>UUID&nbsp;&nbsp;&nbsp;: <span style="color:#4a6880">${uid}</span></div>
+        <div style="margin-top:6px">Attendu : <span style="color:#1e3048">${SUPER_ID}</span></div>
+      </div>
+    </div>`;
 } else {
   document.getElementById('guard').style.display = 'none';
   document.getElementById('app').style.display = 'block';
+  document.getElementById('user-identity').textContent =
+    `${session.user.email} · ${session.user.id.slice(0, 8)}…`;
   document.getElementById('refresh-btn').addEventListener('click', loadAll);
   loadAll();
 }
