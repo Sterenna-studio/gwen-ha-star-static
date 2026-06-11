@@ -1,40 +1,77 @@
-// pages/homePage.js — v1.0.0
-// Home: greeting + stat cards + daily widget + quick nav
-import { mount as mountDaily } from './dailyWidget.js';
-import { getCachedPlayer }      from '../data/supabaseData.js';
+// pages/homePage.js — v2.0.0
+// Home: greeting + stat cards + daily widget + leaderboard + quick nav
+import { mount as mountDaily }       from './dailyWidget.js';
+import { mount as mountLeaderboard } from './leaderboardWidget.js';
+import { getCachedPlayer }           from '../data/supabaseData.js';
+import { getUser }                   from '../logic/supaRaw.js';
 
 const NAV_ITEMS = [
-  { hash: '#/packs',      icon: '🃏', label: 'Boosters'   },
-  { hash: '#/shop',       icon: '🛒', label: 'Boutique'   },
-  { hash: '#/collection', icon: '📖', label: 'Collection' },
+  { hash: '#/packs',      icon: '\u{1F0CF}', label: 'Boosters'   },
+  { hash: '#/shop',       icon: '\u{1F6D2}', label: 'Boutique'   },
+  { hash: '#/collection', icon: '\u{1F4D6}', label: 'Collection' },
 ];
 
 const CSS = `
 .home-wrap {
-  color:#dfe; display:flex; flex-direction:column; align-items:center;
-  gap:28px; padding:24px 12px 48px;
+  color: #dfe;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 24px 12px 56px;
 }
-.home-greeting { font-size:22px; font-weight:800; color:#c8f0d0; letter-spacing:.4px; }
+.home-greeting { font-size: 22px; font-weight: 800; color: #c8f0d0; letter-spacing: .4px; }
 .home-row {
-  display:flex; flex-wrap:wrap; justify-content:center;
-  gap:20px; width:100%; max-width:900px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 900px;
 }
 .stat-card {
-  background:#0b1218; border:1px solid #1a2e40; border-radius:16px;
-  padding:18px 24px; min-width:140px; text-align:center; flex:1;
+  background: #0b1218;
+  border: 1px solid #1a2e40;
+  border-radius: 16px;
+  padding: 18px 24px;
+  min-width: 140px;
+  text-align: center;
+  flex: 1;
 }
-.stat-val   { font-size:28px; font-weight:900; color:#ffd36b; }
-.stat-label { font-size:12px; color:#5a8a7a; margin-top:4px; text-transform:uppercase; letter-spacing:.5px; }
-.home-nav   { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; }
+.stat-val   { font-size: 28px; font-weight: 900; color: #ffd36b; }
+.stat-label { font-size: 12px; color: #5a8a7a; margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+.home-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+  width: 100%;
+  max-width: 900px;
+  align-items: flex-start;
+}
+.home-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 160px;
+}
 .nav-btn {
-  display:flex; flex-direction:column; align-items:center; gap:6px;
-  border:1px solid #1e3a4a; background:#0b1624; color:#cde;
-  padding:18px 28px; border-radius:16px; cursor:pointer;
-  font-size:13px; font-weight:700; text-decoration:none;
-  transition:filter .15s,transform .1s; min-width:100px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #1e3a4a;
+  background: #0b1624;
+  color: #cde;
+  padding: 14px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: filter .15s, transform .1s;
 }
-.nav-btn:hover { filter:brightness(1.15); transform:translateY(-2px); }
-.nav-icon { font-size:28px; }
+.nav-btn:hover { filter: brightness(1.15); transform: translateX(3px); }
+.nav-icon { font-size: 22px; }
 `;
 
 export async function render(root) {
@@ -50,8 +87,8 @@ export async function render(root) {
   wrap.className = 'home-wrap';
 
   // --- Greeting ---
-  const player   = getCachedPlayer();
-  const name     = player?.username || 'Joueur';
+  const player  = getCachedPlayer();
+  const name    = player?.username || 'Joueur';
   const greeting = document.createElement('div');
   greeting.className   = 'home-greeting';
   greeting.textContent = `Bienvenue, ${name} ⚔️`;
@@ -61,9 +98,9 @@ export async function render(root) {
   const statsRow = document.createElement('div');
   statsRow.className = 'home-row';
   const STATS = [
-    { id: 'stat-gold',   val: player?.gold        ?? 0, label: '⛁ Or'           },
-    { id: 'stat-cards',  val: player?.cards_count ?? 0, label: '🃏 Cartes'       },
-    { id: 'stat-packs',  val: player?.pack_count  ?? 0, label: '📦 Packs ouverts' },
+    { id: 'stat-gold',  val: player?.gold        ?? 0, label: '⛁ Or'           },
+    { id: 'stat-cards', val: player?.cards_count ?? 0, label: '🃏 Cartes'       },
+    { id: 'stat-packs', val: player?.pack_count  ?? 0, label: '📦 Packs ouverts' },
   ];
   STATS.forEach(({ id, val, label }) => {
     const card = document.createElement('div');
@@ -78,7 +115,18 @@ export async function render(root) {
   await mountDaily(dailySlot);
   wrap.appendChild(dailySlot);
 
-  // --- Quick nav ---
+  // --- Bottom: leaderboard + quick nav ---
+  const bottom = document.createElement('div');
+  bottom.className = 'home-bottom';
+
+  // Leaderboard
+  const lbSlot = document.createElement('div');
+  lbSlot.style.flex = '2';
+  const user = await getUser();
+  mountLeaderboard(lbSlot, user?.id ?? null);   // async, non-blocking
+  bottom.appendChild(lbSlot);
+
+  // Quick nav (vertical, beside leaderboard)
   const nav = document.createElement('div');
   nav.className = 'home-nav';
   NAV_ITEMS.forEach(({ hash, icon, label }) => {
@@ -88,11 +136,12 @@ export async function render(root) {
     a.innerHTML = `<span class="nav-icon">${icon}</span>${label}`;
     nav.appendChild(a);
   });
-  wrap.appendChild(nav);
+  bottom.appendChild(nav);
 
+  wrap.appendChild(bottom);
   root.appendChild(wrap);
 
-  // Live gold update after daily claim
+  // Live gold after daily claim
   const onGold = (e) => {
     const el = root.querySelector('#stat-gold');
     if (el && e.detail?.gold != null) el.textContent = String(e.detail.gold);
