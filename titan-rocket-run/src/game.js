@@ -23,13 +23,14 @@
     rocket:     { name: "Rocket",           desc: "Boost utilisable en plein vol avec ta touche rocket.", base: 70, max: 8 },
     cape:       { name: "Cape aéro",        desc: "Titan perd moins de vitesse en l'air.",              base: 45, max: 8 },
     start:      { name: "Ligne de départ",  desc: "Bonus de vitesse initiale.",                         base: 35, max: 8 },
-    doubleJump: { name: "Double Saut",      desc: "Touche saut en vol = second envol. Niv.5 = 2 charges.", base: 90, max: 5 },
+    doubleJump:  { name: "Double Saut",        desc: "Touche saut en vol = second envol. Niv.5 = 2 charges.",             base: 90, max: 5 },
+    rubberBoots: { name: "Bottes caoutchouc",  desc: "Titan rebondit à l'atterrissage. Niv.+ = rebonds plus hauts/nombreux.", base: 75, max: 6 },
   };
 
   const defaultSave = {
     coins: 0,
     best: 0,
-    upgrades: { shoes: 0, ramp: 0, rocket: 0, cape: 0, start: 0, doubleJump: 0 }
+    upgrades: { shoes: 0, ramp: 0, rocket: 0, cape: 0, start: 0, doubleJump: 0, rubberBoots: 0 }
   };
 
   let save = loadSave();
@@ -72,6 +73,18 @@
 
   let keybinds = loadKeys();
   let listeningFor = null;
+
+  // Deterministic star field — stable across frames
+  const STARS = (() => {
+    const arr = [];
+    for (let i = 0; i < 72; i++) arr.push({
+      x: (i * 347 + 83) % W,
+      y: (i * 271 + 51) % Math.round(config.groundY * 0.60),
+      r: 0.5 + (i * 13 % 12) * 0.10,
+      a: 0.22 + (i * 23 % 10) * 0.05,
+    });
+    return arr;
+  })();
 
   const titan = {
     x: config.startX,
@@ -197,6 +210,7 @@
       reward: 0,
       bonusCoins: 0,
       doubleJumpsUsed: 0,
+      bounces: 0,
     };
     message("Prêt ?", `Alterne ${keyLabel(keybinds.runLeft)} / ${keyLabel(keybinds.runRight)} pour courir. Appuie sur ${keyLabel(keybinds.jump)} dans la zone verte.`);
   }
@@ -320,10 +334,11 @@
     save.coins += attempt.reward;
     if (dist > save.best) save.best = dist;
     writeSave();
-    const bonusPart = attempt.bonusCoins > 0 ? ` (+${attempt.bonusCoins} ramassés)` : '';
+    const bonusPart  = attempt.bonusCoins > 0 ? ` (+${attempt.bonusCoins} ramassés)` : '';
+    const bouncePart = attempt.bounces   > 0 ? ` · ${attempt.bounces} rebond${attempt.bounces > 1 ? 's' : ''}` : '';
     message(
       `${dist.toFixed(1)} m !`,
-      `+${attempt.reward} os${bonusPart}. Appuie sur R pour relancer.`
+      `+${attempt.reward} os${bonusPart}${bouncePart}. Appuie sur ${keyLabel(keybinds.restart)} pour relancer.`
     );
   }
 
@@ -412,11 +427,26 @@
 
       if (titan.y >= config.groundY && titan.vy > 0) {
         titan.y = config.groundY;
-        titan.grounded = true;
         titan.rotation = 0;
-        titan.vx *= 0.55;
-        burst(titan.x, titan.y - 20, 20);
-        finishRun();
+        const bounceCoeff = 0.38 + save.upgrades.rubberBoots * 0.044;
+        const nextVy      = titan.vy * bounceCoeff;
+        const maxBounces  = 3 + save.upgrades.rubberBoots;
+        if (nextVy > 62 && attempt.bounces < maxBounces) {
+          attempt.bounces++;
+          titan.vy = -nextVy;
+          titan.vx *= 0.85;
+          titan.grounded = false;
+          titan.anim = "jump";
+          titan.frame = 0;
+          titan.y -= 3;
+          burst(titan.x, titan.y, 6 + attempt.bounces * 4);
+          floats.push({ x: titan.x, y: titan.y - 30, text: `×${attempt.bounces}`, life: 0.75, max: 0.75, vy: -65, color: "#f5e8c8" });
+        } else {
+          titan.grounded = true;
+          titan.vx *= 0.55;
+          burst(titan.x, titan.y - 20, 20);
+          finishRun();
+        }
       }
     }
 
@@ -484,24 +514,75 @@
   }
 
   function drawBackground() {
-    const grd = ctx.createLinearGradient(0, 0, 0, H);
-    grd.addColorStop(0, "#07150d");
-    grd.addColorStop(.55, "#0d2412");
-    grd.addColorStop(1, "#10120c");
-    ctx.fillStyle = grd;
+    // Sky
+    const sky = ctx.createLinearGradient(0, 0, 0, config.groundY + 20);
+    sky.addColorStop(0,    '#010b05');
+    sky.addColorStop(0.42, '#061a0b');
+    sky.addColorStop(0.80, '#0d2c15');
+    sky.addColorStop(1,    '#132f18');
+    ctx.fillStyle = sky;
     ctx.fillRect(0, 0, W, H);
 
-    ctx.save();
-    ctx.translate(-cameraX * .25 % 320, 0);
-    for (let x = -320; x < W + 640; x += 320) {
-      ctx.fillStyle = "rgba(98,255,82,.05)";
+    // Stars — twinkle
+    ctx.fillStyle = '#c8ffd8';
+    for (const s of STARS) {
+      ctx.globalAlpha = s.a * (0.5 + 0.5 * Math.sin(time * s.r * 1.9 + s.x * 0.014));
       ctx.beginPath();
-      ctx.arc(x + 100, 130, 90, 0, Math.PI * 2);
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "rgba(98,255,82,.08)";
-      ctx.strokeRect(x + 40, 80, 180, 320);
     }
-    ctx.restore();
+    ctx.globalAlpha = 1;
+
+    // Mountain layers (back → front, darker → lighter dark)
+    drawMtLayer(0.028, '#030e07', 118, config.groundY - 148, 0.00046);
+    drawMtLayer(0.062, '#06100a', 85,  config.groundY -  96, 0.00080);
+    drawMtLayer(0.115, '#091e0d', 60,  config.groundY -  54, 0.00128);
+
+    // Tree line
+    drawTreeLine(0.18, '#0d2413', 50, config.groundY - 5);
+
+    // Horizon glow
+    const haze = ctx.createLinearGradient(0, config.groundY - 72, 0, config.groundY);
+    haze.addColorStop(0, 'rgba(40,200,70,0)');
+    haze.addColorStop(1, 'rgba(50,220,80,.07)');
+    ctx.fillStyle = haze;
+    ctx.fillRect(0, config.groundY - 72, W, 72);
+  }
+
+  function drawMtLayer(parallax, color, amp, baseY, freq) {
+    const ox = cameraX * parallax;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(0, H);
+    const step = 14;
+    for (let sx = -step; sx <= W + step * 2; sx += step) {
+      const wx = sx + ox;
+      const n  = Math.sin(wx * freq)         * 0.50
+               + Math.sin(wx * freq * 1.79)  * 0.28
+               + Math.sin(wx * freq * 3.13)  * 0.14
+               + Math.sin(wx * freq * 6.91)  * 0.08;
+      ctx.lineTo(sx, baseY - amp * (0.5 + n * 0.52));
+    }
+    ctx.lineTo(W, H);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawTreeLine(parallax, color, treeH, baseY) {
+    const ox = cameraX * parallax;
+    ctx.fillStyle = color;
+    const sp = 34;
+    const si = Math.floor(ox / sp) - 1;
+    for (let i = si; i < si + Math.ceil(W / sp) + 4; i++) {
+      const sx = i * sp - ox + ((i * 137 + 3) % 14) - 7;
+      const h  = treeH + ((i * 31 + 5) % 18) - 9;
+      ctx.beginPath();
+      ctx.moveTo(sx - h * 0.34, baseY);
+      ctx.lineTo(sx + h * 0.34, baseY);
+      ctx.lineTo(sx,            baseY - h);
+      ctx.closePath();
+      ctx.fill();
+    }
   }
 
   function drawTrack() {
