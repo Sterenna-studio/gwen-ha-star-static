@@ -1,4 +1,4 @@
-// data/playersRepo.js — v5
+// data/playersRepo.js — v6
 export async function resolveDisplayName(supabase, user) {
   const { data: profile } = await supabase
     .from('profiles')
@@ -41,4 +41,23 @@ export async function saveGold(supabase, userId, delta) {
   const gold = Math.max(0, (pl?.gold || 0) + (delta || 0));
   await supabase.from('players').update({ gold }).eq('id', userId);
   return gold;
+}
+
+export async function syncStatsAfterPack(supabase, userId, cards) {
+  if (!cards?.length) return;
+  const hasLegendary = cards.some(c => {
+    const r = String(c.rarity || '').toLowerCase();
+    return r === 'legendary' || r === 'mythical';
+  });
+  const { data: pl } = await supabase
+    .from('players')
+    .select('cards_count')
+    .eq('id', userId)
+    .single();
+  const updates = {
+    cards_count: (pl?.cards_count ?? 0) + cards.length,
+    ...(hasLegendary && { has_legendary: true }),
+  };
+  const { error } = await supabase.from('players').update(updates).eq('id', userId);
+  if (error) console.error('syncStatsAfterPack error:', error);
 }

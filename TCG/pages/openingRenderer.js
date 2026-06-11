@@ -1,8 +1,10 @@
-// lab/tcg/pages/openingRenderer.js — v4.0.0 (rarity halos ++, z-index focus, legendary/mythical celebration)
+// lab/tcg/pages/openingRenderer.js — v4.1.0 (rarity halos ++, z-index focus, legendary/mythical celebration, Supabase save)
 import { openOnePack, commitOpenedCards } from '../../shared/packsRepo.js';
 import { getSettings } from '../app/ui-settings.js';
 import { cardArtworkUrl } from '../../shared/assetHelpers.js';
 import { burstParticles, celebrateCard } from '../../shared/effects/animations.js';
+import { saveCards } from '../data/cardsRepo.js';
+import { syncStatsAfterPack } from '../data/playersRepo.js';
 
 const SFX = {
   common: 'common.mp3',
@@ -29,12 +31,14 @@ function playOnceFactory(volume=1.0){
   };
 }
 
-export async function runOpeningFlow(root, { setId='SET', packTypeId, imageName=null }){
+export async function runOpeningFlow(root, { setId='SET', packTypeId, imageName=null, supabase=null, userId=null }){
   const overlay=document.createElement('div'); Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:9998,display:'grid',placeItems:'center',background:'#070b11cc'});
   const wrap=document.createElement('div'); Object.assign(wrap.style,{width:'min(1200px,96vw)',userSelect:'none'}); overlay.appendChild(wrap); document.body.appendChild(overlay);
 
   const s=getSettings(); const volume=Math.max(0,Math.min(100,('volume' in s?s.volume:80)))/100; const playSfx=playOnceFactory(volume);
   const backUrl='/lab/shared/assets/ui/card_back.png'; const packUrl=imageName?`/lab/shared/assets/packs/${imageName}`:`/lab/shared/assets/packs/${setId}-default.jpg`;
+
+  let _lastResults = [];
 
   wrap.innerHTML=`
   <style>
@@ -87,7 +91,11 @@ export async function runOpeningFlow(root, { setId='SET', packTypeId, imageName=
     if (holding) return;
     holding=true; packEl.classList.add('hold');
     holdTimer=setTimeout(async()=>{
-      try{ const payload=await finishOpen(); renderCards(payload.results); }
+      try{
+        const payload=await finishOpen();
+        _lastResults = payload.results;
+        renderCards(payload.results);
+      }
       catch(e){ hint.textContent=e?.message||'Erreur ouverture pack'; packEl.style.display=''; }
     }, HOLD_MS);
   }
@@ -174,7 +182,15 @@ export async function runOpeningFlow(root, { setId='SET', packTypeId, imageName=
 
     document.querySelector('#btn-save')?.addEventListener('click', async ()=>{
       const ids=[...cardsEl.querySelectorAll('.back img')].map(img=>({id:img.alt,rarity:''}));
-      try{ await commitOpenedCards({results:ids}); document.body.removeChild(overlay); window.dispatchEvent(new Event('tcg:refresh')); } catch(e){ alert('Erreur enregistrement: '+(e?.message||e)); }
+      try{
+        await commitOpenedCards({results:ids});
+        if (supabase && userId) {
+          await saveCards(supabase, userId, _lastResults);
+          await syncStatsAfterPack(supabase, userId, _lastResults);
+        }
+        document.body.removeChild(overlay);
+        window.dispatchEvent(new Event('tcg:refresh'));
+      } catch(e){ alert('Erreur enregistrement: '+(e?.message||e)); }
       document.removeEventListener('keydown', onKey, { capture:true });
     });
   }
