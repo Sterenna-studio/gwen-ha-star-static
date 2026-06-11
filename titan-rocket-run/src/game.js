@@ -48,6 +48,7 @@
   let attempt = {};
   let cameraX = 0;
   let cameraY = 0;
+  let shakeX = 0, shakeY = 0, shakeI = 0;
 
   const config = {
     groundY: 575,
@@ -198,6 +199,7 @@
     springs   = [];
     floats    = [];
     runInput = { lastKey: null, combo: 0, spamHeat: 0 };
+    shakeX = 0; shakeY = 0; shakeI = 0;
     state = "ready";
     attempt = {
       maxSpeed: 0,
@@ -396,6 +398,14 @@
   function update(dt) {
     time += dt;
 
+    // Screen shake decay
+    if (shakeI > 0.4) {
+      const a = Math.random() * Math.PI * 2;
+      shakeX = Math.cos(a) * shakeI;
+      shakeY = Math.sin(a) * shakeI;
+      shakeI *= 0.78;
+    } else { shakeX = 0; shakeY = 0; shakeI = 0; }
+
     if (state === "ready") {
       titan.anim = "idle";
       titan.vx *= 0.96;
@@ -510,6 +520,8 @@
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
+    ctx.save();
+    ctx.translate(Math.round(shakeX), Math.round(shakeY));
     drawBackground();
     ctx.save();
     ctx.translate(0, Math.round(cameraY));
@@ -522,6 +534,7 @@
     drawFloats();
     ctx.restore();
     drawForegroundText();
+    ctx.restore();
   }
 
   function drawBackground() {
@@ -656,6 +669,25 @@
     ctx.fillStyle = "#62ff52";
     ctx.font = "800 18px system-ui";
     ctx.fillText("JUMP", rx + rw * .55, ground - rh - 20);
+
+    // Best record marker
+    if (save.best > 0) {
+      const recX = config.startX + save.best / config.worldScale;
+      if (recX > cameraX - 40 && recX < cameraX + W + 40) {
+        ctx.strokeStyle = 'rgba(255,210,0,.60)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([7, 5]);
+        ctx.beginPath();
+        ctx.moveTo(recX, ground - 115);
+        ctx.lineTo(recX, ground);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(255,210,0,.90)';
+        ctx.font = '700 13px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText(`★ ${save.best.toFixed(1)} m`, recX, ground - 123);
+      }
+    }
 
     ctx.restore();
   }
@@ -806,6 +838,7 @@
           ty > o.y - o.h / 2 - 20 && ty < o.y + o.h / 2 + 20) {
         o.hit = true;
         titan.vx *= 0.62;
+        shakeI = 14;
         burst(titan.x, titan.y - 80, 16);
         floats.push({ x: o.x, y: o.y - 30, text: 'IMPACT !', life: 1.2, max: 1.2, vy: -45, color: '#ff4b4b' });
       }
