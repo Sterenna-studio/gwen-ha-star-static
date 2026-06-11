@@ -18,17 +18,18 @@
   };
 
   const upgrades = {
-    shoes: { name: "Chaussures", desc: "Plus d'accélération quand tu spammes.", base: 40, max: 8 },
-    ramp: { name: "Rampe", desc: "Zone de saut plus large et meilleur angle.", base: 55, max: 8 },
-    rocket: { name: "Rocket", desc: "Boost utilisable en plein vol avec Shift.", base: 70, max: 8 },
-    cape: { name: "Cape aéro", desc: "Titan perd moins de vitesse en l'air.", base: 45, max: 8 },
-    start: { name: "Ligne de départ", desc: "Bonus de vitesse initiale.", base: 35, max: 8 },
+    shoes:      { name: "Chaussures",       desc: "Plus d'accélération quand tu spammes.",             base: 40, max: 8 },
+    ramp:       { name: "Rampe",            desc: "Zone de saut plus large et meilleur angle.",         base: 55, max: 8 },
+    rocket:     { name: "Rocket",           desc: "Boost utilisable en plein vol avec ta touche rocket.", base: 70, max: 8 },
+    cape:       { name: "Cape aéro",        desc: "Titan perd moins de vitesse en l'air.",              base: 45, max: 8 },
+    start:      { name: "Ligne de départ",  desc: "Bonus de vitesse initiale.",                         base: 35, max: 8 },
+    doubleJump: { name: "Double Saut",      desc: "Touche saut en vol = second envol. Niv.5 = 2 charges.", base: 90, max: 5 },
   };
 
   const defaultSave = {
     coins: 0,
     best: 0,
-    upgrades: { shoes: 0, ramp: 0, rocket: 0, cape: 0, start: 0 }
+    upgrades: { shoes: 0, ramp: 0, rocket: 0, cape: 0, start: 0, doubleJump: 0 }
   };
 
   let save = loadSave();
@@ -54,6 +55,22 @@
     rampH: 58,
     worldScale: 0.09, // px to meters-ish
   };
+
+  const defaultKeys = { runLeft: 'a', runRight: 'd', jump: ' ', rocket: 'shift', restart: 'r' };
+
+  function loadKeys() {
+    try {
+      const raw = localStorage.getItem('titanRocketRunKeys');
+      if (!raw) return { ...defaultKeys };
+      return { ...defaultKeys, ...JSON.parse(raw) };
+    } catch { return { ...defaultKeys }; }
+  }
+  function saveKeys() {
+    localStorage.setItem('titanRocketRunKeys', JSON.stringify(keybinds));
+  }
+
+  let keybinds = loadKeys();
+  let listeningFor = null;
 
   const titan = {
     x: config.startX,
@@ -96,7 +113,12 @@
     try {
       const raw = localStorage.getItem("titanRocketRunSave");
       if (!raw) return structuredClone(defaultSave);
-      return { ...structuredClone(defaultSave), ...JSON.parse(raw) };
+      const parsed = JSON.parse(raw);
+      const base = structuredClone(defaultSave);
+      if (parsed.coins != null) base.coins = parsed.coins;
+      if (parsed.best  != null) base.best  = parsed.best;
+      if (parsed.upgrades) Object.assign(base.upgrades, parsed.upgrades);
+      return base;
     } catch {
       return structuredClone(defaultSave);
     }
@@ -117,6 +139,7 @@
     el.best.textContent = `${save.best.toFixed(1)} m`;
     el.coins.textContent = save.coins;
     renderShop();
+    renderControls();
   }
 
   function renderShop() {
@@ -171,12 +194,61 @@
       distance: 0,
       reward: 0,
       bonusCoins: 0,
+      doubleJumpsUsed: 0,
     };
-    message("Prêt ?", "Alterne A / D pour courir. Appuie sur Espace dans la zone verte de la rampe.");
+    message("Prêt ?", `Alterne ${keyLabel(keybinds.runLeft)} / ${keyLabel(keybinds.runRight)} pour courir. Appuie sur ${keyLabel(keybinds.jump)} dans la zone verte.`);
   }
 
   function message(title, body) {
     el.msg.innerHTML = `<b>${title}</b><br>${body}`;
+  }
+
+  function keyLabel(k) {
+    const MAP = { ' ': 'Espace', 'shift': 'Shift', 'control': 'Ctrl', 'alt': 'Alt',
+      'arrowleft': '←', 'arrowright': '→', 'arrowup': '↑', 'arrowdown': '↓', 'escape': 'Échap' };
+    return MAP[k] ?? k.toUpperCase();
+  }
+
+  function renderControls() {
+    const panel = document.getElementById('controls-panel');
+    if (!panel) return;
+    const defs = [
+      { id: 'runLeft',  label: 'Courir ←' },
+      { id: 'runRight', label: 'Courir →' },
+      { id: 'jump',     label: 'Sauter' },
+      { id: 'rocket',   label: 'Booster' },
+      { id: 'restart',  label: 'Relancer' },
+    ];
+    panel.innerHTML = '';
+    defs.forEach(({ id, label }) => {
+      const row = document.createElement('div');
+      row.className = 'ctrl-row';
+      const lbl = document.createElement('span');
+      lbl.className = 'ctrl-label';
+      lbl.textContent = label;
+      const btn = document.createElement('button');
+      btn.className = 'ctrl-key' + (listeningFor === id ? ' listening' : '');
+      btn.textContent = listeningFor === id ? '…' : keyLabel(keybinds[id]);
+      btn.onclick = () => { listeningFor = id; renderControls(); };
+      row.appendChild(lbl);
+      row.appendChild(btn);
+      panel.appendChild(row);
+    });
+    const hint = document.createElement('p');
+    hint.className = 'ctrl-hint';
+    hint.textContent = listeningFor ? 'Appuie sur une touche (Échap = annuler)' : 'Cliquer une touche pour rebinder';
+    panel.appendChild(hint);
+  }
+
+  function doDoubleJump() {
+    attempt.doubleJumpsUsed++;
+    const power = 320 + save.upgrades.doubleJump * 50;
+    titan.vy = -power;
+    titan.vx *= 1.04 + save.upgrades.doubleJump * 0.015;
+    titan.anim = 'jump';
+    titan.frame = 0;
+    burst(titan.x, titan.y - 65, 18);
+    floats.push({ x: titan.x, y: titan.y - 90, text: 'DOUBLE SAUT !', life: 1.1, max: 1.1, vy: -55, color: '#62ff52' });
   }
 
   function startRun() {
@@ -255,22 +327,35 @@
 
   function keyDown(e) {
     const k = e.key.toLowerCase();
-    keys.add(k);
 
-    if (k === "r") resetAttempt();
-    if (k === " " && (state === "ready" || state === "result")) {
+    // Remap capture mode
+    if (listeningFor) {
       e.preventDefault();
-      resetAttempt();
-      startRun();
+      if (k !== 'escape') {
+        const conflict = Object.entries(keybinds).find(([id, v]) => v === k && id !== listeningFor);
+        if (!conflict) { keybinds[listeningFor] = k; saveKeys(); }
+      }
+      listeningFor = null;
+      renderControls();
       return;
     }
-    if (k === " ") {
+
+    keys.add(k);
+
+    if (k === keybinds.restart) { resetAttempt(); return; }
+
+    if (k === keybinds.jump) {
       e.preventDefault();
+      if (state === 'ready' || state === 'result') { resetAttempt(); startRun(); return; }
+      if (state === 'flight' && !titan.grounded && save.upgrades.doubleJump > 0) {
+        const maxCharges = save.upgrades.doubleJump >= 5 ? 2 : 1;
+        if (attempt.doubleJumpsUsed < maxCharges) { doDoubleJump(); return; }
+      }
       tryJump();
       return;
     }
 
-    if ((k === "a" || k === "d") && (state === "ready" || state === "runup")) {
+    if ((k === keybinds.runLeft || k === keybinds.runRight) && (state === 'ready' || state === 'runup')) {
       startRun();
       if (runInput.lastKey !== k) {
         const gain = 34 + save.upgrades.shoes * 5;
@@ -316,8 +401,8 @@
     }
 
     if (state === "flight") {
-      titan.anim = keys.has("shift") && attempt.rocket > 0 ? "bark_energy_blast" : "jump";
-      if (keys.has("shift")) doRocket(dt);
+      titan.anim = keys.has(keybinds.rocket) && attempt.rocket > 0 ? "bark_energy_blast" : "jump";
+      if (keys.has(keybinds.rocket)) doRocket(dt);
       const aero = 0.05 + save.upgrades.cape * 0.007;
       titan.vx *= (1 - aero * dt);
       titan.vy += 960 * dt;
