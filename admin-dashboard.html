@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Sterenna</title>
+  <style>
+    :root {
+      --bg: #070b11;
+      --bg2: #0d1520;
+      --bg3: #111d2e;
+      --border: #1e3048;
+      --accent: #00f5c4;
+      --accent2: #42b0ff;
+      --warn: #ffbe46;
+      --err: #ff4e6a;
+      --ok: #22c55e;
+      --muted: #4a6880;
+      --text: #c8e8ff;
+      --font: 'Courier New', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 13px; min-height: 100vh; }
+
+    #guard { display:flex; align-items:center; justify-content:center; height:100vh; font-size:1.1em; color: var(--muted); }
+    #app   { display:none; }
+
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 24px; border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+    }
+    header h1 { font-size: 1em; color: var(--accent); letter-spacing: .08em; }
+    #refresh-btn {
+      background: transparent; border: 1px solid var(--accent); color: var(--accent);
+      padding: 5px 14px; cursor: pointer; font-family: var(--font); font-size: .85em;
+      border-radius: 4px; transition: background .15s;
+    }
+    #refresh-btn:hover { background: rgba(0,245,196,.1); }
+    #last-refresh { color: var(--muted); font-size: .78em; margin-left: 12px; }
+
+    main { padding: 24px; display: flex; flex-direction: column; gap: 28px; max-width: 1400px; margin: 0 auto; }
+
+    .section-title {
+      font-size: .72em; color: var(--muted); letter-spacing: .12em;
+      text-transform: uppercase; border-bottom: 1px solid var(--border);
+      padding-bottom: 6px; margin-bottom: 14px;
+    }
+
+    /* ── KPI row ── */
+    .kpi-row { display: flex; gap: 14px; flex-wrap: wrap; }
+    .kpi {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 20px; flex: 1; min-width: 140px;
+    }
+    .kpi .val { font-size: 1.8em; font-weight: 700; color: var(--accent2); }
+    .kpi .lbl { font-size: .72em; color: var(--muted); margin-top: 2px; }
+
+    /* ── Tables ── */
+    .table-wrap {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; overflow: auto;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: left; padding: 9px 14px; font-size: .72em;
+      color: var(--muted); letter-spacing: .08em; text-transform: uppercase;
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid #0f1e2d; transition: background .1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,.025); }
+    td { padding: 8px 14px; font-size: .88em; white-space: nowrap; }
+    td.mono { font-family: var(--font); color: var(--muted); font-size: .78em; }
+    td.name { color: var(--accent2); font-weight: 600; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: .72em; font-weight: 700; letter-spacing: .04em;
+    }
+    .badge.ok      { background: rgba(34,197,94,.15);  color: var(--ok); }
+    .badge.warn    { background: rgba(255,190,70,.15);  color: var(--warn); }
+    .badge.err     { background: rgba(255,78,106,.15);  color: var(--err); }
+    .badge.info    { background: rgba(66,176,255,.12);  color: var(--accent2); }
+    .badge.mythic  { background: rgba(0,245,196,.12);   color: var(--accent); }
+
+    /* ── Log tail ── */
+    #log {
+      background: #050a10; border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 16px; font-size: .78em; color: var(--muted);
+      max-height: 180px; overflow-y: auto; line-height: 1.7;
+    }
+    #log .entry { display: flex; gap: 10px; }
+    #log .ts   { color: #2a4060; min-width: 60px; }
+    #log .ok   { color: var(--ok); }
+    #log .warn { color: var(--warn); }
+    #log .err  { color: var(--err); }
+
+    /* ── Spinner ── */
+    .spin {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Accordion ── */
+    details > summary {
+      cursor: pointer; list-style: none; padding: 10px 14px;
+      color: var(--text); font-size: .88em;
+      border-bottom: 1px solid var(--border);
+    }
+    details > summary::-webkit-details-marker { display: none; }
+    details > summary::before { content: '▶ '; font-size: .7em; color: var(--muted); }
+    details[open] > summary::before { content: '▼ '; }
+  </style>
+</head>
+<body>
+
+<div id="guard">Vérification accès…</div>
+
+<div id="app">
+  <header>
+    <h1>⚙ STERENNA — Admin Dashboard</h1>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="last-refresh"></span>
+      <button id="refresh-btn">↺ Rafraîchir</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- KPIs globaux -->
+    <section>
+      <div class="section-title">Vue globale</div>
+      <div class="kpi-row" id="kpi-row">
+        <div class="kpi"><div class="val" id="kpi-users"><span class="spin"></span></div><div class="lbl">Utilisateurs inscrits</div></div>
+        <div class="kpi"><div class="val" id="kpi-players"><span class="spin"></span></div><div class="lbl">Joueurs TCG actifs</div></div>
+        <div class="kpi"><div class="val" id="kpi-cards"><span class="spin"></span></div><div class="lbl">Cartes en collection</div></div>
+        <div class="kpi"><div class="val" id="kpi-packs"><span class="spin"></span></div><div class="lbl">Packs ouverts (total)</div></div>
+        <div class="kpi"><div class="val" id="kpi-gold"><span class="spin"></span></div><div class="lbl">Gold total en circulation</div></div>
+      </div>
+    </section>
+
+    <!-- Joueurs TCG -->
+    <section>
+      <div class="section-title">Joueurs TCG — <code>players</code></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Joueur</th>
+            <th>Gold</th>
+            <th>Cartes</th>
+            <th>Legendary</th>
+            <th>Packs restants</th>
+            <th>User ID</th>
+          </tr></thead>
+          <tbody id="tbl-players"><tr><td colspan="6"><span class="spin"></span> Chargement…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Pack types -->
+    <section>
+      <div class="section-title">Catalogue packs — <code>pack_types</code></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Nom</th>
+            <th>Set</th>
+            <th>Prix</th>
+            <th>Cartes/pack</th>
+            <th>Garanties</th>
+            <th>ID</th>
+          </tr></thead>
+          <tbody id="tbl-packs"><tr><td colspan="6"><span class="spin"></span> Chargement…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Collections -->
+    <section>
+      <details>
+        <summary>Collection <code>player_cards</code> — top 20 quantités</summary>
+        <div class="table-wrap" style="border-top:none;border-radius:0 0 8px 8px">
+          <table>
+            <thead><tr>
+              <th>Player ID</th>
+              <th>Card ID</th>
+              <th>Qty</th>
+            </tr></thead>
+            <tbody id="tbl-cards"><tr><td colspan="3"><span class="spin"></span> Chargement…</td></tr></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <!-- Auth users -->
+    <section>
+      <details>
+        <summary>Comptes Auth — <code>auth.users</code> (10 derniers)</summary>
+        <div class="table-wrap" style="border-top:none;border-radius:0 0 8px 8px">
+          <table>
+            <thead><tr>
+              <th>Email</th>
+              <th>Créé le</th>
+              <th>Dernière connexion</th>
+              <th>Provider</th>
+              <th>ID</th>
+            </tr></thead>
+            <tbody id="tbl-users"><tr><td colspan="5"><span class="spin"></span> Chargement…</td></tr></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <!-- Log -->
+    <section>
+      <div class="section-title">Log requêtes</div>
+      <div id="log"></div>
+    </section>
+
+  </main>
+</div>
+
+<script type="module" src="/admin-dashboard.js"></script>
+</body>
+</html>
