@@ -271,7 +271,10 @@ function bindStaticEvents() {
       pulseShell('store');
       toast(`Fragment Nitro confiné dans la sphère +${result.fragmentsStored}`);
     }
-    if (result?.fragments) toast(`Fragment Nitro obtenu +${result.fragments}`);
+    if (result?.fragments) {
+      toast(`Fragment Nitro obtenu +${result.fragments}`);
+      spawnFragmentOrbs(result.fragments);
+    }
     if (Math.random() > 0.45) zapToRandomModule();
 
     claimMilestonesAndRender();
@@ -321,7 +324,8 @@ function bindStaticEvents() {
   });
 
   document.getElementById('prestige-btn').addEventListener('click', () => {
-    const beforeLayer = getScalingLayer(state).id;
+    const beforeLayer  = getScalingLayer(state).id;
+    const oldFragments = state.fragments ?? 0;
     const result = doPrestige(state);
     if (!result.ok) return toast('Prestige pas encore prêt. Continue à charger le noyau.');
     state = result.state;
@@ -333,6 +337,8 @@ function bindStaticEvents() {
     if (getScalingLayer(state).id !== beforeLayer) spawnScaleShift();
     claimMilestonesAndRender();
     toast('Prestige activé. Échelle du système recalculée.');
+    const earned = (state.fragments ?? 0) - oldFragments;
+    if (earned > 0) setTimeout(() => spawnFragmentOrbs(earned), 500);
   });
 }
 
@@ -461,6 +467,49 @@ function spawnBouncingBurst(clientX, clientY, count = 8) {
     if (!bounceLoop) bounceCtx.clearRect(0, 0, bw, bh);
   }
   bounceLoop = requestAnimationFrame(tick);
+}
+
+function spawnFragmentOrbs(count) {
+  if (count <= 0) return;
+  const core  = document.getElementById('click-core');
+  const panel = document.getElementById('core-panel');
+  if (!core || !panel) return;
+  const cr  = core.getBoundingClientRect();
+  const pr  = panel.getBoundingClientRect();
+  const cx  = cr.left + cr.width  / 2 - pr.left;
+  const cy  = cr.top  + cr.height / 2 - pr.top;
+  const orbitR = cr.width / 2 * 1.12;
+  const n = Math.min(count, 8);
+  for (let i = 0; i < n; i++) {
+    const angle = (i / n) * Math.PI * 2 + (Math.random() * 0.35 - 0.175);
+    const orb = document.createElement('div');
+    orb.className = 'fragment-orb';
+    orb.textContent = '⬡';
+    orb.style.left = `${cx + Math.cos(angle) * orbitR}px`;
+    orb.style.top  = `${cy + Math.sin(angle) * orbitR}px`;
+    panel.appendChild(orb);
+    const t = setTimeout(() => collectOrb(orb), 2000);
+    orb.addEventListener('click', e => { e.stopPropagation(); clearTimeout(t); collectOrb(orb); }, { once: true });
+  }
+}
+
+function collectOrb(orb) {
+  if (!orb.isConnected) return;
+  const stat = document.getElementById('stat-fragments');
+  const or   = orb.getBoundingClientRect();
+  orb.remove();
+  if (!stat || !fxEnabled) return;
+  const sr    = stat.getBoundingClientRect();
+  const ghost = document.createElement('div');
+  ghost.className = 'fragment-orb-ghost';
+  ghost.textContent = '⬡';
+  ghost.style.left = `${or.left + or.width  / 2}px`;
+  ghost.style.top  = `${or.top  + or.height / 2}px`;
+  ghost.style.setProperty('--tx', `${sr.left + sr.width  / 2 - or.left - or.width  / 2}px`);
+  ghost.style.setProperty('--ty', `${sr.top  + sr.height / 2 - or.top  - or.height / 2}px`);
+  document.body.appendChild(ghost);
+  requestAnimationFrame(() => ghost.classList.add('fragment-orb-ghost--fly'));
+  setTimeout(() => ghost.remove(), 600);
 }
 
 function pulseReactor() {

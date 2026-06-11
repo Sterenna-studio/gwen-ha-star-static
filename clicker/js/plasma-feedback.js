@@ -14,7 +14,7 @@ function mountPlasmaFeedback() {
   arcLayer.id = 'plasma-arc-layer';
   arcLayer.className = 'plasma-arc-layer';
   arcLayer.setAttribute('aria-hidden', 'true');
-  panel.appendChild(arcLayer);
+  core.appendChild(arcLayer);
 
   core.addEventListener('click', event => {
     triggerPlasmaArc(event.clientX, event.clientY, event.isTrusted ? 5 : 2);
@@ -27,39 +27,35 @@ function mountPlasmaFeedback() {
 }
 
 function triggerPlasmaArc(clientX, clientY, count = 4) {
-  const panel = document.getElementById('core-panel');
   const layer = document.getElementById('plasma-arc-layer');
-  const core = document.getElementById('click-core');
-  if (!panel || !layer || !core) return;
+  const core  = document.getElementById('click-core');
+  if (!layer || !core) return;
 
-  const panelRect = panel.getBoundingClientRect();
-  const coreRect = core.getBoundingClientRect();
-  const origin = {
-    x: Number.isFinite(clientX) ? clientX - panelRect.left : coreRect.left + coreRect.width / 2 - panelRect.left,
-    y: Number.isFinite(clientY) ? clientY - panelRect.top : coreRect.top + coreRect.height / 2 - panelRect.top,
-  };
+  const cr = core.getBoundingClientRect();
+  const w  = cr.width;
+  const h  = cr.height;
+  const cx = w / 2;
+  const cy = h / 2;
+  const r  = Math.min(w, h) / 2;
+
+  const ox = Number.isFinite(clientX) ? clientX - cr.left : cx;
+  const oy = Number.isFinite(clientY) ? clientY - cr.top  : cy;
 
   for (let i = 0; i < count; i++) {
-    const target = pickArcTarget(coreRect, panelRect);
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    path.classList.add('plasma-arc-svg');
-    path.setAttribute('viewBox', `0 0 ${panelRect.width} ${panelRect.height}`);
-    path.innerHTML = `<path class="plasma-arc-main" d="${makeArcPath(origin.x, origin.y, target.x, target.y)}"/><path class="plasma-arc-glow" d="${makeArcPath(origin.x, origin.y, target.x, target.y)}"/>`;
-    layer.appendChild(path);
-    setTimeout(() => path.remove(), 460 + Math.random() * 160);
+    const angle  = Math.random() * Math.PI * 2;
+    const targetR = r * (0.52 + Math.random() * 0.44);
+    const tx = cx + Math.cos(angle) * targetR;
+    const ty = cy + Math.sin(angle) * targetR;
+    const d  = makeArcPath(ox, oy, tx, ty);
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('plasma-arc-svg');
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.innerHTML = `<path class="plasma-arc-main" d="${d}"/><path class="plasma-arc-glow" d="${d}"/>`;
+    layer.appendChild(svg);
+    setTimeout(() => svg.remove(), 460 + Math.random() * 160);
   }
 }
 
-function pickArcTarget(coreRect, panelRect) {
-  const angle = Math.random() * Math.PI * 2;
-  const radius = Math.min(panelRect.width, panelRect.height) * (0.18 + Math.random() * 0.22);
-  const cx = coreRect.left + coreRect.width / 2 - panelRect.left;
-  const cy = coreRect.top + coreRect.height / 2 - panelRect.top;
-  return {
-    x: cx + Math.cos(angle) * radius,
-    y: cy + Math.sin(angle) * radius,
-  };
-}
 
 function makeArcPath(x1, y1, x2, y2) {
   const dx = x2 - x1;

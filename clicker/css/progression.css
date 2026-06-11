@@ -160,13 +160,14 @@
 }
 
 .sub-core {
+  --sub-size: max(28px, calc(var(--eff) * var(--nc-core-size, 220px)));
   position: absolute;
-  width: 46px;
-  height: 46px;
+  width: var(--sub-size);
+  height: var(--sub-size);
   transform:
     translate(-50%, -50%)
     rotate(var(--angle))
-    translateX(155px)
+    translateX(calc(var(--nc-core-size, 220px) * 0.52 + var(--sub-size) * 0.56))
     rotate(calc(-1 * var(--angle)));
 }
 
@@ -220,15 +221,15 @@
 }
 
 .sub-core-glyph {
-  font-size: 12px;
+  font-size: max(8px, calc(var(--sub-size, 46px) * 0.26));
   line-height: 1;
   color: var(--nc-primary);
   display: block;
 }
 
 .sub-core-eff {
-  font-size: 6px;
-  letter-spacing: .07em;
+  font-size: max(5px, calc(var(--sub-size, 46px) * 0.10));
+  letter-spacing: .05em;
   color: rgba(0,255,204,.6);
   display: block;
 }
@@ -239,6 +240,59 @@
 
 /* Float-pop contained inside click-core (override body inheritance) */
 .float-pop { font-size: clamp(13px, 1.5vw, 19px); }
+
+/* ── Fragment collectibles ───────────────────────────────────────────────── */
+
+.fragment-orb {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  color: var(--nc-accent, #ffcc00);
+  text-shadow:
+    0 0 8px var(--nc-accent, #ffcc00),
+    0 0 20px rgba(0,255,204,.55),
+    0 0 36px rgba(255,204,0,.28);
+  pointer-events: all;
+  cursor: pointer;
+  z-index: 20;
+  user-select: none;
+  animation:
+    fragmentOrbPop  .32s cubic-bezier(.1,.9,.18,1) both,
+    fragmentOrbFloat 1.5s ease-in-out .32s infinite;
+}
+
+.fragment-orb:hover {
+  filter: brightness(1.7) drop-shadow(0 0 8px var(--nc-accent, #ffcc00));
+}
+
+@keyframes fragmentOrbPop {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(.05); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes fragmentOrbFloat {
+  0%, 100% { transform: translate(-50%, calc(-50% - 6px)); }
+  50%       { transform: translate(-50%, calc(-50% + 6px)); }
+}
+
+.fragment-orb-ghost {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  color: var(--nc-accent, #ffcc00);
+  text-shadow: 0 0 10px var(--nc-accent, #ffcc00);
+  pointer-events: none;
+  z-index: 300;
+}
+
+.fragment-orb-ghost--fly {
+  animation: fragmentOrbFlyToStat .52s cubic-bezier(.4, 0, 1, 1) forwards;
+}
+
+@keyframes fragmentOrbFlyToStat {
+  from { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  to   { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(.12); opacity: 0; }
+}
 
 /* Bounce canvas is already styled inline; this reinforces clip */
 .bounce-canvas { border-radius: 50%; overflow: hidden; }
