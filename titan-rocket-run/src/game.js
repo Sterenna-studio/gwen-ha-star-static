@@ -34,7 +34,6 @@
   };
 
   let save = loadSave();
-  const images = {};
   const anim = {};
   const keys = new Set();
   let last = performance.now();
@@ -48,6 +47,7 @@
   let runInput = { lastKey: null, combo: 0, spamHeat: 0 };
   let attempt = {};
   let cameraX = 0;
+  let cameraY = 0;
 
   const config = {
     groundY: 575,
@@ -271,7 +271,7 @@
     if (state === "ready") {
       state = "runup";
       titan.anim = "run";
-      message("Cours !", "Alterne A / D vite, puis Espace sur la rampe.");
+      message("Cours !", `Alterne ${keyLabel(keybinds.runLeft)} / ${keyLabel(keybinds.runRight)} vite, puis ${keyLabel(keybinds.jump)} sur la rampe.`);
     }
   }
 
@@ -317,7 +317,8 @@
         life: .35 + Math.random() * .25,
         max: .55,
         r: 5 + Math.random() * 11,
-        color: `rgba(${90 + Math.random()*90},255,80,`
+        color: `rgba(${90 + Math.random()*90},255,80,`,
+        z: 1,
       });
     }
   }
@@ -413,6 +414,7 @@
         titan.grounded = false;
         titan.vy = -160;
         titan.vx *= .55;
+        spawnFlightObjects();
         message("Trop tard !", "Titan a raté la rampe. R pour recommencer.");
       }
     }
@@ -459,6 +461,12 @@
     attempt.maxSpeed = Math.max(attempt.maxSpeed, titan.vx);
     cameraX = Math.max(0, titan.x - 330);
 
+    // Vertical camera: pan up when Titan flies high
+    const vtarget = (state === 'flight' && !titan.grounded)
+      ? Math.max(0, Math.min(185, 155 - titan.y))
+      : 0;
+    cameraY += (vtarget - cameraY) * Math.min(1, dt * 5);
+
     updateAnim(dt);
     updateParticles(dt);
     updateSprings(dt);
@@ -503,6 +511,8 @@
   function draw() {
     ctx.clearRect(0, 0, W, H);
     drawBackground();
+    ctx.save();
+    ctx.translate(0, Math.round(cameraY));
     drawTrack();
     drawPickups();
     drawSprings();
@@ -510,6 +520,7 @@
     drawTitan();
     drawParticles(false);
     drawFloats();
+    ctx.restore();
     drawForegroundText();
   }
 
@@ -603,7 +614,7 @@
     // distance markers
     ctx.font = "700 18px system-ui";
     ctx.textAlign = "center";
-    for (let m = 0; m < 500; m += 10) {
+    for (let m = 0; m < 2000; m += 10) {
       const x = config.startX + m / config.worldScale;
       if (x < cameraX - 100 || x > cameraX + W + 100) continue;
       ctx.strokeStyle = m % 50 === 0 ? "rgba(98,255,82,.55)" : "rgba(255,255,255,.18)";
@@ -986,6 +997,7 @@
     ctx.save();
     ctx.translate(-cameraX, 0);
     for (const p of particles) {
+      if (((p.z ?? 0) === 0) !== behind) continue;
       const alpha = clamp(p.life / p.max, 0, 1);
       ctx.fillStyle = `${p.color}${alpha})`;
       ctx.beginPath();
