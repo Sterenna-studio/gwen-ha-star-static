@@ -131,7 +131,7 @@ function renderShell() {
         </div>
         <a href="/star/" class="nav-btn">⬡ STAR</a>
         <a href="/" class="nav-btn">← HUB</a>
-        <a href="/nitro/deploy.html" class="nav-btn deploy-badge" id="deploy-badge" title="Deploy status">BUILD</a>
+        <a href="/clicker/deploy.html" class="nav-btn deploy-badge" id="deploy-badge" title="Deploy status">BUILD</a>
       </nav>
     </header>
 
