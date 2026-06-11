@@ -91,13 +91,25 @@
     /* MODE LECTURE */
     .readonly-mode .field-input:not([readonly]),
     .readonly-mode .field-textarea { pointer-events:none; opacity:.6; }
-    .readonly-mode .btn-save, .readonly-mode .title-chip, .readonly-mode .btn-danger { display:none; }
+    .readonly-mode .btn-save, .readonly-mode .btn-danger { display:none; }
+    .readonly-mode .title-chip { pointer-events:none; }
+    .readonly-mode .title-chip:not(.locked):not(.active) { opacity:.5; }
 
     /* TITLES */
-    .titles-list { display:flex; flex-wrap:wrap; gap:var(--space-2); list-style:none; }
-    .title-chip { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; padding:3px var(--space-3); border-radius:var(--radius-full); border:1px solid var(--c-border); color:var(--c-text-muted); cursor:pointer; transition:all 180ms; }
+    .titles-list { display:flex; flex-direction:column; gap:var(--space-3); list-style:none; }
+    .titles-chips { display:flex; flex-wrap:wrap; gap:var(--space-2); }
+    .titles-section-label { font-family:var(--font-mono); font-size:9px; letter-spacing:.18em; color:var(--c-text-faint); margin:0; }
+    .titles-section-label .titles-count { opacity:.45; }
+    .title-chip { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; padding:3px var(--space-3); border-radius:var(--radius-full); border:1px solid var(--c-border); color:var(--c-text-muted); cursor:pointer; transition:all 180ms; white-space:nowrap; }
     .title-chip:hover { border-color:var(--c-amber); color:var(--c-amber); }
     .title-chip.active { border-color:var(--c-amber); color:var(--c-amber); background:rgba(253,203,110,.08); }
+    .title-chip.locked { opacity:.38; cursor:default; border-style:dashed; }
+    .title-chip.locked:hover { border-color:var(--c-border); color:var(--c-text-muted); }
+    .title-chip[data-rarity="rare"] { border-color:color-mix(in oklch,var(--c-primary) 55%,var(--c-border)); }
+    .title-chip[data-rarity="epic"] { border-color:color-mix(in oklch,#a78bfa 55%,var(--c-border)); color:#c4b5fd; }
+    .title-chip[data-rarity="legendary"] { border-color:color-mix(in oklch,var(--c-amber) 60%,var(--c-border)); color:var(--c-amber); }
+    .title-chip.locked[data-rarity] { border-color:var(--c-border); color:var(--c-text-muted); }
+    .title-chip.active[data-rarity="legendary"] { background:rgba(253,203,110,.12); }
 
     /* SAVE */
     .save-row { display:flex; align-items:center; gap:var(--space-3); margin-top:var(--space-4); }
@@ -417,7 +429,7 @@
           <p class="cig-card-tag">// 02 · TITRES</p>
           <h2 class="cig-card-title">Titre actif</h2>
           <p style="font-family:var(--font-mono);font-size:10px;color:var(--c-text-muted);margin-bottom:var(--space-4);letter-spacing:.06em">Sélectionne ton titre affiché</p>
-          <ul class="titles-list" id="titles-list"></ul>
+          <div class="titles-list" id="titles-list"></div>
           <div class="save-row">
             <button class="btn-save" id="btn-save-title">→ APPLIQUER</button>
             <span class="save-status" id="status-title"></span>
@@ -485,12 +497,27 @@
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
-      <span class="footer-version">CIG · v1.2</span>
+      <span class="footer-version">CIG · v1.3</span>
     </div>
   </footer>
 
   <script type="module">
     import { supabase, getSession, signOut } from './js/supabase.js';
+
+    const TITLES_CATALOG = [
+      { label: 'Recrue',       rarity: 'common',    hint: 'Titre par défaut' },
+      { label: 'Agent',        rarity: 'common',    hint: 'Profil complété' },
+      { label: 'Vétéran',      rarity: 'uncommon',  hint: 'Membre de longue date' },
+      { label: 'Spéculateur',  rarity: 'uncommon',  hint: 'Chronicles : 1 000 C gagnés' },
+      { label: 'Grand Joueur', rarity: 'rare',      hint: 'Chronicles : 10 000 C' },
+      { label: 'Lore Master',  rarity: 'rare',      hint: 'BZH Universe exploré' },
+      { label: 'Explorateur',  rarity: 'rare',      hint: 'Tous les projets visités' },
+      { label: 'Bankroll',     rarity: 'epic',      hint: 'Chronicles : 50 000 C' },
+      { label: 'Champion',     rarity: 'epic',      hint: 'Skill Arena : top 3' },
+      { label: 'Légende',      rarity: 'legendary', hint: 'Top 1 Chronicles' },
+      { label: 'Fondateur',    rarity: 'legendary', hint: 'Membre fondateur' },
+      { label: 'Protocole',    rarity: 'legendary', hint: 'Rôle administrateur' },
+    ];
 
     const $    = id => document.getElementById(id);
     const show = id => { const e=$(id); if(e) e.style.display=''; };
@@ -635,18 +662,61 @@
 
       const list = $('titles-list');
       list.innerHTML = '';
-      titles.forEach(t => {
-        const li = document.createElement('li');
-        li.className = 'title-chip' + (t === activeTitle ? ' active' : '');
-        li.textContent = t.toUpperCase();
-        if (!readOnly) {
-          li.addEventListener('click', () => {
-            list.querySelectorAll('.title-chip').forEach(c => c.classList.remove('active'));
-            li.classList.add('active');
+
+      const ownedNorm = new Set(titles.map(t => t.toLowerCase()));
+      const catalogOwned   = TITLES_CATALOG.filter(tc => ownedNorm.has(tc.label.toLowerCase()));
+      const catalogMissing = TITLES_CATALOG.filter(tc => !ownedNorm.has(tc.label.toLowerCase()));
+      // titres hors catalogue mais possédés
+      const extraOwned = titles
+        .filter(t => !TITLES_CATALOG.some(tc => tc.label.toLowerCase() === t.toLowerCase()))
+        .map(t => ({ label: t, rarity: 'common', hint: '' }));
+      const allOwned = [...catalogOwned, ...extraOwned];
+
+      function makeChip(tc, isActive, locked) {
+        const chip = document.createElement('span');
+        chip.className = 'title-chip' + (isActive ? ' active' : '') + (locked ? ' locked' : '');
+        if (tc.rarity && tc.rarity !== 'common' && tc.rarity !== 'uncommon') chip.dataset.rarity = tc.rarity;
+        chip.textContent = tc.label.toUpperCase();
+        if (tc.hint) chip.title = tc.hint;
+        if (!locked && !readOnly) {
+          chip.addEventListener('click', () => {
+            list.querySelectorAll('.title-chip:not(.locked)').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
           });
         }
-        list.appendChild(li);
+        return chip;
+      }
+
+      // Section possédés
+      const lblOwned = document.createElement('p');
+      lblOwned.className = 'titles-section-label';
+      lblOwned.innerHTML = `POSSÉDÉS <span class="titles-count">(${allOwned.length}/${TITLES_CATALOG.length})</span>`;
+      list.appendChild(lblOwned);
+      const rowOwned = document.createElement('div');
+      rowOwned.className = 'titles-chips';
+      allOwned.forEach(tc => {
+        const isActive = tc.label.toLowerCase() === activeTitle.toLowerCase();
+        rowOwned.appendChild(makeChip(tc, isActive, false));
       });
+      if (!allOwned.length) {
+        const none = document.createElement('span');
+        none.style.cssText = 'font-family:var(--font-mono);font-size:9px;color:var(--c-text-faint);opacity:.5';
+        none.textContent = 'aucun titre débloqué';
+        rowOwned.appendChild(none);
+      }
+      list.appendChild(rowOwned);
+
+      // Section manquants
+      if (catalogMissing.length) {
+        const lblMissing = document.createElement('p');
+        lblMissing.className = 'titles-section-label';
+        lblMissing.innerHTML = `MANQUANTS <span class="titles-count">(${catalogMissing.length})</span>`;
+        list.appendChild(lblMissing);
+        const rowMissing = document.createElement('div');
+        rowMissing.className = 'titles-chips';
+        catalogMissing.forEach(tc => rowMissing.appendChild(makeChip(tc, false, true)));
+        list.appendChild(rowMissing);
+      }
 
       if (readOnly) {
         $('cig-grid').classList.add('readonly-mode');
