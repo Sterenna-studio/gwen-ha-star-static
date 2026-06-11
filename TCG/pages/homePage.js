@@ -1,9 +1,10 @@
-// pages/homePage.js — v2.0.0
-// Home: greeting + stat cards + daily widget + leaderboard + quick nav
-import { mount as mountDaily }       from './dailyWidget.js';
-import { mount as mountLeaderboard } from './leaderboardWidget.js';
-import { getCachedPlayer }           from '../data/supabaseData.js';
-import { getUser }                   from '../logic/supaRaw.js';
+// pages/homePage.js — v3.0.0
+// Home: greeting + stats + daily + leaderboard/nav row + achievements
+import { mount as mountDaily }        from './dailyWidget.js';
+import { mount as mountLeaderboard }  from './leaderboardWidget.js';
+import { mount as mountAchievements } from './achievementsWidget.js';
+import { getCachedPlayer }            from '../data/supabaseData.js';
+import { getUser }                    from '../logic/supaRaw.js';
 
 const NAV_ITEMS = [
   { hash: '#/packs',      icon: '\u{1F0CF}', label: 'Boosters'   },
@@ -18,7 +19,7 @@ const CSS = `
   flex-direction: column;
   align-items: center;
   gap: 28px;
-  padding: 24px 12px 56px;
+  padding: 24px 12px 64px;
 }
 .home-greeting { font-size: 22px; font-weight: 800; color: #c8f0d0; letter-spacing: .4px; }
 .home-row {
@@ -27,7 +28,7 @@ const CSS = `
   justify-content: center;
   gap: 20px;
   width: 100%;
-  max-width: 900px;
+  max-width: 960px;
 }
 .stat-card {
   background: #0b1218;
@@ -40,13 +41,13 @@ const CSS = `
 }
 .stat-val   { font-size: 28px; font-weight: 900; color: #ffd36b; }
 .stat-label { font-size: 12px; color: #5a8a7a; margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
-.home-bottom {
+.home-mid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 28px;
   width: 100%;
-  max-width: 900px;
+  max-width: 960px;
   align-items: flex-start;
 }
 .home-nav {
@@ -54,6 +55,7 @@ const CSS = `
   flex-direction: column;
   gap: 10px;
   min-width: 160px;
+  flex-shrink: 0;
 }
 .nav-btn {
   display: flex;
@@ -72,6 +74,17 @@ const CSS = `
 }
 .nav-btn:hover { filter: brightness(1.15); transform: translateX(3px); }
 .nav-icon { font-size: 22px; }
+.home-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #aaedbb;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  width: 100%;
+  max-width: 960px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #1a2e22;
+}
 `;
 
 export async function render(root) {
@@ -86,7 +99,7 @@ export async function render(root) {
   const wrap = document.createElement('div');
   wrap.className = 'home-wrap';
 
-  // --- Greeting ---
+  // ── Greeting ──────────────────────────────────────────────────────────────
   const player  = getCachedPlayer();
   const name    = player?.username || 'Joueur';
   const greeting = document.createElement('div');
@@ -94,39 +107,36 @@ export async function render(root) {
   greeting.textContent = `Bienvenue, ${name} ⚔️`;
   wrap.appendChild(greeting);
 
-  // --- Stat cards ---
+  // ── Stat cards ────────────────────────────────────────────────────────────
   const statsRow = document.createElement('div');
   statsRow.className = 'home-row';
-  const STATS = [
+  [
     { id: 'stat-gold',  val: player?.gold        ?? 0, label: '⛁ Or'           },
     { id: 'stat-cards', val: player?.cards_count ?? 0, label: '🃏 Cartes'       },
     { id: 'stat-packs', val: player?.pack_count  ?? 0, label: '📦 Packs ouverts' },
-  ];
-  STATS.forEach(({ id, val, label }) => {
-    const card = document.createElement('div');
-    card.className = 'stat-card';
-    card.innerHTML = `<div class="stat-val" id="${id}">${val}</div><div class="stat-label">${label}</div>`;
-    statsRow.appendChild(card);
+  ].forEach(({ id, val, label }) => {
+    const c = document.createElement('div');
+    c.className = 'stat-card';
+    c.innerHTML = `<div class="stat-val" id="${id}">${val}</div><div class="stat-label">${label}</div>`;
+    statsRow.appendChild(c);
   });
   wrap.appendChild(statsRow);
 
-  // --- Daily widget ---
+  // ── Daily widget ──────────────────────────────────────────────────────────
   const dailySlot = document.createElement('div');
   await mountDaily(dailySlot);
   wrap.appendChild(dailySlot);
 
-  // --- Bottom: leaderboard + quick nav ---
-  const bottom = document.createElement('div');
-  bottom.className = 'home-bottom';
+  // ── Mid row: leaderboard (flex:2) + quick nav ─────────────────────────────
+  const mid = document.createElement('div');
+  mid.className = 'home-mid';
 
-  // Leaderboard
   const lbSlot = document.createElement('div');
   lbSlot.style.flex = '2';
   const user = await getUser();
-  mountLeaderboard(lbSlot, user?.id ?? null);   // async, non-blocking
-  bottom.appendChild(lbSlot);
+  mountLeaderboard(lbSlot, user?.id ?? null); // non-blocking
+  mid.appendChild(lbSlot);
 
-  // Quick nav (vertical, beside leaderboard)
   const nav = document.createElement('div');
   nav.className = 'home-nav';
   NAV_ITEMS.forEach(({ hash, icon, label }) => {
@@ -136,12 +146,24 @@ export async function render(root) {
     a.innerHTML = `<span class="nav-icon">${icon}</span>${label}`;
     nav.appendChild(a);
   });
-  bottom.appendChild(nav);
+  mid.appendChild(nav);
+  wrap.appendChild(mid);
 
-  wrap.appendChild(bottom);
+  // ── Achievements section ───────────────────────────────────────────────────
+  const achTitle = document.createElement('div');
+  achTitle.className   = 'home-section-title';
+  achTitle.textContent = '🏅 Succès';
+  wrap.appendChild(achTitle);
+
+  const achSlot = document.createElement('div');
+  achSlot.style.width    = '100%';
+  achSlot.style.maxWidth = '960px';
+  mountAchievements(achSlot); // non-blocking
+  wrap.appendChild(achSlot);
+
   root.appendChild(wrap);
 
-  // Live gold after daily claim
+  // ── Live gold ──────────────────────────────────────────────────────────────
   const onGold = (e) => {
     const el = root.querySelector('#stat-gold');
     if (el && e.detail?.gold != null) el.textContent = String(e.detail.gold);
