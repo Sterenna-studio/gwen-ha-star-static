@@ -78,16 +78,16 @@ export async function renderShop(root) {
           const sb = await getClient();
           const user = await getUser();
           // Débit gold
-          const { data: pl } = await sb.from('players').select('gold').eq('id', user.id).single();
+          const { data: pl } = await sb.from('tcg_players').select('gold').eq('id', user.id).single();
           const currentGold = pl?.gold || 0;
           if (currentGold < price) { showMsg('Or insuffisant !', '#ff8a8a'); btn.disabled = false; btn.textContent = 'Acheter'; return; }
           const newGold = currentGold - price;
-          await sb.from('players').update({ gold: newGold }).eq('id', user.id);
+          await sb.from('tcg_players').update({ gold: newGold }).eq('id', user.id);
           // Incrément pack
-          const { data: row } = await sb.from('player_packs').select('quantity')
+          const { data: row } = await sb.from('tcg_player_packs').select('quantity')
             .eq('player_id', user.id).eq('pack_type_id', packId).maybeSingle();
           const qty = (row?.quantity || 0) + 1;
-          await sb.from('player_packs').upsert(
+          await sb.from('tcg_player_packs').upsert(
             { player_id: user.id, pack_type_id: packId, quantity: qty },
             { onConflict: 'player_id,pack_type_id' }
           );
