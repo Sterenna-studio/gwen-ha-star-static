@@ -25,8 +25,6 @@
     .btn-refresh{margin-top:16px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);padding:6px 18px;cursor:pointer;font-family:var(--font);font-size:12px;letter-spacing:.1em}
     .btn-refresh:hover{background:var(--cyan);color:#000}
     #summary{margin-top:20px;padding:10px 14px;border:1px solid var(--border);background:var(--bg2);font-size:12px;letter-spacing:.08em}
-    a{color:var(--cyan);text-decoration:none}
-    a:hover{text-decoration:underline}
   </style>
 </head>
 <body>
@@ -57,108 +55,79 @@
   <div id="summary">Analyse en cours…</div>
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { supabase as sb } from '/TCG/shared/supabaseClient.js';
 
 const SUPA_URL = 'https://imryukpbtkngsihxfxox.supabase.co';
-const SUPA_KEY = await fetch('/TCG/shared/supabaseClient.js')
-  .then(r => r.text())
-  .then(txt => { const m = txt.match(/ANON_KEY\s*=\s*['"]([^'"]+)['"/]; return m?.[1] || null; })
-  .catch(() => null);
-
-// Fallback: lire depuis supabaseClient.js directement
-let sb;
-try {
-  const mod = await import('/TCG/shared/supabaseClient.js');
-  sb = mod.supabase;
-} catch {
-  try {
-    const mod = await import('../../shared/supabaseClient.js');
-    sb = mod.supabase;
-  } catch(e) {
-    sb = null;
-  }
-}
 
 document.getElementById('ts').textContent = new Date().toLocaleString('fr-FR');
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────
 let okCount = 0, errCount = 0, warnCount = 0;
 
-function row(containerId, label, status, detail = '') {
-  const el = document.getElementById(containerId);
-  const div = document.createElement('div');
-  div.className = 'row';
+function addRow(containerId, label, status, detail = '') {
   if (status === 'ok')   okCount++;
   if (status === 'err')  errCount++;
   if (status === 'warn') warnCount++;
-  div.innerHTML = `
-    <span class="dot ${status === 'ok' ? 'ok' : status === 'err' ? 'err' : status === 'warn' ? 'warn' : 'pend'}"></span>
-    <span class="label">${label}</span>
-    <span class="detail">${detail}</span>
-  `;
-  el.appendChild(div);
-}
-
-function pending(containerId, label) {
   const el = document.getElementById(containerId);
   const div = document.createElement('div');
   div.className = 'row';
-  div.id = 'row-' + label.replace(/\s+/g, '-');
+  div.innerHTML = `<span class="dot ${status}"></span><span class="label">${label}</span><span class="detail">${detail}</span>`;
+  el.appendChild(div);
+}
+
+function addPending(containerId, label) {
+  const el = document.getElementById(containerId);
+  const div = document.createElement('div');
+  div.className = 'row';
   div.innerHTML = `<span class="dot pend"></span><span class="label">${label}</span><span class="detail">…</span>`;
   el.appendChild(div);
-  return div;
+  return {
+    ok:   (detail = '') => _resolve(div, 'ok',   label, detail),
+    err:  (detail = '') => _resolve(div, 'err',  label, detail),
+    warn: (detail = '') => _resolve(div, 'warn', label, detail),
+  };
 }
 
-function resolve(div, status, detail = '') {
+function _resolve(div, status, label, detail) {
   if (status === 'ok')   okCount++;
   if (status === 'err')  errCount++;
   if (status === 'warn') warnCount++;
-  div.innerHTML = `
-    <span class="dot ${status}"></span>
-    <span class="label">${div.querySelector('.label').textContent}</span>
-    <span class="detail">${detail}</span>
-  `;
+  div.innerHTML = `<span class="dot ${status}"></span><span class="label">${label}</span><span class="detail">${detail}</span>`;
 }
 
-// ── 1. Auth ───────────────────────────────────────────────────────────────────
+// ── 1. Auth ────────────────────────────────────────────────
 async function checkAuth() {
-  if (!sb) {
-    row('checks-auth', 'Client Supabase', 'err', 'Import supabaseClient.js échoué');
-    return;
-  }
-  row('checks-auth', 'Client Supabase', 'ok', SUPA_URL);
-
-  const p = pending('checks-auth', 'Session utilisateur');
+  addRow('checks-auth', 'Client Supabase', 'ok', SUPA_URL);
+  const p = addPending('checks-auth', 'Session utilisateur');
   try {
     const { data: { user }, error } = await sb.auth.getUser();
-    if (error || !user) resolve(p, 'warn', 'Non connecté (normal si admin non loggé)');
-    else resolve(p, 'ok', user.email || user.id);
-  } catch(e) { resolve(p, 'err', e.message); }
+    if (error || !user) p.warn('Non connecté — normal si pas loggé');
+    else p.ok(user.email || user.id);
+  } catch(e) { p.err(e.message); }
 }
 
-// ── 2. DB tables ─────────────────────────────────────────────────────────────
+// ── 2. Tables DB ───────────────────────────────────────────────
 const TABLES = [
-  { name: 'tcg_players',      query: () => sb.from('tcg_players').select('id', { count: 'exact', head: true }) },
-  { name: 'tcg_player_packs', query: () => sb.from('tcg_player_packs').select('id', { count: 'exact', head: true }) },
-  { name: 'tcg_player_cards', query: () => sb.from('tcg_player_cards').select('id', { count: 'exact', head: true }) },
-  { name: 'tcg_leaderboard',  query: () => sb.from('tcg_leaderboard').select('id', { count: 'exact', head: true }) },
-  { name: 'pack_types',       query: () => sb.from('pack_types').select('id', { count: 'exact', head: true }) },
-  { name: 'profiles',         query: () => sb.from('profiles').select('id', { count: 'exact', head: true }) },
+  'tcg_players',
+  'tcg_player_packs',
+  'tcg_player_cards',
+  'tcg_leaderboard',
+  'pack_types',
+  'profiles',
 ];
 
 async function checkDB() {
-  if (!sb) { row('checks-db', 'DB', 'err', 'Client indisponible'); return; }
   for (const t of TABLES) {
-    const p = pending('checks-db', t.name);
+    const p = addPending('checks-db', t);
     try {
-      const { count, error } = await t.query();
-      if (error) resolve(p, 'err', error.message);
-      else resolve(p, 'ok', `${count ?? '?'} lignes`);
-    } catch(e) { resolve(p, 'err', e.message); }
+      const { count, error } = await sb.from(t).select('*', { count: 'exact', head: true });
+      if (error) p.err(error.message);
+      else p.ok(`${count ?? '?'} lignes`);
+    } catch(e) { p.err(e.message); }
   }
 }
 
-// ── 3. Modules JS ────────────────────────────────────────────────────────────
+// ── 3. Modules JS ───────────────────────────────────────────────
 const MODULES = [
   '/TCG/logic/supaRaw.js',
   '/TCG/data/supabaseData.js',
@@ -174,57 +143,44 @@ const MODULES = [
 
 async function checkJS() {
   for (const path of MODULES) {
-    const p = pending('checks-js', path);
+    const p = addPending('checks-js', path);
     try {
       const r = await fetch(path, { method: 'HEAD' });
-      if (r.ok) resolve(p, 'ok', `${r.status} · ${(r.headers.get('content-length') || '?')} bytes`);
-      else resolve(p, 'err', `HTTP ${r.status}`);
-    } catch(e) { resolve(p, 'err', e.message); }
+      if (r.ok) p.ok(`HTTP ${r.status}`);
+      else p.err(`HTTP ${r.status}`);
+    } catch(e) { p.err(e.message); }
   }
 }
 
-// ── 4. Assets packs ──────────────────────────────────────────────────────────
-const PACK_ASSETS = [
-  '/TCG/assets/packs/set01.jpg',
-  '/TCG/assets/packs/set02.jpg',
-  '/TCG/assets/packs/default.jpg',
-];
-
+// ── 4. Assets ───────────────────────────────────────────────────────────
 async function checkAssets() {
-  // Liste dynamique depuis pack_types si dispo
+  const base = ['/TCG/assets/packs/set01.jpg', '/TCG/assets/packs/set02.jpg', '/TCG/assets/packs/default.jpg'];
   let extra = [];
-  if (sb) {
+  try {
     const { data } = await sb.from('pack_types').select('image_name').not('image_name', 'is', null);
     extra = (data || []).map(r => `/TCG/assets/packs/${r.image_name}`);
-  }
-  const all = [...new Set([...PACK_ASSETS, ...extra])];
+  } catch {}
+  const all = [...new Set([...base, ...extra])];
   for (const path of all) {
-    const p = pending('checks-assets', path);
+    const p = addPending('checks-assets', path);
     try {
       const r = await fetch(path, { method: 'HEAD' });
-      if (r.ok) resolve(p, 'ok', `${r.status}`);
-      else resolve(p, 'err', `HTTP ${r.status}`);
-    } catch(e) { resolve(p, 'err', e.message); }
+      if (r.ok) p.ok(`HTTP ${r.status}`);
+      else p.err(`HTTP ${r.status}`);
+    } catch(e) { p.err(e.message); }
   }
 }
 
-// ── Run all ───────────────────────────────────────────────────────────────────
-await Promise.all([
-  checkAuth(),
-  checkDB(),
-  checkJS(),
-  checkAssets(),
-]);
+// ── Run ─────────────────────────────────────────────────────────────────
+await Promise.all([checkAuth(), checkDB(), checkJS(), checkAssets()]);
 
-// Summary
-const total = okCount + errCount + warnCount;
 const sumEl = document.getElementById('summary');
 if (errCount === 0 && warnCount === 0) {
   sumEl.style.borderColor = 'var(--green)';
-  sumEl.innerHTML = `✅ Tout OK — ${okCount}/${total} checks passés`;
+  sumEl.textContent = `✅ Tout OK — ${okCount} checks passés`;
 } else {
   sumEl.style.borderColor = errCount > 0 ? 'var(--red)' : 'var(--amber)';
-  sumEl.innerHTML = `${ errCount > 0 ? '❌' : '⚠️'} ${errCount} erreur(s) · ${warnCount} avertissement(s) · ${okCount} OK`;
+  sumEl.textContent = `${errCount > 0 ? '❌' : '⚠️'} ${errCount} erreur(s) · ${warnCount} avertissement(s) · ${okCount} OK`;
 }
 </script>
 </body>
