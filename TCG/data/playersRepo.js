@@ -1,4 +1,4 @@
-// data/playersRepo.js — v7 (tcg_players)
+// data/playersRepo.js — v8 (chronicles)
 export async function resolveDisplayName(supabase, user) {
   const { data: profile } = await supabase
     .from('profiles')
@@ -23,7 +23,7 @@ export async function ensurePlayer(supabase, user) {
     .maybeSingle();
   if (!player) {
     const displayName = await resolveDisplayName(supabase, user);
-    await supabase.from('tcg_players').insert({ id: userId, username: displayName, gold: 0 });
+    await supabase.from('tcg_players').insert({ id: userId, username: displayName, chronicles: 0 });
   } else if (!player.username) {
     const displayName = await resolveDisplayName(supabase, user);
     await supabase.from('tcg_players').update({ username: displayName }).eq('id', userId);
@@ -36,11 +36,17 @@ export async function getPlayer(supabase, userId) {
   return data;
 }
 
+// chronicles = ex-gold
+export async function saveChronicles(supabase, userId, delta) {
+  const { data: pl } = await supabase.from('tcg_players').select('chronicles').eq('id', userId).single();
+  const chronicles = Math.max(0, (pl?.chronicles || 0) + (delta || 0));
+  await supabase.from('tcg_players').update({ chronicles }).eq('id', userId);
+  return chronicles;
+}
+
+/** @deprecated use saveChronicles */
 export async function saveGold(supabase, userId, delta) {
-  const { data: pl } = await supabase.from('tcg_players').select('gold').eq('id', userId).single();
-  const gold = Math.max(0, (pl?.gold || 0) + (delta || 0));
-  await supabase.from('tcg_players').update({ gold }).eq('id', userId);
-  return gold;
+  return saveChronicles(supabase, userId, delta);
 }
 
 export async function syncStatsAfterPack(supabase, userId, cards) {
