@@ -1,6 +1,6 @@
-// lab/tcg/pages/shopPage.js — v3.9.4 (tcg_players + tcg_player_packs)
-import { getClient } from '../../shared/supaRaw.js';
-import { getCachedPlayer, refreshPlayer, updateCachedPlayer } from '../../shared/supabaseData.js';
+// pages/shopPage.js — v4.0.0
+import { getClient, getUser } from '../logic/supaRaw.js';
+import { getCachedPlayer, initPlayer } from '../data/supabaseData.js';
 
 export async function render(root){
   root.innerHTML = `
@@ -25,7 +25,7 @@ export async function render(root){
     <section class="shop-wrap">
       <div class="shop-header">
         <div class="shop-title">Boutique</div>
-        <div class="gold-chip" id="gold-chip"><span class="ico">⛁</span><span id="gold-val">0</span></div>
+        <div class="gold-chip" id="gold-chip"><span class="ico">⧁</span><span id="gold-val">0</span></div>
       </div>
       <div class="shop-container">
         <div id="grid" class="shop-grid"></div>
@@ -34,8 +34,10 @@ export async function render(root){
   `;
 
   const sb = await getClient();
-  let player = await refreshPlayer();
-  if (!player) player = getCachedPlayer();
+  const user = await getUser();
+  let player = getCachedPlayer();
+  if (!player && user) player = await initPlayer(sb, user);
+
   const goldVal = root.querySelector('#gold-val');
   const setGold = (v) => { goldVal.textContent = String(v | 0); };
   setGold(player?.gold ?? 0);
@@ -55,13 +57,15 @@ export async function render(root){
   types.forEach(t => {
     const card = document.createElement('div');
     card.className = 'shop-card';
-    const imgUrl = t.image_name ? `/lab/shared/assets/packs/${t.image_name}` : `/lab/shared/assets/packs/${t.set_id}-default.jpg`;
+    const imgUrl = t.image_name
+      ? `/TCG/assets/packs/${t.image_name}`
+      : `/TCG/assets/packs/${t.set_id}-default.jpg`;
     card.innerHTML = `
       <img class="shop-img" src="${imgUrl}" alt="${t.name}">
       <div class="shop-body">
         <div>
           <div class="title">${t.name}</div>
-          <div class="price">${t.price} ⛁</div>
+          <div class="price">${t.price} ⧁</div>
         </div>
         <div>
           <button class="btn-buy" data-id="${t.id}" data-price="${t.price}">Acheter</button>
@@ -74,17 +78,20 @@ export async function render(root){
     btn.addEventListener('click', async () => {
       btn.disabled = true; warn.style.display = 'none'; warn.textContent = '';
       try {
-        player = await refreshPlayer();
+        // Re-fetch gold frais
+        const { data: fresh } = await sb.from('tcg_players').select('gold').eq('id', player.id).single();
+        const currentGold = fresh?.gold ?? player?.gold ?? 0;
         const price = Number(btn.dataset.price || 0);
-        if ((player?.gold || 0) < price){
+        if (currentGold < price){
           warn.textContent = "Pas assez d'or.";
           warn.style.display = 'block';
           return;
         }
-        await buyPack({ packTypeId: btn.dataset.id, price });
-        const newGold = (player.gold - price);
-        updateCachedPlayer({ gold: newGold, pack_count: (player.pack_count || 0) + 1 });
+        await buyPack({ sb, player, packTypeId: btn.dataset.id, price, currentGold });
+        const newGold = currentGold - price;
+        player = { ...player, gold: newGold };
         setGold(newGold);
+        window.dispatchEvent(new CustomEvent('tcg:gold', { detail: { gold: newGold } }));
         if (window.tcgForceRefresh){ await window.tcgForceRefresh(); }
       } catch(e) {
         warn.textContent = 'Achat impossible: ' + (e?.message || e);
@@ -97,8 +104,8 @@ export async function render(root){
   });
 
   const onGold = async () => {
-    const p = await refreshPlayer();
-    setGold(p?.gold ?? 0);
+    const { data: fresh } = await sb.from('tcg_players').select('gold').eq('id', player?.id).single();
+    setGold(fresh?.gold ?? 0);
   };
   window.addEventListener('tcg:gold', onGold);
   root.addEventListener('removed', () => {
@@ -106,14 +113,10 @@ export async function render(root){
   });
 }
 
-async function buyPack({ packTypeId, price }){
-  const sb = await getClient();
-  const player = getCachedPlayer();
-
-  // Débit gold sur tcg_players avec guard
+async function buyPack({ sb, player, packTypeId, price, currentGold }){
   const { data: afterDebit, error: debitErr } = await sb
     .from('tcg_players')
-    .update({ gold: (player.gold - price) })
+    .update({ gold: currentGold - price })
     .eq('id', player.id)
     .gte('gold', price)
     .select('id, gold')
@@ -123,7 +126,6 @@ async function buyPack({ packTypeId, price }){
     throw new Error('Solde insuffisant ou erreur débit.');
   }
 
-  // Upsert tcg_player_packs
   const { data: existing } = await sb
     .from('tcg_player_packs')
     .select('quantity')
