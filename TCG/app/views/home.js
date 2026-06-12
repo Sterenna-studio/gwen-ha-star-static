@@ -4,8 +4,8 @@ import { getClient, getUser } from '../../logic/supaRaw.js';
 import { state } from '../state.js';
 import { navigate } from '../router.js';
 import { url } from '../../logic/paths.js';
+import { getDisplayName } from '../../data/supabaseData.js';
 
-// Probabilités par rareté selon le type de pack (card_count sert d'indicateur)
 const RARITY_PROBA = [
   { label: 'Common',    color: '#9da7b3', prob: '60%' },
   { label: 'Rare',      color: '#42b0ff', prob: '25%' },
@@ -64,7 +64,6 @@ function showPackTooltip(p, anchorEl) {
 
   document.body.appendChild(tooltip);
 
-  // Positionnement intelligent
   const rect = anchorEl.getBoundingClientRect();
   const tw = 220, th = 260;
   let left = rect.left + rect.width / 2 - tw / 2;
@@ -75,7 +74,6 @@ function showPackTooltip(p, anchorEl) {
   tooltip.style.left = left + 'px';
   tooltip.style.top = top + 'px';
 
-  // Défocalisation du fond
   const shell = document.querySelector('.shell');
   if (shell) shell.style.filter = 'blur(3px)';
 
@@ -195,10 +193,16 @@ function buildSingleCard(p) {
 }
 
 export async function renderHome(root) {
+  // Récupère le pseudo dès le début (getDisplayName() utilise le cache supabaseData)
+  const pseudo = getDisplayName() || '…';
+
   const el = document.createElement('div');
   el.className = 'panel';
   el.innerHTML = `
-    <div class="h-section">Accueil</div>
+    <div class="h-section" style="display:flex;align-items:center;gap:10px">
+      <span>Accueil</span>
+      <span id="home-pseudo" style="font-size:.75em;font-weight:500;color:#6fa694;margin-left:4px">— ${pseudo}</span>
+    </div>
     <div id="home-stats" style="display:flex;gap:16px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--border)">
       <span style="color:var(--muted);font-size:.9em">Chargement...</span>
     </div>
@@ -227,17 +231,24 @@ export async function renderHome(root) {
       const sb = await getClient();
       const user = await getUser();
       const [{ data: pl }, { data: cards }, { data: packs }] = await Promise.all([
-        sb.from('tcg_players').select('gold').eq('id', user.id).single(),
+        sb.from('tcg_players').select('chronicles, username').eq('id', user.id).single(),
         sb.from('tcg_player_cards').select('quantity').eq('user_id', user.id),
         sb.from('tcg_player_packs').select('quantity').eq('player_id', user.id),
       ]);
-      const gold = pl?.gold ?? (state.gold || 0);
-      const totalCards = (cards || []).reduce((s, r) => s + (r.quantity || 0), 0);
-      const totalPacks = (packs || []).reduce((s, r) => s + (r.quantity || 0), 0);
+
+      // Met à jour le pseudo dans le titre si dispos via DB
+      const dbPseudo = pl?.username || getDisplayName();
+      const pseudoEl = el.querySelector('#home-pseudo');
+      if (pseudoEl && dbPseudo) pseudoEl.textContent = `— ${dbPseudo}`;
+
+      const chronicles = pl?.chronicles ?? (state.chronicles || 0);
+      const totalCards  = (cards || []).reduce((s, r) => s + (r.quantity || 0), 0);
+      const totalPacks  = (packs || []).reduce((s, r) => s + (r.quantity || 0), 0);
+
       statsEl.innerHTML = `
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px">
-          <div style="font-size:.75em;color:var(--muted)">Or</div>
-          <div style="font-weight:700;font-size:1.1em">${gold} monnaies</div>
+        <div style="background:var(--card);border:1px solid #a07820;border-radius:10px;padding:10px 16px">
+          <div style="font-size:.75em;color:var(--muted)">Chronicles</div>
+          <div style="font-weight:700;font-size:1.1em;color:#f0c060">◆ ${chronicles.toLocaleString('fr-FR')}</div>
         </div>
         <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px">
           <div style="font-size:.75em;color:var(--muted)">Cartes possédées</div>
