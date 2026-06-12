@@ -1,19 +1,23 @@
-// logic/supaRaw.js — static Supabase helper
+// TCG/logic/supaRaw.js
+// Utilise le client partagé Nitro → session récupérée automatiquement.
 import { supabase } from '../shared/supabaseClient.js';
+import { getUser as nitroGetUser, getSession } from '/shared/auth.js';
 
-export async function getClient(){
+export async function getClient() {
   return supabase;
 }
 
-export async function getUser(){
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
+// getUser() depuis le client partagé (session Nitro)
+export async function getUser() {
+  return await nitroGetUser();
 }
 
-export async function requireLogin(){
+export async function getSession_() {
+  return await getSession();
+}
+
+export async function requireLogin() {
   const user = await getUser();
-  if (!user) {
-    throw new Error('Utilisateur non connecté');
-  }
+  if (!user) throw new Error('Non connecté — redirection login');
   return user;
 }
