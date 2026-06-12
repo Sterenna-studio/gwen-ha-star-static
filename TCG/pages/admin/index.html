@@ -58,10 +58,8 @@
 import { supabase as sb } from '/TCG/shared/supabaseClient.js';
 
 const SUPA_URL = 'https://imryukpbtkngsihxfxox.supabase.co';
-
 document.getElementById('ts').textContent = new Date().toLocaleString('fr-FR');
 
-// ── Helpers ────────────────────────────────────────────────
 let okCount = 0, errCount = 0, warnCount = 0;
 
 function addRow(containerId, label, status, detail = '') {
@@ -82,9 +80,9 @@ function addPending(containerId, label) {
   div.innerHTML = `<span class="dot pend"></span><span class="label">${label}</span><span class="detail">…</span>`;
   el.appendChild(div);
   return {
-    ok:   (detail = '') => _resolve(div, 'ok',   label, detail),
-    err:  (detail = '') => _resolve(div, 'err',  label, detail),
-    warn: (detail = '') => _resolve(div, 'warn', label, detail),
+    ok:   (d = '') => _resolve(div, 'ok',   label, d),
+    err:  (d = '') => _resolve(div, 'err',  label, d),
+    warn: (d = '') => _resolve(div, 'warn', label, d),
   };
 }
 
@@ -95,7 +93,6 @@ function _resolve(div, status, label, detail) {
   div.innerHTML = `<span class="dot ${status}"></span><span class="label">${label}</span><span class="detail">${detail}</span>`;
 }
 
-// ── 1. Auth ────────────────────────────────────────────────
 async function checkAuth() {
   addRow('checks-auth', 'Client Supabase', 'ok', SUPA_URL);
   const p = addPending('checks-auth', 'Session utilisateur');
@@ -106,17 +103,8 @@ async function checkAuth() {
   } catch(e) { p.err(e.message); }
 }
 
-// ── 2. Tables DB ───────────────────────────────────────────────
-const TABLES = [
-  'tcg_players',
-  'tcg_player_packs',
-  'tcg_player_cards',
-  'tcg_leaderboard',
-  'pack_types',
-  'profiles',
-];
-
 async function checkDB() {
+  const TABLES = ['tcg_players','tcg_player_packs','tcg_player_cards','tcg_leaderboard','pack_types','profiles'];
   for (const t of TABLES) {
     const p = addPending('checks-db', t);
     try {
@@ -127,21 +115,19 @@ async function checkDB() {
   }
 }
 
-// ── 3. Modules JS ───────────────────────────────────────────────
-const MODULES = [
-  '/TCG/logic/supaRaw.js',
-  '/TCG/data/supabaseData.js',
-  '/TCG/data/packsRepo.js',
-  '/TCG/data/playersRepo.js',
-  '/TCG/shared/supabaseClient.js',
-  '/TCG/app/router.js',
-  '/TCG/app/ui-shell.js',
-  '/TCG/pages/shopPage.js',
-  '/TCG/pages/packsPage.js',
-  '/TCG/pages/openingRenderer.js',
-];
-
 async function checkJS() {
+  const MODULES = [
+    '/TCG/logic/supaRaw.js',
+    '/TCG/data/supabaseData.js',
+    '/TCG/data/packsRepo.js',
+    '/TCG/data/playersRepo.js',
+    '/TCG/shared/supabaseClient.js',
+    '/TCG/app/router.js',
+    '/TCG/app/ui-shell.js',
+    '/TCG/pages/shopPage.js',
+    '/TCG/pages/packsPage.js',
+    '/TCG/pages/openingRenderer.js',
+  ];
   for (const path of MODULES) {
     const p = addPending('checks-js', path);
     try {
@@ -152,16 +138,21 @@ async function checkJS() {
   }
 }
 
-// ── 4. Assets ───────────────────────────────────────────────────────────
 async function checkAssets() {
-  const base = ['/TCG/assets/packs/set01.jpg', '/TCG/assets/packs/set02.jpg', '/TCG/assets/packs/default.jpg'];
-  let extra = [];
+  // Liste 100% dynamique depuis pack_types — pas de fallback hardcode
+  let paths = [];
   try {
     const { data } = await sb.from('pack_types').select('image_name').not('image_name', 'is', null);
-    extra = (data || []).map(r => `/TCG/assets/packs/${r.image_name}`);
-  } catch {}
-  const all = [...new Set([...base, ...extra])];
-  for (const path of all) {
+    paths = [...new Set((data || []).map(r => `/TCG/assets/packs/${r.image_name}`))];
+  } catch(e) {
+    addRow('checks-assets', 'pack_types fetch', 'err', e.message);
+    return;
+  }
+  if (!paths.length) {
+    addRow('checks-assets', 'pack_types', 'warn', 'Aucun image_name en DB');
+    return;
+  }
+  for (const path of paths) {
     const p = addPending('checks-assets', path);
     try {
       const r = await fetch(path, { method: 'HEAD' });
@@ -171,7 +162,6 @@ async function checkAssets() {
   }
 }
 
-// ── Run ─────────────────────────────────────────────────────────────────
 await Promise.all([checkAuth(), checkDB(), checkJS(), checkAssets()]);
 
 const sumEl = document.getElementById('summary');
