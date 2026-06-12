@@ -124,7 +124,6 @@ function buildGroupedCard(p) {
 
 function buildSingleCard(p) {
   const imgSrc = url('/assets/packs/' + p.image_name + '?v=cyber');
-  // Épaisseur simulée selon card_count (3-12px)
   const cardCount = p.card_count || 5;
   const depth = Math.min(12, Math.max(3, Math.round(cardCount * 0.9)));
 
@@ -137,7 +136,6 @@ function buildSingleCard(p) {
     transition:transform .22s ease, filter .22s ease;
   `;
 
-  // Couches d'épaisseur
   for (let i = depth; i > 0; i--) {
     const layer = document.createElement('div');
     const offset = i * 2;
@@ -155,7 +153,6 @@ function buildSingleCard(p) {
     wrapper.appendChild(layer);
   }
 
-  // Carte principale
   const front = document.createElement('div');
   front.style.cssText = `
     position:relative;
@@ -174,13 +171,11 @@ function buildSingleCard(p) {
   `;
   wrapper.appendChild(front);
 
-  // Nom sous la carte
   const label = document.createElement('div');
   label.style.cssText = 'margin-top:6px;font-size:.72em;text-align:center;color:#8ab;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:130px;';
   label.textContent = p.name;
   wrapper.appendChild(label);
 
-  // Hover levitation
   wrapper.addEventListener('mouseenter', () => {
     wrapper.style.transform = 'translateY(-8px) scale(1.04)';
     wrapper.style.filter = 'drop-shadow(0 12px 24px rgba(0,245,196,.25))';
@@ -190,10 +185,7 @@ function buildSingleCard(p) {
     wrapper.style.filter = '';
   });
 
-  // Clic gauche → ouvrir
   wrapper.addEventListener('click', () => dispatchOpen(p));
-
-  // Clic droit → tooltip info
   wrapper.addEventListener('contextmenu', e => {
     e.preventDefault();
     showPackTooltip(p, wrapper);
@@ -235,12 +227,12 @@ export async function renderHome(root) {
       const sb = await getClient();
       const user = await getUser();
       const [{ data: pl }, { data: cards }, { data: packs }] = await Promise.all([
-        sb.from('players').select('gold').eq('id', user.id).single(),
-        sb.from('player_cards').select('qty').eq('player_id', user.id),
-        sb.from('player_packs').select('quantity').eq('player_id', user.id),
+        sb.from('tcg_players').select('gold').eq('id', user.id).single(),
+        sb.from('tcg_player_cards').select('quantity').eq('user_id', user.id),
+        sb.from('tcg_player_packs').select('quantity').eq('player_id', user.id),
       ]);
       const gold = pl?.gold ?? (state.gold || 0);
-      const totalCards = (cards || []).reduce((s, r) => s + (r.qty || 0), 0);
+      const totalCards = (cards || []).reduce((s, r) => s + (r.quantity || 0), 0);
       const totalPacks = (packs || []).reduce((s, r) => s + (r.quantity || 0), 0);
       statsEl.innerHTML = `
         <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px">
@@ -275,10 +267,8 @@ export async function renderHome(root) {
     }
 
     if (grouped) {
-      // Mode groupé : une carte par type avec badge quantité
       owned.forEach(p => shelf.appendChild(buildGroupedCard(p)));
     } else {
-      // Mode non groupé : une carte par booster individuel avec épaisseur + lévitation
       owned.forEach(p => {
         for (let i = 0; i < p.quantity; i++) {
           shelf.appendChild(buildSingleCard(p));
