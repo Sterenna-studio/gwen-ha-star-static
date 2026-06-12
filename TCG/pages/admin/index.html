@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TCG · Admin Check</title>
+  <style>
+    :root{--bg:#04060a;--bg2:#070d14;--cyan:#00f5c4;--red:#ff2d4e;--amber:#f0a500;--green:#22c55e;--muted:#3a6655;--border:#0e2a1f;--fg:#c8ffe8;--font:'Courier New',monospace}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:13px}
+    body{padding:24px}
+    h1{font-size:18px;letter-spacing:.2em;color:var(--cyan);margin-bottom:4px}
+    .sub{color:var(--muted);font-size:11px;margin-bottom:24px;letter-spacing:.1em}
+    .section{margin-bottom:28px}
+    .section-title{font-size:11px;letter-spacing:.18em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:10px;text-transform:uppercase}
+    .row{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #0a1810}
+    .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .ok  {background:var(--green);box-shadow:0 0 6px var(--green)}
+    .err {background:var(--red);box-shadow:0 0 6px var(--red)}
+    .warn{background:var(--amber);box-shadow:0 0 6px var(--amber)}
+    .pend{background:var(--muted);animation:blink 1s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .label{flex:1;color:var(--fg)}
+    .detail{font-size:11px;color:var(--muted);text-align:right;max-width:360px;word-break:break-all}
+    .btn-refresh{margin-top:16px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);padding:6px 18px;cursor:pointer;font-family:var(--font);font-size:12px;letter-spacing:.1em}
+    .btn-refresh:hover{background:var(--cyan);color:#000}
+    #summary{margin-top:20px;padding:10px 14px;border:1px solid var(--border);background:var(--bg2);font-size:12px;letter-spacing:.08em}
+    a{color:var(--cyan);text-decoration:none}
+    a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <h1>⬡ TCG · ADMIN CHECK</h1>
+  <div class="sub">Diagnostic automatique · <span id="ts"></span></div>
+
+  <div class="section">
+    <div class="section-title">🔐 Authentification</div>
+    <div id="checks-auth"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🗄️ Tables Supabase</div>
+    <div id="checks-db"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📦 Modules JS critiques</div>
+    <div id="checks-js"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🖼️ Assets packs</div>
+    <div id="checks-assets"></div>
+  </div>
+
+  <button class="btn-refresh" onclick="location.reload()">↺ Relancer</button>
+  <div id="summary">Analyse en cours…</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const SUPA_URL = 'https://imryukpbtkngsihxfxox.supabase.co';
+const SUPA_KEY = await fetch('/TCG/shared/supabaseClient.js')
+  .then(r => r.text())
+  .then(txt => { const m = txt.match(/ANON_KEY\s*=\s*['"]([^'"]+)['"/]; return m?.[1] || null; })
+  .catch(() => null);
+
+// Fallback: lire depuis supabaseClient.js directement
+let sb;
+try {
+  const mod = await import('/TCG/shared/supabaseClient.js');
+  sb = mod.supabase;
+} catch {
+  try {
+    const mod = await import('../../shared/supabaseClient.js');
+    sb = mod.supabase;
+  } catch(e) {
+    sb = null;
+  }
+}
+
+document.getElementById('ts').textContent = new Date().toLocaleString('fr-FR');
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+let okCount = 0, errCount = 0, warnCount = 0;
+
+function row(containerId, label, status, detail = '') {
+  const el = document.getElementById(containerId);
+  const div = document.createElement('div');
+  div.className = 'row';
+  if (status === 'ok')   okCount++;
+  if (status === 'err')  errCount++;
+  if (status === 'warn') warnCount++;
+  div.innerHTML = `
+    <span class="dot ${status === 'ok' ? 'ok' : status === 'err' ? 'err' : status === 'warn' ? 'warn' : 'pend'}"></span>
+    <span class="label">${label}</span>
+    <span class="detail">${detail}</span>
+  `;
+  el.appendChild(div);
+}
+
+function pending(containerId, label) {
+  const el = document.getElementById(containerId);
+  const div = document.createElement('div');
+  div.className = 'row';
+  div.id = 'row-' + label.replace(/\s+/g, '-');
+  div.innerHTML = `<span class="dot pend"></span><span class="label">${label}</span><span class="detail">…</span>`;
+  el.appendChild(div);
+  return div;
+}
+
+function resolve(div, status, detail = '') {
+  if (status === 'ok')   okCount++;
+  if (status === 'err')  errCount++;
+  if (status === 'warn') warnCount++;
+  div.innerHTML = `
+    <span class="dot ${status}"></span>
+    <span class="label">${div.querySelector('.label').textContent}</span>
+    <span class="detail">${detail}</span>
+  `;
+}
+
+// ── 1. Auth ───────────────────────────────────────────────────────────────────
+async function checkAuth() {
+  if (!sb) {
+    row('checks-auth', 'Client Supabase', 'err', 'Import supabaseClient.js échoué');
+    return;
+  }
+  row('checks-auth', 'Client Supabase', 'ok', SUPA_URL);
+
+  const p = pending('checks-auth', 'Session utilisateur');
+  try {
+    const { data: { user }, error } = await sb.auth.getUser();
+    if (error || !user) resolve(p, 'warn', 'Non connecté (normal si admin non loggé)');
+    else resolve(p, 'ok', user.email || user.id);
+  } catch(e) { resolve(p, 'err', e.message); }
+}
+
+// ── 2. DB tables ─────────────────────────────────────────────────────────────
+const TABLES = [
+  { name: 'tcg_players',      query: () => sb.from('tcg_players').select('id', { count: 'exact', head: true }) },
+  { name: 'tcg_player_packs', query: () => sb.from('tcg_player_packs').select('id', { count: 'exact', head: true }) },
+  { name: 'tcg_player_cards', query: () => sb.from('tcg_player_cards').select('id', { count: 'exact', head: true }) },
+  { name: 'tcg_leaderboard',  query: () => sb.from('tcg_leaderboard').select('id', { count: 'exact', head: true }) },
+  { name: 'pack_types',       query: () => sb.from('pack_types').select('id', { count: 'exact', head: true }) },
+  { name: 'profiles',         query: () => sb.from('profiles').select('id', { count: 'exact', head: true }) },
+];
+
+async function checkDB() {
+  if (!sb) { row('checks-db', 'DB', 'err', 'Client indisponible'); return; }
+  for (const t of TABLES) {
+    const p = pending('checks-db', t.name);
+    try {
+      const { count, error } = await t.query();
+      if (error) resolve(p, 'err', error.message);
+      else resolve(p, 'ok', `${count ?? '?'} lignes`);
+    } catch(e) { resolve(p, 'err', e.message); }
+  }
+}
+
+// ── 3. Modules JS ────────────────────────────────────────────────────────────
+const MODULES = [
+  '/TCG/logic/supaRaw.js',
+  '/TCG/data/supabaseData.js',
+  '/TCG/data/packsRepo.js',
+  '/TCG/data/playersRepo.js',
+  '/TCG/shared/supabaseClient.js',
+  '/TCG/app/router.js',
+  '/TCG/app/ui-shell.js',
+  '/TCG/pages/shopPage.js',
+  '/TCG/pages/packsPage.js',
+  '/TCG/pages/openingRenderer.js',
+];
+
+async function checkJS() {
+  for (const path of MODULES) {
+    const p = pending('checks-js', path);
+    try {
+      const r = await fetch(path, { method: 'HEAD' });
+      if (r.ok) resolve(p, 'ok', `${r.status} · ${(r.headers.get('content-length') || '?')} bytes`);
+      else resolve(p, 'err', `HTTP ${r.status}`);
+    } catch(e) { resolve(p, 'err', e.message); }
+  }
+}
+
+// ── 4. Assets packs ──────────────────────────────────────────────────────────
+const PACK_ASSETS = [
+  '/TCG/assets/packs/set01.jpg',
+  '/TCG/assets/packs/set02.jpg',
+  '/TCG/assets/packs/default.jpg',
+];
+
+async function checkAssets() {
+  // Liste dynamique depuis pack_types si dispo
+  let extra = [];
+  if (sb) {
+    const { data } = await sb.from('pack_types').select('image_name').not('image_name', 'is', null);
+    extra = (data || []).map(r => `/TCG/assets/packs/${r.image_name}`);
+  }
+  const all = [...new Set([...PACK_ASSETS, ...extra])];
+  for (const path of all) {
+    const p = pending('checks-assets', path);
+    try {
+      const r = await fetch(path, { method: 'HEAD' });
+      if (r.ok) resolve(p, 'ok', `${r.status}`);
+      else resolve(p, 'err', `HTTP ${r.status}`);
+    } catch(e) { resolve(p, 'err', e.message); }
+  }
+}
+
+// ── Run all ───────────────────────────────────────────────────────────────────
+await Promise.all([
+  checkAuth(),
+  checkDB(),
+  checkJS(),
+  checkAssets(),
+]);
+
+// Summary
+const total = okCount + errCount + warnCount;
+const sumEl = document.getElementById('summary');
+if (errCount === 0 && warnCount === 0) {
+  sumEl.style.borderColor = 'var(--green)';
+  sumEl.innerHTML = `✅ Tout OK — ${okCount}/${total} checks passés`;
+} else {
+  sumEl.style.borderColor = errCount > 0 ? 'var(--red)' : 'var(--amber)';
+  sumEl.innerHTML = `${ errCount > 0 ? '❌' : '⚠️'} ${errCount} erreur(s) · ${warnCount} avertissement(s) · ${okCount} OK`;
+}
+</script>
+</body>
+</html>
