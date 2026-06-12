@@ -1,4 +1,4 @@
-// data/supabaseData.js — v6 (chronicles + RPC onboarding)
+// data/supabaseData.js — v7 (chronicles + RPC onboarding + pseudo home)
 import * as playersRepo from './playersRepo.js';
 
 let _displayName = null;
@@ -41,4 +41,4 @@ export function formatUserTag() {
   return getDisplayName();
 }
 
-export const ASSET_VERSION = '1.6.0';
+export const ASSET_VERSION = '1.7.0';
