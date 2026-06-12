@@ -361,6 +361,57 @@ body {
 .upgrade-cost { color:var(--nc-accent); font-size:10px; letter-spacing:.1em; white-space:nowrap; }
 .upgrade-desc { color:var(--c-text-muted, #93a7b4); font-size:10px; line-height:1.5; margin-top:6px; }
 
+/* ── Arbre LEMEGETON ──────────────────────────────────────────────────── */
+.meta-section--lemegeton.locked { opacity:.6; }
+.lemegeton-skill-hint {
+  font-size:9px;
+  letter-spacing:.08em;
+  line-height:1.5;
+  color:var(--c-text-muted, #93a7b4);
+  margin:0 0 10px;
+}
+.lemegeton-skill-list { display:flex; flex-direction:column; gap:9px; }
+.lemegeton-skill {
+  width:100%;
+  text-align:left;
+  border:1px solid rgba(204,102,255,.18);
+  background:rgba(204,102,255,.045);
+  color:var(--c-text, #e8faff);
+  border-radius:14px;
+  padding:12px 13px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:border-color .15s, background .15s, transform .15s, opacity .15s;
+}
+.lemegeton-skill:hover:not(:disabled) { border-color:rgba(204,102,255,.6); background:rgba(204,102,255,.09); transform:translateY(-1px); }
+.lemegeton-skill:disabled { cursor:not-allowed; opacity:.5; }
+.lemegeton-skill.locked { opacity:.4; }
+.lemegeton-skill.can-buy {
+  border-color:rgba(204,102,255,.55);
+  box-shadow:0 0 18px rgba(204,102,255,.14), inset 0 0 18px rgba(204,102,255,.05);
+  opacity:1;
+}
+.lemegeton-skill.can-buy:not(:disabled)::after {
+  content:'READY';
+  position:absolute; top:8px; right:10px;
+  font-size:7px; letter-spacing:.18em; color:#d68bff;
+}
+.lemegeton-skill.maxed { border-color:rgba(255,204,0,.4); background:rgba(255,204,0,.05); opacity:1; }
+.lemegeton-skill-fill {
+  position:absolute; inset:0;
+  transform-origin:left center;
+  background:linear-gradient(90deg, rgba(204,102,255,.18), rgba(0,255,204,.05));
+  pointer-events:none;
+  transition:transform .2s ease-out;
+}
+.lemegeton-skill-head, .lemegeton-skill-desc { position:relative; z-index:2; }
+.lemegeton-skill-head { display:flex; justify-content:space-between; gap:10px; align-items:center; }
+.lemegeton-skill-name { font-family:var(--font-display, 'Exo 2', sans-serif); font-weight:800; font-size:12px; }
+.lemegeton-skill-name small { font-family:var(--font-mono, 'Share Tech Mono', monospace); font-weight:400; font-size:8px; letter-spacing:.12em; color:#c79bff; margin-left:4px; }
+.lemegeton-skill-cost { color:#d68bff; font-size:10px; letter-spacing:.1em; white-space:nowrap; }
+.lemegeton-skill-desc { color:var(--c-text-muted, #93a7b4); font-size:9.5px; line-height:1.5; margin-top:5px; }
+
 .save-row { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
 .action-btn {
   border:1px solid rgba(0,255,204,.3);

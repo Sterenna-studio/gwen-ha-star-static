@@ -50,6 +50,7 @@ export function createDefaultState(userId = null) {
     maxSurcharge: 100,
     surchargeGain: 5,
     overdriveLevel: 0,
+    overdriveCount: 0,
     factoryRate: 0,
     permanentMultiplier: 1,
     coreShellCapacity: 0,
@@ -76,10 +77,128 @@ export function createDefaultState(userId = null) {
       orbitalHive: 0,
     },
     milestones: {},
+    lemegetonSkills: {},
     lastTickAt: Date.now(),
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
+}
+
+// ── Arbre de compétences LEMEGETON ────────────────────────────────────────
+// Compétences permanentes achetées en FRAGMENTS, survivant au prestige.
+// S'activent une fois LEMEGETON en ligne (1 Md énergie cumulée ou Prestige 10).
+export const LEMEGETON_ONLINE_LIFETIME = 1_000_000_000;
+
+export function isLemegetonOnline(state) {
+  const lifetime = Number(state?.lifetimeEnergy ?? state?.totalEnergy ?? 0);
+  return lifetime >= LEMEGETON_ONLINE_LIFETIME || Number(state?.prestige ?? 0) >= 10;
+}
+
+export const LEMEGETON_SKILLS = [
+  {
+    id: 'overclock', name: 'Surcadence', icon: '🌀', kind: 'leveled',
+    baseCost: 10, scale: 1.5, maxLevel: 30, perLevel: 0.04,
+    desc(state) {
+      const lvl = lemegetonSkillLevel(state, 'overclock');
+      return `+4% production globale par niveau (clic · passif · usine). Actuel : +${Math.round(lvl * 4)}%.`;
+    },
+    unlock: state => isLemegetonOnline(state),
+    lockedText: 'Nécessite LEMEGETON en ligne (1 Md énergie cumulée ou Prestige 10).',
+  },
+  {
+    id: 'autoPurchase', name: 'Auto-achat', icon: '🧠', kind: 'unlock',
+    cost: 35,
+    desc: 'LEMEGETON achète seul l’upgrade énergie abordable le moins cher. Auto-amélioration continue.',
+    unlock: state => isLemegetonOnline(state),
+    lockedText: 'Nécessite LEMEGETON en ligne (1 Md énergie cumulée ou Prestige 10).',
+  },
+  {
+    id: 'fragmentResonance', name: 'Résonance fragmentaire', icon: '💠', kind: 'leveled',
+    baseCost: 14, scale: 1.55, maxLevel: 25, perLevel: 0.05,
+    desc(state) {
+      const lvl = lemegetonSkillLevel(state, 'fragmentResonance');
+      return `+5% de fragments gagnés (prestige & brisure de coque) par niveau. Actuel : +${Math.round(lvl * 5)}%.`;
+    },
+    unlock: state => isLemegetonOnline(state) && Number(state?.prestige ?? 0) >= 3,
+    lockedText: 'Nécessite LEMEGETON en ligne et Prestige 3.',
+  },
+  {
+    id: 'critOverdrive', name: 'Surcharge critique', icon: '💥', kind: 'leveled',
+    baseCost: 18, scale: 1.6, maxLevel: 12,
+    desc(state) {
+      const lvl = lemegetonSkillLevel(state, 'critOverdrive');
+      if (lvl === 0) return 'Un overdrive sur N devient CRITIQUE (×gain massif). N diminue et le multiplicateur monte par niveau.';
+      return `1 overdrive sur ${getCritOverdriveInterval(state)} est CRITIQUE ×${getCritOverdriveMultiplier(state).toFixed(1)}.`;
+    },
+    unlock: state => isLemegetonOnline(state) && Number(state?.prestige ?? 0) >= 5,
+    lockedText: 'Nécessite LEMEGETON en ligne et Prestige 5.',
+  },
+  {
+    id: 'offlineGrid', name: 'Grille offline', icon: '🛰️', kind: 'unlock',
+    cost: 80,
+    desc: 'LEMEGETON maintient le réseau hors-ligne : cap de farm offline porté de 8 h à 24 h.',
+    unlock: state => isLemegetonOnline(state) && Number(state?.prestige ?? 0) >= 10,
+    lockedText: 'Nécessite LEMEGETON en ligne et Prestige 10.',
+  },
+];
+
+export function lemegetonSkillLevel(state, id) {
+  return Math.max(0, Math.floor(Number(state?.lemegetonSkills?.[id] ?? 0)));
+}
+
+export function isLemegetonSkillUnlocked(state, skill) {
+  return skill.unlock ? !!skill.unlock(state) : true;
+}
+
+export function lemegetonSkillCost(skill, level) {
+  if (skill.kind === 'unlock') return skill.cost;
+  return Math.floor(skill.baseCost * Math.pow(skill.scale, level));
+}
+
+export function isLemegetonSkillMaxed(state, skill) {
+  const lvl = lemegetonSkillLevel(state, skill.id);
+  return skill.kind === 'unlock' ? lvl >= 1 : lvl >= (skill.maxLevel ?? Infinity);
+}
+
+export function buyLemegetonSkill(state, skillId) {
+  const skill = LEMEGETON_SKILLS.find(s => s.id === skillId);
+  if (!skill) return { ok: false, reason: 'unknown_skill' };
+  if (!isLemegetonSkillUnlocked(state, skill)) return { ok: false, reason: 'locked' };
+  if (isLemegetonSkillMaxed(state, skill)) return { ok: false, reason: 'maxed' };
+
+  const level = lemegetonSkillLevel(state, skill.id);
+  const cost = lemegetonSkillCost(skill, level);
+  if (Number(state.fragments ?? 0) < cost) return { ok: false, reason: 'not_enough_fragments', cost };
+
+  state.fragments -= cost;
+  if (!state.lemegetonSkills) state.lemegetonSkills = {};
+  state.lemegetonSkills[skill.id] = level + 1;
+  recalcDerivedStats(state);
+  state.updatedAt = Date.now();
+  return { ok: true, cost, level: level + 1, skill };
+}
+
+// Effets dérivés des compétences (lus par recalc, la boucle de jeu et l'offline)
+export function getLemegetonProdMultiplier(state) {
+  return 1 + lemegetonSkillLevel(state, 'overclock') * 0.04;
+}
+export function getFragmentGainMultiplier(state) {
+  return 1 + lemegetonSkillLevel(state, 'fragmentResonance') * 0.05;
+}
+export function isAutoPurchaseEnabled(state) {
+  return lemegetonSkillLevel(state, 'autoPurchase') >= 1;
+}
+export function getCritOverdriveInterval(state) {
+  const lvl = lemegetonSkillLevel(state, 'critOverdrive');
+  if (lvl <= 0) return 0;
+  return Math.max(10, 50 - (lvl - 1) * 4); // Lv.1 : 1/50 · Lv.11+ : 1/10
+}
+export function getCritOverdriveMultiplier(state) {
+  const lvl = lemegetonSkillLevel(state, 'critOverdrive');
+  return lvl <= 0 ? 1 : 5 + lvl * 1.5; // Lv.1 : ×6.5 · Lv.12 : ×23
+}
+export function getOfflineCapHours(state) {
+  return lemegetonSkillLevel(state, 'offlineGrid') >= 1 ? 24 : BALANCE.passiveOfflineCapHours;
 }
 
 export const UPGRADES = [
@@ -188,17 +307,26 @@ export const UPGRADES = [
   },
   {
     id: 'enginePlant', name: 'Chaîne de production moteur', icon: '⚙️', baseCost: 900000, scale: 1.38, currency: 'energy', tier: 5,
-    desc: 'Prestige 20 : production industrielle massive.',
+    desc(state) {
+      const lvl = state?.upgrades?.enginePlant ?? 0;
+      if (lvl === 0) return 'Allume l’usine : +75 énergie/s industrielle par niveau, amplifiée par tes noyaux dupliqués.';
+      const rate = Math.round(state?.factoryRate ?? 0);
+      return `Usine active · ${rate.toLocaleString('fr-FR')} é/s industrielle · +75 é/s par niveau (×noyaux).`;
+    },
     unlock: state => state.prestige >= 20,
     lockedText: 'Débloqué au Prestige 20.',
-    apply(state) { state.clickPower += 140; state.passiveRate += 360; state.factoryRate += 8; },
+    apply(state) { state.clickPower += 140; state.passiveRate += 200; state.factoryRate += 75; },
   },
   {
     id: 'orbitalHive', name: 'Ruche orbitale Nitro', icon: '🛰️', baseCost: 6200000, scale: 1.48, currency: 'energy', tier: 6,
-    desc: 'Prestige 50 : essaim orbital, scaling très haut.',
+    desc(state) {
+      const lvl = state?.upgrades?.orbitalHive ?? 0;
+      if (lvl === 0) return 'Essaim orbital : +300 é/s industrielle et +10% production usine par niveau.';
+      return `Essaim ×${lvl} · +${lvl * 10}% production usine · +300 é/s par niveau.`;
+    },
     unlock: state => state.prestige >= 50,
     lockedText: 'Débloqué au Prestige 50.',
-    apply(state) { state.clickPower += 560; state.passiveRate += 1600; state.factoryRate += 34; state.maxSurcharge += 50; },
+    apply(state) { state.clickPower += 560; state.passiveRate += 800; state.factoryRate += 300; state.factoryMult += 0.10; state.maxSurcharge += 50; },
   },
 ];
 
@@ -273,6 +401,7 @@ export function hydrateState(raw, userId = null) {
   const merged = { ...base, ...(raw ?? {}) };
   merged.upgrades = { ...base.upgrades, ...(raw?.upgrades ?? {}) };
   merged.milestones = { ...base.milestones, ...(raw?.milestones ?? {}) };
+  merged.lemegetonSkills = { ...base.lemegetonSkills, ...(raw?.lemegetonSkills ?? {}) };
   merged.coreShell = { ...base.coreShell, ...(raw?.coreShell ?? {}) };
   merged.fragments = Number(merged.fragments ?? 0);
   merged.totalFragments = Number(merged.totalFragments ?? merged.fragments ?? 0);
@@ -307,6 +436,7 @@ export function recalcDerivedStats(state) {
   state.surchargeGain = 5;
   state.overdriveLevel = 0;
   state.factoryRate = 0;
+  state.factoryMult = 1;
   state.permanentMultiplier = 1;
   state.coreShellCapacity = 0;
   state.coreShellHardness = 0;
@@ -331,7 +461,19 @@ export function recalcDerivedStats(state) {
   state.clickPower  *= state.permanentMultiplier * reflectMultiplier * coreMult;
   state.passiveRate *= state.permanentMultiplier * reflectMultiplier * coreMult;
   state.autoClickRate *= state.permanentMultiplier;
-  state.factoryRate   *= state.permanentMultiplier;
+  // Production industrielle : source d'énergie/s réelle (tickPassive + offline).
+  // Boostée par le mult permanent, l'essaim orbital (factoryMult) et les noyaux.
+  state.factoryRate   *= state.permanentMultiplier * (state.factoryMult ?? 1) * coreMult;
+
+  // Surcadence (compétence LEMEGETON) : +% production globale, persistant.
+  const lemeProd = getLemegetonProdMultiplier(state);
+  if (lemeProd !== 1) {
+    state.clickPower    *= lemeProd;
+    state.passiveRate   *= lemeProd;
+    state.autoClickRate *= lemeProd;
+    state.factoryRate   *= lemeProd;
+  }
+
   state.surcharge = Math.min(state.surcharge ?? 0, state.maxSurcharge);
 }
 
@@ -440,9 +582,10 @@ export function attemptCoreShellBreak(state) {
     state.coreShell.cracks = 0;
     state.coreShell.lastBreakAt = Date.now();
     state.coreShell.failedBreaks = Math.max(0, Number(state.coreShell.failedBreaks ?? 0));
-    addFragments(state, released);
+    const releasedGain = Math.max(released, Math.floor(released * getFragmentGainMultiplier(state)));
+    addFragments(state, releasedGain);
     state.updatedAt = Date.now();
-    return { ok: true, released, forced: forcedSuccess && !naturalSuccess, chance, shell: getCoreShellInfo(state) };
+    return { ok: true, released: releasedGain, forced: forcedSuccess && !naturalSuccess, chance, shell: getCoreShellInfo(state) };
   }
 
   state.coreShell.cracks = nextCracks;
@@ -454,13 +597,13 @@ export function attemptCoreShellBreak(state) {
 export function applyOfflineProgress(state) {
   const now = Date.now();
   const rawElapsed = Math.max(0, (now - (state.lastTickAt ?? now)) / 1000);
-  const elapsed = Math.min(BALANCE.passiveOfflineCapHours * 60 * 60, rawElapsed);
-  const gained = Math.floor(elapsed * (state.passiveRate ?? 0));
+  const elapsed = Math.min(getOfflineCapHours(state) * 60 * 60, rawElapsed);
+  const gained = Math.floor(elapsed * ((state.passiveRate ?? 0) + (state.factoryRate ?? 0)));
   addEnergy(state, gained);
   state.lastTickAt = now;
   state.updatedAt = now;
   // FIX #6 : on retourne aussi le temps réel écoulé et si le cap a été atteint
-  return { gained, elapsed, cappedAt: rawElapsed > elapsed ? BALANCE.passiveOfflineCapHours : null };
+  return { gained, elapsed, cappedAt: rawElapsed > elapsed ? getOfflineCapHours(state) : null };
 }
 
 export function clickCore(state) {
@@ -472,6 +615,7 @@ export function applyCoreClick(state, { automatic = false, gainRatio = 1, surcha
   let gain = Math.max(1, Math.floor(state.clickPower * gainRatio));
   let overdrive = false;
   let overdriveGain = 0;
+  let crit = false;
   let fragments = 0;
   let fragmentsStored = 0;
 
@@ -479,7 +623,14 @@ export function applyCoreClick(state, { automatic = false, gainRatio = 1, surcha
   if (state.surcharge >= state.maxSurcharge) {
     overdrive = true;
     state.surcharge = 0;
+    state.overdriveCount = Math.max(0, Math.floor(Number(state.overdriveCount ?? 0))) + 1;
     overdriveGain = Math.floor(state.clickPower * gainRatio * (BALANCE.overdriveBase + state.overdriveLevel * BALANCE.overdrivePerLevel) + state.passiveRate * BALANCE.overdrivePassiveSeconds);
+    // Surcharge critique (compétence LEMEGETON) : 1 overdrive sur N est amplifié.
+    const critInterval = getCritOverdriveInterval(state);
+    if (critInterval > 0 && state.overdriveCount % critInterval === 0) {
+      crit = true;
+      overdriveGain = Math.floor(overdriveGain * getCritOverdriveMultiplier(state));
+    }
     gain += overdriveGain;
     if (Math.random() < getFragmentDropChanceOnOverdrive(state)) {
       const stored = storeCoreShellFragments(state, 1);
@@ -490,7 +641,7 @@ export function applyCoreClick(state, { automatic = false, gainRatio = 1, surcha
 
   addEnergy(state, gain);
   state.updatedAt = Date.now();
-  return { gain, overdrive, overdriveGain, fragments, fragmentsStored, automatic };
+  return { gain, overdrive, overdriveGain, crit, fragments, fragmentsStored, automatic };
 }
 
 export function tickAutoClicks(state, deltaSeconds) {
@@ -512,7 +663,7 @@ export function tickAutoClicks(state, deltaSeconds) {
 }
 
 export function tickPassive(state, deltaSeconds) {
-  const passiveGain = (state.passiveRate ?? 0) * deltaSeconds;
+  const passiveGain = ((state.passiveRate ?? 0) + (state.factoryRate ?? 0)) * deltaSeconds;
   addEnergy(state, passiveGain);
   const auto = tickAutoClicks(state, deltaSeconds);
   state.lastTickAt = Date.now();
@@ -600,14 +751,18 @@ export function doPrestige(state) {
   const keptTotalClicks = state.totalClicks;
   const keptLifetimeEnergy = Math.max(0, Number(state.lifetimeEnergy ?? state.totalEnergy ?? 0));
   const keptPersistentUpgrades = getPersistentUpgradeLevels(state);
+  const keptLemegetonSkills = { ...(state.lemegetonSkills ?? {}) };
   const next = createDefaultState(userId);
   next.prestige = state.prestige + 1;
   // Bonus prestige basé sur totalEnergy (progression globale) et non energy courante
-  const prestigeReward = Math.floor(4 + next.prestige * 1.6 + Math.sqrt(Math.max(0, state.totalEnergy)) / 2200 + keptTotalFragments * 0.02);
+  const baseReward = Math.floor(4 + next.prestige * 1.6 + Math.sqrt(Math.max(0, state.totalEnergy)) / 2200 + keptTotalFragments * 0.02);
+  // Résonance fragmentaire (compétence LEMEGETON) amplifie le gain de fragments.
+  const prestigeReward = Math.floor(baseReward * getFragmentGainMultiplier(state));
   next.fragments = keptFragments + prestigeReward;
   next.totalFragments = keptTotalFragments + prestigeReward;
   next.lifetimeEnergy = keptLifetimeEnergy;
   next.upgrades = { ...next.upgrades, ...keptPersistentUpgrades };
+  next.lemegetonSkills = keptLemegetonSkills;
   next.milestones = keptMilestones;
   next.totalClicks = keptTotalClicks;
   recalcDerivedStats(next);
