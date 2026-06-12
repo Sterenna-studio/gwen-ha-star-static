@@ -23,6 +23,7 @@ export async function initDashboard() {
     _loadVideo(),
     _loadActivity(),
     _loadPokegangFromSupabase(user.id),
+    _loadPokegangLeaderboard(user.id),
   ]);
   _loadRadio();
 }
@@ -118,6 +119,82 @@ function _renderPokegangOffline() {
   setEl('pg-dex-nat',   'NATIONAL : —');
   setEl('pg-agents',    '—');
   setEl('kpi-pg-rep',   'OFFLINE');
+}
+
+// ── POKEGANG · CLASSEMENT (table publique pokegang_leaderboard) ───────────────
+const PG_TRAINER_SPRITE = sprite =>
+  `https://play.pokemonshowdown.com/sprites/trainers/${encodeURIComponent(sprite)}.png`;
+
+function _compactNum(n) {
+  n = Number(n) || 0;
+  if (n >= 1e6) return (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(/\.0$/, '') + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(n >= 1e4 ? 0 : 1).replace(/\.0$/, '') + 'K';
+  return String(n);
+}
+
+async function _loadPokegangLeaderboard(userId) {
+  const el = document.getElementById('pg-leaderboard');
+  if (!el) return;
+
+  try {
+    const { data, error } = await supabase
+      .from('pokegang_leaderboard')
+      .select('user_id, gang_name, boss_name, boss_sprite, reputation, total_caught, shiny_count, dex_national_count, agents_count')
+      .eq('is_anonymous', false)
+      .order('reputation', { ascending: false })
+      .limit(8);
+
+    if (error || !data || data.length === 0) {
+      _renderPgBoardEmpty(el);
+      return;
+    }
+    _renderPgBoard(el, data, userId);
+
+  } catch {
+    _renderPgBoardEmpty(el);
+  }
+}
+
+function _renderPgBoard(el, rows, userId) {
+  el.innerHTML = `<ol class="pgl-list" role="list">
+    ${rows.map((g, i) => {
+      const rank = i + 1;
+      const me   = userId && g.user_id === userId ? ' pgl-row--me' : '';
+      const top  = rank <= 3 ? ` pgl-row--top pgl-rank-${rank}` : '';
+      const sprite = g.boss_sprite
+        ? `<img class="pgl-sprite" src="${PG_TRAINER_SPRITE(g.boss_sprite)}" alt="" loading="lazy" onerror="this.remove()">`
+        : '<span class="pgl-sprite pgl-sprite--none" aria-hidden="true">◉</span>';
+      return `<li class="pgl-row${top}${me}">
+        <span class="pgl-rank">${rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : '#'+rank}</span>
+        ${sprite}
+        <div class="pgl-id">
+          <span class="pgl-gang">${_esc(g.gang_name) || 'Team ???'}</span>
+          <span class="pgl-boss">BOSS · ${_esc(g.boss_name) || '???'}</span>
+        </div>
+        <div class="pgl-stats">
+          <span class="pgl-stat"><b>${_compactNum(g.reputation)}</b><i>RÉPUT.</i></span>
+          <span class="pgl-stat"><b>${_compactNum(g.total_caught)}</b><i>CAPT.</i></span>
+          <span class="pgl-stat pgl-stat--shiny"><b>${_compactNum(g.shiny_count)}</b><i>✦ SHINY</i></span>
+          <span class="pgl-stat"><b>${_compactNum(g.dex_national_count)}</b><i>DEX</i></span>
+        </div>
+      </li>`;
+    }).join('')}
+  </ol>
+  <div class="pgl-foot">SYNC · POKEGANG.STERENNA.FR · TOP ${rows.length}</div>`;
+}
+
+function _renderPgBoardEmpty(el) {
+  el.innerHTML = `
+    <div class="widget-empty">
+      <span class="widget-empty-icon">◉</span>
+      <p>Classement indisponible</p>
+      <span class="widget-empty-sub">POKEGANG_LEADERBOARD · OFFLINE</span>
+    </div>`;
+}
+
+function _esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
 
 // ── VIDEO DU JOUR ─────────────────────────────────────────────────────────────

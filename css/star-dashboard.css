@@ -109,12 +109,13 @@
 .bc-otk      { grid-column:span 5;  }
 .bc-crew     { grid-column:span 3;  }
 .bc-pg       { grid-column:span 5;  }
+.bc-pgboard  { grid-column:span 7;  }
 .bc-video    { grid-column:span 7;  }
 .bc-activity { grid-column:span 4;  }
 .bc-radio    { grid-column:span 5;  }
 .bc-slots    { grid-column:span 5;  }
 @media(max-width:1100px) {
-  .bc-brand,.bc-otk,.bc-crew,.bc-pg,.bc-video,.bc-activity,.bc-radio,.bc-slots { grid-column:span 12; }
+  .bc-brand,.bc-otk,.bc-crew,.bc-pg,.bc-pgboard,.bc-video,.bc-activity,.bc-radio,.bc-slots { grid-column:span 12; }
 }
 
 /* ── QUICK ACCESS ───────────────────────────────────────── */
@@ -274,6 +275,35 @@
 .pg-stat-gang { grid-column:span 2; display:flex; align-items:center; gap:var(--space-3); }
 .pg-boss-sprite { width:48px; height:48px; object-fit:contain; image-rendering:pixelated; flex-shrink:0; }
 .pg-boss-info { display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; }
+
+/* ── POKEGANG · CLASSEMENT ─────────────────────────────────── */
+.pgl-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--space-2); }
+.pgl-row {
+  display:grid; grid-template-columns:auto 40px 1fr auto; align-items:center; gap:var(--space-3);
+  background:var(--c-surface-2); border:1px solid var(--c-border);
+  border-radius:var(--radius-md); padding:var(--space-2) var(--space-3);
+  transition:border-color .2s, background .2s;
+}
+.pgl-row:hover { border-color:color-mix(in oklch,var(--c-amber) 45%,var(--c-border)); }
+.pgl-row--top { background:linear-gradient(100deg,color-mix(in oklch,var(--c-amber) 8%,var(--c-surface-2)),var(--c-surface-2) 60%); }
+.pgl-rank-1 { border-color:color-mix(in oklch,var(--c-amber) 55%,var(--c-border)); box-shadow:0 0 18px color-mix(in oklch,var(--c-amber) 14%,transparent); }
+.pgl-row--me { border-color:var(--c-primary); box-shadow:inset 0 0 0 1px color-mix(in oklch,var(--c-primary) 35%,transparent); }
+.pgl-rank { font-family:var(--font-display); font-size:var(--text-base); min-width:26px; text-align:center; color:var(--c-text-muted); }
+.pgl-row--top .pgl-rank { font-size:var(--text-lg); }
+.pgl-sprite { width:40px; height:40px; object-fit:contain; image-rendering:pixelated; flex-shrink:0; }
+.pgl-sprite--none { display:grid; place-items:center; font-size:1.3rem; color:var(--c-text-faint); }
+.pgl-id { min-width:0; display:flex; flex-direction:column; gap:1px; }
+.pgl-gang { font-family:var(--font-display); font-size:var(--text-base); line-height:1.1; color:var(--c-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pgl-boss { font-family:var(--font-mono); font-size:8px; letter-spacing:.12em; color:var(--c-text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pgl-stats { display:flex; gap:var(--space-3); }
+.pgl-stat { display:flex; flex-direction:column; align-items:flex-end; line-height:1.05; }
+.pgl-stat b { font-family:var(--font-display); font-size:var(--text-sm); color:var(--c-amber); font-weight:700; }
+.pgl-stat i { font-family:var(--font-mono); font-style:normal; font-size:7px; letter-spacing:.1em; color:var(--c-text-faint); }
+.pgl-stat--shiny b { color:var(--c-cyan); }
+.pgl-foot { font-family:var(--font-mono); font-size:8px; letter-spacing:.16em; color:var(--c-text-faint); text-align:right; margin-top:var(--space-3); }
+@media(max-width:560px) {
+  .pgl-stats .pgl-stat:nth-child(n+3) { display:none; }
+}
 
 /* ── VIDEO ─────────────────────────────────────────────────── */
 .video-embed-wrap { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:var(--radius-lg); margin-top:var(--space-2); }
