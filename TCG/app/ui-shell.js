@@ -1,9 +1,10 @@
-// app/ui-shell.js — v3.0.0
-// Navbar persistante : active state, live gold, #/packs, tcg_player_packs
+// app/ui-shell.js — v4.0.0
+// Navbar persistante : active state, live chronicles, #/packs, tcg_player_packs
 import { navigate, boot } from './router.js';
 import { set } from './state.js';
 import { getClient, getUser, requireLogin } from '../logic/supaRaw.js';
 import { getDisplayName, initPlayer } from '../data/supabaseData.js';
+import { supabase as sb2 } from '/shared/supabase-client.js';
 
 const NAV_LINKS = [
   { hash: '#/home',       icon: '\u{1F3E0}', label: 'Accueil'    },
@@ -78,17 +79,23 @@ const SHELL_CSS = `
   color: #7ab;
   white-space: nowrap;
 }
-.gold-chip {
+/* Chronicles chip — remplace gold-chip */
+.chr-chip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: linear-gradient(180deg,#0f1a10,#0b140c);
-  border: 1px solid #3b2;
-  color: #ffd36b;
+  background: linear-gradient(180deg,#1a1000,#120e00);
+  border: 1px solid #a07820;
+  color: #f0c060;
   padding: 3px 10px;
   border-radius: 999px;
   font-weight: 700;
   font-size: 13px;
+  letter-spacing: .03em;
+}
+.chr-chip .chr-ico {
+  filter: drop-shadow(0 0 5px rgba(255,200,60,.4));
+  font-style: normal;
 }
 .btn-cig {
   border: 1px solid #234;
@@ -104,7 +111,6 @@ const SHELL_CSS = `
 `;
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Inject shell CSS
   if (!document.getElementById('shell-style')) {
     const s = document.createElement('style');
     s.id = 'shell-style';
@@ -119,12 +125,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       <nav class="nav" id="main-nav"></nav>
       <div class="userbar">
         <span id="ub-name">…</span>
-        <div class="gold-chip">⛁ <span id="ub-gold">0</span></div>
-        <button class="btn-cig" id="btn-cig" title="Carte d'Identification">CIG</button>
+        <div class="chr-chip"><i class="chr-ico">◆</i><span id="ub-chr">0</span></div>
+        <button class="btn-cig" id="btn-cig" title="Carte d&apos;Identification">CIG</button>
       </div>
     </div>`;
 
-  // Build nav links
+  // Nav links
   const navEl = top.querySelector('#main-nav');
   NAV_LINKS.forEach(({ hash, icon, label }) => {
     const btn = document.createElement('button');
@@ -135,17 +141,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     navEl.appendChild(btn);
   });
 
-  // Active state on hash change
   function syncActive() {
     const h = location.hash || '#/home';
-    navEl.querySelectorAll('.btn-nav').forEach(b => {
-      b.classList.toggle('active', b.dataset.hash === h);
-    });
+    navEl.querySelectorAll('.btn-nav').forEach(b =>
+      b.classList.toggle('active', b.dataset.hash === h)
+    );
   }
   window.addEventListener('hashchange', syncActive);
   syncActive();
 
-  // CIG button
   top.querySelector('#btn-cig').addEventListener('click', openCIGModal);
 
   // Auth + player init
@@ -155,19 +159,47 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!user) return;
 
   const player = await initPlayer(sb, user);
-  set({ user, player, gold: player?.gold ?? 0 });
+  set({ user, player, chronicles: player?.chronicles ?? 0 });
 
   const nameEl = document.getElementById('ub-name');
-  const goldEl = document.getElementById('ub-gold');
-  nameEl.textContent = getDisplayName();
-  goldEl.textContent = String(player?.gold ?? 0);
+  const chrEl  = document.getElementById('ub-chr');
 
-  // Live gold update from any page
-  window.addEventListener('tcg:gold', (e) => {
-    if (e.detail?.gold != null) goldEl.textContent = String(e.detail.gold);
+  nameEl.textContent = getDisplayName();
+  setChr(player?.chronicles ?? 0);
+
+  function setChr(v) {
+    if (chrEl) chrEl.textContent = Number(v || 0).toLocaleString('fr-FR');
+  }
+
+  // Mise à jour live après achat (event boutique)
+  window.addEventListener('tcg:chronicles', (e) => {
+    if (e.detail?.chronicles != null) setChr(e.detail.chronicles);
   });
 
-  // Boot router after shell is ready
+  // Rétro-compat — ancien event tcg:gold
+  window.addEventListener('tcg:gold', (e) => {
+    if (e.detail?.gold != null) setChr(e.detail.gold);
+  });
+
+  // Sync auth (connexion / déconnexion)
+  const { data: authListener } = sb2.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_OUT') {
+      setChr(0);
+      if (nameEl) nameEl.textContent = 'Non connecté';
+      return;
+    }
+    if (session) {
+      const fresh = await getClient();
+      const { data } = await fresh
+        .from('tcg_players')
+        .select('chronicles')
+        .eq('id', session.user.id)
+        .single();
+      setChr(data?.chronicles ?? 0);
+    }
+  });
+
+  // Boot router
   boot();
 });
 
@@ -177,19 +209,16 @@ async function openCIGModal() {
   const user = await getUser();
   if (!user) return;
 
-  const { data: packs } = await sb
-    .from('tcg_player_packs')
-    .select('quantity')
-    .eq('player_id', user.id);
+  const [{ data: packs }, { data: cards }, { data: player }] = await Promise.all([
+    sb.from('tcg_player_packs').select('quantity').eq('player_id', user.id),
+    sb.from('tcg_player_cards').select('quantity').eq('user_id', user.id),
+    sb.from('tcg_players').select('chronicles').eq('id', user.id).single(),
+  ]);
+
   const boostersOwned = (packs || []).reduce((a, b) => a + (b.quantity || 0), 0);
-
-  const { data: cards } = await sb
-    .from('tcg_player_cards')
-    .select('quantity')
-    .eq('user_id', user.id);
-  const cardsTotal = (cards || []).reduce((a, b) => a + (b.quantity || 0), 0);
-
-  const name = getDisplayName();
+  const cardsTotal    = (cards || []).reduce((a, b) => a + (b.quantity || 0), 0);
+  const chronicles    = player?.chronicles ?? 0;
+  const name          = getDisplayName();
 
   const overlay = document.createElement('div');
   Object.assign(overlay.style, {
@@ -205,10 +234,11 @@ async function openCIGModal() {
   });
   card.innerHTML = `
     <div style="text-align:center;font-weight:800;font-size:15px;color:#aaedbb;margin-bottom:14px;letter-spacing:.4px">
-      Carte d'Identification Galactique
+      Carte d&apos;Identification Galactique
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">
       <div>👤 Joueur : <b>${name}</b></div>
+      <div>◆ Chronicles : <b style="color:#f0c060">${chronicles.toLocaleString('fr-FR')}</b></div>
       <div>🃏 Cartes : <b>${cardsTotal}</b></div>
       <div>📦 Boosters : <b>${boostersOwned}</b></div>
     </div>
