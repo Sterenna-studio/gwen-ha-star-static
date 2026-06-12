@@ -142,7 +142,7 @@ async function renderShop(){
     if(!user){ shopList.innerHTML='<div style="padding:12px;font-size:.72em;opacity:.6">Non connecté</div>'; return; }
     const [packs, {data:pl}] = await Promise.all([
       loadPackTypes(),
-      sb.from('players').select('gold').eq('id',user.id).single()
+      sb.from('tcg_players').select('gold').eq('id',user.id).single()
     ]);
     const gold = pl?.gold ?? 0;
     const ubGold = document.getElementById('ub-gold');
@@ -176,13 +176,13 @@ async function renderShop(){
         try{
           const sb = await getClient();
           const user = await getUser();
-          const {data:pl} = await sb.from('players').select('gold').eq('id',user.id).single();
+          const {data:pl} = await sb.from('tcg_players').select('gold').eq('id',user.id).single();
           const cur = pl?.gold||0;
           if(cur<price){showMsg('Or insuffisant !','#ff8a8a');btn.disabled=false;return;}
-          await sb.from('players').update({gold:cur-price}).eq('id',user.id);
-          const {data:row} = await sb.from('player_packs').select('quantity').eq('player_id',user.id).eq('pack_type_id',packId).maybeSingle();
+          await sb.from('tcg_players').update({gold:cur-price}).eq('id',user.id);
+          const {data:row} = await sb.from('tcg_player_packs').select('quantity').eq('player_id',user.id).eq('pack_type_id',packId).maybeSingle();
           const qty=(row?.quantity||0)+1;
-          await sb.from('player_packs').upsert({player_id:user.id,pack_type_id:packId,quantity:qty},{onConflict:'player_id,pack_type_id'});
+          await sb.from('tcg_player_packs').upsert({player_id:user.id,pack_type_id:packId,quantity:qty},{onConflict:'player_id,pack_type_id'});
           showMsg(`✅ Pack acheté ! 🪙 ${cur-price} restants`,'#22c55e');
           await refreshHub();
           await renderShop();
@@ -194,9 +194,9 @@ async function renderShop(){
 
 // ── HUB ──────────────────────────────────────────────────────
 async function fetchTotalCards(sb, user){
-  const {data, error} = await sb.from('player_cards').select('qty').eq('player_id', user.id);
-  if(error){ console.warn('[hub] player_cards',error); return 0; }
-  return (data||[]).reduce((s,r)=>s+(r.qty||0),0);
+  const {data, error} = await sb.from('tcg_player_cards').select('quantity').eq('user_id', user.id);
+  if(error){ console.warn('[hub] tcg_player_cards',error); return 0; }
+  return (data||[]).reduce((s,r)=>s+(r.quantity||0),0);
 }
 
 async function refreshHub(){
@@ -205,7 +205,7 @@ async function refreshHub(){
     const [totalCards, playerPacks, {data:pl}] = await Promise.all([
       fetchTotalCards(sb,user),
       loadPlayerPacks(),
-      sb.from('players').select('gold').eq('id',user.id).single()
+      sb.from('tcg_players').select('gold').eq('id',user.id).single()
     ]);
     const totalPacks = playerPacks.reduce((s,p)=>s+(p.quantity||0),0);
     const gold = pl?.gold??0;
