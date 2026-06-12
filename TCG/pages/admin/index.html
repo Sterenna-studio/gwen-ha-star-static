@@ -55,7 +55,9 @@
   <div id="summary">Analyse en cours…</div>
 
 <script type="module">
-import { supabase as sb } from '/TCG/shared/supabaseClient.js';
+import { supabase as sb } from '/shared/supabase-client.js';
+import { getUser } from '/shared/auth.js';
+import { getProfile, getDisplayNameFromUser } from '/shared/profile.js';
 
 const SUPA_URL = 'https://imryukpbtkngsihxfxox.supabase.co';
 document.getElementById('ts').textContent = new Date().toLocaleString('fr-FR');
@@ -95,11 +97,16 @@ function _resolve(div, status, label, detail) {
 
 async function checkAuth() {
   addRow('checks-auth', 'Client Supabase', 'ok', SUPA_URL);
-  const p = addPending('checks-auth', 'Session utilisateur');
+  const p = addPending('checks-auth', 'Session agent');
   try {
-    const { data: { user }, error } = await sb.auth.getUser();
-    if (error || !user) p.warn('Non connecté — normal si pas loggé');
-    else p.ok(user.email || user.id);
+    const user = await getUser();
+    if (!user) {
+      p.warn('Non connecté — <a href="/login.html" style="color:var(--cyan)">Se connecter</a>');
+      return;
+    }
+    const profile = await getProfile(user.id);
+    const displayName = getDisplayNameFromUser(user, profile);
+    p.ok(`👤 ${displayName}`);
   } catch(e) { p.err(e.message); }
 }
 
@@ -122,6 +129,9 @@ async function checkJS() {
     '/TCG/data/packsRepo.js',
     '/TCG/data/playersRepo.js',
     '/TCG/shared/supabaseClient.js',
+    '/shared/supabase-client.js',
+    '/shared/auth.js',
+    '/shared/profile.js',
     '/TCG/app/router.js',
     '/TCG/app/ui-shell.js',
     '/TCG/pages/shopPage.js',
@@ -139,7 +149,6 @@ async function checkJS() {
 }
 
 async function checkAssets() {
-  // Liste 100% dynamique depuis pack_types — pas de fallback hardcode
   let paths = [];
   try {
     const { data } = await sb.from('pack_types').select('image_name').not('image_name', 'is', null);
@@ -148,10 +157,7 @@ async function checkAssets() {
     addRow('checks-assets', 'pack_types fetch', 'err', e.message);
     return;
   }
-  if (!paths.length) {
-    addRow('checks-assets', 'pack_types', 'warn', 'Aucun image_name en DB');
-    return;
-  }
+  if (!paths.length) { addRow('checks-assets', 'pack_types', 'warn', 'Aucun image_name en DB'); return; }
   for (const path of paths) {
     const p = addPending('checks-assets', path);
     try {
