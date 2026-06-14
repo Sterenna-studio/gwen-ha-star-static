@@ -110,3 +110,6 @@ Si l'app utilise le shared Nitro, elle n'a normalement pas besoin de secrets Sup
 - [ ] imports `/shared/...` si auth nécessaire
 - [ ] README du repo mis à jour
 - [ ] lien ajouté dans le hub ou le cockpit Star si utile
+
+> Pour **afficher les données** d'une app dans le cockpit Star (widget),
+> voir [integrer-widget-star.md](integrer-widget-star.md).
