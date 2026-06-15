@@ -813,7 +813,7 @@ export class SlotMachine {
       btn.classList.add('sl-casino-btn--enter');
     }
     this._setMsg(`✦ −${cost} CHRONICLES · BIENVENUE AU CASINO`, 'win');
-    setTimeout(() => { window.location.href = '/star/casino/'; }, 900);
+    setTimeout(() => { window.location.href = '/arena/arcade-casino/'; }, 900);
   }
 
   // ── UI HELPERS ─────────────────────────────────────────────────────────────────

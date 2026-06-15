@@ -3,31 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STAR ARCADE — Gwen Ha Star</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../css/base.css">
-  <link rel="stylesheet" href="../../css/theme.css">
-  <link rel="stylesheet" href="../../css/components.css">
-  <link rel="stylesheet" href="../../css/star.css">
-  <link rel="stylesheet" href="./css/casino.css">
-  <link rel="stylesheet" href="./css/chase.css">
-  <link rel="stylesheet" href="./css/neon-racer.css">
-  <link rel="icon" href="/shared/favicon.png" type="image/png">
+  <title>Star Arcade — déplacé</title>
+  <!-- Star Arcade est désormais servi sous /arena/arcade-casino/ (repo skill-arena). -->
+  <meta http-equiv="refresh" content="0; url=/arena/arcade-casino/">
+  <link rel="canonical" href="/arena/arcade-casino/">
+  <script>location.replace('/arena/arcade-casino/');</script>
+  <style>
+    body { margin:0; min-height:100vh; display:grid; place-items:center;
+           background:#0a0a0f; color:#e8e8f0;
+           font-family:'Share Tech Mono',ui-monospace,monospace; text-align:center; }
+    a { color:#ffb300; text-decoration:none; border-bottom:1px solid currentColor; }
+    .box { padding:32px; }
+    .dot { display:inline-block; width:8px; height:8px; border-radius:50%;
+           background:#ffb300; margin-right:8px; animation:b 1s infinite alternate; }
+    @keyframes b { to { opacity:.2; } }
+  </style>
 </head>
-<body class="star-page">
-  <div id="casino-root"></div>
-
-  <script type="module">
-    import { requireAuth } from '/shared/guards.js';
-    import { StarArcadeCore } from './js/star-arcade-core.js';
-
-    const auth = await requireAuth({ redirectTo: '/login.html' });
-    if (auth) {
-      const arcade = await StarArcadeCore.boot({ mount: '#casino-root', user: auth.user });
-      arcade.showLobby();
-    }
-  </script>
+<body>
+  <div class="box">
+    <p><span class="dot"></span>STAR ARCADE A DÉMÉNAGÉ</p>
+    <p>Redirection vers <a href="/arena/arcade-casino/">/arena/arcade-casino/</a>…</p>
+  </div>
 </body>
 </html>

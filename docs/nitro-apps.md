@@ -19,7 +19,8 @@ Les gros projets doivent rester dans leurs propres repos et se déployer sous un
 ```txt
 https://nitro.sterenna.fr/
 ├── star/             # cockpit membre
-├── star/casino/      # Star Arcade
+├── star/casino/      # redirection → /arena/arcade-casino/ (Star Arcade déplacé)
+├── arena/            # Skill Arena (submodule) + arcade-casino/ (Star Arcade canonique)
 ├── botanica/         # Botanica Obscura, repo séparé
 ├── TCG/              # TCG
 ├── jukebox/          # jukebox
