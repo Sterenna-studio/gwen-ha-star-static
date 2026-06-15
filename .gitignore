@@ -6,6 +6,9 @@ shared/config.js
 TCG/config.local.js
 TCG/config.js
 
+# Scripts admin privés (peuvent contenir emails / clés)
+scripts/admin/
+
 # Dependencies / build caches
 node_modules/
 .cache/
