@@ -16,12 +16,12 @@ jobs:
       contents: write
     steps:
       - name: Checkout gwen-ha-star-static
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.SYNC_TOKEN }}
 
       - name: Checkout titan-rocket-run
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: sterenna-studio/titan-rocket-run
           token: ${{ secrets.SYNC_TOKEN }}

@@ -16,10 +16,10 @@ jobs:
       contents: write
     steps:
       - name: Checkout gwen-ha-star-static
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Checkout bzh-universe (public)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: sterenna-studio/bzh-universe
           path: _bzh_universe_tmp
@@ -36,7 +36,7 @@ jobs:
           ls -la bzh-universe/
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
 

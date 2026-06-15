@@ -16,10 +16,10 @@ jobs:
       contents: write
     steps:
       - name: Checkout gwen-ha-star-static
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Checkout nitro-clicker (public)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: sterenna-studio/nitro-clicker
           path: _nitro_clicker_tmp

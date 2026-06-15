@@ -16,7 +16,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout sans submodules
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Init et update submodule skill-arena (public)
         run: |
