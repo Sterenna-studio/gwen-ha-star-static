@@ -5,6 +5,14 @@
 
 Options -Indexes
 
+# ── ZONE ADMIN : Basic Auth (défense en profondeur, en + du rôle superuser Supabase) ──
+<FilesMatch "^admin-dashboard\.(html|js)$">
+  AuthType Basic
+  AuthName "Gwen Ha Star — Zone admin"
+  AuthUserFile /homez.956/sterenn/.htpasswd-admin
+  Require valid-user
+</FilesMatch>
+
 # ── CACHE CONTROL ──────────────────────────────────────────────
 <IfModule mod_headers.c>
 
