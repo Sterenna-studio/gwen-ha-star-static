@@ -214,6 +214,27 @@ export const NITRO_APPS = [
     quickDesc: 'Sous-domaine jeu',
     color: '--c-red',
   },
+  {
+    id: 'dedale',
+    name: 'Dédale Temporel',
+    url: '/dedale/',
+    icon: '🚪',
+    status: 'alpha',
+    scope: 'nitro-app',
+    auth: 'public',
+    repo: 'sterenna-studio/dedale-temporel',
+    deployPath: '~/nitro/dedale/',
+    description: 'Escape game steampunk : couloir des portes temporelles, énigmes (SpectroCrypt, Imprimerie Médicale) et ambiance cuivre/vapeur.',
+    quickAccess: false,
+    hero: true,
+    heroTitle: 'DÉDALE TEMPOREL',
+    heroEyebrow: '// S.T.E.A.M. · COULOIR',
+    heroSub: 'PORTES TEMPORELLES · ÉNIGMES · CUIVRE/VAPEUR',
+    heroBadge: 'ALPHA',
+    quickLabel: 'DÉDALE',
+    quickDesc: 'Escape · énigmes',
+    color: '--c-amber',
+  },
 ];
 
 export function getNitroApp(id) {
