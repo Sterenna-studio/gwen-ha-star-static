@@ -28,6 +28,8 @@ import {
   lemegetonSkillCost,
   buyLemegetonSkill,
   isAutoPurchaseEnabled,
+  isLemegetonSkillActive,
+  toggleLemegetonSkill,
 } from './clicker-state.js';
 import { loadSave, saveAll } from './clicker-save.js';
 import { setClassToggle, setHtml, setText, setTransformScaleX } from './ui/render-cache.js';
@@ -186,20 +188,31 @@ function renderShell() {
       </article>
 
       <aside class="panel progression-panel">
-        <div class="upgrade-title-row">
-          <h2 class="panel-title">UPGRADES</h2>
-          <div class="buy-mult-row" role="group" aria-label="Multiplicateur d'achat">
-            ${BUY_MULTIPLIERS.map(mult => `<button class="buy-mult-btn ${buyMultiplier === mult ? 'active' : ''}" data-buy-mult="${mult}" type="button">×${mult}</button>`).join('')}
+        <div class="shop-tabs" role="tablist" aria-label="Boutiques">
+          <button class="shop-tab active" data-shop-tab="upgrades" role="tab" aria-selected="true" type="button">UPGRADES</button>
+          <button class="shop-tab" data-shop-tab="lemegeton" role="tab" aria-selected="false" type="button">⬡ LEMEGETON</button>
+        </div>
+
+        <div class="shop-pane" data-shop-pane="upgrades">
+          <div class="upgrade-title-row">
+            <span class="upgrade-sync-hint" id="upgrade-sync-hint">SYNC LIVE · ACHAT ×${buyMultiplier}</span>
+            <div class="buy-mult-row" role="group" aria-label="Multiplicateur d'achat">
+              ${BUY_MULTIPLIERS.map(mult => `<button class="buy-mult-btn ${buyMultiplier === mult ? 'active' : ''}" data-buy-mult="${mult}" type="button">×${mult}</button>`).join('')}
+            </div>
+          </div>
+          <div class="upgrade-list" id="upgrade-list"></div>
+          <div class="prestige-upgrade-footer">
+            <button class="upgrade-btn prestige-card" id="prestige-btn" type="button">
+              <span class="upgrade-fill" id="prestige-fill"></span>
+              <div class="upgrade-head"><span class="upgrade-name">✦ Surcharge contrôlée</span><span class="upgrade-cost" id="prestige-cost"></span></div>
+              <div class="upgrade-desc">Reset le run, conserve tes fragments, augmente l'échelle et débloque des systèmes.</div>
+            </button>
           </div>
         </div>
-        <div class="upgrade-sync-hint" id="upgrade-sync-hint">SYNC LIVE · ACHAT ×${buyMultiplier}</div>
-        <div class="upgrade-list" id="upgrade-list"></div>
-        <div class="prestige-upgrade-footer">
-          <button class="upgrade-btn prestige-card" id="prestige-btn" type="button">
-            <span class="upgrade-fill" id="prestige-fill"></span>
-            <div class="upgrade-head"><span class="upgrade-name">✦ Surcharge contrôlée</span><span class="upgrade-cost" id="prestige-cost"></span></div>
-            <div class="upgrade-desc">Reset le run, conserve tes fragments, augmente l'échelle et débloque des systèmes.</div>
-          </button>
+
+        <div class="shop-pane" data-shop-pane="lemegeton" hidden>
+          <p class="lemegeton-skill-hint" id="lemegeton-skill-hint">Compétences permanentes · payées en fragments · survivent au prestige.</p>
+          <div class="lemegeton-skill-list" id="lemegeton-skill-list"></div>
         </div>
       </aside>
 
@@ -241,17 +254,6 @@ function renderShell() {
           </button>
         </section>
 
-        <section class="meta-section meta-section--lemegeton" id="lemegeton-skill-section">
-          <div class="meta-section-header">
-            <span class="meta-section-accent"></span>
-            <span class="meta-section-icon">⬡</span>
-            <h2 class="meta-title">ARBRE LEMEGETON</h2>
-            <span class="meta-section-rule"></span>
-          </div>
-          <p class="lemegeton-skill-hint" id="lemegeton-skill-hint">Compétences permanentes · payées en fragments · survivent au prestige.</p>
-          <div class="lemegeton-skill-list" id="lemegeton-skill-list"></div>
-        </section>
-
       </aside>
     </section>
   `;
@@ -266,6 +268,23 @@ function bindStaticEvents() {
     localStorage.setItem(FX_KEY, String(fxEnabled));
     app.classList.toggle('fx-disabled', !fxEnabled);
     setText('fx-toggle', fxEnabled ? '✨ FX ON' : 'FX OFF');
+  });
+
+  // Onglets boutique : UPGRADES / LEMEGETON
+  document.querySelectorAll('[data-shop-tab]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.shopTab;
+      document.querySelectorAll('[data-shop-tab]').forEach(t => {
+        const on = t.dataset.shopTab === target;
+        setClassToggle(t, 'active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      document.querySelectorAll('[data-shop-pane]').forEach(pane => {
+        pane.hidden = pane.dataset.shopPane !== target;
+      });
+      if (target === 'lemegeton') renderLemegetonSkills(true);
+      else renderUpgrades(true);
+    });
   });
 
   document.querySelectorAll('[data-buy-mult]').forEach(btn => {
@@ -955,16 +974,17 @@ function getLemegetonSignature() {
   return LEMEGETON_SKILLS.map(skill => {
     const unlocked = isLemegetonSkillUnlocked(state, skill) ? 1 : 0;
     const level = lemegetonSkillLevel(state, skill.id);
-    return `${skill.id}:${unlocked}:${level}`;
+    const active = skill.toggleable ? (isLemegetonSkillActive(state, skill.id) ? 1 : 0) : '';
+    return `${skill.id}:${unlocked}:${level}:${active}`;
   }).join('|') + `|f${Math.floor(state.fragments ?? 0)}`;
 }
 
 function renderLemegetonSkills(force = false) {
   const root = document.getElementById('lemegeton-skill-list');
   if (!root) return;
-  const section = document.getElementById('lemegeton-skill-section');
+  const pane = document.querySelector('[data-shop-pane="lemegeton"]');
   const online = isLemegetonOnline(state);
-  if (section) section.classList.toggle('locked', !online);
+  if (pane) pane.classList.toggle('locked', !online);
 
   const hint = document.getElementById('lemegeton-skill-hint');
   if (hint) {
@@ -1005,6 +1025,20 @@ function renderLemegetonSkillButton(skill) {
       </button>`;
   }
 
+  // Compétence activable déjà acquise → bouton interrupteur ON/PAUSE
+  if (skill.toggleable && level >= 1) {
+    const active = isLemegetonSkillActive(state, skill.id);
+    return `
+      <button class="lemegeton-skill toggleable ${active ? 'on' : 'off'}" data-skill="${skill.id}" data-skill-toggle="1">
+        <span class="lemegeton-skill-fill" style="transform:scaleX(${active ? 1 : 0})"></span>
+        <div class="lemegeton-skill-head">
+          <span class="lemegeton-skill-name">${skill.icon} ${skill.name} <small>${active ? 'ACTIF' : 'EN PAUSE'}</small></span>
+          <span class="lemegeton-skill-cost">${active ? 'ON' : 'OFF'}</span>
+        </div>
+        <div class="lemegeton-skill-desc">${desc}</div>
+      </button>`;
+  }
+
   const costLabel = maxed ? (skill.kind === 'unlock' ? 'ACTIF' : 'MAX') : `${fmt(cost)} F`;
   return `
     <button class="lemegeton-skill ${canBuy ? 'can-buy' : ''} ${maxed ? 'maxed' : ''}" data-skill="${skill.id}" ${canBuy ? '' : 'disabled'}>
@@ -1020,6 +1054,17 @@ function renderLemegetonSkillButton(skill) {
 function bindLemegetonButtons() {
   document.querySelectorAll('[data-skill]:not(.locked)').forEach(btn => {
     btn.addEventListener('click', event => {
+      // Interrupteur ON/PAUSE pour les compétences activables déjà acquises
+      if (btn.dataset.skillToggle) {
+        const r = toggleLemegetonSkill(state, btn.dataset.skill);
+        if (!r.ok) return;
+        const sk = LEMEGETON_SKILLS.find(s => s.id === btn.dataset.skill);
+        lastLemegetonSignature = '';
+        renderLemegetonSkills(true);
+        scheduleSave();
+        toast(`LEMEGETON · ${sk?.name ?? ''} ${r.active ? 'réactivé' : 'mis en pause'}`);
+        return;
+      }
       const result = buyLemegetonSkill(state, btn.dataset.skill);
       if (!result.ok) {
         if (result.reason === 'maxed') return;

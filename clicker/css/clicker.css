@@ -412,6 +412,48 @@ body {
 .lemegeton-skill-cost { color:#d68bff; font-size:10px; letter-spacing:.1em; white-space:nowrap; }
 .lemegeton-skill-desc { color:var(--c-text-muted, #93a7b4); font-size:9.5px; line-height:1.5; margin-top:5px; }
 
+/* Interrupteur ON/PAUSE des compétences activables */
+.lemegeton-skill.toggleable { cursor:pointer; opacity:1; }
+.lemegeton-skill.toggleable.on { border-color:rgba(0,255,204,.5); background:rgba(0,255,204,.05); }
+.lemegeton-skill.toggleable.on .lemegeton-skill-cost { color:var(--nc-primary); }
+.lemegeton-skill.toggleable.on .lemegeton-skill-fill { background:linear-gradient(90deg, rgba(0,255,204,.16), rgba(204,102,255,.05)); }
+.lemegeton-skill.toggleable.off { border-color:rgba(255,255,255,.14); background:rgba(255,255,255,.025); }
+.lemegeton-skill.toggleable.off .lemegeton-skill-name small,
+.lemegeton-skill.toggleable.off .lemegeton-skill-cost { color:rgba(168,210,255,.5); }
+.lemegeton-skill.toggleable.off:hover { border-color:rgba(0,255,204,.4); }
+
+/* ── Onglets boutique (UPGRADES / LEMEGETON) ──────────────────────────── */
+.shop-tabs { display:flex; gap:6px; margin-bottom:14px; }
+.shop-tab {
+  flex:1;
+  padding:9px 10px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.03);
+  color:var(--c-text-muted, #93a7b4);
+  border-radius:12px;
+  font-family:var(--font-display, 'Exo 2', sans-serif);
+  font-weight:800;
+  font-size:11px;
+  letter-spacing:.1em;
+  cursor:pointer;
+  transition:border-color .15s, background .15s, color .15s;
+}
+.shop-tab:hover { border-color:rgba(0,255,204,.4); color:var(--c-text, #e8faff); }
+.shop-tab.active {
+  color:#02050a;
+  background:linear-gradient(90deg, var(--nc-primary), var(--nc-accent));
+  border-color:transparent;
+  box-shadow:0 0 18px rgba(0,255,204,.2);
+}
+.shop-tab[data-shop-tab="lemegeton"].active {
+  background:linear-gradient(90deg, #cc66ff, var(--nc-primary));
+  box-shadow:0 0 18px rgba(204,102,255,.28);
+}
+.shop-pane[hidden] { display:none; }
+.shop-pane { display:flex; flex-direction:column; }
+/* Le hint sync vit désormais dans la barre de titre : neutralise sa marge */
+.upgrade-title-row .upgrade-sync-hint { margin:0; }
+
 .save-row { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
 .action-btn {
   border:1px solid rgba(0,255,204,.3);

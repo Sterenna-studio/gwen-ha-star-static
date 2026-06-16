@@ -78,6 +78,7 @@ export function createDefaultState(userId = null) {
     },
     milestones: {},
     lemegetonSkills: {},
+    lemegetonToggles: {},
     lastTickAt: Date.now(),
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -106,7 +107,7 @@ export const LEMEGETON_SKILLS = [
     lockedText: 'Nécessite LEMEGETON en ligne (1 Md énergie cumulée ou Prestige 10).',
   },
   {
-    id: 'autoPurchase', name: 'Auto-achat', icon: '🧠', kind: 'unlock',
+    id: 'autoPurchase', name: 'Auto-achat', icon: '🧠', kind: 'unlock', toggleable: true,
     cost: 35,
     desc: 'LEMEGETON améliore seul les systèmes automatiques : noyau automatique et auto-clicker de maintien.',
     unlock: state => isLemegetonOnline(state),
@@ -185,8 +186,23 @@ export function getLemegetonProdMultiplier(state) {
 export function getFragmentGainMultiplier(state) {
   return 1 + lemegetonSkillLevel(state, 'fragmentResonance') * 0.05;
 }
+// Compétences activables/désactivables (toggleable) : actives par défaut une
+// fois achetées, mises en pause si le joueur le décide.
+export function isLemegetonSkillActive(state, id) {
+  if (lemegetonSkillLevel(state, id) < 1) return false;
+  return state?.lemegetonToggles?.[id] !== false;
+}
+export function toggleLemegetonSkill(state, id) {
+  const skill = LEMEGETON_SKILLS.find(s => s.id === id);
+  if (!skill?.toggleable || lemegetonSkillLevel(state, id) < 1) return { ok: false };
+  if (!state.lemegetonToggles) state.lemegetonToggles = {};
+  const next = !isLemegetonSkillActive(state, id);
+  state.lemegetonToggles[id] = next;
+  state.updatedAt = Date.now();
+  return { ok: true, active: next };
+}
 export function isAutoPurchaseEnabled(state) {
-  return lemegetonSkillLevel(state, 'autoPurchase') >= 1;
+  return isLemegetonSkillActive(state, 'autoPurchase');
 }
 export function getCritOverdriveInterval(state) {
   const lvl = lemegetonSkillLevel(state, 'critOverdrive');
@@ -402,6 +418,7 @@ export function hydrateState(raw, userId = null) {
   merged.upgrades = { ...base.upgrades, ...(raw?.upgrades ?? {}) };
   merged.milestones = { ...base.milestones, ...(raw?.milestones ?? {}) };
   merged.lemegetonSkills = { ...base.lemegetonSkills, ...(raw?.lemegetonSkills ?? {}) };
+  merged.lemegetonToggles = { ...base.lemegetonToggles, ...(raw?.lemegetonToggles ?? {}) };
   merged.coreShell = { ...base.coreShell, ...(raw?.coreShell ?? {}) };
   merged.fragments = Number(merged.fragments ?? 0);
   merged.totalFragments = Number(merged.totalFragments ?? merged.fragments ?? 0);
@@ -752,6 +769,7 @@ export function doPrestige(state) {
   const keptLifetimeEnergy = Math.max(0, Number(state.lifetimeEnergy ?? state.totalEnergy ?? 0));
   const keptPersistentUpgrades = getPersistentUpgradeLevels(state);
   const keptLemegetonSkills = { ...(state.lemegetonSkills ?? {}) };
+  const keptLemegetonToggles = { ...(state.lemegetonToggles ?? {}) };
   const next = createDefaultState(userId);
   next.prestige = state.prestige + 1;
   // Bonus prestige basé sur totalEnergy (progression globale) et non energy courante
@@ -763,6 +781,7 @@ export function doPrestige(state) {
   next.lifetimeEnergy = keptLifetimeEnergy;
   next.upgrades = { ...next.upgrades, ...keptPersistentUpgrades };
   next.lemegetonSkills = keptLemegetonSkills;
+  next.lemegetonToggles = keptLemegetonToggles;
   next.milestones = keptMilestones;
   next.totalClicks = keptTotalClicks;
   recalcDerivedStats(next);
