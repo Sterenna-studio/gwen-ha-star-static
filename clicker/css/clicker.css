@@ -210,33 +210,6 @@ body {
   100% { box-shadow: 0 0 80px rgba(0,255,204,.22), inset 0 0 80px rgba(0,255,204,.08); }
 }
 
-.reactor-gauges {
-  position: absolute;
-  left: 26px;
-  right: 26px;
-  bottom: 28px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  z-index: 2;
-}
-.reactor-gauge {
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.06);
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.07);
-}
-.reactor-gauge span {
-  display: block;
-  height: 100%;
-  transform-origin:left center;
-  transform: scaleX(0);
-  background: linear-gradient(90deg, var(--nc-primary), var(--nc-pink), var(--nc-accent));
-  box-shadow: 0 0 16px rgba(0,255,204,.42);
-  transition: transform .2s ease-out;
-}
-
 .energy-particle {
   position: absolute;
   width: 7px;
@@ -485,7 +458,6 @@ body {
 
 .fx-disabled .energy-field,
 .fx-disabled .module-orbit,
-.fx-disabled .reactor-gauges,
 .fx-disabled .core-rings { display: none; }
 .fx-disabled .click-core { box-shadow: 0 0 40px rgba(0,255,204,.12), inset 0 0 40px rgba(0,255,204,.05); }
 

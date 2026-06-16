@@ -274,8 +274,6 @@ body::after {
 }
 @keyframes glyphHeartbeat { 0%,100% { transform: scale(1); } 18% { transform: scale(1.08); } 28% { transform: scale(.98); } 42% { transform: scale(1.045); } }
 
-.reactor-gauge { height: 12px; border-color: rgba(0,255,204,.22); background: rgba(0,0,0,.26); box-shadow: inset 0 0 18px rgba(0,255,204,.12); }
-.reactor-gauge span,
 .stat-meter span {
   background: linear-gradient(90deg, #00ff80, #00ffcc, #ff3df2, #ffcc00);
   background-size: 240% 100%;

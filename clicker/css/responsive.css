@@ -130,12 +130,6 @@ body {
   top: clamp(14px, 2vw, 28px);
 }
 
-.reactor-gauges {
-  left: clamp(14px, 2vw, 26px);
-  right: clamp(14px, 2vw, 26px);
-  bottom: clamp(14px, 2vw, 28px);
-}
-
 .scale-radar::before {
   width: min(560px, 88cqw);
   height: min(560px, 88cqw);
@@ -343,11 +337,6 @@ body {
     width: min(205px, 58vw);
     max-width: min(205px, 58vw);
     font-size: 50px;
-  }
-
-  .reactor-gauges {
-    grid-template-columns: 1fr;
-    gap: 6px;
   }
 
   .upgrade-head {

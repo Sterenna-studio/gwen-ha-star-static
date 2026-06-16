@@ -180,11 +180,6 @@ function renderShell() {
           <span class="core-scale-unit">ÉCHELLE</span>
         </div>
         <div class="layer-caption" id="layer-caption"></div>
-        <div class="reactor-gauges" aria-hidden="true">
-          <div class="reactor-gauge"><span id="reactor-a"></span></div>
-          <div class="reactor-gauge"><span id="reactor-b"></span></div>
-          <div class="reactor-gauge"><span id="reactor-c"></span></div>
-        </div>
       </article>
 
       <aside class="panel progression-panel">
@@ -828,9 +823,6 @@ function renderStats() {
   const prestigeRatio = Math.min(1, state.energy / Math.max(1, req));
   setMeter('meter-prestige', prestigeRatio);
   setMeter('prestige-fill', prestigeRatio);
-  setMeter('reactor-a', Math.min(1, state.surcharge / Math.max(1, state.maxSurcharge)));
-  setMeter('reactor-b', Math.min(1, (state.clickPower + state.passiveRate) / 5000));
-  setMeter('reactor-c', prestigeRatio);
 
   const btn = document.getElementById('prestige-btn');
   setText('prestige-cost', `${fmt(state.energy)} / ${fmt(req)}`);
@@ -870,7 +862,7 @@ function renderCoreShell(force = false) {
   setClassToggle(btn, 'can-buy', canTry);
   btn.disabled = !canTry;
   setText('shell-break-cost', `${fmt(shell.breakCost)} E`);
-  setText('shell-break-desc', `Chance ${Math.round(shell.breakChance * 100)}% · fissures ${shell.cracks}/${shell.requiredHits} · dureté ${shell.hardness}`);
+  setText('shell-break-desc', `Chance ${Math.round(shell.breakChance * 100)}% de briser la sphère et libérer les fragments stockés.`);
   setMeter('shell-break-fill', Math.min(1, state.energy / Math.max(1, shell.breakCost)));
 
   setHtml(card, `
