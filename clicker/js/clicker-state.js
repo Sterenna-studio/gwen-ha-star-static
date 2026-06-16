@@ -108,7 +108,7 @@ export const LEMEGETON_SKILLS = [
   {
     id: 'autoPurchase', name: 'Auto-achat', icon: '🧠', kind: 'unlock',
     cost: 35,
-    desc: 'LEMEGETON achète seul l’upgrade énergie abordable le moins cher. Auto-amélioration continue.',
+    desc: 'LEMEGETON améliore seul les systèmes automatiques : noyau automatique et auto-clicker de maintien.',
     unlock: state => isLemegetonOnline(state),
     lockedText: 'Nécessite LEMEGETON en ligne (1 Md énergie cumulée ou Prestige 10).',
   },

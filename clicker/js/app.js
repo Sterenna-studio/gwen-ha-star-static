@@ -1039,13 +1039,15 @@ function bindLemegetonButtons() {
   });
 }
 
-// Auto-achat : LEMEGETON achète l'upgrade énergie abordable le moins cher.
+// Auto-achat : LEMEGETON n'améliore QUE les systèmes automatiques
+// (noyau automatique + auto-clicker de maintien), pas les upgrades manuels.
+const AUTO_PURCHASE_IDS = ['autoCore', 'autoClicker'];
 function runAutoPurchase() {
   if (!isAutoPurchaseEnabled(state)) return;
   let best = null;
-  for (const upgrade of UPGRADES) {
-    if ((upgrade.currency ?? 'energy') !== 'energy') continue;
-    if (!isUpgradeUnlocked(state, upgrade)) continue;
+  for (const id of AUTO_PURCHASE_IDS) {
+    const upgrade = UPGRADES.find(u => u.id === id);
+    if (!upgrade || !isUpgradeUnlocked(state, upgrade)) continue;
     const cost = upgradeCost(upgrade, state.upgrades[upgrade.id] ?? 0);
     if (cost > state.energy) continue;
     if (!best || cost < best.cost) best = { id: upgrade.id, cost };
