@@ -240,7 +240,7 @@ function renderPausePanel() {
       ${metric('Énergie', liveText('stat-energy', fmt(s.energy)))}
       ${metric('Fragments', liveText('stat-fragments', fmt(s.fragments)))}
       ${metric('Prestige', liveText('stat-prestige', fmt(s.prestige)))}
-      ${metric('Échelle', liveText('stat-layer', 'CORE'))}
+      ${metric('Échelle', getLayerFromPrestige(s.prestige ?? 0).short)}
     </div>`;
 }
 

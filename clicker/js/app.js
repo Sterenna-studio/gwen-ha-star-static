@@ -155,8 +155,6 @@ function renderShell() {
       <article class="stat-card"><div class="stat-label">SURCHARGE</div><div class="stat-value danger" id="stat-surcharge">0%</div><div class="stat-meter danger"><span id="meter-surcharge"></span></div></article>
       <article class="stat-card"><div class="stat-label">COQUE</div><div class="stat-value shell" id="stat-shell">0/0</div><div class="stat-meter shell"><span id="meter-shell"></span></div></article>
       <article class="stat-card"><div class="stat-label">PRESTIGE</div><div class="stat-value accent" id="stat-prestige">0</div><div class="stat-meter accent"><span id="meter-prestige"></span></div></article>
-      <article class="stat-card"><div class="stat-label">ÉCHELLE</div><div class="stat-value layer" id="stat-layer">CORE</div><div class="stat-meter layer"><span id="meter-layer"></span></div></article>
-      <article class="stat-card"><div class="stat-label">USINES</div><div class="stat-value factory" id="stat-factory">0</div><div class="stat-meter factory"><span id="meter-factory"></span></div></article>
     </section>
 
     <section class="game-grid game-grid-wide" id="game-grid" data-layout="${currentLayout}">
@@ -179,7 +177,6 @@ function renderShell() {
           <span id="core-scale-value">0.001 pm</span>
           <span class="core-scale-unit">ÉCHELLE</span>
         </div>
-        <div class="layer-caption" id="layer-caption"></div>
       </article>
 
       <aside class="panel progression-panel">
@@ -802,8 +799,6 @@ function renderStats() {
   setText('stat-passive', `${Number(state.passiveRate ?? 0).toFixed(2)}`);
   setText('stat-prestige', fmt(state.prestige));
   setText('stat-surcharge', `${Math.floor((state.surcharge / state.maxSurcharge) * 100)}%`);
-  setText('stat-layer', layer.short);
-  setText('stat-factory', fmt(state.factoryRate));
   setText('stat-shell', shell.unlocked ? `${shell.storedFragments}/${shell.capacity}` : 'LOCK');
 
   const nextCost = getNextAffordableCost();
@@ -813,10 +808,6 @@ function renderStats() {
   setMeter('meter-click', Math.min(1, state.clickPower / 1000));
   setMeter('meter-passive', Math.min(1, state.passiveRate / 2500));
   setMeter('meter-surcharge', Math.min(1, state.surcharge / Math.max(1, state.maxSurcharge)));
-  const tierStart = [...SCALING_LAYERS].reverse().find(l => l.prestige <= state.prestige)?.prestige ?? 0;
-  const tierEnd = SCALING_LAYERS.find(l => l.prestige > state.prestige)?.prestige ?? (tierStart + 100);
-  setMeter('meter-layer', Math.min(1, (state.prestige - tierStart) / Math.max(1, tierEnd - tierStart)));
-  setMeter('meter-factory', Math.min(1, state.factoryRate / 5000));
   setMeter('meter-shell', shell.unlocked ? Math.max(shell.fillRatio, shell.crackRatio * 0.35) : 0);
 
   const req = prestigeRequirement(state);
@@ -831,7 +822,6 @@ function renderStats() {
     setClassToggle(btn, 'can-buy', state.energy >= req);
   }
 
-  setHtml('layer-caption', `<strong>${layer.name}</strong><span>${layer.desc}</span>`);
   setText('core-label', layer.id === 'factory' || layer.id === 'district' || layer.id === 'orbital' ? 'RUN FACTORIES' : shell.unlocked ? 'CONTAIN CORE' : 'CLICK CORE');
 }
 

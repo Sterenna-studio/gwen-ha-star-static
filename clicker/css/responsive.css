@@ -124,12 +124,6 @@ body {
   letter-spacing: clamp(.12em, .8vw, .25em);
 }
 
-.layer-caption {
-  left: clamp(14px, 2vw, 28px);
-  right: clamp(14px, 2vw, 28px);
-  top: clamp(14px, 2vw, 28px);
-}
-
 .scale-radar::before {
   width: min(560px, 88cqw);
   height: min(560px, 88cqw);
@@ -272,22 +266,6 @@ body {
   .game-grid,
   .game-grid-wide {
     grid-template-columns: 1fr;
-  }
-
-  .layer-caption {
-    position: relative;
-    left: auto;
-    right: auto;
-    top: auto;
-    z-index: 5;
-    margin-bottom: 12px;
-    flex-direction: column;
-    text-align: center;
-    align-items: center;
-  }
-
-  .layer-caption span {
-    max-width: 100%;
   }
 
   .upgrade-title-row {

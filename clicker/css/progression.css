@@ -587,34 +587,6 @@
   background: rgba(0,255,128,.045);
 }
 
-.layer-caption {
-  position: absolute;
-  left: 28px;
-  right: 28px;
-  top: 28px;
-  z-index: 4;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: flex-start;
-  text-align: left;
-  pointer-events: none;
-}
-
-.layer-caption strong {
-  color: #b88cff;
-  font-family: var(--font-display, 'Exo 2', sans-serif);
-  font-size: 13px;
-  text-shadow: 0 0 14px rgba(184,140,255,.55);
-}
-
-.layer-caption span {
-  max-width: 260px;
-  font-size: 9px;
-  line-height: 1.45;
-  color: rgba(168,230,255,.58);
-}
-
 .scale-radar,
 .factory-field {
   position: absolute;
@@ -846,5 +818,4 @@
 @media (max-width: 840px) {
   .stats-grid-extended { grid-template-columns: repeat(2, 1fr); }
   .game-grid-wide { grid-template-columns: 1fr; }
-  .layer-caption { position: relative; left: auto; right: auto; top: auto; margin-bottom: 12px; flex-direction: column; text-align: center; align-items: center; }
 }
