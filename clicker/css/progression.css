@@ -140,6 +140,24 @@
   z-index: 3;
 }
 
+/* Zone de clic plus grande que le sprite : disque transparent derrière le noyau */
+.core-hit-zone {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(440px, 94vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 2;
+  -webkit-tap-highlight-color: transparent;
+}
+.core-hit-zone:focus-visible { outline: 1px dashed rgba(0,255,204,.4); }
+
 /* ── Core scale indicator ────────────────────────────────────────────────── */
 
 .core-scale-indicator {
@@ -178,6 +196,49 @@
   color: rgba(200,220,255,.32);
   text-transform: uppercase;
   font-family: var(--font-mono, 'Share Tech Mono', monospace);
+}
+
+/* ── Sélecteur de zoom de la vue noyau ───────────────────────────────────── */
+.core-zoom-control {
+  position: absolute;
+  top: clamp(14px, 2vw, 22px);
+  right: clamp(14px, 2vw, 22px);
+  z-index: 13;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(5, 12, 18, .62);
+  border: 1px solid rgba(0,255,204,.18);
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+}
+.core-zoom-btn {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,255,204,.08);
+  color: var(--nc-primary);
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s, transform .1s, opacity .15s;
+}
+.core-zoom-btn:hover:not(:disabled) { background: rgba(0,255,204,.2); }
+.core-zoom-btn:active:not(:disabled) { transform: scale(.9); }
+.core-zoom-btn:disabled { opacity: .3; cursor: not-allowed; }
+.core-zoom-readout {
+  min-width: 34px;
+  text-align: center;
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 10px;
+  letter-spacing: .08em;
+  color: rgba(0,255,204,.85);
 }
 
 /* ── Deploy badge (topbar) ───────────────────────────────────────────────── */
@@ -228,18 +289,16 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 1px solid rgba(0, 255, 204, 0.32);
+  border: 1.5px solid rgba(0, 255, 204, 0.75);
+  /* Vraie sphère Nitro lumineuse — même identité que le noyau principal */
   background:
-    radial-gradient(circle at 35% 30%, rgba(255,255,255,.14), transparent 38%),
-    radial-gradient(circle, rgba(0,255,204,.09), transparent 68%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  opacity: calc(0.38 + var(--eff) * 0.62);
-  filter: brightness(calc(0.5 + var(--eff) * 0.75));
-  box-shadow: 0 0 14px rgba(0,255,204,.18), inset 0 0 10px rgba(0,255,204,.05);
+    radial-gradient(circle at 38% 32%, rgba(255,255,255,.55), transparent 30%),
+    radial-gradient(circle, rgba(0,255,204,.5), rgba(0,200,255,.22) 56%, rgba(255,61,242,.16) 86%);
+  opacity: calc(0.85 + var(--eff) * 0.15);
+  box-shadow:
+    0 0 26px rgba(0,255,204,.55),
+    0 0 52px rgba(0,255,204,.22),
+    inset 0 0 20px rgba(255,255,255,.14);
   animation: subCoreCounterSpin 50s linear infinite, subCorePulse 3.8s ease-in-out infinite;
 }
 

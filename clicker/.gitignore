@@ -1,0 +1,6 @@
+# Harnais de dev local (bypass auth) — ne pas déployer
+/dev-local.html
+/dev/
+
+# Outils locaux
+/.claude/

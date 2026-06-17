@@ -43,10 +43,6 @@ function ensureSharedAssetNodes() {
     shell.insertAdjacentHTML('afterbegin', '<div class="shared-bg-sigil shared-asset-node" id="shared-bg-sigil" aria-hidden="true"></div>');
   }
 
-  if (!document.getElementById('shared-core-center-asset')) {
-    clickCore.insertAdjacentHTML('beforeend', '<span class="shared-core-center-asset shared-asset-node" id="shared-core-center-asset" aria-hidden="true"></span>');
-  }
-
   return true;
 }
 
@@ -56,7 +52,6 @@ function applyResolvedAssets(src) {
   setImage(document.getElementById('shared-brand-mark'), src);
   setImage(document.getElementById('shared-reactor-watermark'), src);
   setImage(document.getElementById('shared-bg-sigil'), src);
-  setImage(document.getElementById('shared-core-center-asset'), src);
   updateFavicon(src);
 }
 

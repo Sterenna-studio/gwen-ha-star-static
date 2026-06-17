@@ -40,6 +40,9 @@ const BUY_MULT_KEY = 'nitro-clicker.buy.multiplier';
 const BUY_MULTIPLIERS = [1, 5, 10];
 const LAYOUT_KEY = 'nitro-clicker.layout';
 const LAYOUTS = ['nexus', 'orbital', 'command', 'mono'];
+const CORE_ZOOM_KEY = 'nitro-clicker.core.zoom';
+// index 0 = le plus zoomé (noyau principal à 80% de sa taille naturelle), puis dézoom
+const CORE_ZOOM_LEVELS = [0.80, 0.64, 0.50, 0.38, 0.28];
 
 let auth;
 let profile;
@@ -49,6 +52,8 @@ let saveTimer;
 let lastTick = performance.now();
 let lastUpgradeSignature = '';
 let lastLemegetonSignature = '';
+let coreZoomIndex = Math.min(CORE_ZOOM_LEVELS.length - 1, Math.max(0, Math.floor(Number(localStorage.getItem(CORE_ZOOM_KEY) ?? 0)) || 0));
+let lastAutoFitZoom = 1;
 let lastScaleSignature = '';
 let lastMilestoneSignature = '';
 let lastModuleSignature = '';
@@ -165,10 +170,9 @@ function renderShell() {
         <div class="core-viewport" id="core-viewport">
           <div class="sub-core-field" id="sub-core-field" aria-hidden="true"></div>
           <div class="core-shell-visual" id="core-shell-visual" aria-hidden="true"><span></span><i></i><b></b></div>
-          <button class="click-core" id="click-core" aria-label="Cliquer le noyau Nitro">
+          <button class="core-hit-zone" id="core-hit-zone" type="button" aria-label="Cliquer le noyau Nitro"></button>
+          <button class="click-core" id="click-core" aria-label="Cliquer le noyau Nitro" tabindex="-1">
             <span class="core-rings"></span>
-            <span class="core-glyph">⬡</span>
-            <small id="core-label">CLICK CORE</small>
           </button>
         </div>
         <div class="energy-field" id="energy-field" aria-hidden="true"></div>
@@ -176,6 +180,11 @@ function renderShell() {
         <div class="core-scale-indicator" id="core-scale-indicator">
           <span id="core-scale-value">0.001 pm</span>
           <span class="core-scale-unit">ÉCHELLE</span>
+        </div>
+        <div class="core-zoom-control" id="core-zoom-control" aria-label="Zoom de la vue noyau">
+          <button class="core-zoom-btn" data-zoom-step="1" type="button" aria-label="Dézoomer">−</button>
+          <span class="core-zoom-readout" id="core-zoom-readout">80%</span>
+          <button class="core-zoom-btn" data-zoom-step="-1" type="button" aria-label="Zoomer">+</button>
         </div>
       </article>
 
@@ -254,6 +263,42 @@ function renderShell() {
   renderAll();
 }
 
+function handleCoreClick(event) {
+  const result = clickCore(state);
+  const gain = typeof result === 'number' ? result : result.gain;
+  FX.click();
+  spawnPop(event.clientX, event.clientY, `+${fmt(gain)}`);
+  spawnBouncingBurst(event.clientX, event.clientY, Math.min(14, 4 + Math.floor(gain / Math.max(1, state.clickPower / 3))));
+  pulseReactor();
+  pulseSubCores();
+  sparkTendrils();
+
+  if (result?.overdrive) {
+    FX.overdrive();
+    if (result.crit) {
+      spawnSystemWave(`💥 CRIT OVERDRIVE +${fmt(result.overdriveGain)}`);
+      lightningStorm(10);
+      spawnEnergyBurst(event.clientX, event.clientY, 32);
+      toast(`SURCHARGE CRITIQUE · +${fmt(result.overdriveGain)} énergie`);
+    } else {
+      spawnSystemWave(`OVERDRIVE +${fmt(result.overdriveGain)}`);
+      lightningStorm(5);
+    }
+  }
+  if (result?.fragmentsStored) {
+    pulseShell('store');
+    toast(`Fragment Nitro confiné dans la sphère +${result.fragmentsStored}`);
+  }
+  if (result?.fragments) {
+    toast(`Fragment Nitro obtenu +${result.fragments}`);
+    spawnFragmentOrbs(result.fragments);
+  }
+  if (Math.random() > 0.45) zapToRandomModule();
+
+  claimMilestonesAndRender();
+  scheduleSave();
+}
+
 function bindStaticEvents() {
   document.getElementById('fx-toggle').addEventListener('click', () => {
     fxEnabled = !fxEnabled;
@@ -279,6 +324,11 @@ function bindStaticEvents() {
     });
   });
 
+  // Sélecteur de zoom de la vue noyau
+  document.querySelectorAll('[data-zoom-step]').forEach(btn => {
+    btn.addEventListener('click', () => stepCoreZoom(Number(btn.dataset.zoomStep)));
+  });
+
   document.querySelectorAll('[data-buy-mult]').forEach(btn => {
     btn.addEventListener('click', () => {
       buyMultiplier = Number(btn.dataset.buyMult);
@@ -289,41 +339,8 @@ function bindStaticEvents() {
     });
   });
 
-  document.getElementById('click-core').addEventListener('click', event => {
-    const result = clickCore(state);
-    const gain = typeof result === 'number' ? result : result.gain;
-    FX.click();
-    spawnPop(event.clientX, event.clientY, `+${fmt(gain)}`);
-    spawnBouncingBurst(event.clientX, event.clientY, Math.min(14, 4 + Math.floor(gain / Math.max(1, state.clickPower / 3))));
-    pulseReactor();
-    pulseSubCores();
-    sparkTendrils();
-
-    if (result?.overdrive) {
-      FX.overdrive();
-      if (result.crit) {
-        spawnSystemWave(`💥 CRIT OVERDRIVE +${fmt(result.overdriveGain)}`);
-        lightningStorm(10);
-        spawnEnergyBurst(event.clientX, event.clientY, 32);
-        toast(`SURCHARGE CRITIQUE · +${fmt(result.overdriveGain)} énergie`);
-      } else {
-        spawnSystemWave(`OVERDRIVE +${fmt(result.overdriveGain)}`);
-        lightningStorm(5);
-      }
-    }
-    if (result?.fragmentsStored) {
-      pulseShell('store');
-      toast(`Fragment Nitro confiné dans la sphère +${result.fragmentsStored}`);
-    }
-    if (result?.fragments) {
-      toast(`Fragment Nitro obtenu +${result.fragments}`);
-      spawnFragmentOrbs(result.fragments);
-    }
-    if (Math.random() > 0.45) zapToRandomModule();
-
-    claimMilestonesAndRender();
-    scheduleSave();
-  });
+  document.getElementById('click-core').addEventListener('click', handleCoreClick);
+  document.getElementById('core-hit-zone').addEventListener('click', handleCoreClick);
 
   document.getElementById('shell-break-btn').addEventListener('click', () => {
     const result = attemptCoreShellBreak(state);
@@ -617,6 +634,28 @@ function formatCoreScale(coreCount) {
   return `${pm.toPrecision(3)} pm`;
 }
 
+// Applique le zoom de la vue noyau : niveau manuel plafonné par l'auto-fit.
+function applyCoreZoom() {
+  const panel = document.getElementById('core-panel');
+  if (!panel) return;
+  const target = CORE_ZOOM_LEVELS[coreZoomIndex] ?? CORE_ZOOM_LEVELS[0];
+  const effective = Math.min(target, lastAutoFitZoom);
+  panel.style.setProperty('--panel-zoom', effective.toFixed(4));
+  const readout = document.getElementById('core-zoom-readout');
+  if (readout) readout.textContent = `${Math.round(target * 100)}%`;
+  const ctrl = document.getElementById('core-zoom-control');
+  if (ctrl) {
+    ctrl.querySelector('[data-zoom-step="-1"]')?.toggleAttribute('disabled', coreZoomIndex <= 0);
+    ctrl.querySelector('[data-zoom-step="1"]')?.toggleAttribute('disabled', coreZoomIndex >= CORE_ZOOM_LEVELS.length - 1);
+  }
+}
+
+function stepCoreZoom(delta) {
+  coreZoomIndex = Math.min(CORE_ZOOM_LEVELS.length - 1, Math.max(0, coreZoomIndex + delta));
+  localStorage.setItem(CORE_ZOOM_KEY, String(coreZoomIndex));
+  applyCoreZoom();
+}
+
 function renderSubCores() {
   const field = document.getElementById('sub-core-field');
   if (!field) return;
@@ -638,24 +677,27 @@ function renderSubCores() {
   // orbit radius computed so no two sub-cores overlap each other.
   // Constraint: chord between adjacent sub-cores ≥ 2 × maxR_sub
   //   chord = 2 × orbitR × sin(π / N)  →  orbitR ≥ maxR_sub / sin(π/N)
+  // Vrais noyaux dupliqués : taille substantielle (55%→85% du principal),
+  // pour qu'ils se lisent comme de vrais noyaux côte à côte.
+  const effOf = i => Math.min(0.85, 0.55 + (i - 1) * 0.06);
   let orbitR = 0;
   let systemExtent = R_main;
   if (coreCount > 0) {
-    const maxEff    = Math.min(0.80, coreCount * 0.10);
-    const maxR_sub  = Math.max(14, maxEff * R_main);
-    const minTangential = R_main + maxR_sub + 8;               // touch main core
+    const maxR_sub  = Math.max(34, effOf(coreCount) * R_main);
+    const minTangential = R_main + maxR_sub + 10;              // touch main core
     const minPacking    = coreCount > 1
-      ? maxR_sub / Math.sin(Math.PI / coreCount) + 6           // touch each other
+      ? maxR_sub / Math.sin(Math.PI / coreCount) + 8           // touch each other
       : 0;
     orbitR      = Math.max(minTangential, minPacking);
     systemExtent = orbitR + maxR_sub;
   }
 
-  // Dezoom so the whole system fits comfortably in the panel
-  const zoom = coreCount > 0
+  // Auto-fit : plancher de dézoom pour que tout le système tienne dans le panneau.
+  // Sert de cap au zoom manuel (si trop de noyaux, on dézoome au-delà du choix).
+  lastAutoFitZoom = coreCount > 0
     ? Math.min(1, (panelShort * 0.80) / (systemExtent * 2))
     : 1;
-  panel?.style.setProperty('--panel-zoom', zoom.toFixed(4));
+  applyCoreZoom();
 
   const scaleEl = document.getElementById('core-scale-value');
   if (scaleEl) scaleEl.textContent = formatCoreScale(coreCount);
@@ -663,8 +705,8 @@ function renderSubCores() {
   // Build sub-core DOM elements
   field.innerHTML = '';
   for (let i = 1; i <= coreCount; i++) {
-    const eff     = Math.min(0.80, i * 0.10);
-    const subSize = Math.max(28, eff * R_main * 2);
+    const eff     = effOf(i);
+    const subSize = Math.max(60, eff * R_main * 2);
     const angle   = -90 + ((i - 1) / coreCount) * 360;
     const div = document.createElement('div');
     div.className = 'sub-core';
@@ -672,8 +714,8 @@ function renderSubCores() {
     div.style.setProperty('--eff',     String(eff));
     div.style.setProperty('--orbit-r', `${orbitR}px`);
     div.style.setProperty('--sub-size',`${subSize}px`);
-    div.title = `Noyau ×${i} · ${Math.round(eff * 100)}% du principal`;
-    div.innerHTML = `<div class="sub-core-inner"><span class="sub-core-glyph">⬡</span><span class="sub-core-eff">${Math.round(eff * 100)}%</span></div>`;
+    div.title = `Noyau dupliqué ×${i}`;
+    div.innerHTML = `<div class="sub-core-inner"></div>`;
     field.appendChild(div);
   }
 }
@@ -822,7 +864,6 @@ function renderStats() {
     setClassToggle(btn, 'can-buy', state.energy >= req);
   }
 
-  setText('core-label', layer.id === 'factory' || layer.id === 'district' || layer.id === 'orbital' ? 'RUN FACTORIES' : shell.unlocked ? 'CONTAIN CORE' : 'CLICK CORE');
 }
 
 function setMeter(id, ratio) {
