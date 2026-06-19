@@ -1,0 +1,47 @@
+name: Deploy chronicles-tcg to OVH
+
+on:
+  repository_dispatch:
+    types: [chronicles-tcg-updated]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-chronicles-tcg-ovh
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout chronicles-tcg
+        uses: actions/checkout@v4
+        with:
+          repository: Sterenna-studio/chronicles-tcg
+          token: ${{ secrets.SYNC_TOKEN }}
+          path: _tmp
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.OVH_SSH_KEY }}" > ~/.ssh/ovh_key
+          chmod 600 ~/.ssh/ovh_key
+          ssh-keyscan -H "${{ secrets.OVH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Ensure remote dir
+        run: |
+          ssh -i ~/.ssh/ovh_key "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}" \
+            "mkdir -p ~/nitro/chronicles"
+
+      - name: Deploy via rsync
+        run: |
+          rsync -avz --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='.env' \
+            --exclude='.env.example' \
+            -e "ssh -i ~/.ssh/ovh_key" \
+            _tmp/ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/chronicles/"
+
+      - name: Cleanup
+        if: always()
+        run: rm -f ~/.ssh/ovh_key
