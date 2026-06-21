@@ -81,7 +81,7 @@ const PROJECTS = [
   { name: 'BZH Universe',     url: '/bzh-universe/' },
   { name: 'Corebots',         url: '/corebots/' },
   { name: 'Titan Rocket Run', url: '/titan-rocket-run/' },
-  { name: 'Botanica Obscura', url: '/botanica-obscura/' },
+  { name: 'Botanica Obscura', url: '/botanica/' },
   { name: 'TCG',              url: '/TCG/' },
   { name: 'Jukebox',          url: '/jukebox/' },
   { name: 'Star Crew',        url: '/star/' },
