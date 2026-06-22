@@ -12,8 +12,7 @@ const STORAGE_KEY      = 'cfm-freq-idx';
 const TICKER_INTERVAL  = 5500;   // ms entre segments
 const AMBIENT_INTERVAL = 50000;  // ms entre phrases ambient Lemegeton
 // Clé YouTube Data API v3 (lecture seule, domaine restreint)
-// Laisser vide pour désactiver le fetch YouTube (mode texte seul)
-const YT_API_KEY       = '';
+const YT_API_KEY       = 'AIzaSyAEruwkr9u1CN0OECR6onqY1Z3vW-LsvCE';
 const YT_CACHE_KEY     = 'cfm-yt-cache';
 const YT_CACHE_TTL     = 1000 * 60 * 60 * 6; // 6h
 
@@ -46,7 +45,6 @@ async function fetchPlaylistTitles(playlistId) {
   try {
     let titles = [];
     let pageToken = '';
-    // On fetch max 2 pages (50 titres) pour rester rapide
     for (let page = 0; page < 2; page++) {
       const url = new URL('https://www.googleapis.com/youtube/v3/playlistItems');
       url.searchParams.set('part', 'snippet');
@@ -63,7 +61,6 @@ async function fetchPlaylistTitles(playlistId) {
       pageToken = data.nextPageToken ?? '';
       if (!pageToken) break;
     }
-    // Persiste dans sessionStorage
     try {
       const raw = sessionStorage.getItem(YT_CACHE_KEY);
       const store = raw ? JSON.parse(raw) : {};
@@ -97,7 +94,6 @@ function injectCSS() {
     --cfm-h:      34px;
   }
 
-  /* ══ BARRE ══ */
   #cfm-widget {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -115,7 +111,6 @@ function injectCSS() {
   }
   body { padding-bottom: var(--cfm-h) !important; }
 
-  /* ─ brand ─ */
   .cfm-slot-brand {
     display:flex; align-items:center; gap:.4rem;
     padding: 0 .8rem;
@@ -135,7 +130,6 @@ function injectCSS() {
     letter-spacing:.22em; text-shadow:0 0 8px rgba(233,69,96,.5);
   }
 
-  /* ─ nav ─ */
   .cfm-slot-nav { display:flex; align-items:center; border-right:1px solid var(--cfm-border); flex-shrink:0; }
   .cfm-nav-btn {
     background:none; border:none; color:var(--cfm-dim); cursor:pointer;
@@ -144,7 +138,6 @@ function injectCSS() {
   }
   .cfm-nav-btn:hover { background:rgba(0,212,255,.07); color:var(--cfm-blue); }
 
-  /* ─ slot freq ─ */
   .cfm-slot-freq {
     display:flex; align-items:center; gap:.45rem;
     padding:0 .7rem; border-right:1px solid var(--cfm-border);
@@ -153,7 +146,6 @@ function injectCSS() {
   .cfm-freq-name  { color:var(--cfm-text);  font-size:.68rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .cfm-freq-style { color:var(--cfm-blue);  font-size:.58rem; letter-spacing:.12em; white-space:nowrap; opacity:.8; }
 
-  /* ══ TICKER ══ */
   .cfm-slot-ticker {
     flex:1; min-width:0; overflow:hidden;
     display:flex; align-items:center;
@@ -180,24 +172,20 @@ function injectCSS() {
   .cfm-ticker-seg.visible { opacity:1; transform:translateY(0); pointer-events:auto; }
   .cfm-ticker-seg.exit    { opacity:0; transform:translateY(-8px); }
 
-  /* couleurs par type */
   .cfm-ticker-seg[data-type="leme"]   { color:var(--cfm-purple); font-style:italic; }
   .cfm-ticker-seg[data-type="freq"]   { color:var(--cfm-text); }
   .cfm-ticker-seg[data-type="style"]  { color:var(--cfm-blue); letter-spacing:.12em; }
   .cfm-ticker-seg[data-type="mood"]   { color:var(--cfm-amber); font-style:italic; font-size:.64rem; }
   .cfm-ticker-seg[data-type="signal"] { color:var(--cfm-dim); font-size:.62rem; letter-spacing:.1em; }
-  /* titres YouTube — couleur distincte */
   .cfm-ticker-seg[data-type="yt"] {
     color: var(--cfm-yellow);
     font-size: .66rem;
   }
-  /* préfixes icônes */
   .cfm-ticker-seg[data-type="leme"]::before   { content:'◈ ';    opacity:.6; margin-right:.15rem; flex-shrink:0; }
   .cfm-ticker-seg[data-type="signal"]::before { content:'⬡ ';    opacity:.5; margin-right:.15rem; flex-shrink:0; }
   .cfm-ticker-seg[data-type="yt"]::before     { content:'▶ NOW '; opacity:.7; margin-right:.15rem; flex-shrink:0;
                                                 color:var(--cfm-red); font-size:.6rem; }
 
-  /* ─ actions ─ */
   .cfm-slot-actions { display:flex; align-items:center; padding:0 .5rem; gap:.3rem; flex-shrink:0; }
   .cfm-act-btn {
     padding:.2rem .5rem; border:1px solid var(--cfm-border);
@@ -212,7 +200,6 @@ function injectCSS() {
   .cfm-act-btn--open:hover         { box-shadow:0 0 8px rgba(139,92,246,.3); }
   .cfm-act-btn--mute.muted         { border-color:var(--cfm-red); color:var(--cfm-red); }
 
-  /* ══ DRAWER ══ */
   #cfm-drawer {
     position:fixed; bottom:var(--cfm-h); left:0; right:0;
     z-index:7999;
@@ -236,7 +223,6 @@ function injectCSS() {
   }
   .cfm-drawer-close:hover { border-color:var(--cfm-red); color:var(--cfm-red); }
 
-  /* Lemegeton bubble */
   .cfm-bubble {
     display:flex; align-items:flex-start; gap:.6rem;
     background:rgba(139,92,246,.07); border:1px solid rgba(139,92,246,.2);
@@ -250,7 +236,6 @@ function injectCSS() {
   .cfm-bubble-badge  { font-size:.55rem; letter-spacing:.12em; color:var(--cfm-dim); margin-top:.2rem; }
   .cfm-bubble-badge.speaking { color:var(--cfm-green); animation:cfm-pulse 1s ease-in-out infinite; }
 
-  /* Titres YouTube dans le drawer */
   .cfm-yt-titles {
     margin: .8rem 0;
     display: flex;
@@ -323,11 +308,8 @@ class Ticker {
 
   setSegments(segs) { this._segments = segs; this._idx = 0; }
 
-  /** Inject des segments yt après le chargement async */
   addYtSegments(titles) {
-    // Remplace ou insère les segments yt dans le cycle
     this._segments = this._segments.filter(s => s.type !== 'yt');
-    // On insère un max de 8 titres aléatoires pour ne pas saturer
     const sample = titles.sort(() => Math.random() - .5).slice(0, 8);
     sample.forEach(t => this._segments.push({ type: 'yt', text: t }));
   }
@@ -495,7 +477,6 @@ async function initChroniclesFM() {
     ticker.updateSegment('leme', phrase);
   }
 
-  /** Charge les titres YouTube et injecte dans ticker + drawer */
   async function loadYtTitles(p) {
     if (!p.youtubePlaylistId) {
       ytSection.style.display = 'none';
@@ -504,10 +485,8 @@ async function initChroniclesFM() {
     const titles = await fetchPlaylistTitles(p.youtubePlaylistId);
     if (!titles.length) { ytSection.style.display = 'none'; return; }
 
-    // ─ ticker
     ticker.addYtSegments(titles);
 
-    // ─ drawer : liste déroulante
     ytTitlesList.innerHTML = '';
     titles.forEach(t => {
       const el = document.createElement('div');
@@ -535,7 +514,6 @@ async function initChroniclesFM() {
     ticker.setSegments(buildBaseSegments(p, phrase));
     ticker.start();
 
-    // Charge les titres YT en async — s'insèrent dans le ticker dès dispo
     loadYtTitles(p);
 
     dTitle.textContent = p.title;
