@@ -5,18 +5,17 @@
  */
 import { LemegetonVoice, pickPhrase, PHRASES } from './lemegeton-voice.js';
 
-// ─── CONFIG ─────────────────────────────────────────────────────────────────
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
 const CFM_DATA_URL     = '/jukebox/chronicles-fm.json';
 const CFM_PAGE_URL     = '/jukebox/chronicles-fm.html';
 const STORAGE_KEY      = 'cfm-freq-idx';
-const TICKER_INTERVAL  = 5500;   // ms entre segments
-const AMBIENT_INTERVAL = 50000;  // ms entre phrases ambient Lemegeton
-// Clé YouTube Data API v3 (lecture seule, domaine restreint)
+const TICKER_INTERVAL  = 5500;
+const AMBIENT_INTERVAL = 50000;
 const YT_API_KEY       = 'AIzaSyAEruwkr9u1CN0OECR6onqY1Z3vW-LsvCE';
 const YT_CACHE_KEY     = 'cfm-yt-cache';
-const YT_CACHE_TTL     = 1000 * 60 * 60 * 6; // 6h
+const YT_CACHE_TTL     = 1000 * 60 * 60 * 6;
 
-// ─── TYPEWRITER ─────────────────────────────────────────────────────────────
+// ─── TYPEWRITER ───────────────────────────────────────────────────────────────
 function typewriter(el, text, speed = 26) {
   if (!el) return;
   el.textContent = '';
@@ -25,25 +24,23 @@ function typewriter(el, text, speed = 26) {
   tick();
 }
 
-// ─── YOUTUBE PLAYLIST TITLES ───────────────────────────────────────────────────
-const _ytCache = new Map(); // playlistId → { titles: string[], ts: number }
-
-async function fetchPlaylistTitles(playlistId) {
+// ─── YOUTUBE ──────────────────────────────────────────────────────────────────
+// items : [{ title, videoId }]
+async function fetchPlaylistItems(playlistId) {
   if (!YT_API_KEY || !playlistId) return [];
 
-  // Cache sessionStorage
   try {
     const raw = sessionStorage.getItem(YT_CACHE_KEY);
     if (raw) {
       const store = JSON.parse(raw);
       if (store[playlistId] && Date.now() - store[playlistId].ts < YT_CACHE_TTL) {
-        return store[playlistId].titles;
+        return store[playlistId].items;
       }
     }
   } catch { /**/ }
 
   try {
-    let titles = [];
+    let items = [];
     let pageToken = '';
     for (let page = 0; page < 2; page++) {
       const url = new URL('https://www.googleapis.com/youtube/v3/playlistItems');
@@ -55,8 +52,11 @@ async function fetchPlaylistTitles(playlistId) {
       const r = await fetch(url);
       if (!r.ok) break;
       const data = await r.json();
-      titles = titles.concat(
-        (data.items ?? []).map(i => i.snippet?.title).filter(Boolean)
+      items = items.concat(
+        (data.items ?? []).map(i => ({
+          title:   i.snippet?.title ?? '',
+          videoId: i.snippet?.resourceId?.videoId ?? ''
+        })).filter(i => i.title && i.videoId)
       );
       pageToken = data.nextPageToken ?? '';
       if (!pageToken) break;
@@ -64,16 +64,16 @@ async function fetchPlaylistTitles(playlistId) {
     try {
       const raw = sessionStorage.getItem(YT_CACHE_KEY);
       const store = raw ? JSON.parse(raw) : {};
-      store[playlistId] = { titles, ts: Date.now() };
+      store[playlistId] = { items, ts: Date.now() };
       sessionStorage.setItem(YT_CACHE_KEY, JSON.stringify(store));
     } catch { /**/ }
-    return titles;
+    return items;
   } catch {
     return [];
   }
 }
 
-// ─── CSS ─────────────────────────────────────────────────────────────────────
+// ─── CSS ──────────────────────────────────────────────────────────────────────
 function injectCSS() {
   if (document.getElementById('cfm-widget-css')) return;
   const s = document.createElement('style');
@@ -177,10 +177,9 @@ function injectCSS() {
   .cfm-ticker-seg[data-type="style"]  { color:var(--cfm-blue); letter-spacing:.12em; }
   .cfm-ticker-seg[data-type="mood"]   { color:var(--cfm-amber); font-style:italic; font-size:.64rem; }
   .cfm-ticker-seg[data-type="signal"] { color:var(--cfm-dim); font-size:.62rem; letter-spacing:.1em; }
-  .cfm-ticker-seg[data-type="yt"] {
-    color: var(--cfm-yellow);
-    font-size: .66rem;
-  }
+  .cfm-ticker-seg[data-type="yt"]     { color:var(--cfm-yellow); font-size:.66rem; cursor:pointer; }
+  .cfm-ticker-seg[data-type="yt"]:hover { text-decoration:underline; text-underline-offset:3px; }
+
   .cfm-ticker-seg[data-type="leme"]::before   { content:'◈ ';    opacity:.6; margin-right:.15rem; flex-shrink:0; }
   .cfm-ticker-seg[data-type="signal"]::before { content:'⬡ ';    opacity:.5; margin-right:.15rem; flex-shrink:0; }
   .cfm-ticker-seg[data-type="yt"]::before     { content:'▶ NOW '; opacity:.7; margin-right:.15rem; flex-shrink:0;
@@ -241,7 +240,7 @@ function injectCSS() {
     display: flex;
     flex-direction: column;
     gap: .25rem;
-    max-height: 120px;
+    max-height: 140px;
     overflow-y: auto;
     padding-right: .3rem;
   }
@@ -251,7 +250,7 @@ function injectCSS() {
     font-size: .68rem; color: var(--cfm-dim);
     padding: .2rem .4rem;
     border-left: 2px solid transparent;
-    transition: all .15s; cursor: default;
+    transition: all .15s; cursor: pointer;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .cfm-yt-title-item:hover  { color: var(--cfm-yellow); border-left-color: var(--cfm-yellow); }
@@ -259,6 +258,18 @@ function injectCSS() {
   .cfm-yt-section-label {
     font-size: .6rem; letter-spacing: .15em; color: var(--cfm-dim);
     margin-bottom: .2rem; opacity: .7;
+  }
+
+  /* hint raccourcis clavier */
+  .cfm-kbd-hint {
+    font-size: .55rem; color: var(--cfm-dim); letter-spacing: .1em;
+    margin-top: .5rem; opacity: .6;
+  }
+  .cfm-kbd-hint kbd {
+    display:inline-block; padding:.05rem .3rem;
+    border:1px solid var(--cfm-border); border-radius:2px;
+    font-family:var(--cfm-mono); font-size:.55rem;
+    color:var(--cfm-dim); margin:0 .15rem;
   }
 
   .cfm-drawer-embed iframe { width:100%; height:200px; border:none; border-radius:3px; display:block; }
@@ -290,12 +301,13 @@ function injectCSS() {
     .cfm-brand-label { display:none; }
     .cfm-slot-freq   { max-width:110px; }
     #cfm-widget      { font-size:.62rem; }
+    .cfm-kbd-hint    { display:none; }
   }
   `;
   document.head.appendChild(s);
 }
 
-// ─── TICKER ────────────────────────────────────────────────────────────────────
+// ─── TICKER ───────────────────────────────────────────────────────────────────
 class Ticker {
   constructor(track, interval = TICKER_INTERVAL) {
     this._track    = track;
@@ -304,14 +316,16 @@ class Ticker {
     this._cur      = null;
     this._timer    = null;
     this._idx      = 0;
+    this._onYtClick = null; // callback(videoId)
   }
 
   setSegments(segs) { this._segments = segs; this._idx = 0; }
+  onYtClick(fn) { this._onYtClick = fn; }
 
-  addYtSegments(titles) {
+  addYtSegments(items) {
     this._segments = this._segments.filter(s => s.type !== 'yt');
-    const sample = titles.sort(() => Math.random() - .5).slice(0, 8);
-    sample.forEach(t => this._segments.push({ type: 'yt', text: t }));
+    const sample = [...items].sort(() => Math.random() - .5).slice(0, 8);
+    sample.forEach(item => this._segments.push({ type: 'yt', text: item.title, videoId: item.videoId }));
   }
 
   start() { this._show(); this._timer = setInterval(() => this._advance(), this._interval); }
@@ -335,6 +349,12 @@ class Ticker {
     el.className = 'cfm-ticker-seg';
     el.dataset.type = seg.type;
     el.textContent  = seg.text;
+    if (seg.type === 'yt' && seg.videoId) {
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', () => {
+        if (this._onYtClick) this._onYtClick(seg.videoId);
+      });
+    }
     this._track.appendChild(el);
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('visible')));
     this._cur = el;
@@ -404,6 +424,9 @@ function buildDOM() {
       <a   class="cfm-drawer-btn cfm-drawer-btn--page" href="${CFM_PAGE_URL}">⬡ TOUTES LES FRÉQUENCES</a>
       <button class="cfm-drawer-btn cfm-drawer-btn--mute" id="cfm-drawer-mute">🔊 VOIX</button>
     </div>
+    <div class="cfm-kbd-hint">
+      <kbd>←</kbd><kbd>→</kbd> changer de fréquence &nbsp;·&nbsp; <kbd>Espace</kbd> ouvrir/fermer
+    </div>
   `;
 
   document.body.appendChild(drawer);
@@ -411,7 +434,7 @@ function buildDOM() {
   return { bar, drawer };
 }
 
-// ─── MAIN ────────────────────────────────────────────────────────────────────
+// ─── MAIN ─────────────────────────────────────────────────────────────────────
 async function initChroniclesFM() {
   injectCSS();
 
@@ -433,20 +456,27 @@ async function initChroniclesFM() {
   let drawerOpen   = false;
   let ambientTimer = null;
 
-  const wName       = bar.querySelector('#cfm-w-name');
-  const wStyle      = bar.querySelector('#cfm-w-style');
-  const tickerTrack = bar.querySelector('#cfm-ticker-track');
-  const dLeme       = drawer.querySelector('#cfm-drawer-leme');
-  const dEmbed      = drawer.querySelector('#cfm-drawer-embed');
-  const dTitle      = drawer.querySelector('#cfm-d-title');
-  const dStyle      = drawer.querySelector('#cfm-d-style');
-  const dMood       = drawer.querySelector('#cfm-d-mood');
-  const dYt         = drawer.querySelector('#cfm-d-yt');
-  const ytSection   = drawer.querySelector('#cfm-yt-section');
-  const ytTitlesList= drawer.querySelector('#cfm-yt-titles');
-  const voiceBadge  = drawer.querySelector('#cfm-voice-badge');
+  const wName        = bar.querySelector('#cfm-w-name');
+  const wStyle       = bar.querySelector('#cfm-w-style');
+  const tickerTrack  = bar.querySelector('#cfm-ticker-track');
+  const dLeme        = drawer.querySelector('#cfm-drawer-leme');
+  const dEmbed       = drawer.querySelector('#cfm-drawer-embed');
+  const dTitle       = drawer.querySelector('#cfm-d-title');
+  const dStyle       = drawer.querySelector('#cfm-d-style');
+  const dMood        = drawer.querySelector('#cfm-d-mood');
+  const dYt          = drawer.querySelector('#cfm-d-yt');
+  const ytSection    = drawer.querySelector('#cfm-yt-section');
+  const ytTitlesList = drawer.querySelector('#cfm-yt-titles');
+  const voiceBadge   = drawer.querySelector('#cfm-voice-badge');
 
   const ticker = new Ticker(tickerTrack, TICKER_INTERVAL);
+
+  // Ouvrir une vidéo YouTube dans un nouvel onglet
+  function openVideo(videoId) {
+    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank', 'noopener');
+  }
+
+  ticker.onYtClick(openVideo);
 
   function buildBaseSegments(p, lemePhrase) {
     const segs = [];
@@ -477,22 +507,22 @@ async function initChroniclesFM() {
     ticker.updateSegment('leme', phrase);
   }
 
-  async function loadYtTitles(p) {
-    if (!p.youtubePlaylistId) {
-      ytSection.style.display = 'none';
-      return;
-    }
-    const titles = await fetchPlaylistTitles(p.youtubePlaylistId);
-    if (!titles.length) { ytSection.style.display = 'none'; return; }
+  async function loadYtItems(p) {
+    if (!p.youtubePlaylistId) { ytSection.style.display = 'none'; return; }
+    const items = await fetchPlaylistItems(p.youtubePlaylistId);
+    if (!items.length) { ytSection.style.display = 'none'; return; }
 
-    ticker.addYtSegments(titles);
+    ticker.addYtSegments(items);
 
     ytTitlesList.innerHTML = '';
-    titles.forEach(t => {
+    items.forEach(item => {
       const el = document.createElement('div');
-      el.className = 'cfm-yt-title-item';
-      el.textContent = t;
-      el.title = t;
+      el.className   = 'cfm-yt-title-item';
+      el.textContent = item.title;
+      el.title       = item.title;
+      if (item.videoId) {
+        el.addEventListener('click', () => openVideo(item.videoId));
+      }
       ytTitlesList.appendChild(el);
     });
     ytSection.style.display = 'block';
@@ -514,7 +544,7 @@ async function initChroniclesFM() {
     ticker.setSegments(buildBaseSegments(p, phrase));
     ticker.start();
 
-    loadYtTitles(p);
+    loadYtItems(p);
 
     dTitle.textContent = p.title;
     dStyle.textContent = p.style ?? '';
@@ -566,6 +596,44 @@ async function initChroniclesFM() {
     updateVoiceBadge();
   }
 
+  // ─── RACCOURCIS CLAVIER ──────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    // Ignorer si focus dans un input/textarea
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
+
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      renderFreq((idx - 1 + playlists.length) % playlists.length, true);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      renderFreq((idx + 1) % playlists.length, true);
+    } else if (e.key === ' ' || e.code === 'Space') {
+      e.preventDefault();
+      drawerOpen ? closeDrawer() : openDrawer();
+    }
+  });
+
+  // ─── SWIPE MOBILE ────────────────────────────────────────────────────────
+  let touchStartX = 0;
+  let touchStartY = 0;
+  const SWIPE_THRESHOLD = 50;
+  const SWIPE_MAX_Y     = 80; // tolérance verticale
+
+  bar.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].clientX;
+    touchStartY = e.changedTouches[0].clientY;
+  }, { passive: true });
+
+  bar.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dy) > SWIPE_MAX_Y) return;
+    if (dx < 0) renderFreq((idx + 1) % playlists.length, true);         // swipe gauche → suivant
+    else        renderFreq((idx - 1 + playlists.length) % playlists.length, true); // swipe droite → précédent
+  }, { passive: true });
+
+  // ─── EVENTS ──────────────────────────────────────────────────────────────
   bar.querySelector('#cfm-brand').addEventListener('click',    () => drawerOpen ? closeDrawer() : openDrawer());
   bar.querySelector('#cfm-prev').addEventListener('click',     () => renderFreq((idx - 1 + playlists.length) % playlists.length, true));
   bar.querySelector('#cfm-next').addEventListener('click',     () => renderFreq((idx + 1) % playlists.length, true));
