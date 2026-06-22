@@ -23,6 +23,11 @@
       <div class="sb-item"><span class="sb-dot"></span><span>GWEN·HA·STAR</span></div>
       <div class="sb-item" id="sb-supa"><span class="sb-dot amber"></span><span>SUPABASE · LINK</span></div>
       <div class="sb-item" id="sb-pg"><span class="sb-dot off"></span><span>POKEGANG · EXTERNE</span></div>
+      <!-- Chronicles FM status -->
+      <div class="sb-item" id="sb-cfm" style="cursor:pointer" title="Chronicles FM — cliquer pour ouvrir">
+        <span class="sb-dot" style="background:#e94560;box-shadow:0 0 4px #e94560"></span>
+        <span style="color:#e94560">CHRONICLES FM</span>
+      </div>
     </div>
     <div class="sb-right">
       <span class="sb-user" id="sb-username">···</span>
@@ -176,7 +181,6 @@
   <header id="star-header-user" role="banner"></header>
 
   <style>
-  /* Conteneur hero cards — layout horizontal compact (like hub tool-cards) */
   .bento-hero-row {
     grid-column: 1 / -1;
     display: flex;
@@ -215,6 +219,12 @@
 
     document.getElementById('btn-signout-strip')?.addEventListener('click',()=>signOut());
 
+    // Chronicles FM status bar click
+    document.getElementById('sb-cfm')?.addEventListener('click', () => {
+      const bar = document.getElementById('cfm-widget');
+      if (bar) bar.classList.toggle('cfm-visible');
+    });
+
     async function loadMembers(){
       const el=document.getElementById('kpi-members');
       try{
@@ -236,7 +246,6 @@
       }
     }
 
-    // Injection immédiate des hero cards depuis shared/nitro-apps.js
     renderNitroHeroCards('nitro-hero-cards');
 
     const auth=await requireAuth();
@@ -250,6 +259,9 @@
     }
     initDashboard();
   </script>
+
+  <!-- ── CHRONICLES FM WIDGET ── -->
+  <script type="module" src="../js/chronicles-fm-widget.js"></script>
 
 </body>
 </html>

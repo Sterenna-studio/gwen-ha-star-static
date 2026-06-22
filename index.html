@@ -158,6 +158,94 @@
     .jk-track.active .jk-track-num { color:var(--c-primary); }
     .jk-hint { font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); letter-spacing:.06em; margin-top:var(--space-4); line-height:1.5; }
 
+    /* ── CHRONICLES FM SECTION ── */
+    .cfm-hub-card {
+      background: var(--c-surface);
+      border: 1px solid #1a2840;
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .cfm-hub-top {
+      display: flex; align-items: center; gap: var(--space-4);
+    }
+    .cfm-hub-icon {
+      width: 52px; height: 52px;
+      border-radius: var(--radius-md);
+      background: rgba(233,69,96,.1);
+      border: 1px solid rgba(233,69,96,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; flex-shrink: 0;
+    }
+    .cfm-hub-meta { flex: 1; min-width: 0; }
+    .cfm-hub-name {
+      font-family: var(--font-display); font-weight: 700;
+      color: var(--c-text); font-size: var(--text-lg);
+    }
+    .cfm-hub-sub {
+      font-family: var(--font-mono); font-size: 10px;
+      color: #e94560; letter-spacing: .1em; margin-top: 2px;
+    }
+    .cfm-hub-live {
+      font-family: var(--font-mono); font-size: 9px;
+      color: #e94560; display: flex; align-items: center; gap: 4px;
+      letter-spacing: .12em;
+    }
+    .cfm-hub-live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #e94560;
+      box-shadow: 0 0 6px #e94560;
+      animation: pulse-dot 1.4s ease-in-out infinite;
+    }
+    .cfm-hub-desc {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--c-text-muted); letter-spacing: .06em; line-height: 1.6;
+    }
+    .cfm-hub-actions {
+      display: flex; gap: var(--space-3); flex-wrap: wrap;
+    }
+    .cfm-hub-btn {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      padding: var(--space-2) var(--space-5);
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .15em;
+      border-radius: var(--radius-md);
+      text-decoration: none; transition: all 180ms;
+      cursor: pointer;
+    }
+    .cfm-hub-btn--primary {
+      background: rgba(233,69,96,.15);
+      border: 1px solid #e94560;
+      color: #e94560;
+    }
+    .cfm-hub-btn--primary:hover {
+      background: rgba(233,69,96,.25);
+      box-shadow: 0 0 12px rgba(233,69,96,.3);
+      transform: translateY(-1px);
+    }
+    .cfm-hub-btn--ghost {
+      background: transparent;
+      border: 1px solid var(--c-border);
+      color: var(--c-text-muted);
+    }
+    .cfm-hub-btn--ghost:hover {
+      border-color: #8b5cf6;
+      color: #8b5cf6;
+    }
+    .cfm-hub-freqs {
+      display: flex; flex-wrap: wrap; gap: var(--space-2);
+    }
+    .cfm-hub-freq-pill {
+      padding: 2px var(--space-3);
+      background: rgba(139,92,246,.08);
+      border: 1px solid rgba(139,92,246,.2);
+      border-radius: var(--radius-full);
+      font-family: var(--font-mono); font-size: 9px;
+      color: #8b5cf6; letter-spacing: .1em;
+    }
+
     #ship-canvas { position:fixed; inset:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .1s; }
     @keyframes screen-shake {
       0%  { transform:translate(0,0) rotate(0deg); }
@@ -249,6 +337,14 @@
           <span class="tool-card-tag int">⬡ INTÉGRÉ</span>
         </a>
 
+        <a href="#chronicles-fm" class="tool-card" style="--card-accent:#e94560">
+          <div class="tool-card-icon">📻</div>
+          <div class="tool-card-name">CHRONICLES FM</div>
+          <div class="live-badge"><span class="live-dot"></span>WEB RADIO</div>
+          <div class="tool-card-desc">Radio pirate BZH Chronicles — 13 fréquences, playlists YT, animée par Lemegeton.</div>
+          <span class="tool-card-tag stream">⬤ RADIO</span>
+        </a>
+
         <a href="/star/index.html" class="tool-card card-chronicles">
           <div class="tool-card-icon">⬡</div>
           <div style="position:relative">
@@ -306,8 +402,37 @@
 
     <div class="hub-divider"></div>
 
+    <!-- ══════════════════════════════════════════════════════
+         CHRONICLES FM
+    ══════════════════════════════════════════════════════ -->
+    <section class="hub-section" id="chronicles-fm">
+      <p class="hub-section-label">// 04 · WEB RADIO</p>
+      <h2 class="hub-section-title">Chronicles FM <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">Radio pirate</span></h2>
+      <div class="cfm-hub-card">
+        <div class="cfm-hub-top">
+          <div class="cfm-hub-icon">📻</div>
+          <div class="cfm-hub-meta">
+            <div class="cfm-hub-name">CHRONICLES FM</div>
+            <div class="cfm-hub-sub">BZH CHRONICLES RADIO · LES FRÉQUENCES DU CODE</div>
+          </div>
+          <div class="cfm-hub-live"><span class="cfm-hub-live-dot"></span>ON AIR</div>
+        </div>
+        <div class="cfm-hub-desc">
+          Radio pirate captée entre les ruines du Code, les néons cyberpunk et les échos néo-bretons.
+          13 fréquences thématiques. Animée par Lemegeton, le chronicœur de l'onde.
+        </div>
+        <div class="cfm-hub-freqs" id="cfm-hub-freq-pills"></div>
+        <div class="cfm-hub-actions">
+          <a href="/jukebox/chronicles-fm.html" class="cfm-hub-btn cfm-hub-btn--primary">📻 TOUTES LES FRÉQUENCES</a>
+          <button class="cfm-hub-btn cfm-hub-btn--ghost" id="cfm-hub-open-widget">▶ OUVRIR LA RADIO</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="hub-divider"></div>
+
     <section class="hub-section">
-      <p class="hub-section-label">// 04 · CHAÎNE</p>
+      <p class="hub-section-label">// 05 · CHAÎNE</p>
       <h2 class="hub-section-title">YouTube <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">@mutenrock</span></h2>
       <div class="yt-layout">
         <div>
@@ -343,7 +468,7 @@
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
-      <span class="footer-version">HUB · v2.5</span>
+      <span class="footer-version">HUB · v2.6</span>
     </div>
   </footer>
 
@@ -418,7 +543,37 @@
     });
     audio.addEventListener('ended',()=>{ loadTrack((current+1)%TRACKS.length,true); });
     loadTrack(0,false);
+
+    // ── CHRONICLES FM pills ──────────────────────────────────────────────
+    fetch('/jukebox/chronicles-fm.json')
+      .then(r=>r.json())
+      .then(pl=>{
+        const container = document.getElementById('cfm-hub-freq-pills');
+        if(!container) return;
+        pl.slice(0,6).forEach(p=>{
+          const pill = document.createElement('span');
+          pill.className = 'cfm-hub-freq-pill';
+          pill.textContent = p.subtitle ?? p.style;
+          container.appendChild(pill);
+        });
+        const more = document.createElement('span');
+        more.className = 'cfm-hub-freq-pill';
+        more.textContent = `+${pl.length - 6} fréquences`;
+        container.appendChild(more);
+      }).catch(()=>{});
+
+    // ── Bouton "Ouvrir la radio" scroll vers widget ──────────────────────
+    document.getElementById('cfm-hub-open-widget')?.addEventListener('click', () => {
+      const bar = document.getElementById('cfm-widget');
+      if (bar) {
+        bar.classList.add('cfm-visible');
+        bar.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    });
   </script>
+
+  <!-- ── CHRONICLES FM WIDGET ── -->
+  <script type="module" src="/js/chronicles-fm-widget.js"></script>
 
   <script>
   (function(){
