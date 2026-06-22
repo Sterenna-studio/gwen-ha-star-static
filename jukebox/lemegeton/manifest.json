@@ -1,0 +1,6 @@
+{
+  "_readme": "Manifeste des MP3 Lemegeton (Option D). Clé = slug, valeur = nom de fichier dans ce dossier.",
+  "_format": "{ slug: filename.mp3 }",
+  "_exemple": { "signal-capte-lemegeton-aux-commandes": "intro-01.mp3" },
+  "_status": "vide — ajoute tes MP3 ici et enregistre les slugs correspondants"
+}
