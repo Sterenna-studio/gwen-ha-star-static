@@ -1,0 +1,145 @@
+[
+  {
+    "id": "drspig-mix",
+    "title": "Chronicles FM — Dr.Spig Mix",
+    "subtitle": "Techno, Electro & Riddim",
+    "style": "Techno / Electro / Riddim / DnB / Hardtek",
+    "tags": ["rave", "bass", "dnb", "dubstep", "riddim", "hardtek"],
+    "description": "Sélection nerveuse : techno, electro, rave, tekno, hardtek, frenchcore, bass music, DnB, dubstep et riddim. Mix pensé comme une montée progressive vers le chaos contrôlé.",
+    "mood": "nerveux · rave · basses lourdes · chaos contrôlé",
+    "youtubePlaylistId": "",
+    "featured": true
+  },
+  {
+    "id": "bass-dnb-dubstep",
+    "title": "Chronicles FM — Bass music, DnB & dubstep",
+    "subtitle": "Basses lourdes & drops",
+    "style": "Bass / DnB / Dubstep / Neuro",
+    "tags": ["bass", "dnb", "dubstep"],
+    "description": "Bass music, drum and bass, dubstep et neuro : basses lourdes, drops, tension et mouvement.",
+    "mood": "lourd · tendu · en mouvement",
+    "youtubePlaylistId": "",
+    "featured": false
+  },
+  {
+    "id": "techno-rave-hardtek",
+    "title": "Chronicles FM — Techno, rave, hardtek & frenchcore",
+    "subtitle": "Fréquence rapide & énergie brute",
+    "style": "Techno / Rave / Hardtek / Frenchcore",
+    "tags": ["rave", "techno", "hardtek"],
+    "description": "Techno, rave, hardtek, frenchcore et tekno : fréquences rapides, dancefloor, free party et énergie brute.",
+    "mood": "rapide · dancefloor · énergie brute",
+    "youtubePlaylistId": "",
+    "featured": false
+  },
+  {
+    "id": "rap-cloud-trap",
+    "title": "Chronicles FM — Rap FR, cloud rap & trap",
+    "subtitle": "Flows urbains & mélancolie digitale",
+    "style": "Rap FR / Cloud / Trap",
+    "tags": ["rap"],
+    "description": "Rap français, cloud rap, trap et flows hybrides : textes, egotrip, mélancolie digitale et énergie urbaine.",
+    "mood": "urbain · mélancolique · ego",
+    "youtubePlaylistId": "",
+    "featured": false
+  },
+  {
+    "id": "hyperpop-electropop-vocaloid",
+    "title": "Chronicles FM — Hyperpop, electro-pop & vocaloid",
+    "subtitle": "Sucre numérique & glitch",
+    "style": "Hyperpop / Electro-pop / Vocaloid",
+    "tags": ["hyperpop"],
+    "description": "Hyperpop, electro-pop, vocaloid et sons saturés : mélodies glitchées, voix transformées et sucre numérique.",
+    "mood": "saturé · glitché · digital",
+    "youtubePlaylistId": "",
+    "featured": false
+  },
+  {
+    "id": "pop-alternative-chanson",
+    "title": "Chronicles FM — Pop alternative & chanson",
+    "subtitle": "Voix néon & mélancolie",
+    "style": "Pop / Chanson / Alt",
+    "tags": ["pop"],
+    "description": "Voix néon, pop alternative et chanson moderne : morceaux vocaux, sensibles, mélancoliques ou narratifs.",
+    "mood": "sensible · vocal · narratif",
+    "youtubePlaylistId": "",
+    "featured": false
+  },
+  {
+    "id": "chill-lofi-ambient",
+    "title": "Chronicles FM — Chill, lo-fi, ambient & downtempo",
+    "subtitle": "Pour la nuit & la concentration",
+    "style": "Chill / Lo-fi / Ambient / Downtempo",
+    "tags": ["chill"],
+    "description": "Chill, lo-fi, ambient et downtempo : sons posés pour la nuit, la concentration, la marche ou le flottement mental.",
+    "mood": "posé · nuit · flottement",
+    "youtubePlaylistId": "",
+    "featured": false
+  },
+  {
+    "id": "ost-anime-jv",
+    "title": "Chronicles FM — OST, anime, jeu vidéo & cinematic",
+    "subtitle": "Thèmes narratifs & épiques",
+    "style": "OST / Anime / Jeu Vidéo / Cinematic",
+    "tags": ["ost"],
+    "description": "OST, anime, jeu vidéo et cinematic : thèmes narratifs, remixes, ambiances épiques ou contemplatives.",
+    "mood": "épique · contemplatif · narratif",
+    "youtubePlaylistId": "",
+    "featured": false
+  },
+  {
+    "id": "groove-funk-soul-house",
+    "title": "Chronicles FM — Groove, funk, soul & house",
+    "subtitle": "Chaleur & danse",
+    "style": "Groove / Funk / Soul / House",
+    "tags": ["chill"],
+    "description": "Groove, funk, soul et house : chaleur, basse, danse, sourire et énergie plus solaire.",
+    "mood": "chaud · dansant · solaire",
+    "youtubePlaylistId": "",
+    "featured": false
+  },
+  {
+    "id": "rock-metal-punk",
+    "title": "Chronicles FM — Rock, metal, punk & guitares",
+    "subtitle": "Riffs & saturation",
+    "style": "Rock / Metal / Punk",
+    "tags": ["rock"],
+    "description": "Rock, metal, punk et guitares : tension organique, riffs, saturation et énergie live.",
+    "mood": "tendu · organique · live",
+    "youtubePlaylistId": "",
+    "featured": false
+  },
+  {
+    "id": "folk-world-celtique",
+    "title": "Chronicles FM — Folk, world, celtique & organique",
+    "subtitle": "Vibes druidiques & traditions",
+    "style": "Folk / World / Celtique",
+    "tags": ["folk"],
+    "description": "Folk, world, celtique et organique : instruments traditionnels, textures naturelles et vibes druidiques.",
+    "mood": "naturel · druidique · voyage",
+    "youtubePlaylistId": "",
+    "featured": false
+  },
+  {
+    "id": "weird-meme-experimental",
+    "title": "Chronicles FM — Weird, meme & expérimental",
+    "subtitle": "Sons bizarres & chaos",
+    "style": "Weird / Meme / Expérimental",
+    "tags": ["weird"],
+    "description": "Weird, meme et expérimental : sons bizarres, hybrides, drôles, inclassables ou volontairement cassés.",
+    "mood": "bizarre · chaotique · inclassable",
+    "youtubePlaylistId": "",
+    "featured": false
+  },
+  {
+    "id": "albums-sets-longs-formats",
+    "title": "Chronicles FM — Albums, sets & longs formats",
+    "subtitle": "Voyages complets & mixtapes",
+    "style": "Album / Set / Long format",
+    "tags": ["long format"],
+    "description": "Albums, sets et longs formats : écoutes plus longues, voyages complets et formats mixtape.",
+    "mood": "long · immersif · voyage",
+    "youtubePlaylistId": "",
+    "featured": false
+  }
+]
