@@ -22,7 +22,6 @@
   <link rel="stylesheet" href="css/components.css"/>
   <link rel="stylesheet" href="css/auth.css"/>
   <link rel="stylesheet" href="css/hub.css"/>
-  <link rel="stylesheet" href="css/star.css"/>
   <style>
     /* ── HUB PUBLIC ── */
     .hub-hero { text-align:center; padding:var(--space-16) var(--space-4) var(--space-10); position:relative; }
@@ -198,7 +197,7 @@
       border: 1px solid color-mix(in oklch, var(--c-primary) 28%, var(--c-border));
       border-radius: var(--radius-xl);
       padding: var(--space-6);
-      max-width: 640px;
+      max-width: 880px;
       display: flex;
       flex-direction: column;
       gap: var(--space-4);
@@ -252,13 +251,96 @@
       box-shadow: var(--glow-primary);
       animation: pulse-dot 1.4s ease-in-out infinite;
     }
-    .radio-hub-card .radio-player {
+    .radio-hub-controls {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
       padding-top: var(--space-2);
       border-top: 1px solid var(--c-divider);
+    }
+    .radio-hub-select {
+      min-width: min(100%, 320px);
+      flex: 1;
+      height: 36px;
+      padding: 0 var(--space-3);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius-md);
+      background: var(--c-surface-2);
+      color: var(--c-text);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .08em;
+    }
+    .radio-hub-btn {
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: 0 var(--space-4);
+      border: 1px solid color-mix(in oklch, var(--c-primary) 55%, var(--c-border));
+      border-radius: var(--radius-md);
+      background: color-mix(in oklch, var(--c-primary) 12%, transparent);
+      color: var(--c-primary);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 180ms;
+    }
+    .radio-hub-btn:hover {
+      background: color-mix(in oklch, var(--c-primary) 20%, transparent);
+      box-shadow: 0 0 12px color-mix(in oklch, var(--c-primary) 25%, transparent);
+      transform: translateY(-1px);
+    }
+    .radio-hub-frame {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      min-height: 220px;
+      overflow: hidden;
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius-lg);
+      background:
+        linear-gradient(135deg, color-mix(in oklch, var(--c-primary) 12%, transparent), transparent 55%),
+        var(--c-surface-2);
+    }
+    .radio-hub-frame iframe,
+    .radio-hub-placeholder {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .radio-hub-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-6);
+      background: transparent;
+      color: var(--c-text);
+      cursor: pointer;
+      text-align: center;
+    }
+    .radio-hub-placeholder strong {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      letter-spacing: .08em;
+    }
+    .radio-hub-placeholder span {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .08em;
+      color: var(--c-text-muted);
     }
     @media (max-width: 520px) {
       .radio-hub-head { align-items: flex-start; }
       .radio-hub-live { display: none; }
+      .radio-hub-btn,
+      .radio-hub-select { width: 100%; }
     }
 
     /* ── CHRONICLES FM SECTION ── */
@@ -444,8 +526,8 @@
           <div class="tool-card-icon">📡</div>
           <div class="tool-card-name">WEB RADIO</div>
           <div class="live-badge"><span class="live-dot"></span>LIVE SYNC</div>
-          <div class="tool-card-desc">Gwen Ha Star Radio — direct synchronisé, jukebox live et dédicaces antenne.</div>
-          <span class="tool-card-tag int">⬤ LIVE</span>
+          <div class="tool-card-desc">Chronicles FM — lecteur YouTube intégré avec sélection des fréquences.</div>
+          <span class="tool-card-tag int">▶ YT RADIO</span>
         </a>
 
         <a href="#chronicles-fm" class="tool-card" style="--card-accent:#e94560">
@@ -520,17 +602,29 @@
 
     <section class="hub-section" id="web-radio">
       <p class="hub-section-label">// 04 · WEB RADIO LIVE</p>
-      <h2 class="hub-section-title">Gwen Ha Star Radio <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">Direct synchronisé</span></h2>
+      <h2 class="hub-section-title">Chronicles FM <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">Playlists YouTube</span></h2>
       <div class="radio-hub-card">
         <div class="radio-hub-head">
           <div class="radio-hub-icon">📡</div>
           <div class="radio-hub-meta">
-            <div class="radio-hub-name">WEB RADIO · LIVE</div>
-            <div class="radio-hub-sub">RADIO STAR · JUKEBOX LIVE · DÉDICACES</div>
+            <div class="radio-hub-name">WEB RADIO · YOUTUBE</div>
+            <div class="radio-hub-sub" id="radio-yt-sub">CHARGEMENT DES FRÉQUENCES</div>
           </div>
-          <div class="radio-hub-live"><span class="radio-hub-live-dot"></span>SYNC</div>
+          <div class="radio-hub-live"><span class="radio-hub-live-dot"></span>ON AIR</div>
         </div>
-        <div id="hub-radio-player"></div>
+        <div class="radio-hub-controls">
+          <select class="radio-hub-select" id="radio-yt-select" aria-label="Fréquence Chronicles FM">
+            <option>Chargement...</option>
+          </select>
+          <button class="radio-hub-btn" id="radio-yt-play" type="button">▶ LANCER</button>
+          <a class="radio-hub-btn" id="radio-yt-open" href="/jukebox/chronicles-fm.html">↗ YOUTUBE</a>
+        </div>
+        <div class="radio-hub-frame" id="radio-yt-frame">
+          <button class="radio-hub-placeholder" id="radio-yt-placeholder" type="button">
+            <strong>CHRONICLES FM</strong>
+            <span>SÉLECTIONNE UNE FRÉQUENCE PUIS LANCE LE PLAYER YOUTUBE</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -610,23 +704,9 @@
     import { initAuth }  from './js/auth.js';
     import { initTheme } from './js/theme.js';
     import { getSession } from './js/supabase.js';
-    import { RadioPlayer } from './js/star/widgets.js';
 
     initTheme();
     initAuth();
-
-    function initHubRadio(session) {
-      const user = session?.user ?? null;
-      const username =
-        user?.user_metadata?.username ??
-        user?.email?.split('@')[0] ??
-        'VISITEUR';
-      const radio = new RadioPlayer('hub-radio-player', {
-        userId: user?.id ?? null,
-        username,
-      });
-      radio.render();
-    }
 
     getSession().then(s => {
       const desc = document.getElementById('chronicles-desc');
@@ -635,8 +715,7 @@
         desc.textContent = 'Tableau de bord membre — CIG, crew, vidéo du jour, activité réseau.';
         tag.textContent  = '⬡ MON ESPACE';
       }
-      initHubRadio(s);
-    }).catch(() => initHubRadio(null));
+    }).catch(() => {});
 
     const twitchWrap = document.getElementById('twitch-wrap');
     const twitchLoad = document.getElementById('twitch-load');
@@ -714,12 +793,73 @@
     audio.addEventListener('ended',()=>{ loadTrack((current+1)%TRACKS.length,true); });
     loadTrack(0,false);
 
-    // ── CHRONICLES FM pills ──────────────────────────────────────────────
-    fetch('/jukebox/chronicles-fm.json')
-      .then(r=>r.json())
-      .then(pl=>{
+    // ── CHRONICLES FM / Web radio YouTube ───────────────────────────────
+    const radioYtSelect = document.getElementById('radio-yt-select');
+    const radioYtPlay = document.getElementById('radio-yt-play');
+    const radioYtOpen = document.getElementById('radio-yt-open');
+    const radioYtFrame = document.getElementById('radio-yt-frame');
+    const radioYtPlaceholder = document.getElementById('radio-yt-placeholder');
+    const radioYtSub = document.getElementById('radio-yt-sub');
+    let radioYtPlaylists = [];
+
+    function escAttr(v) {
+      return String(v ?? '').replace(/[&<>"']/g, c =>
+        ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+    }
+
+    function ytPlaylistUrl(playlistId, autoplay = false) {
+      const url = new URL('https://www.youtube.com/embed/videoseries');
+      url.searchParams.set('list', playlistId);
+      url.searchParams.set('autoplay', autoplay ? '1' : '0');
+      url.searchParams.set('rel', '0');
+      url.searchParams.set('modestbranding', '1');
+      return url.toString();
+    }
+
+    function renderRadioYt(index = 0, autoplay = false) {
+      const p = radioYtPlaylists[index];
+      if (!p?.youtubePlaylistId || !radioYtFrame) return;
+      if (radioYtSub) radioYtSub.textContent = p.subtitle ?? p.style ?? 'PLAYLIST YOUTUBE';
+      if (radioYtOpen) {
+        radioYtOpen.href = `https://youtube.com/playlist?list=${encodeURIComponent(p.youtubePlaylistId)}`;
+        radioYtOpen.target = '_blank';
+        radioYtOpen.rel = 'noopener noreferrer';
+      }
+      radioYtFrame.innerHTML = `<iframe
+        src="${ytPlaylistUrl(p.youtubePlaylistId, autoplay)}"
+        title="${escAttr(p.title)}"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen loading="lazy"></iframe>`;
+    }
+
+    function initRadioYt(playlists) {
+      radioYtPlaylists = playlists.filter(p => p.youtubePlaylistId);
+      if (!radioYtSelect || !radioYtPlaylists.length) {
+        if (radioYtSub) radioYtSub.textContent = 'AUCUNE PLAYLIST YOUTUBE';
+        return;
+      }
+      const featuredIdx = Math.max(0, radioYtPlaylists.findIndex(p => p.featured));
+      radioYtSelect.innerHTML = radioYtPlaylists.map((p, i) =>
+        `<option value="${i}">${escAttr(p.subtitle ?? p.title)}</option>`
+      ).join('');
+      radioYtSelect.value = String(featuredIdx);
+      renderRadioYt(featuredIdx, false);
+
+      radioYtSelect.addEventListener('change', () => {
+        renderRadioYt(parseInt(radioYtSelect.value, 10) || 0, false);
+      });
+      radioYtPlay?.addEventListener('click', () => {
+        renderRadioYt(parseInt(radioYtSelect.value, 10) || 0, true);
+      });
+      radioYtPlaceholder?.addEventListener('click', () => {
+        renderRadioYt(parseInt(radioYtSelect.value, 10) || 0, true);
+      });
+    }
+
+    function renderCfmPills(pl) {
         const container = document.getElementById('cfm-hub-freq-pills');
         if(!container) return;
+        container.innerHTML = '';
         pl.slice(0,6).forEach(p=>{
           const pill = document.createElement('span');
           pill.className = 'cfm-hub-freq-pill';
@@ -730,7 +870,16 @@
         more.className = 'cfm-hub-freq-pill';
         more.textContent = `+${pl.length - 6} fréquences`;
         container.appendChild(more);
-      }).catch(()=>{});
+    }
+
+    fetch('/jukebox/chronicles-fm.json')
+      .then(r=>r.json())
+      .then(pl=>{
+        initRadioYt(pl);
+        renderCfmPills(pl);
+      }).catch(()=>{
+        if (radioYtSub) radioYtSub.textContent = 'PLAYLISTS INDISPONIBLES';
+      });
 
     // ── Bouton "Ouvrir la radio" scroll vers widget ──────────────────────
     document.getElementById('cfm-hub-open-widget')?.addEventListener('click', () => {
