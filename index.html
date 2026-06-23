@@ -431,7 +431,27 @@
       color: #8b5cf6; letter-spacing: .1em;
     }
 
-    #ship-canvas { position:fixed; inset:0; pointer-events:none; z-index:9999; opacity:0; transition:opacity .1s; }
+    body > header,
+    body > main,
+    body > footer {
+      position: relative;
+      z-index: 2;
+    }
+    #ship-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      pointer-events: none;
+      z-index: 1;
+      opacity: .58;
+      mix-blend-mode: screen;
+    }
+    [data-theme="light"] #ship-canvas {
+      opacity: .36;
+      mix-blend-mode: multiply;
+    }
     @keyframes screen-shake {
       0%  { transform:translate(0,0) rotate(0deg); }
       15% { transform:translate(-3px,2px) rotate(-.3deg); }
@@ -896,15 +916,258 @@
 
   <script>
   (function(){
-    const canvas=document.getElementById('ship-canvas'), ctx=canvas.getContext('2d'); let W,H;
-    function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
-    resize(); window.addEventListener('resize',resize);
-    class Particle{ constructor(x,y,c){ this.x=x;this.y=y;this.vx=(Math.random()-.5)*4;this.vy=(Math.random()-.5)*4-1;this.life=1;this.decay=.025+Math.random()*.03;this.r=2+Math.random()*3;this.color=c; } update(){ this.x+=this.vx;this.y+=this.vy;this.vy+=.08;this.life-=this.decay; } draw(){ ctx.save();ctx.globalAlpha=Math.max(0,this.life);ctx.fillStyle=this.color;ctx.shadowBlur=8;ctx.shadowColor=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();ctx.restore(); } }
-    function drawShip(x,y,dir,scale){ ctx.save();ctx.translate(x,y);ctx.scale(dir,1);ctx.scale(scale,scale);ctx.strokeStyle='#00ffcc';ctx.shadowColor='#00ffcc';ctx.shadowBlur=18;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-30,-10);ctx.lineTo(-36,0);ctx.lineTo(-30,10);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(-12,-6);ctx.lineTo(-20,-22);ctx.lineTo(-30,-10);ctx.stroke();ctx.beginPath();ctx.moveTo(-12,6);ctx.lineTo(-20,22);ctx.lineTo(-30,10);ctx.stroke();ctx.shadowBlur=24;ctx.shadowColor='#ff6600';ctx.strokeStyle='#ff9933';ctx.beginPath();ctx.moveTo(-36,-5);ctx.lineTo(-48-Math.random()*12,0);ctx.lineTo(-36,5);ctx.stroke();ctx.restore(); }
-    let particles=[],shipActive=false,shipX,shipY,shipVX,shipDir,shipScale=1;
-    function spawnShip(){ if(shipActive)return; shipActive=true; canvas.style.opacity='1'; shipDir=Math.random()>.5?1:-1; shipX=shipDir===1?-60:W+60; shipY=80+Math.random()*(H*.5); shipVX=shipDir===1?7+Math.random()*5:-(7+Math.random()*5); shipScale=.8+Math.random()*.6; document.body.classList.add('shaking'); setTimeout(()=>document.body.classList.remove('shaking'),500); function loop(){ ctx.clearRect(0,0,W,H); shipX+=shipVX; for(let i=0;i<3;i++){ const ex=shipX+(shipDir===1?-36:36)*shipScale,ey=shipY+(Math.random()-.5)*10; particles.push(new Particle(ex,ey,Math.random()>.5?'#ff6600':'#ffaa00')); } if(Math.random()<.4) particles.push(new Particle(shipX,shipY+(Math.random()-.5)*20,'#00ffcc')); particles=particles.filter(p=>p.life>0); particles.forEach(p=>{p.update();p.draw();}); drawShip(shipX,shipY,shipDir,shipScale); const gone=shipDir===1?shipX>W+80:shipX<-80; if(!gone){ requestAnimationFrame(loop); }else{ let fade=60; function fadeOut(){ ctx.clearRect(0,0,W,H); particles=particles.filter(p=>p.life>0); particles.forEach(p=>{p.update();p.draw();}); fade--; if(particles.length>0&&fade>0){ requestAnimationFrame(fadeOut); }else{ ctx.clearRect(0,0,W,H); canvas.style.opacity='0'; shipActive=false; } } fadeOut(); } } loop(); }
-    function scheduleNext(){ setTimeout(()=>{ spawnShip(); scheduleNext(); },18000+Math.random()*27000); }
-    setTimeout(()=>{ spawnShip(); scheduleNext(); },4000);
+    const canvas = document.getElementById('ship-canvas');
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    let W = 0, H = 0, DPR = 1, last = performance.now(), nextSpawn = 0;
+    let ships = [], particles = [], stars = [];
+
+    const rnd = (min, max) => min + Math.random() * (max - min);
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+    function resize() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = Math.floor(W * DPR);
+      canvas.height = Math.floor(H * DPR);
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      buildStars();
+    }
+
+    function buildStars() {
+      const count = Math.min(180, Math.max(70, Math.floor((W * H) / 10500)));
+      stars = Array.from({ length: count }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        z: rnd(.25, 1),
+        r: rnd(.35, 1.45),
+        a: rnd(.12, .55),
+        drift: rnd(2, 16),
+      }));
+    }
+
+    class Particle {
+      constructor(x, y, vx, vy, color, size, life) {
+        this.x = x; this.y = y; this.vx = vx; this.vy = vy;
+        this.color = color; this.size = size; this.life = life; this.max = life;
+      }
+      update(dt) {
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        this.vy += 18 * dt;
+        this.life -= dt;
+      }
+      draw() {
+        const a = Math.max(0, this.life / this.max);
+        ctx.save();
+        ctx.globalAlpha = a;
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 14;
+        ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size * (.45 + a), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function path(points) {
+      ctx.beginPath();
+      points.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
+      ctx.closePath();
+    }
+
+    function hull(points, stroke, fill) {
+      path(points);
+      ctx.fillStyle = fill;
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 1.25;
+      ctx.shadowColor = stroke;
+      ctx.shadowBlur = 16;
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    const shipTypes = [
+      {
+        name: 'scout', weight: 4, size: .78, speed: [170, 260], engine: 34,
+        stroke: '#00ffe7', fill: 'rgba(0,255,231,.08)', accent: '#39ff14', flame: '#ffaa00',
+        draw() {
+          hull([[38,0],[4,-12],[-30,-8],[-38,0],[-30,8],[4,12]], this.stroke, this.fill);
+          hull([[0,-8],[-16,-27],[-28,-8]], this.accent, 'rgba(57,255,20,.05)');
+          hull([[0,8],[-16,27],[-28,8]], this.accent, 'rgba(57,255,20,.05)');
+          ctx.strokeStyle = this.stroke;
+          ctx.beginPath(); ctx.moveTo(14,-7); ctx.lineTo(26,0); ctx.lineTo(14,7); ctx.stroke();
+        }
+      },
+      {
+        name: 'freighter', weight: 2, size: 1.05, speed: [95, 145], engine: 42,
+        stroke: '#bf5fff', fill: 'rgba(191,95,255,.08)', accent: '#00ffe7', flame: '#ff2d55',
+        draw() {
+          hull([[34,-9],[14,-18],[-34,-16],[-46,0],[-34,16],[14,18],[34,9]], this.stroke, this.fill);
+          hull([[4,-20],[-22,-31],[-34,-16]], this.accent, 'rgba(0,255,231,.05)');
+          hull([[4,20],[-22,31],[-34,16]], this.accent, 'rgba(0,255,231,.05)');
+          ctx.strokeStyle = this.accent;
+          for (let x = -20; x <= 18; x += 14) {
+            ctx.strokeRect(x, -6, 7, 12);
+          }
+        }
+      },
+      {
+        name: 'needle', weight: 3, size: .62, speed: [260, 390], engine: 28,
+        stroke: '#39ff14', fill: 'rgba(57,255,20,.07)', accent: '#b8ff4a', flame: '#00ffe7',
+        draw() {
+          hull([[48,0],[-18,-5],[-38,0],[-18,5]], this.stroke, this.fill);
+          ctx.strokeStyle = this.accent;
+          ctx.beginPath(); ctx.moveTo(3,-10); ctx.lineTo(-14,-5); ctx.lineTo(3,0); ctx.lineTo(-14,5); ctx.lineTo(3,10); ctx.stroke();
+        }
+      },
+      {
+        name: 'carrier', weight: 1, size: 1.25, speed: [70, 110], engine: 56,
+        stroke: '#ffaa00', fill: 'rgba(255,170,0,.07)', accent: '#ff2d55', flame: '#ffaa00',
+        draw() {
+          hull([[44,0],[22,-18],[-40,-20],[-58,-8],[-58,8],[-40,20],[22,18]], this.stroke, this.fill);
+          hull([[10,-18],[-24,-38],[-42,-20]], this.accent, 'rgba(255,45,85,.06)');
+          hull([[10,18],[-24,38],[-42,20]], this.accent, 'rgba(255,45,85,.06)');
+          ctx.strokeStyle = this.stroke;
+          ctx.beginPath(); ctx.moveTo(-30,-12); ctx.lineTo(26,-10); ctx.moveTo(-30,12); ctx.lineTo(26,10); ctx.stroke();
+        }
+      },
+    ];
+    const weightedShips = shipTypes.flatMap(type => Array(type.weight).fill(type));
+
+    function drawStars(dt) {
+      ctx.save();
+      stars.forEach(star => {
+        star.x -= star.drift * star.z * dt;
+        if (star.x < -8) { star.x = W + 8; star.y = Math.random() * H; }
+        ctx.globalAlpha = star.a;
+        ctx.fillStyle = star.z > .75 ? '#b8ffc0' : '#00ffe7';
+        ctx.fillRect(star.x, star.y, star.r, star.r);
+      });
+      ctx.restore();
+
+      const g = ctx.createRadialGradient(W * .72, H * .18, 0, W * .72, H * .18, Math.max(W, H) * .55);
+      g.addColorStop(0, 'rgba(0,255,231,.055)');
+      g.addColorStop(.45, 'rgba(57,255,20,.025)');
+      g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    function spawnShip(forceLarge = false) {
+      if (ships.length >= 5 || reduceMotion?.matches) return;
+      const type = forceLarge ? shipTypes[3] : pick(weightedShips);
+      const dir = Math.random() > .5 ? 1 : -1;
+      const depth = rnd(.55, 1.18);
+      const scale = type.size * depth * rnd(.88, 1.16);
+      const margin = 90 * scale;
+      const yBand = Math.random() > .18 ? [H * .12, H * .62] : [H * .62, H * .9];
+      const speed = rnd(type.speed[0], type.speed[1]) * depth;
+      ships.push({
+        type, dir, scale, depth,
+        x: dir === 1 ? -margin : W + margin,
+        y: rnd(yBand[0], yBand[1]),
+        vx: dir * speed,
+        vy: rnd(-12, 12),
+        wobble: rnd(0, Math.PI * 2),
+        roll: rnd(-.035, .035),
+        life: 0,
+      });
+      if (depth > 1.06) {
+        document.body.classList.add('shaking');
+        setTimeout(() => document.body.classList.remove('shaking'), 360);
+      }
+    }
+
+    function updateShips(dt) {
+      ships.forEach(ship => {
+        ship.life += dt;
+        ship.x += ship.vx * dt;
+        ship.y += (ship.vy + Math.sin(ship.life * 2.2 + ship.wobble) * 6) * dt;
+
+        const rearX = ship.x - ship.dir * ship.type.engine * ship.scale;
+        const rearY = ship.y + Math.sin(ship.life * 18) * ship.scale * 2;
+        const burst = ship.type.name === 'needle' ? 1 : 2;
+        for (let i = 0; i < burst; i++) {
+          particles.push(new Particle(
+            rearX + rnd(-4, 4),
+            rearY + rnd(-5, 5) * ship.scale,
+            -ship.dir * rnd(90, 190) * ship.depth,
+            rnd(-28, 28),
+            Math.random() > .35 ? ship.type.flame : ship.type.accent,
+            rnd(1.2, 3.8) * ship.depth,
+            rnd(.32, .72)
+          ));
+        }
+      });
+      ships = ships.filter(ship => ship.dir === 1 ? ship.x < W + 150 : ship.x > -150);
+    }
+
+    function drawShips() {
+      ships
+        .slice()
+        .sort((a, b) => a.depth - b.depth)
+        .forEach(ship => {
+          ctx.save();
+          ctx.globalAlpha = .48 + ship.depth * .42;
+          ctx.translate(ship.x, ship.y);
+          ctx.rotate(ship.roll + Math.sin(ship.life * 1.7) * .012);
+          ctx.scale(ship.dir * ship.scale, ship.scale);
+          ship.type.draw.call(ship.type);
+          ctx.strokeStyle = ship.type.flame;
+          ctx.shadowColor = ship.type.flame;
+          ctx.shadowBlur = 20;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(-ship.type.engine + rnd(-2, 2), -4);
+          ctx.lineTo(-ship.type.engine - rnd(16, 34), 0);
+          ctx.lineTo(-ship.type.engine + rnd(-2, 2), 4);
+          ctx.stroke();
+          ctx.restore();
+        });
+    }
+
+    function updateParticles(dt) {
+      particles.forEach(p => p.update(dt));
+      particles = particles.filter(p => p.life > 0).slice(-520);
+    }
+
+    function drawParticles() {
+      particles.forEach(p => p.draw());
+    }
+
+    function frame(now) {
+      const dt = Math.min(.05, (now - last) / 1000);
+      last = now;
+      ctx.clearRect(0, 0, W, H);
+      drawStars(dt);
+
+      if (!reduceMotion?.matches) {
+        if (now > nextSpawn) {
+          spawnShip(Math.random() < .12);
+          if (Math.random() < .22) setTimeout(() => spawnShip(false), rnd(180, 900));
+          nextSpawn = now + rnd(2800, 7600);
+        }
+        updateShips(dt);
+        updateParticles(dt);
+        drawParticles();
+        drawShips();
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    spawnShip(false);
+    setTimeout(() => spawnShip(true), 1400);
+    requestAnimationFrame(frame);
   })();
   </script>
 </body>
