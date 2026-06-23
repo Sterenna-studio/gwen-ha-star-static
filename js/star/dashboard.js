@@ -25,7 +25,7 @@ export async function initDashboard() {
     _loadPokegangFromSupabase(user.id),
     _loadPokegangLeaderboard(user.id),
   ]);
-  _loadRadio();
+  _loadRadio(user, meta);
 }
 
 // ── HEADER ────────────────────────────────────────────────────────────────────
@@ -204,8 +204,11 @@ async function _loadVideo() {
 }
 
 // ── WEB RADIO ─────────────────────────────────────────────────────────────────
-function _loadRadio() {
-  const radio = new RadioPlayer('widget-radio');
+function _loadRadio(user, profile) {
+  const radio = new RadioPlayer('widget-radio', {
+    userId: user?.id ?? null,
+    username: profile?.username ?? user?.email?.split('@')[0] ?? 'AGENT',
+  });
   radio.render();
 }
 

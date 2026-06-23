@@ -225,6 +225,9 @@
 .radio-player {
   display: flex; flex-direction: column; gap: var(--space-3);
 }
+.radio-player--live .jk-cover {
+  box-shadow: 0 0 18px color-mix(in oklch, var(--c-primary) 28%, transparent);
+}
 .radio-top {
   display: flex; align-items: center; gap: var(--space-3);
   flex-wrap: wrap;
@@ -249,6 +252,28 @@
   font-size: var(--text-xs);
   letter-spacing: 0.1em;
   color: var(--c-text-muted);
+}
+.radio-live-pill {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-border);
+  color: var(--c-text-faint);
+  background: var(--c-surface-2);
+  white-space: nowrap;
+}
+.radio-live-pill--active {
+  color: var(--c-primary);
+  border-color: color-mix(in oklch, var(--c-primary) 55%, var(--c-border));
+  background: color-mix(in oklch, var(--c-primary) 10%, transparent);
+  box-shadow: 0 0 12px color-mix(in oklch, var(--c-primary) 20%, transparent);
+}
+.radio-live-pill--offline {
+  color: var(--c-red);
+  border-color: color-mix(in oklch, var(--c-red) 60%, var(--c-border));
+  background: color-mix(in oklch, var(--c-red) 10%, transparent);
 }
 .radio-select {
   font-family: var(--font-mono);
@@ -377,6 +402,117 @@
 .radio-btn-sm {
   width: 28px; height: 28px;
   font-size: var(--text-xs);
+}
+.radio-live-btn {
+  width: auto;
+  min-width: 52px;
+  padding-inline: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+.jk-seek:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+.jk-seek:disabled::-webkit-slider-thumb {
+  opacity: 0;
+}
+.radio-dedication-now {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid color-mix(in oklch, var(--c-primary) 28%, var(--c-border));
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--c-primary) 6%, var(--c-surface-2));
+}
+.radio-dedication-kicker {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--c-primary);
+}
+.radio-dedication-text {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--c-text-muted);
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+}
+.radio-dedication-form {
+  display: grid;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--c-divider);
+}
+.radio-dedication-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--c-text-faint);
+}
+.radio-dedication-head strong {
+  color: var(--c-amber, #fbbf24);
+  font-weight: 700;
+}
+.radio-dedication-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2);
+}
+.radio-dedication-row input {
+  min-width: 0;
+  height: 32px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface-2);
+  color: var(--c-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  outline: none;
+}
+.radio-dedication-row input:focus {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 10px color-mix(in oklch, var(--c-primary) 18%, transparent);
+}
+.radio-dedication-row button {
+  height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--c-purple);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--c-purple) 12%, transparent);
+  color: var(--c-text);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+.radio-dedication-row button:hover:not(:disabled) {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+}
+.radio-dedication-row button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.radio-dedication-status {
+  min-height: 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--c-text-faint);
+}
+.radio-dedication-status--ok { color: var(--c-primary); }
+.radio-dedication-status--err { color: var(--c-red); }
+.radio-dedication-status--pending { color: var(--c-amber, #fbbf24); }
+@media (max-width: 520px) {
+  .radio-dedication-row { grid-template-columns: 1fr; }
+  .radio-dedication-row button { width: 100%; }
 }
 
 /* ── ACTIVITY FEED ───────────────────────────────────────────────────────────────── */

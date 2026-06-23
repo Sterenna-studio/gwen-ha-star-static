@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "stationName": "Gwen Ha Star Radio",
+  "streamUrl": "",
+  "metadataUrl": "",
+  "scheduleEpoch": "2026-01-01T00:00:00Z",
+  "dedicationSlotSeconds": 14,
+  "fallbackToJukebox": true,
+  "pollSeconds": 20,
+  "coverImage": "/shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png",
+  "coverColor": "#00ff80",
+  "labelColor": "#07110d"
+}
