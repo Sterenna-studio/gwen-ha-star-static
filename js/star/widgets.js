@@ -261,6 +261,10 @@ export class RadioPlayer {
     this._vizLoop();
   }
 
+  _$(id) {
+    return this.el?.querySelector(`#${id}`) ?? null;
+  }
+
   async _loadLiveConfig() {
     try {
       const res = await fetch('/radio/live.json?v=' + Date.now(), { cache: 'no-store' });
@@ -324,7 +328,7 @@ export class RadioPlayer {
   }
 
   _buildPlaylist() {
-    const sel = document.getElementById('radio-playlist');
+    const sel = this._$('radio-playlist');
     if (!sel) return;
     const liveOptions = this._hasLiveMode()
       ? `<option value="live">DIRECT - ${this._html(this.live.stationName)}</option>`
@@ -475,14 +479,14 @@ export class RadioPlayer {
   }
 
   _bindEvents() {
-    const playBtn = document.getElementById('radio-play');
-    const prevBtn = document.getElementById('radio-prev');
-    const nextBtn = document.getElementById('radio-next');
-    const liveBtn = document.getElementById('radio-live-sync');
-    const volEl   = document.getElementById('radio-vol');
-    const seekEl  = document.getElementById('jk-seek');
-    const selEl   = document.getElementById('radio-playlist');
-    const ledEl   = document.getElementById('radio-led');
+    const playBtn = this._$('radio-play');
+    const prevBtn = this._$('radio-prev');
+    const nextBtn = this._$('radio-next');
+    const liveBtn = this._$('radio-live-sync');
+    const volEl   = this._$('radio-vol');
+    const seekEl  = this._$('jk-seek');
+    const selEl   = this._$('radio-playlist');
+    const ledEl   = this._$('radio-led');
     playBtn?.addEventListener('click', () => {
       _sfx.click();
       if (this.mode === 'dedication' && this._wantsPlayback) {
@@ -527,7 +531,7 @@ export class RadioPlayer {
       const idx = parseInt(selEl.value.replace('track:', ''), 10);
       this._loadTrack(idx, true);
     });
-    document.getElementById('radio-dedication-form')?.addEventListener('submit', e => this._submitDedication(e));
+    this._$('radio-dedication-form')?.addEventListener('submit', e => this._submitDedication(e));
     this.audio.addEventListener('play',  () => {
       this._wantsPlayback = true;
       if (this._isLiveMode()) this._rememberAutoJoin();
@@ -547,9 +551,9 @@ export class RadioPlayer {
     this.audio.addEventListener('error', () => this._handleAudioError());
     this.audio.addEventListener('timeupdate', () => {
       const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
-      const cur = document.getElementById('jk-cur');
-      const dur = document.getElementById('jk-dur');
-      const sk  = document.getElementById('jk-seek');
+      const cur = this._$('jk-cur');
+      const dur = this._$('jk-dur');
+      const sk  = this._$('jk-seek');
       if (this.mode === 'stream') {
         if (cur) cur.textContent = 'LIVE';
         if (dur) dur.textContent = 'ON AIR';
@@ -664,8 +668,8 @@ export class RadioPlayer {
     if (!this._currentDedication || this._spokenSlotKey === this._currentSlotKey) return;
     this._spokenSlotKey = this._currentSlotKey;
     this._wantsPlayback = true;
-    const playBtn = document.getElementById('radio-play');
-    const ledEl = document.getElementById('radio-led');
+    const playBtn = this._$('radio-play');
+    const ledEl = this._$('radio-led');
     if (playBtn) playBtn.textContent = '⏸';
     if (ledEl) ledEl.classList.add('active');
 
@@ -702,8 +706,8 @@ export class RadioPlayer {
 
   async _submitDedication(event) {
     event?.preventDefault();
-    const input = document.getElementById('radio-dedication-input');
-    const btn = document.getElementById('radio-dedication-submit');
+    const input = this._$('radio-dedication-input');
+    const btn = this._$('radio-dedication-submit');
     const message = input?.value?.trim() ?? '';
     if (message.length < 3) {
       this._setDedicationStatus('Message trop court', 'err');
@@ -739,26 +743,26 @@ export class RadioPlayer {
   }
 
   _setDedicationText(text) {
-    const el = document.getElementById('radio-dedication-text');
+    const el = this._$('radio-dedication-text');
     if (el) el.textContent = text;
   }
 
   _setDedicationStatus(text, type = '') {
-    const el = document.getElementById('radio-dedication-status');
+    const el = this._$('radio-dedication-status');
     if (!el) return;
     el.textContent = text;
     el.className = `radio-dedication-status${type ? ` radio-dedication-status--${type}` : ''}`;
   }
 
   _updateTrackUI(t, opts = {}) {
-    const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+    const s = (id, v) => { const e = this._$(id); if (e) e.textContent = v; };
     s('jk-title',  t.title  ?? '—');
     s('jk-artist', t.artist ?? '—');
     s('jk-badge',  opts.badge ?? t.genre ?? 'JUKEBOX');
     s('radio-station', opts.station ?? `STAR - ${(t.artist ?? 'UNKNOWN').toUpperCase()}`);
-    const selEl   = document.getElementById('radio-playlist');
-    const coverEl = document.getElementById('jk-cover');
-    const seekEl  = document.getElementById('jk-seek');
+    const selEl   = this._$('radio-playlist');
+    const coverEl = this._$('jk-cover');
+    const seekEl  = this._$('jk-seek');
     if (selEl) selEl.value = opts.live ? 'live' : `track:${this.idx}`;
     if (coverEl) {
       coverEl.innerHTML = t.cover
@@ -782,14 +786,14 @@ export class RadioPlayer {
   }
 
   _setSeekMode(isLive) {
-    const seekEl = document.getElementById('jk-seek');
+    const seekEl = this._$('jk-seek');
     if (!seekEl) return;
     seekEl.disabled = Boolean(isLive);
     seekEl.setAttribute('aria-disabled', isLive ? 'true' : 'false');
   }
 
   _setLivePill(text, state = 'idle') {
-    const pill = document.getElementById('radio-live-pill');
+    const pill = this._$('radio-live-pill');
     if (!pill) return;
     if (text) pill.textContent = text;
     pill.classList.remove('radio-live-pill--active', 'radio-live-pill--offline', 'radio-live-pill--idle');
@@ -911,7 +915,7 @@ export class RadioPlayer {
   }
 
   _vizLoop() {
-    const canvas = document.getElementById('radio-viz');
+    const canvas = this._$('radio-viz');
     if (!canvas) return;
     const ctx2 = canvas.getContext('2d');
     const draw = () => {

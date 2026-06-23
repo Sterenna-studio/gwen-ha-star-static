@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="css/components.css"/>
   <link rel="stylesheet" href="css/auth.css"/>
   <link rel="stylesheet" href="css/hub.css"/>
+  <link rel="stylesheet" href="css/star.css"/>
   <style>
     /* ── HUB PUBLIC ── */
     .hub-hero { text-align:center; padding:var(--space-16) var(--space-4) var(--space-10); position:relative; }
@@ -112,6 +113,39 @@
 
     .twitch-wrap { position:relative; width:100%; padding-top:56.25%; border-radius:var(--radius-lg); overflow:hidden; background:var(--c-surface-2); border:1px solid var(--c-border); margin-top:var(--space-4); }
     .twitch-wrap iframe { position:absolute; inset:0; width:100%; height:100%; border:none; }
+    .twitch-placeholder {
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:var(--space-3);
+      padding:var(--space-6);
+      color:var(--c-text);
+      background:
+        linear-gradient(135deg,rgba(145,70,255,.18),transparent 55%),
+        radial-gradient(circle at 50% 0,rgba(255,255,255,.08),transparent 42%),
+        var(--c-surface-2);
+      border:0;
+      cursor:pointer;
+      text-align:center;
+    }
+    .twitch-placeholder:hover { color:var(--c-primary); }
+    .twitch-placeholder-title {
+      font-family:var(--font-display);
+      font-size:var(--text-lg);
+      font-weight:700;
+      letter-spacing:.08em;
+    }
+    .twitch-placeholder-sub {
+      font-family:var(--font-mono);
+      font-size:10px;
+      letter-spacing:.08em;
+      color:var(--c-text-muted);
+    }
 
     .yt-layout { display:grid; grid-template-columns:1fr 280px; gap:var(--space-6); align-items:start; max-width:1000px; }
     @media(max-width:768px){ .yt-layout { grid-template-columns:1fr; } }
@@ -157,6 +191,75 @@
     .jk-track-num { font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); width:16px; text-align:right; flex-shrink:0; }
     .jk-track.active .jk-track-num { color:var(--c-primary); }
     .jk-hint { font-family:var(--font-mono); font-size:9px; color:var(--c-text-faint); letter-spacing:.06em; margin-top:var(--space-4); line-height:1.5; }
+
+    /* ── WEB RADIO LIVE ── */
+    .radio-hub-card {
+      background: var(--c-surface);
+      border: 1px solid color-mix(in oklch, var(--c-primary) 28%, var(--c-border));
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .radio-hub-head {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .radio-hub-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: color-mix(in oklch, var(--c-primary) 10%, transparent);
+      border: 1px solid color-mix(in oklch, var(--c-primary) 35%, var(--c-border));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .radio-hub-meta { flex: 1; min-width: 0; }
+    .radio-hub-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: var(--c-text);
+      font-size: var(--text-lg);
+    }
+    .radio-hub-sub {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--c-primary);
+      letter-spacing: .1em;
+      margin-top: 2px;
+    }
+    .radio-hub-live {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--c-primary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      letter-spacing: .12em;
+      white-space: nowrap;
+    }
+    .radio-hub-live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--c-primary);
+      box-shadow: var(--glow-primary);
+      animation: pulse-dot 1.4s ease-in-out infinite;
+    }
+    .radio-hub-card .radio-player {
+      padding-top: var(--space-2);
+      border-top: 1px solid var(--c-divider);
+    }
+    @media (max-width: 520px) {
+      .radio-hub-head { align-items: flex-start; }
+      .radio-hub-live { display: none; }
+    }
 
     /* ── CHRONICLES FM SECTION ── */
     .cfm-hub-card {
@@ -337,6 +440,14 @@
           <span class="tool-card-tag int">⬡ INTÉGRÉ</span>
         </a>
 
+        <a href="#web-radio" class="tool-card" style="--card-accent:var(--c-primary)">
+          <div class="tool-card-icon">📡</div>
+          <div class="tool-card-name">WEB RADIO</div>
+          <div class="live-badge"><span class="live-dot"></span>LIVE SYNC</div>
+          <div class="tool-card-desc">Gwen Ha Star Radio — direct synchronisé, jukebox live et dédicaces antenne.</div>
+          <span class="tool-card-tag int">⬤ LIVE</span>
+        </a>
+
         <a href="#chronicles-fm" class="tool-card" style="--card-accent:#e94560">
           <div class="tool-card-icon">📻</div>
           <div class="tool-card-name">CHRONICLES FM</div>
@@ -366,7 +477,12 @@
     <section class="hub-section">
       <p class="hub-section-label">// 02 · STREAM LIVE</p>
       <h2 class="hub-section-title">Twitch <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">@mutenrock</span></h2>
-      <div class="twitch-wrap" id="twitch-wrap"></div>
+      <div class="twitch-wrap" id="twitch-wrap">
+        <button class="twitch-placeholder" id="twitch-load" type="button">
+          <span class="twitch-placeholder-title">TWITCH · MUTENROCK</span>
+          <span class="twitch-placeholder-sub">CHARGER LE PLAYER</span>
+        </button>
+      </div>
       <p style="font-family:var(--font-mono);font-size:10px;color:var(--c-text-faint);letter-spacing:.08em;margin-top:var(--space-3)">⬤ Embed live — rejoins le chat sur <a href="https://twitch.tv/mutenrock" target="_blank" rel="noopener noreferrer" style="color:var(--c-text-muted);text-decoration:underline;text-underline-offset:3px">twitch.tv/mutenrock</a></p>
     </section>
 
@@ -402,11 +518,29 @@
 
     <div class="hub-divider"></div>
 
+    <section class="hub-section" id="web-radio">
+      <p class="hub-section-label">// 04 · WEB RADIO LIVE</p>
+      <h2 class="hub-section-title">Gwen Ha Star Radio <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">Direct synchronisé</span></h2>
+      <div class="radio-hub-card">
+        <div class="radio-hub-head">
+          <div class="radio-hub-icon">📡</div>
+          <div class="radio-hub-meta">
+            <div class="radio-hub-name">WEB RADIO · LIVE</div>
+            <div class="radio-hub-sub">RADIO STAR · JUKEBOX LIVE · DÉDICACES</div>
+          </div>
+          <div class="radio-hub-live"><span class="radio-hub-live-dot"></span>SYNC</div>
+        </div>
+        <div id="hub-radio-player"></div>
+      </div>
+    </section>
+
+    <div class="hub-divider"></div>
+
     <!-- ══════════════════════════════════════════════════════
          CHRONICLES FM
     ══════════════════════════════════════════════════════ -->
     <section class="hub-section" id="chronicles-fm">
-      <p class="hub-section-label">// 04 · WEB RADIO</p>
+      <p class="hub-section-label">// 05 · WEB RADIO</p>
       <h2 class="hub-section-title">Chronicles FM <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">Radio pirate</span></h2>
       <div class="cfm-hub-card">
         <div class="cfm-hub-top">
@@ -432,7 +566,7 @@
     <div class="hub-divider"></div>
 
     <section class="hub-section">
-      <p class="hub-section-label">// 05 · CHAÎNE</p>
+      <p class="hub-section-label">// 06 · CHAÎNE</p>
       <h2 class="hub-section-title">YouTube <span style="font-size:var(--text-sm);font-weight:400;color:var(--c-text-muted)">@mutenrock</span></h2>
       <div class="yt-layout">
         <div>
@@ -476,9 +610,23 @@
     import { initAuth }  from './js/auth.js';
     import { initTheme } from './js/theme.js';
     import { getSession } from './js/supabase.js';
+    import { RadioPlayer } from './js/star/widgets.js';
 
     initTheme();
     initAuth();
+
+    function initHubRadio(session) {
+      const user = session?.user ?? null;
+      const username =
+        user?.user_metadata?.username ??
+        user?.email?.split('@')[0] ??
+        'VISITEUR';
+      const radio = new RadioPlayer('hub-radio-player', {
+        userId: user?.id ?? null,
+        username,
+      });
+      radio.render();
+    }
 
     getSession().then(s => {
       const desc = document.getElementById('chronicles-desc');
@@ -487,12 +635,34 @@
         desc.textContent = 'Tableau de bord membre — CIG, crew, vidéo du jour, activité réseau.';
         tag.textContent  = '⬡ MON ESPACE';
       }
-    });
+      initHubRadio(s);
+    }).catch(() => initHubRadio(null));
 
-    const parent = window.location.hostname || 'localhost';
-    document.getElementById('twitch-wrap').innerHTML =
-      `<iframe src="https://player.twitch.tv/?channel=mutenrock&parent=${parent}&muted=true"
-        allowfullscreen title="Stream Twitch MutenRock"></iframe>`;
+    const twitchWrap = document.getElementById('twitch-wrap');
+    const twitchLoad = document.getElementById('twitch-load');
+    let twitchMounted = false;
+
+    function mountTwitchPlayer() {
+      if (!twitchWrap || twitchMounted) return;
+      twitchMounted = true;
+      const parent = encodeURIComponent(window.location.hostname || 'localhost');
+      twitchWrap.innerHTML =
+        `<iframe src="https://player.twitch.tv/?channel=mutenrock&parent=${parent}&muted=true&autoplay=false"
+          allow="fullscreen; picture-in-picture" allowfullscreen loading="lazy"
+          title="Stream Twitch MutenRock"></iframe>`;
+    }
+
+    twitchLoad?.addEventListener('click', mountTwitchPlayer);
+    if (twitchWrap && 'IntersectionObserver' in window) {
+      const twitchObserver = new IntersectionObserver(entries => {
+        const entry = entries[0];
+        if (entry?.isIntersecting && entry.intersectionRatio >= 0.35) {
+          mountTwitchPlayer();
+          twitchObserver.disconnect();
+        }
+      }, { threshold: [0.35] });
+      twitchObserver.observe(twitchWrap);
+    }
 
     // ── JUKEBOX ──────────────────────────────────────────────────────────
     const BASE = 'https://nitro.sterenna.fr/jukebox/';
