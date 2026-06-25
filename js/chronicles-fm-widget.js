@@ -1,6 +1,6 @@
 /**
  * Chronicles FM — Widget barre radio PERMANENTE
- * v3 : téléscripteur, count titres, survol random, recherche, miniature, mode nuit
+ * v4 : speechEnabled:false · LemePanel flottant · sans bouton mute
  * <script type="module" src="/js/chronicles-fm-widget.js"></script>
  */
 import { LemegetonVoice, pickPhrase, PHRASES } from './lemegeton-voice.js';
@@ -14,18 +14,29 @@ const YT_API_KEY        = 'AIzaSyAEruwkr9u1CN0OECR6onqY1Z3vW-LsvCE';
 const YT_CACHE_KEY      = 'cfm-yt-cache';
 const YT_CACHE_TTL      = 1000 * 60 * 60 * 6;
 const SCROLL_SPEED_PX   = 55;   // px/s téléscripteur
-const SCROLL_SEP        = '  ⬡  '; // séparateur entre segments
+const SCROLL_SEP        = '  ⬡  ';
 
-// Frases spécifiques par genre (complètes le dict dans lemegeton-voice si besoin)
-const NIGHT_HOUR_START  = 0;   // minuit
-const NIGHT_HOUR_END    = 6;   // 6h
+const NIGHT_HOUR_START  = 0;
+const NIGHT_HOUR_END    = 6;
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
-function typewriter(el, text, speed = 26) {
+function typewriter(el, text, speed = 26, onDone) {
   if (!el) return;
-  el.textContent = '';
+  el.innerHTML = '';
+  const cursor = document.createElement('span');
+  cursor.className = 'cfm-lp-cursor';
+  cursor.textContent = '▌';
   let i = 0;
-  const tick = () => { if (i < text.length) { el.textContent += text[i++]; setTimeout(tick, speed); } };
+  const tick = () => {
+    if (i < text.length) {
+      el.textContent = text.slice(0, ++i);
+      el.appendChild(cursor);
+      setTimeout(tick, speed);
+    } else {
+      // cursor reste visible à la fin
+      if (onDone) onDone();
+    }
+  };
   tick();
 }
 
@@ -34,15 +45,14 @@ function isNightMode() {
   return h >= NIGHT_HOUR_START && h < NIGHT_HOUR_END;
 }
 
-// Phrases sombres mode nuit inlines (fallback si lemegeton-voice ne les fournit pas)
 const NIGHT_PHRASES = [
-  'Les signaux se fondent dans l’obscurité des fréquences mortes.',
-  'L’éther murmure des élégies à minuit passé.',
+  'Les signaux se fondent dans l'obscurité des fréquences mortes.',
+  'L'éther murmure des élégies à minuit passé.',
   'Seuls les démons veillent encore sur les ondes.',
   'Transmissions chiffrées depuis les catacombes numériques.',
-  'L’obscurité amplifie. Les vivants dorment. Les machines écoutent.',
-  'Fréquences noires. Signal de l’abîme. BZH Chronicles ne dort pas.',
-  'Les archives s’ouvrent sous la nuit. Système 03:00 · ACTIF.',
+  'L'obscurité amplifie. Les vivants dorment. Les machines écoutent.',
+  'Fréquences noires. Signal de l'abîme. BZH Chronicles ne dort pas.',
+  'Les archives s'ouvrent sous la nuit. Système 03:00 · ACTIF.',
   'Heure maudite. Lemegeton transmet depuis les limbes.',
 ];
 
@@ -54,8 +64,6 @@ function pickNightOrAmbient(type, tags) {
 }
 
 // ─── YOUTUBE ─────────────────────────────────────────────────────────────────
-// items : [{ title, videoId }]
-// thumb : miniature playlist via channelId ou playlistId
 async function fetchPlaylistItems(playlistId) {
   if (!YT_API_KEY || !playlistId) return [];
   try {
@@ -134,7 +142,6 @@ function injectCSS() {
     --cfm-mono:   'Share Tech Mono', monospace;
     --cfm-h:      34px;
   }
-  /* Mode nuit — teintes plus sombres et violacées */
   .cfm-night {
     --cfm-bg:     #04080f;
     --cfm-border: #150d25;
@@ -146,6 +153,7 @@ function injectCSS() {
     --cfm-dim:    #2a3a4a;
   }
 
+  /* ── BARRE ── */
   #cfm-widget {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -164,7 +172,6 @@ function injectCSS() {
   }
   body { padding-bottom: var(--cfm-h) !important; }
 
-  /* ── BRAND ── */
   .cfm-slot-brand {
     display:flex; align-items:center; gap:.4rem;
     padding: 0 .8rem;
@@ -184,19 +191,15 @@ function injectCSS() {
     color:var(--cfm-red); font-size:.66rem;
     letter-spacing:.22em; text-shadow:0 0 8px rgba(233,69,96,.5);
   }
-
-  /* ── COUNT ── */
   .cfm-count-badge {
     font-size:.55rem; letter-spacing:.1em;
     color:var(--cfm-dim); border:1px solid var(--cfm-border);
     padding:.05rem .3rem; border-radius:2px;
     background:rgba(0,212,255,.04);
-    transition:color .3s;
-    flex-shrink:0;
+    transition:color .3s; flex-shrink:0;
   }
   .cfm-count-badge.loaded { color:var(--cfm-blue); border-color:rgba(0,212,255,.3); }
 
-  /* ── TOOLTIP SURVOL ── */
   .cfm-hover-tooltip {
     position:absolute;
     bottom:calc(100% + 6px); left:50%;
@@ -213,14 +216,9 @@ function injectCSS() {
     box-shadow:0 0 12px rgba(139,92,246,.3);
     z-index:8010;
   }
-  .cfm-hover-tooltip.visible {
-    opacity:1; transform:translateX(-50%) translateY(0);
-  }
-  .cfm-hover-tooltip::before {
-    content:'▶ '; color:var(--cfm-red); font-size:.55rem;
-  }
+  .cfm-hover-tooltip.visible { opacity:1; transform:translateX(-50%) translateY(0); }
+  .cfm-hover-tooltip::before { content:'▶ '; color:var(--cfm-red); font-size:.55rem; }
 
-  /* ── NAV ── */
   .cfm-slot-nav { display:flex; align-items:center; border-right:1px solid var(--cfm-border); flex-shrink:0; }
   .cfm-nav-btn {
     background:none; border:none; color:var(--cfm-dim); cursor:pointer;
@@ -229,7 +227,6 @@ function injectCSS() {
   }
   .cfm-nav-btn:hover { background:rgba(0,212,255,.07); color:var(--cfm-blue); }
 
-  /* ── FREQ ── */
   .cfm-slot-freq {
     display:flex; align-items:center; gap:.45rem;
     padding:0 .7rem; border-right:1px solid var(--cfm-border);
@@ -238,7 +235,6 @@ function injectCSS() {
   .cfm-freq-name  { color:var(--cfm-text); font-size:.68rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .cfm-freq-style { color:var(--cfm-blue); font-size:.58rem; letter-spacing:.12em; white-space:nowrap; opacity:.8; }
 
-  /* ── TÉLÉSCRIPTEUR ── */
   .cfm-slot-ticker {
     flex:1; min-width:0; overflow:hidden;
     display:flex; align-items:center;
@@ -254,7 +250,6 @@ function injectCSS() {
     flex:1; min-width:0; overflow:hidden;
     height:100%; position:relative;
   }
-  /* Masques de fondu gauche/droite */
   .cfm-ticker-wrap::before,
   .cfm-ticker-wrap::after {
     content:''; position:absolute; top:0; bottom:0; width:24px;
@@ -262,15 +257,13 @@ function injectCSS() {
   }
   .cfm-ticker-wrap::before { left:0;  background:linear-gradient(to right, rgba(6,12,22,1), transparent); }
   .cfm-ticker-wrap::after  { right:0; background:linear-gradient(to left,  rgba(6,12,22,1), transparent); }
-
   .cfm-ticker-scroll {
     display:inline-flex; align-items:center;
     white-space:nowrap; height:100%;
     will-change:transform;
   }
   .cfm-ticker-item {
-    padding:0 .2rem; line-height:var(--cfm-h);
-    cursor:default;
+    padding:0 .2rem; line-height:var(--cfm-h); cursor:default;
   }
   .cfm-ticker-item[data-type="leme"]   { color:var(--cfm-purple); font-style:italic; }
   .cfm-ticker-item[data-type="freq"]   { color:var(--cfm-text); }
@@ -282,13 +275,11 @@ function injectCSS() {
   .cfm-ticker-item[data-type="count"]  { color:var(--cfm-blue); font-size:.62rem; opacity:.8; }
   .cfm-ticker-item[data-type="night"]  { color:#6d28d9; font-style:italic; text-shadow:0 0 6px rgba(109,40,217,.6); }
   .cfm-ticker-sep { color:var(--cfm-dim); opacity:.35; padding:0 .2rem; }
-
   .cfm-ticker-item[data-type="leme"]::before   { content:'◈ '; opacity:.6; }
   .cfm-ticker-item[data-type="signal"]::before { content:'⬡ '; opacity:.5; }
   .cfm-ticker-item[data-type="yt"]::before     { content:'▶ NOW · '; color:var(--cfm-red); font-size:.6rem; opacity:.8; }
   .cfm-ticker-item[data-type="night"]::before  { content:'🌙 '; }
 
-  /* ── ACTIONS ── */
   .cfm-slot-actions { display:flex; align-items:center; padding:0 .5rem; gap:.3rem; flex-shrink:0; }
   .cfm-act-btn {
     padding:.2rem .5rem; border:1px solid var(--cfm-border);
@@ -298,10 +289,9 @@ function injectCSS() {
     display:inline-flex; align-items:center; white-space:nowrap;
     text-decoration:none; height:22px;
   }
-  .cfm-act-btn:hover              { border-color:var(--cfm-blue); color:var(--cfm-blue); }
-  .cfm-act-btn--open              { border-color:var(--cfm-purple); color:var(--cfm-purple); }
-  .cfm-act-btn--open:hover        { box-shadow:0 0 8px rgba(139,92,246,.3); }
-  .cfm-act-btn--mute.muted        { border-color:var(--cfm-red); color:var(--cfm-red); }
+  .cfm-act-btn:hover        { border-color:var(--cfm-blue); color:var(--cfm-blue); }
+  .cfm-act-btn--open        { border-color:var(--cfm-purple); color:var(--cfm-purple); }
+  .cfm-act-btn--open:hover  { box-shadow:0 0 8px rgba(139,92,246,.3); }
 
   /* ── DRAWER ── */
   #cfm-drawer {
@@ -329,21 +319,6 @@ function injectCSS() {
   }
   .cfm-drawer-close:hover { border-color:var(--cfm-red); color:var(--cfm-red); }
 
-  /* Bubble Lemegeton */
-  .cfm-bubble {
-    display:flex; align-items:flex-start; gap:.6rem;
-    background:rgba(139,92,246,.07); border:1px solid rgba(139,92,246,.2);
-    border-left:3px solid var(--cfm-purple); border-radius:0 4px 4px 0;
-    padding:.6rem .8rem; margin-bottom:1rem;
-  }
-  .cfm-bubble-avatar { font-size:1.1rem; flex-shrink:0; line-height:1; filter:drop-shadow(0 0 4px rgba(139,92,246,.6)); }
-  .cfm-bubble-body   { flex:1; min-width:0; }
-  .cfm-bubble-name   { font-size:.6rem; letter-spacing:.2em; color:var(--cfm-purple); margin-bottom:.25rem; }
-  .cfm-bubble-text   { font-size:.78rem; color:var(--cfm-text); line-height:1.5; font-style:italic; min-height:1.2em; }
-  .cfm-bubble-badge  { font-size:.55rem; letter-spacing:.12em; color:var(--cfm-dim); margin-top:.2rem; }
-  .cfm-bubble-badge.speaking { color:var(--cfm-green); animation:cfm-pulse 1s ease-in-out infinite; }
-
-  /* Miniature playlist */
   .cfm-drawer-thumb-row {
     display:flex; gap:.8rem; align-items:flex-start;
     margin-bottom:.8rem;
@@ -363,7 +338,6 @@ function injectCSS() {
   }
   .cfm-drawer-thumb-meta { flex:1; min-width:0; display:flex; flex-direction:column; gap:.2rem; }
 
-  /* Embed iframe */
   .cfm-drawer-embed iframe {
     width:100%; height:200px; border:none; border-radius:3px; display:block;
     margin-bottom:.6rem;
@@ -375,10 +349,8 @@ function injectCSS() {
     margin-bottom:.6rem;
   }
 
-  /* Recherche */
   .cfm-search-wrap {
-    display:flex; gap:.4rem; align-items:center;
-    margin-bottom:.4rem;
+    display:flex; gap:.4rem; align-items:center; margin-bottom:.4rem;
   }
   .cfm-search-input {
     flex:1; background:rgba(0,212,255,.04);
@@ -388,12 +360,8 @@ function injectCSS() {
   }
   .cfm-search-input:focus { border-color:var(--cfm-blue); }
   .cfm-search-input::placeholder { color:var(--cfm-dim); opacity:.6; }
-  .cfm-search-count {
-    font-size:.58rem; color:var(--cfm-dim); white-space:nowrap;
-    letter-spacing:.08em;
-  }
+  .cfm-search-count { font-size:.58rem; color:var(--cfm-dim); white-space:nowrap; letter-spacing:.08em; }
 
-  /* Liste titres */
   .cfm-yt-titles {
     display:flex; flex-direction:column; gap:.2rem;
     max-height:160px; overflow-y:auto; padding-right:.3rem;
@@ -412,19 +380,13 @@ function injectCSS() {
   .cfm-yt-title-item:hover { color:var(--cfm-yellow); border-left-color:var(--cfm-yellow); background:rgba(253,230,138,.04); }
   .cfm-yt-title-item::before { content:'▶ '; color:var(--cfm-red); font-size:.55rem; opacity:.7; }
   .cfm-yt-title-item.hidden { display:none; }
+  .cfm-yt-section-label { font-size:.6rem; letter-spacing:.15em; color:var(--cfm-dim); margin-bottom:.3rem; opacity:.7; }
 
-  .cfm-yt-section-label {
-    font-size:.6rem; letter-spacing:.15em; color:var(--cfm-dim);
-    margin-bottom:.3rem; opacity:.7;
-  }
-
-  /* Meta */
   .cfm-drawer-meta { display:flex; flex-direction:column; gap:.2rem; margin-bottom:.6rem; }
   .cfm-d-title { color:var(--cfm-text); font-size:.85rem; }
   .cfm-d-style { color:var(--cfm-blue); font-size:.72rem; letter-spacing:.1em; }
   .cfm-d-mood  { color:var(--cfm-dim);  font-size:.7rem;  font-style:italic; }
 
-  /* Boutons drawer */
   .cfm-drawer-actions { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.5rem; }
   .cfm-drawer-btn {
     padding:.35rem .7rem; border:1px solid var(--cfm-border);
@@ -437,9 +399,7 @@ function injectCSS() {
   .cfm-drawer-btn--yt:hover   { border-color:#ff0000; color:#ff0000; }
   .cfm-drawer-btn--page       { border-color:var(--cfm-purple); color:var(--cfm-purple); }
   .cfm-drawer-btn--page:hover { box-shadow:0 0 8px rgba(139,92,246,.3); }
-  .cfm-drawer-btn--mute.muted { border-color:var(--cfm-red); color:var(--cfm-red); }
 
-  /* Hint clavier */
   .cfm-kbd-hint {
     font-size:.55rem; color:var(--cfm-dim); letter-spacing:.1em; opacity:.55;
   }
@@ -450,81 +410,158 @@ function injectCSS() {
     color:var(--cfm-dim); margin:0 .15rem;
   }
 
+  /* ── LEMEGETON PANEL FLOTTANT ── */
+  #cfm-leme-panel {
+    position: fixed;
+    bottom: calc(var(--cfm-h) + 12px);
+    right: 16px;
+    z-index: 7998;
+    width: 280px;
+    background: rgba(4,8,15,.97);
+    border: 1px solid var(--cfm-purple);
+    border-radius: 4px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 0 24px rgba(139,92,246,.25), inset 0 0 40px rgba(0,0,0,.4);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  #cfm-leme-panel.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  /* Scanline overlay */
+  #cfm-leme-panel::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,.18) 3px,
+      rgba(0,0,0,.18) 4px
+    );
+    pointer-events: none;
+    z-index: 2;
+    animation: cfm-scanline 8s linear infinite;
+  }
+  @keyframes cfm-scanline {
+    0%   { background-position: 0 0; }
+    100% { background-position: 0 80px; }
+  }
+  /* Barre de titre du panel */
+  .cfm-lp-header {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .35rem .6rem;
+    background: rgba(139,92,246,.12);
+    border-bottom: 1px solid rgba(139,92,246,.25);
+    position: relative; z-index: 3;
+  }
+  .cfm-lp-avatar { font-size: .9rem; filter: drop-shadow(0 0 4px rgba(139,92,246,.7)); }
+  .cfm-lp-name   {
+    font-size: .55rem; letter-spacing: .22em;
+    color: var(--cfm-purple);
+    text-shadow: 0 0 6px rgba(139,92,246,.5);
+    flex: 1;
+  }
+  .cfm-lp-signal {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--cfm-green);
+    box-shadow: 0 0 5px var(--cfm-green);
+    animation: cfm-pulse 1.2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  /* Corps du texte */
+  .cfm-lp-body {
+    padding: .55rem .65rem .6rem;
+    min-height: 3.4rem;
+    position: relative; z-index: 3;
+  }
+  .cfm-lp-text {
+    font-size: .72rem;
+    color: var(--cfm-text);
+    line-height: 1.55;
+    font-style: italic;
+    letter-spacing: .03em;
+    word-break: break-word;
+  }
+  /* Curseur clignotant inline */
+  .cfm-lp-cursor {
+    display: inline-block;
+    color: var(--cfm-purple);
+    font-style: normal;
+    animation: cfm-blink .7s step-end infinite;
+    text-shadow: 0 0 6px rgba(139,92,246,.8);
+    margin-left: 1px;
+    font-size: .8rem;
+    vertical-align: text-bottom;
+  }
+  @keyframes cfm-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  /* Pied du panel : fréquence courante */
+  .cfm-lp-footer {
+    padding: .2rem .6rem;
+    border-top: 1px solid rgba(139,92,246,.12);
+    font-size: .52rem; letter-spacing: .14em;
+    color: var(--cfm-dim);
+    position: relative; z-index: 3;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .cfm-lp-footer::before { content: '⬡ '; opacity: .5; }
+
   @media(max-width:480px){
     .cfm-brand-label,.cfm-kbd-hint { display:none; }
     .cfm-slot-freq { max-width:100px; }
     #cfm-widget    { font-size:.62rem; }
-    .cfm-drawer-thumb { width:80px; height:45px; }
+    #cfm-leme-panel { width:220px; right:8px; }
   }
   `;
   document.head.appendChild(s);
 }
 
-// ─── TÉLÉSCRIPTEUR CONTINU ─────────────────────────────────────────────────────────────
+// ─── TÉLÉSCRIPTEUR ────────────────────────────────────────────────────────────
 class Scroller {
   constructor(wrap, speedPx = SCROLL_SPEED_PX) {
-    this._wrap   = wrap;
-    this._speed  = speedPx;
-    this._raf    = null;
-    this._x      = 0;
-    this._w      = 0;
-    this._paused = false;
-    this._onYtClick = null;
-    this._scroll = null;
-    this._last   = 0;
+    this._wrap = wrap; this._speed = speedPx;
+    this._raf = null; this._x = 0; this._w = 0;
+    this._paused = false; this._onYtClick = null;
+    this._scroll = null; this._last = 0;
   }
-
   onYtClick(fn) { this._onYtClick = fn; }
-
   setSegments(segs) {
     this._x = 0;
     if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
     this._wrap.innerHTML = '';
-
     const track = document.createElement('div');
     track.className = 'cfm-ticker-scroll';
-
-    // Double passée pour boucle sans-couture
     for (let pass = 0; pass < 2; pass++) {
       segs.forEach(seg => {
         const sep = document.createElement('span');
-        sep.className = 'cfm-ticker-sep';
-        sep.textContent = SCROLL_SEP;
+        sep.className = 'cfm-ticker-sep'; sep.textContent = SCROLL_SEP;
         track.appendChild(sep);
-
         const el = document.createElement('span');
-        el.className  = 'cfm-ticker-item';
-        el.dataset.type = seg.type;
-        el.textContent  = seg.text;
-        if (seg.type === 'yt' && seg.videoId) {
+        el.className = 'cfm-ticker-item'; el.dataset.type = seg.type; el.textContent = seg.text;
+        if (seg.type === 'yt' && seg.videoId)
           el.addEventListener('click', () => this._onYtClick?.(seg.videoId));
-        }
         track.appendChild(el);
       });
     }
-
     this._wrap.appendChild(track);
-    this._scroll = track;
-    this._last   = performance.now();
-
-    // Largeur d’une passe = moitié du total
-    requestAnimationFrame(() => {
-      this._w = track.scrollWidth / 2;
-      this._animate();
-    });
+    this._scroll = track; this._last = performance.now();
+    requestAnimationFrame(() => { this._w = track.scrollWidth / 2; this._animate(); });
   }
-
   updateSegment(type, text) {
     if (!this._scroll) return;
     this._scroll.querySelectorAll(`.cfm-ticker-item[data-type="${type}"]`)
       .forEach(el => el.textContent = text);
   }
-
   _animate() {
     const now = performance.now();
-    const dt  = (now - this._last) / 1000;
-    this._last = now;
-
+    const dt  = (now - this._last) / 1000; this._last = now;
     if (!this._paused && this._w > 0) {
       this._x -= this._speed * dt;
       if (this._x <= -this._w) this._x += this._w;
@@ -532,7 +569,6 @@ class Scroller {
     }
     this._raf = requestAnimationFrame(() => this._animate());
   }
-
   pause()  { this._paused = true; }
   resume() { this._paused = false; }
   stop()   { if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; } }
@@ -540,6 +576,7 @@ class Scroller {
 
 // ─── BUILD DOM ────────────────────────────────────────────────────────────────
 function buildDOM() {
+  // ── Barre (sans bouton mute) ──
   const bar = document.createElement('div');
   bar.id = 'cfm-widget';
   bar.innerHTML = `
@@ -563,24 +600,16 @@ function buildDOM() {
     </div>
     <div class="cfm-slot-actions">
       <button class="cfm-act-btn cfm-act-btn--open" id="cfm-w-toggle">▶ OUVRIR</button>
-      <button class="cfm-act-btn cfm-act-btn--mute" id="cfm-w-mute" title="Muet voix">🔊</button>
     </div>
   `;
 
+  // ── Drawer (sans bouton mute) ──
   const drawer = document.createElement('div');
   drawer.id = 'cfm-drawer';
   drawer.innerHTML = `
     <div class="cfm-drawer-header">
       <span class="cfm-drawer-title">📡 CHRONICLES FM<span class="cfm-night-badge" id="cfm-night-badge" style="display:none">🌙 MODE NUIT</span></span>
       <button class="cfm-drawer-close" id="cfm-drawer-close">✕ FERMER</button>
-    </div>
-    <div class="cfm-bubble">
-      <span class="cfm-bubble-avatar">👾</span>
-      <div class="cfm-bubble-body">
-        <div class="cfm-bubble-name">LEMEGETON · CHRONICŒUR</div>
-        <div class="cfm-bubble-text" id="cfm-drawer-leme"></div>
-        <div class="cfm-bubble-badge" id="cfm-voice-badge">—</div>
-      </div>
     </div>
     <div class="cfm-drawer-thumb-row" id="cfm-thumb-row">
       <div class="cfm-drawer-thumb-placeholder" id="cfm-thumb-ph">📡</div>
@@ -600,18 +629,33 @@ function buildDOM() {
       <div class="cfm-yt-titles" id="cfm-yt-titles"></div>
     </div>
     <div class="cfm-drawer-actions">
-      <a   class="cfm-drawer-btn cfm-drawer-btn--yt"   id="cfm-d-yt" href="#" target="_blank" rel="noopener">▶ YOUTUBE</a>
-      <a   class="cfm-drawer-btn cfm-drawer-btn--page" href="/jukebox/chronicles-fm.html">⬡ TOUTES LES FRÉQUENCES</a>
-      <button class="cfm-drawer-btn cfm-drawer-btn--mute" id="cfm-drawer-mute">🔊 VOIX</button>
+      <a class="cfm-drawer-btn cfm-drawer-btn--yt"   id="cfm-d-yt" href="#" target="_blank" rel="noopener">▶ YOUTUBE</a>
+      <a class="cfm-drawer-btn cfm-drawer-btn--page" href="/jukebox/chronicles-fm.html">⬡ TOUTES LES FRÉQUENCES</a>
     </div>
     <div class="cfm-kbd-hint">
       <kbd>←</kbd><kbd>→</kbd> fréquence &nbsp;·&nbsp; <kbd>Espace</kbd> ouvrir/fermer
     </div>
   `;
 
+  // ── Lemegeton Panel flottant bas-droite ──
+  const lemePanel = document.createElement('div');
+  lemePanel.id = 'cfm-leme-panel';
+  lemePanel.innerHTML = `
+    <div class="cfm-lp-header">
+      <span class="cfm-lp-avatar">👾</span>
+      <span class="cfm-lp-name">LEMEGETON · CHRONICŒUR</span>
+      <span class="cfm-lp-signal"></span>
+    </div>
+    <div class="cfm-lp-body">
+      <div class="cfm-lp-text" id="cfm-lp-text"></div>
+    </div>
+    <div class="cfm-lp-footer" id="cfm-lp-footer">—</div>
+  `;
+
+  document.body.appendChild(lemePanel);
   document.body.appendChild(drawer);
   document.body.appendChild(bar);
-  return { bar, drawer };
+  return { bar, drawer, lemePanel };
 }
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
@@ -625,12 +669,12 @@ async function initChroniclesFM() {
   } catch { return; }
   if (!playlists.length) return;
 
-  const lv = new LemegetonVoice({ speechEnabled: true, volume: 0.75 });
+  // Speech désactivé par défaut
+  const lv = new LemegetonVoice({ speechEnabled: false, volume: 0.75 });
   await lv.init();
 
-  const { bar, drawer } = buildDOM();
+  const { bar, drawer, lemePanel } = buildDOM();
 
-  // Activer le mode nuit sur l’élément
   const nightMode = isNightMode();
   if (nightMode) bar.classList.add('cfm-night');
   const nightBadge = drawer.querySelector('#cfm-night-badge');
@@ -641,14 +685,14 @@ async function initChroniclesFM() {
 
   let drawerOpen   = false;
   let ambientTimer = null;
-  let currentItems = [];      // items YT de la fréquence courante
+  let currentItems = [];
+  let lemePanelTimer = null;
 
   const wName        = bar.querySelector('#cfm-w-name');
   const wStyle       = bar.querySelector('#cfm-w-style');
   const countBadge   = bar.querySelector('#cfm-count');
   const hoverTip     = bar.querySelector('#cfm-hover-tip');
   const tickerWrap   = bar.querySelector('#cfm-ticker-wrap');
-  const dLeme        = drawer.querySelector('#cfm-drawer-leme');
   const dEmbed       = drawer.querySelector('#cfm-drawer-embed');
   const dTitle       = drawer.querySelector('#cfm-d-title');
   const dStyle       = drawer.querySelector('#cfm-d-style');
@@ -660,7 +704,8 @@ async function initChroniclesFM() {
   const searchInput  = drawer.querySelector('#cfm-search');
   const searchCount  = drawer.querySelector('#cfm-search-count');
   const thumbPh      = drawer.querySelector('#cfm-thumb-ph');
-  const voiceBadge   = drawer.querySelector('#cfm-voice-badge');
+  const lpText       = lemePanel.querySelector('#cfm-lp-text');
+  const lpFooter     = lemePanel.querySelector('#cfm-lp-footer');
 
   const scroller = new Scroller(tickerWrap, SCROLL_SPEED_PX);
 
@@ -669,7 +714,7 @@ async function initChroniclesFM() {
   }
   scroller.onYtClick(openVideo);
 
-  // ── Tooltip survol titre aléatoire ─────────────────────────────
+  // ── Tooltip survol ─────────────────────────────────────
   let hoverTimer = null;
   bar.querySelector('#cfm-brand').addEventListener('mouseenter', () => {
     if (!currentItems.length) return;
@@ -685,38 +730,33 @@ async function initChroniclesFM() {
     hoverTip.classList.remove('visible');
   });
 
-  // ── Helpers ────────────────────────────────────────────
-  function updateVoiceBadge() {
-    if (!voiceBadge) return;
-    if (lv.muted)             voiceBadge.textContent = 'VOIX · MUET';
-    else if (lv._mp3map?.size) voiceBadge.textContent = 'MP3 BANK · ACTIF';
-    else if (lv._voice)       voiceBadge.textContent = `WEB SPEECH · ${lv._voice.name}`;
-    else                      voiceBadge.textContent = 'TEXTE SEUL';
+  // ── LemePanel : affichage flottant avec typewriter ──────
+  function showLemePanel(phrase, freqLabel) {
+    if (lpFooter) lpFooter.textContent = freqLabel ?? playlists[idx]?.title ?? '—';
+    lemePanel.classList.add('visible');
+    typewriter(lpText, phrase, 28);
+    clearTimeout(lemePanelTimer);
+    // Disparaît après lecture complète + 4s
+    const delay = phrase.length * 28 + 4000;
+    lemePanelTimer = setTimeout(() => {
+      lemePanel.classList.remove('visible');
+    }, delay);
   }
 
-  function sayAndWrite(el, phrase) {
-    if (el) typewriter(el, phrase);
-    if (!lv.muted) {
-      voiceBadge?.classList.add('speaking');
-      lv.speak('ambient', { text: phrase });
-      setTimeout(() => voiceBadge?.classList.remove('speaking'), phrase.length * 60 + 800);
-    }
-    scroller.updateSegment('leme', phrase);
-  }
-
+  // ── Segments téléscripteur ──────────────────────────────
   function buildSegments(p, lemePhrase) {
     const segs = [];
-    segs.push({ type: 'freq',   text: p.title });
-    if (p.style)    segs.push({ type: 'style',  text: p.style.toUpperCase() });
-    if (p.mood)     segs.push({ type: 'mood',   text: p.mood });
-    if (nightMode)  segs.push({ type: 'night',  text: NIGHT_PHRASES[Math.floor(Math.random()*NIGHT_PHRASES.length)] });
-    segs.push({ type: 'leme',   text: lemePhrase });
-    segs.push({ type: 'signal', text: 'BZH CHRONICLES RADIO · ON AIR' });
-    if (p.tags?.length) segs.push({ type: 'signal', text: p.tags.map(t=>t.toUpperCase()).join(' · ') });
+    segs.push({ type:'freq',   text: p.title });
+    if (p.style)   segs.push({ type:'style',  text: p.style.toUpperCase() });
+    if (p.mood)    segs.push({ type:'mood',   text: p.mood });
+    if (nightMode) segs.push({ type:'night',  text: NIGHT_PHRASES[Math.floor(Math.random()*NIGHT_PHRASES.length)] });
+    segs.push({ type:'leme',   text: lemePhrase });
+    segs.push({ type:'signal', text: 'BZH CHRONICLES RADIO · ON AIR' });
+    if (p.tags?.length) segs.push({ type:'signal', text: p.tags.map(t=>t.toUpperCase()).join(' · ') });
     return segs;
   }
 
-  // ── Recherche live ────────────────────────────────────────
+  // ── Recherche live ──────────────────────────────────────
   function filterTitles(q) {
     const query = q.trim().toLowerCase();
     const items = ytTitlesList.querySelectorAll('.cfm-yt-title-item');
@@ -729,13 +769,11 @@ async function initChroniclesFM() {
     searchCount.textContent = query ? `${count} rés.` : '';
   }
   searchInput?.addEventListener('input', e => filterTitles(e.target.value));
-  searchInput?.addEventListener('keydown', e => e.stopPropagation()); // ne pas déclencher les raccourcis globaux
+  searchInput?.addEventListener('keydown', e => e.stopPropagation());
 
-  // ── Chargement items YT + miniature ──────────────────────
+  // ── Chargement items YT + miniature ────────────────────
   async function loadYtItems(p) {
-    // Miniature
-    thumbPh.textContent = '📡';
-    thumbPh.style.display = 'flex';
+    thumbPh.textContent = '📡'; thumbPh.style.display = 'flex';
     const existingImg = thumbPh.parentElement?.querySelector('.cfm-drawer-thumb');
     if (existingImg) existingImg.remove();
 
@@ -743,61 +781,45 @@ async function initChroniclesFM() {
       fetchPlaylistThumb(p.youtubePlaylistId).then(url => {
         if (!url) return;
         const img = document.createElement('img');
-        img.className = 'cfm-drawer-thumb';
-        img.src = url;
-        img.alt = p.title;
-        img.loading = 'lazy';
+        img.className = 'cfm-drawer-thumb'; img.src = url; img.alt = p.title; img.loading = 'lazy';
         thumbPh.style.display = 'none';
         thumbPh.parentElement.insertBefore(img, thumbPh);
       });
     }
 
-    // Titres
     if (!p.youtubePlaylistId) {
-      ytSection.style.display = 'none';
-      currentItems = [];
-      countBadge.textContent = '?';
-      countBadge.classList.remove('loaded');
+      ytSection.style.display = 'none'; currentItems = [];
+      countBadge.textContent = '?'; countBadge.classList.remove('loaded');
       return;
     }
 
     const items = await fetchPlaylistItems(p.youtubePlaylistId);
     currentItems = items;
-
-    // Count badge
     countBadge.textContent = items.length ? `${items.length} ▶` : '?';
     countBadge.classList.toggle('loaded', items.length > 0);
 
     if (!items.length) { ytSection.style.display = 'none'; return; }
 
-    // Injecter segments YT dans le téléscripteur
     const ytSegs = [...items].sort(()=>Math.random()-.5).slice(0,10)
       .map(i => ({ type:'yt', text:i.title, videoId:i.videoId }));
-    // On remet les segments de base + YT
     const phrase = pickNightOrAmbient('ambient', p.tags);
-    const segs   = [...buildSegments(p, phrase), ...ytSegs];
-    scroller.setSegments(segs);
+    scroller.setSegments([...buildSegments(p, phrase), ...ytSegs]);
 
-    // Label
     ytLabel.textContent = `▶ PLAYLIST · ${items.length} TITRES`;
-
-    // Liste
     if (searchInput) searchInput.value = '';
     searchCount.textContent = '';
     ytTitlesList.innerHTML = '';
     items.forEach(item => {
       const el = document.createElement('div');
-      el.className        = 'cfm-yt-title-item';
-      el.textContent      = item.title;
-      el.title            = item.title;
-      el.dataset.title    = item.title.toLowerCase();
+      el.className = 'cfm-yt-title-item'; el.textContent = item.title;
+      el.title = item.title; el.dataset.title = item.title.toLowerCase();
       if (item.videoId) el.addEventListener('click', () => openVideo(item.videoId));
       ytTitlesList.appendChild(el);
     });
     ytSection.style.display = 'block';
   }
 
-  // ── Rendu fréquence ────────────────────────────────────────
+  // ── Rendu fréquence ─────────────────────────────────────
   function renderFreq(newIdx, isTransition = false) {
     idx = newIdx;
     sessionStorage.setItem(STORAGE_KEY, idx);
@@ -811,7 +833,6 @@ async function initChroniclesFM() {
       : pickNightOrAmbient('ambient', p.tags);
 
     scroller.setSegments(buildSegments(p, phrase));
-
     loadYtItems(p);
 
     dTitle.textContent = p.title;
@@ -831,13 +852,15 @@ async function initChroniclesFM() {
       dYt.style.opacity = '.4'; dYt.style.pointerEvents = 'none';
     }
 
-    if (drawerOpen) sayAndWrite(dLeme, phrase);
-    else if (dLeme) typewriter(dLeme, phrase);
+    // Affiche le panel flottant Lemegeton à chaque changement de fréquence
+    showLemePanel(phrase, p.title);
+    scroller.updateSegment('leme', phrase);
 
     clearInterval(ambientTimer);
     ambientTimer = setInterval(() => {
       const l = pickNightOrAmbient('ambient', p.tags);
-      sayAndWrite(dLeme, l);
+      showLemePanel(l, p.title);
+      scroller.updateSegment('leme', l);
     }, AMBIENT_INTERVAL);
   }
 
@@ -846,7 +869,8 @@ async function initChroniclesFM() {
     drawerOpen = true;
     drawer.classList.add('open');
     bar.querySelector('#cfm-w-toggle').textContent = '▼ REPLIER';
-    sayAndWrite(dLeme, pickNightOrAmbient('ambient', playlists[idx].tags));
+    const phrase = pickNightOrAmbient('ambient', playlists[idx].tags);
+    showLemePanel(phrase, playlists[idx].title);
   }
   function closeDrawer() {
     drawerOpen = false;
@@ -854,21 +878,11 @@ async function initChroniclesFM() {
     bar.querySelector('#cfm-w-toggle').textContent = '▶ OUVRIR';
   }
 
-  function toggleMute() {
-    lv.setMuted(!lv.muted);
-    const m = lv.muted;
-    const wBtn = bar.querySelector('#cfm-w-mute');
-    const dBtn = drawer.querySelector('#cfm-drawer-mute');
-    if (wBtn) { wBtn.textContent = m ? '🔇' : '🔊'; wBtn.classList.toggle('muted', m); }
-    if (dBtn) { dBtn.textContent = m ? '🔇 VOIX' : '🔊 VOIX'; dBtn.classList.toggle('muted', m); }
-    updateVoiceBadge();
-  }
-
   // ── Raccourcis clavier ──────────────────────────────────
   document.addEventListener('keydown', e => {
     const tag = document.activeElement?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
-    if (e.key === 'ArrowLeft')  { e.preventDefault(); renderFreq((idx-1+playlists.length)%playlists.length, true); }
+    if (e.key === 'ArrowLeft')       { e.preventDefault(); renderFreq((idx-1+playlists.length)%playlists.length, true); }
     else if (e.key === 'ArrowRight') { e.preventDefault(); renderFreq((idx+1)%playlists.length, true); }
     else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); drawerOpen ? closeDrawer() : openDrawer(); }
   });
@@ -888,20 +902,19 @@ async function initChroniclesFM() {
   }, { passive:true });
 
   // ── Events ──────────────────────────────────────────────
-  bar.querySelector('#cfm-brand').addEventListener('click', () => drawerOpen ? closeDrawer() : openDrawer());
-  bar.querySelector('#cfm-prev').addEventListener('click',  () => renderFreq((idx-1+playlists.length)%playlists.length, true));
-  bar.querySelector('#cfm-next').addEventListener('click',  () => renderFreq((idx+1)%playlists.length, true));
+  bar.querySelector('#cfm-brand').addEventListener('click',    () => drawerOpen ? closeDrawer() : openDrawer());
+  bar.querySelector('#cfm-prev').addEventListener('click',     () => renderFreq((idx-1+playlists.length)%playlists.length, true));
+  bar.querySelector('#cfm-next').addEventListener('click',     () => renderFreq((idx+1)%playlists.length, true));
   bar.querySelector('#cfm-w-toggle').addEventListener('click', () => drawerOpen ? closeDrawer() : openDrawer());
-  bar.querySelector('#cfm-w-mute').addEventListener('click',   toggleMute);
   drawer.querySelector('#cfm-drawer-close').addEventListener('click', closeDrawer);
-  drawer.querySelector('#cfm-drawer-mute').addEventListener('click',  toggleMute);
 
-  updateVoiceBadge();
   renderFreq(idx, false);
 
+  // Intro Lemegeton panel après 2s
   setTimeout(() => {
     const intro = pickNightOrAmbient('intro', []);
-    sayAndWrite(dLeme, intro);
+    showLemePanel(intro, playlists[idx]?.title);
+    scroller.updateSegment('leme', intro);
   }, 2000);
 }
 
