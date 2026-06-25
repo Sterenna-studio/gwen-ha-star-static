@@ -1,0 +1,103 @@
+[
+  {
+    "id": "cfm-01",
+    "title": "BASS DIMENSION",
+    "subtitle": "Fréquence 01",
+    "style": "Bass Music · Dubstep · Riddim",
+    "mood": "Lourd, mécanique, subsonique",
+    "description": "Les fréquences basses qui fracassent le bitume. Pour coder sous pression ou traverser la ville à 3h du mat.",
+    "tags": ["bass", "dubstep", "riddim"],
+    "featured": true,
+    "youtubePlaylistId": "PLrwdSlMB9DFJQS2s4E60FVjNpQqODgJjW"
+  },
+  {
+    "id": "cfm-02",
+    "title": "RAVE PROTOCOL",
+    "subtitle": "Fréquence 02",
+    "style": "Techno · Rave · Industrial",
+    "mood": "Tribal, mécanique, hypnotique",
+    "description": "Protocole d'urgence activé. La machine danse. Le code compile dans le chaos.",
+    "tags": ["rave", "techno", "industrial"],
+    "youtubePlaylistId": "PLrwdSlMB9DFJPmMkjQiOT5D8MnalUUExG"
+  },
+  {
+    "id": "cfm-03",
+    "title": "RAP ARCHIVES",
+    "subtitle": "Fréquence 03",
+    "style": "Rap · Hip-Hop · Trap",
+    "mood": "Lyrical, sombre, cinématique",
+    "description": "Les mots comme des commits. Flow brut depuis les archives fracturées.",
+    "tags": ["rap", "hip-hop", "trap"],
+    "youtubePlaylistId": "PLrwdSlMB9DFJHiMoWuGLW7fwBPJLFVrRb"
+  },
+  {
+    "id": "cfm-04",
+    "title": "HYPERPOP GLITCH",
+    "subtitle": "Fréquence 04",
+    "style": "Hyperpop · PC Music · Bubblegum Bass",
+    "mood": "Saturé, coloré, chaotique",
+    "description": "Surcharge sensorielle volontaire. Pop mutante pour cerveaux overclocké.",
+    "tags": ["hyperpop", "glitch", "pop"],
+    "youtubePlaylistId": "PLrwdSlMB9DFJXWVqA1rqMxnk-_3eRjVcm"
+  },
+  {
+    "id": "cfm-05",
+    "title": "CHILL SECTOR",
+    "subtitle": "Fréquence 05",
+    "style": "Lo-fi · Chill · Ambient",
+    "mood": "Doux, flottant, introspectif",
+    "description": "Zone de récupération. Fréquence basse tension pour les longues sessions.",
+    "tags": ["chill", "lofi", "ambient"],
+    "youtubePlaylistId": "PLrwdSlMB9DFIp4JMDGVUj-PaLqSzZTMbW"
+  },
+  {
+    "id": "cfm-06",
+    "title": "OST VAULT",
+    "subtitle": "Fréquence 06",
+    "style": "OST · Cinématique · Orchestral",
+    "mood": "Épique, nostalgique, immersif",
+    "description": "Bandes originales de jeux et films. Chaque track est une carte du monde.",
+    "tags": ["ost", "cinematic", "orchestral"],
+    "youtubePlaylistId": "PLrwdSlMB9DFI9OwMHHKMjxvgBTzFCikhc"
+  },
+  {
+    "id": "cfm-07",
+    "title": "ROCK CIRCUIT",
+    "subtitle": "Fréquence 07",
+    "style": "Rock · Metal · Punk",
+    "mood": "Électrique, brut, viscéral",
+    "description": "Distorsion maximale. Les câbles brûlent, les amplis saignent.",
+    "tags": ["rock", "metal", "punk"],
+    "youtubePlaylistId": "PLrwdSlMB9DFJaX5XBK2h-OG1eVP3rr1Kz"
+  },
+  {
+    "id": "cfm-08",
+    "title": "FOLK TRANSMISSION",
+    "subtitle": "Fréquence 08",
+    "style": "Folk · Celtic · Acoustic",
+    "mood": "Organique, mélancolique, ancré",
+    "description": "Le triskel résonne dans les circuits. Sons du bout du monde, mémoires bretonnes.",
+    "tags": ["folk", "celtic", "acoustic"],
+    "youtubePlaylistId": "PLrwdSlMB9DFJxHOy1RJnMoWABxMFdxgzH"
+  },
+  {
+    "id": "cfm-09",
+    "title": "WEIRD SIGNAL",
+    "subtitle": "Fréquence 09",
+    "style": "Experimental · Noise · Avant-garde",
+    "mood": "Étrange, imprévisible, déstabilisant",
+    "description": "Interférences non classifiées. Signal capté depuis une dimension parallèle.",
+    "tags": ["weird", "experimental", "noise"],
+    "youtubePlaylistId": "PLrwdSlMB9DFJOnMJ0OVP5pIPvqQjLqyTf"
+  },
+  {
+    "id": "cfm-10",
+    "title": "LONG FORMAT",
+    "subtitle": "Fréquence 10",
+    "style": "Mix · DJ Set · Long format",
+    "mood": "Continu, progressif, marathon",
+    "description": "Sets longs pour les sessions de code interminables. Pas de pause, pas d'interruption.",
+    "tags": ["long format", "mix", "djset"],
+    "youtubePlaylistId": "PLrwdSlMB9DFJiHjMeHcMqvWLHqiJFdNLf"
+  }
+]
