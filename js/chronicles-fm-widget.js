@@ -6,8 +6,8 @@
 import { LemegetonVoice, pickPhrase, PHRASES } from './lemegeton-voice.js';
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
-const CFM_DATA_URL      = '/jukebox/chronicles-fm.json';
-const CFM_PAGE_URL      = '/jukebox/chronicles-fm.html';
+const CFM_DATA_URL      = '/chronicles-fm/data.json';
+const CFM_PAGE_URL      = '/chronicles-fm/';
 const STORAGE_KEY       = 'cfm-freq-idx';
 const AMBIENT_INTERVAL  = 50000;
 const YT_API_KEY        = 'AIzaSyAEruwkr9u1CN0OECR6onqY1Z3vW-LsvCE';
@@ -33,7 +33,6 @@ function typewriter(el, text, speed = 26, onDone) {
       el.appendChild(cursor);
       setTimeout(tick, speed);
     } else {
-      // cursor reste visible à la fin
       if (onDone) onDone();
     }
   };
@@ -433,7 +432,6 @@ function injectCSS() {
     transform: translateY(0);
     pointer-events: auto;
   }
-  /* Scanline overlay */
   #cfm-leme-panel::before {
     content: '';
     position: absolute; inset: 0;
@@ -452,7 +450,6 @@ function injectCSS() {
     0%   { background-position: 0 0; }
     100% { background-position: 0 80px; }
   }
-  /* Barre de titre du panel */
   .cfm-lp-header {
     display: flex;
     align-items: center;
@@ -476,7 +473,6 @@ function injectCSS() {
     animation: cfm-pulse 1.2s ease-in-out infinite;
     flex-shrink: 0;
   }
-  /* Corps du texte */
   .cfm-lp-body {
     padding: .55rem .65rem .6rem;
     min-height: 3.4rem;
@@ -490,7 +486,6 @@ function injectCSS() {
     letter-spacing: .03em;
     word-break: break-word;
   }
-  /* Curseur clignotant inline */
   .cfm-lp-cursor {
     display: inline-block;
     color: var(--cfm-purple);
@@ -502,7 +497,6 @@ function injectCSS() {
     vertical-align: text-bottom;
   }
   @keyframes cfm-blink { 0%,100%{opacity:1} 50%{opacity:0} }
-  /* Pied du panel : fréquence courante */
   .cfm-lp-footer {
     padding: .2rem .6rem;
     border-top: 1px solid rgba(139,92,246,.12);
@@ -576,7 +570,6 @@ class Scroller {
 
 // ─── BUILD DOM ────────────────────────────────────────────────────────────────
 function buildDOM() {
-  // ── Barre (sans bouton mute) ──
   const bar = document.createElement('div');
   bar.id = 'cfm-widget';
   bar.innerHTML = `
@@ -603,7 +596,6 @@ function buildDOM() {
     </div>
   `;
 
-  // ── Drawer (sans bouton mute) ──
   const drawer = document.createElement('div');
   drawer.id = 'cfm-drawer';
   drawer.innerHTML = `
@@ -630,14 +622,13 @@ function buildDOM() {
     </div>
     <div class="cfm-drawer-actions">
       <a class="cfm-drawer-btn cfm-drawer-btn--yt"   id="cfm-d-yt" href="#" target="_blank" rel="noopener">▶ YOUTUBE</a>
-      <a class="cfm-drawer-btn cfm-drawer-btn--page" href="/jukebox/chronicles-fm.html">⬡ TOUTES LES FRÉQUENCES</a>
+      <a class="cfm-drawer-btn cfm-drawer-btn--page" href="/chronicles-fm/">⬡ TOUTES LES FRÉQUENCES</a>
     </div>
     <div class="cfm-kbd-hint">
       <kbd>←</kbd><kbd>→</kbd> fréquence &nbsp;·&nbsp; <kbd>Espace</kbd> ouvrir/fermer
     </div>
   `;
 
-  // ── Lemegeton Panel flottant bas-droite ──
   const lemePanel = document.createElement('div');
   lemePanel.id = 'cfm-leme-panel';
   lemePanel.innerHTML = `
@@ -669,7 +660,6 @@ async function initChroniclesFM() {
   } catch { return; }
   if (!playlists.length) return;
 
-  // Speech désactivé par défaut
   const lv = new LemegetonVoice({ speechEnabled: false, volume: 0.75 });
   await lv.init();
 
@@ -714,7 +704,6 @@ async function initChroniclesFM() {
   }
   scroller.onYtClick(openVideo);
 
-  // ── Tooltip survol ─────────────────────────────────────
   let hoverTimer = null;
   bar.querySelector('#cfm-brand').addEventListener('mouseenter', () => {
     if (!currentItems.length) return;
@@ -730,20 +719,17 @@ async function initChroniclesFM() {
     hoverTip.classList.remove('visible');
   });
 
-  // ── LemePanel : affichage flottant avec typewriter ──────
   function showLemePanel(phrase, freqLabel) {
     if (lpFooter) lpFooter.textContent = freqLabel ?? playlists[idx]?.title ?? '—';
     lemePanel.classList.add('visible');
     typewriter(lpText, phrase, 28);
     clearTimeout(lemePanelTimer);
-    // Disparaît après lecture complète + 4s
     const delay = phrase.length * 28 + 4000;
     lemePanelTimer = setTimeout(() => {
       lemePanel.classList.remove('visible');
     }, delay);
   }
 
-  // ── Segments téléscripteur ──────────────────────────────
   function buildSegments(p, lemePhrase) {
     const segs = [];
     segs.push({ type:'freq',   text: p.title });
@@ -756,7 +742,6 @@ async function initChroniclesFM() {
     return segs;
   }
 
-  // ── Recherche live ──────────────────────────────────────
   function filterTitles(q) {
     const query = q.trim().toLowerCase();
     const items = ytTitlesList.querySelectorAll('.cfm-yt-title-item');
@@ -771,7 +756,6 @@ async function initChroniclesFM() {
   searchInput?.addEventListener('input', e => filterTitles(e.target.value));
   searchInput?.addEventListener('keydown', e => e.stopPropagation());
 
-  // ── Chargement items YT + miniature ────────────────────
   async function loadYtItems(p) {
     thumbPh.textContent = '📡'; thumbPh.style.display = 'flex';
     const existingImg = thumbPh.parentElement?.querySelector('.cfm-drawer-thumb');
@@ -819,7 +803,6 @@ async function initChroniclesFM() {
     ytSection.style.display = 'block';
   }
 
-  // ── Rendu fréquence ─────────────────────────────────────
   function renderFreq(newIdx, isTransition = false) {
     idx = newIdx;
     sessionStorage.setItem(STORAGE_KEY, idx);
@@ -852,7 +835,6 @@ async function initChroniclesFM() {
       dYt.style.opacity = '.4'; dYt.style.pointerEvents = 'none';
     }
 
-    // Affiche le panel flottant Lemegeton à chaque changement de fréquence
     showLemePanel(phrase, p.title);
     scroller.updateSegment('leme', phrase);
 
@@ -864,7 +846,6 @@ async function initChroniclesFM() {
     }, AMBIENT_INTERVAL);
   }
 
-  // ── Drawer ──────────────────────────────────────────────
   function openDrawer() {
     drawerOpen = true;
     drawer.classList.add('open');
@@ -878,7 +859,6 @@ async function initChroniclesFM() {
     bar.querySelector('#cfm-w-toggle').textContent = '▶ OUVRIR';
   }
 
-  // ── Raccourcis clavier ──────────────────────────────────
   document.addEventListener('keydown', e => {
     const tag = document.activeElement?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
@@ -887,7 +867,6 @@ async function initChroniclesFM() {
     else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); drawerOpen ? closeDrawer() : openDrawer(); }
   });
 
-  // ── Swipe mobile ────────────────────────────────────────
   let touchStartX = 0, touchStartY = 0;
   bar.addEventListener('touchstart', e => {
     touchStartX = e.changedTouches[0].clientX;
@@ -901,7 +880,6 @@ async function initChroniclesFM() {
     else        renderFreq((idx-1+playlists.length)%playlists.length, true);
   }, { passive:true });
 
-  // ── Events ──────────────────────────────────────────────
   bar.querySelector('#cfm-brand').addEventListener('click',    () => drawerOpen ? closeDrawer() : openDrawer());
   bar.querySelector('#cfm-prev').addEventListener('click',     () => renderFreq((idx-1+playlists.length)%playlists.length, true));
   bar.querySelector('#cfm-next').addEventListener('click',     () => renderFreq((idx+1)%playlists.length, true));
@@ -910,7 +888,6 @@ async function initChroniclesFM() {
 
   renderFreq(idx, false);
 
-  // Intro Lemegeton panel après 2s
   setTimeout(() => {
     const intro = pickNightOrAmbient('intro', []);
     showLemePanel(intro, playlists[idx]?.title);
