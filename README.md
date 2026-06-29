@@ -19,6 +19,40 @@ Une personne connectée devient un **Agent des Chronicles** et accède à son co
 
 ---
 
+## Relation avec Korigan et 3615 Gateways
+
+Ce dépôt reste le **hub public statique Nitro / Gwen Ha Star**, notamment pour OVH et les pages publiques.
+
+La version vivante du cockpit connecté est désormais portée par :
+
+```txt
+MutenRock/Korigan
+```
+
+Korigan contient aussi le runtime actif de 3615 Gateways :
+
+```txt
+MutenRock/Korigan/services/3615-gateways
+```
+
+Rôles recommandés :
+
+```txt
+gwen-ha-star-static
+  Vitrine publique Nitro, pages statiques, shared Supabase, déploiement OVH.
+
+MutenRock/Korigan
+  Cockpit Next.js authentifié, hub des services locaux, wrapper /star/3615.
+
+MutenRock/Korigan/services/3615-gateways
+  Runtime réel Minitel / ESP32 / Telnet / WebSocket.
+
+Sterenna-studio/3615-gateways
+  Prototype public autonome et documentation historique du projet 3615.
+```
+
+---
+
 ## Architecture cible
 
 ```txt
@@ -29,7 +63,7 @@ gwen-ha-star-static/
 ├── update-password.html       # Mise à jour mot de passe Supabase
 ├── cig.html                   # CIG — profil agent connecté
 │
-├── star/                      # Cockpit connecté : crew, widgets, arcade, accès apps
+├── star/                      # Cockpit connecté statique historique
 ├── TCG/                       # App interne TCG
 ├── jukebox/                   # Jukebox statique
 │
@@ -52,7 +86,7 @@ gwen-ha-star-static/
 │   ├── theme.js
 │   ├── auth.js                # Wrapper vers shared/session-ui.js
 │   ├── supabase.js            # Wrapper vers shared auth/client
-│   └── star/                  # Logique spécifique au cockpit Star
+│   └── star/                  # Logique spécifique au cockpit Star statique
 │
 └── .github/workflows/
     └── deploy-ovh.yml         # Déploiement SSH/rsync vers OVH ~/nitro/
@@ -67,7 +101,7 @@ gwen-ha-star-static/
 | `/` | Public | Hub public Gwen Ha Star / Nitro |
 | `/login.html` | Public | Connexion agent |
 | `/cig.html` | Connecté | Carte d'Identification Galactique |
-| `/star/` | Connecté | Cockpit membre / crew / réseau |
+| `/star/` | Connecté | Cockpit membre / crew / réseau statique historique |
 | `/TCG/` | Connecté | App TCG |
 | `/jukebox/` | Public / intégré | Lecteur musical |
 | `/shared/` | Technique | Modules communs Nitro |
@@ -158,111 +192,5 @@ Flux :
 git push main
 → GitHub Actions
 → génération shared/config.js
-→ rsync SSH
-→ OVH ~/nitro/
-→ https://nitro.sterenna.fr/
+→ rsync vers OVH ~/nitro/
 ```
-
-Secrets GitHub requis :
-
-```txt
-OVH_HOST
-OVH_USER
-OVH_SSH_KEY
-GHSTAR_SUPABASE_URL
-GHSTAR_SUPABASE_ANON
-```
-
-Le workflow actif est :
-
-```txt
-.github/workflows/deploy-ovh.yml
-```
-
----
-
-## CORS `/shared` pour PokéGang
-
-`shared/.htaccess` autorise les imports de modules depuis :
-
-```txt
-https://pokegang.sterenna.fr
-```
-
-Headers attendus :
-
-```txt
-Access-Control-Allow-Origin: https://pokegang.sterenna.fr
-Access-Control-Allow-Methods: GET, OPTIONS
-Cross-Origin-Resource-Policy: cross-origin
-```
-
-Si PokéGang voit encore une erreur CORS, purger Cloudflare sur :
-
-```txt
-https://nitro.sterenna.fr/shared/supabase-client.js
-https://nitro.sterenna.fr/shared/auth.js
-https://nitro.sterenna.fr/shared/profile.js
-https://nitro.sterenna.fr/shared/config.js
-```
-
----
-
-## Développement local
-
-Ce repo est une app statique vanilla : HTML, CSS, JavaScript modules ES natifs.
-
-Lancer localement :
-
-```bash
-python -m http.server 8080
-```
-
-Puis ouvrir :
-
-```txt
-http://localhost:8080/
-```
-
-Pour tester Supabase localement, créer temporairement un fichier :
-
-```txt
-shared/config.js
-```
-
-avec :
-
-```js
-export const SUPABASE_URL = 'https://...supabase.co';
-export const SUPABASE_ANON = 'sb_publishable_...';
-```
-
-Ne pas commiter ce fichier.
-
----
-
-## Sécurité
-
-Ne jamais commiter :
-
-- `.env` ;
-- `shared/config.js` généré ;
-- `config.js` racine contenant des clés ;
-- clé `service_role` Supabase ;
-- mot de passe database ;
-- JWT secret ;
-- clé privée SSH.
-
----
-
-## Repos liés
-
-| Repo | Rôle | Déploiement |
-|---|---|---|
-| `gwen-ha-star-static` | Hub Nitro + shared auth | `~/nitro/` |
-| `botanica-obscura` | App Botanica connectée à Nitro | `~/nitro/botanica/` |
-| `pokegang-game` | Jeu autonome + intégration Nitro progressive | `~/pokegang/` |
-
----
-
-*Sterenna EI — Gwen Ha Star / Nitro — 2025-2026*
