@@ -13,7 +13,7 @@ const AMBIENT_INTERVAL  = 50000;
 const YT_API_KEY        = 'AIzaSyAEruwkr9u1CN0OECR6onqY1Z3vW-LsvCE';
 const YT_CACHE_KEY      = 'cfm-yt-cache';
 const YT_CACHE_TTL      = 1000 * 60 * 60 * 6;
-const SCROLL_SPEED_PX   = 55;   // px/s téléscripteur
+const SCROLL_SPEED_PX   = 55;   // px/s télescripteur
 const SCROLL_SEP        = '  ⬡  ';
 
 const NIGHT_HOUR_START  = 0;
@@ -44,14 +44,15 @@ function isNightMode() {
   return h >= NIGHT_HOUR_START && h < NIGHT_HOUR_END;
 }
 
+// FIX: apostrophes typographiques remplacées par des apostrophes droites standard
 const NIGHT_PHRASES = [
-  'Les signaux se fondent dans l'obscurité des fréquences mortes.',
-  'L'éther murmure des élégies à minuit passé.',
-  'Seuls les démons veillent encore sur les ondes.',
-  'Transmissions chiffrées depuis les catacombes numériques.',
-  'L'obscurité amplifie. Les vivants dorment. Les machines écoutent.',
-  'Fréquences noires. Signal de l'abîme. BZH Chronicles ne dort pas.',
-  'Les archives s'ouvrent sous la nuit. Système 03:00 · ACTIF.',
+  "Les signaux se fondent dans l'obscurite des frequences mortes.",
+  "L'ether murmure des elegies a minuit passe.",
+  'Seuls les demons veillent encore sur les ondes.',
+  'Transmissions chiffrees depuis les catacombes numeriques.',
+  "L'obscurite amplifie. Les vivants dorment. Les machines ecoutent.",
+  'Frequences noires. Signal de l\'abime. BZH Chronicles ne dort pas.',
+  'Les archives s\'ouvrent sous la nuit. Systeme 03:00 · ACTIF.',
   'Heure maudite. Lemegeton transmet depuis les limbes.',
 ];
 
@@ -517,7 +518,7 @@ function injectCSS() {
   document.head.appendChild(s);
 }
 
-// ─── TÉLÉSCRIPTEUR ────────────────────────────────────────────────────────────
+// ─── TÉLESCRIPTEUR ────────────────────────────────────────────────────────────
 class Scroller {
   constructor(wrap, speedPx = SCROLL_SPEED_PX) {
     this._wrap = wrap; this._speed = speedPx;
@@ -580,8 +581,8 @@ function buildDOM() {
       <div class="cfm-hover-tooltip" id="cfm-hover-tip"></div>
     </div>
     <div class="cfm-slot-nav">
-      <button class="cfm-nav-btn" id="cfm-prev" aria-label="Fréquence précédente">◀</button>
-      <button class="cfm-nav-btn" id="cfm-next" aria-label="Fréquence suivante">▶</button>
+      <button class="cfm-nav-btn" id="cfm-prev" aria-label="Frequence precedente">◀</button>
+      <button class="cfm-nav-btn" id="cfm-next" aria-label="Frequence suivante">▶</button>
     </div>
     <div class="cfm-slot-freq">
       <span class="cfm-freq-name"  id="cfm-w-name">—</span>
@@ -622,10 +623,10 @@ function buildDOM() {
     </div>
     <div class="cfm-drawer-actions">
       <a class="cfm-drawer-btn cfm-drawer-btn--yt"   id="cfm-d-yt" href="#" target="_blank" rel="noopener">▶ YOUTUBE</a>
-      <a class="cfm-drawer-btn cfm-drawer-btn--page" href="/chronicles-fm/">⬡ TOUTES LES FRÉQUENCES</a>
+      <a class="cfm-drawer-btn cfm-drawer-btn--page" href="/chronicles-fm/">⬡ TOUTES LES FREQUENCES</a>
     </div>
     <div class="cfm-kbd-hint">
-      <kbd>←</kbd><kbd>→</kbd> fréquence &nbsp;·&nbsp; <kbd>Espace</kbd> ouvrir/fermer
+      <kbd>←</kbd><kbd>→</kbd> frequence &nbsp;·&nbsp; <kbd>Espace</kbd> ouvrir/fermer
     </div>
   `;
 
@@ -634,7 +635,7 @@ function buildDOM() {
   lemePanel.innerHTML = `
     <div class="cfm-lp-header">
       <span class="cfm-lp-avatar">👾</span>
-      <span class="cfm-lp-name">LEMEGETON · CHRONICŒUR</span>
+      <span class="cfm-lp-name">LEMEGETON · CHRONICOEUR</span>
       <span class="cfm-lp-signal"></span>
     </div>
     <div class="cfm-lp-body">
@@ -677,6 +678,9 @@ async function initChroniclesFM() {
   let ambientTimer = null;
   let currentItems = [];
   let lemePanelTimer = null;
+
+  // FIX: guard anti-récursion infinie pour renderFreq
+  let _renderFreqLock = false;
 
   const wName        = bar.querySelector('#cfm-w-name');
   const wStyle       = bar.querySelector('#cfm-w-style');
@@ -751,7 +755,7 @@ async function initChroniclesFM() {
       el.classList.toggle('hidden', !match);
       if (match) count++;
     });
-    searchCount.textContent = query ? `${count} rés.` : '';
+    searchCount.textContent = query ? `${count} res.` : '';
   }
   searchInput?.addEventListener('input', e => filterTitles(e.target.value));
   searchInput?.addEventListener('keydown', e => e.stopPropagation());
@@ -804,6 +808,10 @@ async function initChroniclesFM() {
   }
 
   function renderFreq(newIdx, isTransition = false) {
+    // FIX: guard contre la récursion infinie
+    if (_renderFreqLock) return;
+    _renderFreqLock = true;
+
     idx = newIdx;
     sessionStorage.setItem(STORAGE_KEY, idx);
     const p = playlists[idx];
@@ -830,7 +838,7 @@ async function initChroniclesFM() {
       dYt.href = `https://www.youtube.com/playlist?list=${p.youtubePlaylistId}`;
       dYt.style.opacity = '1'; dYt.style.pointerEvents = '';
     } else {
-      dEmbed.innerHTML = `<div class="cfm-drawer-sync">📡 Fréquence en cours de synchronisation</div>`;
+      dEmbed.innerHTML = `<div class="cfm-drawer-sync">📡 Frequence en cours de synchronisation</div>`;
       dYt.href = CFM_PAGE_URL;
       dYt.style.opacity = '.4'; dYt.style.pointerEvents = 'none';
     }
@@ -844,6 +852,8 @@ async function initChroniclesFM() {
       showLemePanel(l, p.title);
       scroller.updateSegment('leme', l);
     }, AMBIENT_INTERVAL);
+
+    _renderFreqLock = false;
   }
 
   function openDrawer() {
