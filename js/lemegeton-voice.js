@@ -1,6 +1,6 @@
 /**
  * Lemegeton Voice Engine — Chronicles FM
- * Priorité : D (MP3 bank) → B (Web Speech API) → A (texte seul)
+ * Priorite : D (MP3 bank) -> B (Web Speech API) -> A (texte seul)
  *
  * Usage:
  *   import { LemegetonVoice } from '/js/lemegeton-voice.js';
@@ -12,95 +12,95 @@
 // ─── BANQUE DE PHRASES ENRICHIES (Option A) ───────────────────────────────────
 export const PHRASES = {
   intro: [
-    "Signal capté… Lemegeton aux commandes. Bienvenue dans les ruines du Code.",
-    "Transmission Chronicles FM — en ligne. Ajuste ta fréquence, l'onde t'attend.",
-    "Radio pirate active. Quelque part entre Brest et le néant numérique.",
-    "Le Code écoute. Moi aussi. Lemegeton sur les ondes.",
-    "Fréquence établie. Les archives sonores de BZH Chronicles sont ouvertes.",
-    "Ici Lemegeton. Tu es branché sur la seule radio qui compte dans ce réseau.",
+    "Signal capte... Lemegeton aux commandes. Bienvenue dans les ruines du Code.",
+    "Transmission Chronicles FM — en ligne. Ajuste ta frequence, l'onde t'attend.",
+    "Radio pirate active. Quelque part entre Brest et le neant numerique.",
+    "Le Code ecoute. Moi aussi. Lemegeton sur les ondes.",
+    "Frequence etablie. Les archives sonores de BZH Chronicles sont ouvertes.",
+    "Ici Lemegeton. Tu es branche sur la seule radio qui compte dans ce reseau.",
   ],
   outro: [
     "Signal perdu. Le Code attend ton retour.",
-    "Transmission suspendue. Les fréquences restent ouvertes dans le noir.",
+    "Transmission suspendue. Les frequences restent ouvertes dans le noir.",
     "Lemegeton se tait. Pour l'instant. La radio dort — toi, jamais.",
-    "La bande s'arrête. Mais les basses, elles, continuent quelque part.",
+    "La bande s'arrete. Mais les basses, elles, continuent quelque part.",
     "Fin de session. Chronicles FM reste en veille. On se retrouve sur les ondes.",
   ],
   ambient: [
     "Le signal tient. Lemegeton surveille.",
     "Transmission stable depuis les ruines du Code.",
-    "Archives sonores en diffusion continue. BZH Chronicles — on émet toujours.",
-    "Fréquence maintenue. Les murs du réseau vibrent.",
+    "Archives sonores en diffusion continue. BZH Chronicles — on emet toujours.",
+    "Frequence maintenue. Les murs du reseau vibrent.",
     "Ici les ondes ne mentent pas. Lemegeton enregistre tout.",
-    "Signal pur. Continue d'écouter.",
-    "BZH Chronicles — entre Brest et l'infini numérique.",
-    "La nuit dans le Code est longue. La musique, elle, ne s'arrête pas.",
-    "Lemegeton en veille active. Les fréquences sont propres.",
-    "Quelque part dans les données — une note, une basse, un souvenir.",
+    "Signal pur. Continue d'ecouter.",
+    "BZH Chronicles — entre Brest et l'infini numerique.",
+    "La nuit dans le Code est longue. La musique, elle, ne s'arrete pas.",
+    "Lemegeton en veille active. Les frequences sont propres.",
+    "Quelque part dans les donnees — une note, une basse, un souvenir.",
   ],
   transition: {
     rave: [
-      "Fréquence rapide détectée. Accroche-toi — le tempo monte.",
+      "Frequence rapide detectee. Accroche-toi — le tempo monte.",
       "Tekno, hardtek — le dancefloor virtuel s'allume. Lemegeton approuve.",
-      "Énergie brute en approche. La grille du Code tremble sous les basses.",
+      "Energie brute en approche. La grille du Code tremble sous les basses.",
       "Changement de canal. On passe en mode combat — rythmes machines.",
     ],
     bass: [
       "Basses lourdes en approche. Monte le volume avant qu'elles arrivent.",
-      "Drop imminent. Lemegeton s'efface — la fréquence parle d'elle-même.",
+      "Drop imminent. Lemegeton s'efface — la frequence parle d'elle-meme.",
       "DnB, dubstep — le subwoofer du Code est en marche.",
       "Le grave s'installe. Laisse-le prendre la place.",
     ],
     rap: [
-      "Flow en diffusion. Les mots comptent ici — écoute-les vraiment.",
-      "Rap FR sur les ondes. Textes, ego, vérités — transmission en cours.",
-      "Plume et beat — la fréquence la plus humaine du réseau.",
+      "Flow en diffusion. Les mots comptent ici — ecoute-les vraiment.",
+      "Rap FR sur les ondes. Textes, ego, verites — transmission en cours.",
+      "Plume et beat — la frequence la plus humaine du reseau.",
       "Ici les syllabes sont des armes. Lemegeton tend l'oreille.",
     ],
     hyperpop: [
-      "Glitch, sucre, saturation — bienvenue dans l'excès numérique.",
-      "Hyperpop activé. Les oreilles vont souffrir. C'est voulu.",
-      "Digital et surchargé. Parfait pour un réseau comme le nôtre.",
-      "Le signal est intentionnellement cassé. C'est l'esthétique.",
+      "Glitch, sucre, saturation — bienvenue dans l'exces numerique.",
+      "Hyperpop active. Les oreilles vont souffrir. C'est voulu.",
+      "Digital et surcharge. Parfait pour un reseau comme le notre.",
+      "Le signal est intentionnellement casse. C'est l'esthetique.",
     ],
     chill: [
       "Ralentis. La nuit dans le Code est longue — profites-en.",
       "Lo-fi, ambient — flottement en cours. Lemegeton baisse la voix.",
-      "Sons posés pour les esprits agités. Laisse la fréquence faire son travail.",
-      "Ici le tempo descend. Le réseau respire.",
+      "Sons poses pour les esprits agites. Laisse la frequence faire son travail.",
+      "Ici le tempo descend. Le reseau respire.",
     ],
     ost: [
-      "Thème épique en diffusion. OST — la musique qui raconte sans paroles.",
-      "Anime, jeu vidéo, film — narratif activé. Lemegeton se tait et écoute.",
-      "Musiques pour les héros fatigués et les voyages sans fin.",
-      "Une partition dans le Code. Chaque note est une coordonnée.",
+      "Theme epique en diffusion. OST — la musique qui raconte sans paroles.",
+      "Anime, jeu video, film — narratif active. Lemegeton se tait et ecoute.",
+      "Musiques pour les heros fatigues et les voyages sans fin.",
+      "Une partition dans le Code. Chaque note est une coordonnee.",
     ],
     rock: [
-      "Guitares et saturation — organique dans un réseau numérique.",
+      "Guitares et saturation — organique dans un reseau numerique.",
       "Rock, metal, punk — la tension live que les machines ne peuvent pas simuler.",
       "Riffs en approche. Le Code a des cordes.",
-      "Saturation et décibels — Lemegeton monte le gain.",
+      "Saturation et decibels — Lemegeton monte le gain.",
     ],
     folk: [
-      "Vibes druidiques détectées. Les anciens parlent sur cette fréquence.",
-      "Folk, celtique — BZH dans les os. Lemegeton reconnaît le territoire.",
-      "Instruments traditionnels sur la fréquence. La mémoire sonore s'active.",
-      "Entre les menhirs et le réseau — cette musique fait le lien.",
+      "Vibes druidiques detectees. Les anciens parlent sur cette frequence.",
+      "Folk, celtique — BZH dans les os. Lemegeton reconnait le territoire.",
+      "Instruments traditionnels sur la frequence. La memoire sonore s'active.",
+      "Entre les menhirs et le reseau — cette musique fait le lien.",
     ],
     weird: [
-      "Signal bizarre capté. Normal pour Chronicles FM.",
+      "Signal bizarre capte. Normal pour Chronicles FM.",
       "Inclassable. Le chaos est voulu — Lemegeton ne s'en excuse pas.",
-      "Weird activé. Les catégories sont une prison. Ici on s'en échappe.",
-      "Cette fréquence ne rentre dans aucune case. C'est sa force.",
+      "Weird active. Les categories sont une prison. Ici on s'en echappe.",
+      "Cette frequence ne rentre dans aucune case. C'est sa force.",
     ],
     'long format': [
       "Long format — installe-toi. Ce voyage prend du temps.",
       "Album, set, mixtape — format complet. Lemegeton te laisse dedans.",
-      "Pas de transitions fréquentes ici. Une seule œuvre, de bout en bout.",
-      "Long format actif. La profondeur récompense la patience.",
+      "Pas de transitions frequentes ici. Une seule oeuvre, de bout en bout.",
+      "Long format actif. La profondeur recompense la patience.",
     ],
     default: [
-      "Nouvelle fréquence — à toi de juger ce qu'elle te raconte.",
+      "Nouvelle frequence — a toi de juger ce qu'elle te raconte.",
       "Changement de canal. Le Code recompose ses ondes.",
       "Transmission en cours sur nouvelle longueur d'onde. Lemegeton s'adapte.",
     ],
@@ -140,13 +140,13 @@ export class LemegetonVoice {
     this._audioEl     = new Audio();
     this._audioEl.volume = this.volume;
 
-    // Map phrase text → nom de fichier MP3 connu
-    // Remplie dynamiquement quand on télécharge le manifeste
+    // Map phrase text -> nom de fichier MP3 connu
+    // Remplie dynamiquement quand on telecharge le manifeste
     this._mp3map      = new Map();
     this._manifestLoaded = false;
   }
 
-  // ── Init : charge le manifeste MP3 + prépare Web Speech ──────────────────
+  // ── Init : charge le manifeste MP3 + prepare Web Speech ──────────────────
   async init() {
     await Promise.all([
       this._loadManifest(),
@@ -175,7 +175,7 @@ export class LemegetonVoice {
     await new Promise(resolve => {
       const load = () => {
         const voices = window.speechSynthesis.getVoices();
-        // Priorité : voix FR masculines
+        // Priorite : voix FR masculines
         const fr = voices.filter(v => v.lang.startsWith('fr'));
         this._voice =
           fr.find(v => /thomas|nicolas|pierre|male/i.test(v.name)) ??
@@ -244,9 +244,9 @@ export class LemegetonVoice {
     else if (this.speechEnabled && this._voice) {
       await this._playSpeech(phrase);
     }
-    // Option A — texte uniquement (géré côté widget via callback)
+    // Option A — texte uniquement (gere cote widget via callback)
     else {
-      // noop ici — le widget a déjà fait le typewriter
+      // noop ici — le widget a deja fait le typewriter
     }
 
     // petite pause entre les phrases
@@ -274,7 +274,7 @@ export class LemegetonVoice {
       if (this._voice) utter.voice = this._voice;
       utter.onend   = resolve;
       utter.onerror = resolve;
-      window.speechSynthesis.cancel(); // évite la file interne du browser
+      window.speechSynthesis.cancel(); // evite la file interne du browser
       window.speechSynthesis.speak(utter);
     });
   }
