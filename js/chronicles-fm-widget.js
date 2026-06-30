@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Chronicles FM — Widget barre radio PERMANENTE
  * v4 : speechEnabled:false · LemePanel flottant · sans bouton mute
  * <script type="module" src="/js/chronicles-fm-widget.js"></script>
@@ -811,6 +811,7 @@ async function initChroniclesFM() {
     // FIX: guard contre la récursion infinie
     if (_renderFreqLock) return;
     _renderFreqLock = true;
+    try {
 
     idx = newIdx;
     sessionStorage.setItem(STORAGE_KEY, idx);
@@ -853,7 +854,9 @@ async function initChroniclesFM() {
       scroller.updateSegment('leme', l);
     }, AMBIENT_INTERVAL);
 
-    _renderFreqLock = false;
+    } finally {
+      _renderFreqLock = false;
+    }
   }
 
   function openDrawer() {
