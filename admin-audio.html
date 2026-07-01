@@ -26,6 +26,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:.8
   box-shadow:0 0 6px var(--green);animation:pulse 1.4s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
+/* CONFIG BADGE */
+.adm-cfg-badge{font-size:.58rem;letter-spacing:.1em;padding:.2rem .5rem;
+  border-radius:3px;border:1px solid var(--border);color:var(--dim);}
+.adm-cfg-badge.ok{border-color:rgba(0,255,157,.4);color:var(--green);}
+.adm-cfg-badge.warn{border-color:rgba(245,158,11,.4);color:var(--amber);}
+
 /* LAYOUT */
 .adm-main{display:grid;grid-template-columns:220px 1fr;gap:0;min-height:calc(100vh - 57px);}
 
@@ -65,6 +71,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:.8
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ac-text{font-size:.72rem;color:var(--text);line-height:1.5;font-style:italic;
   opacity:.85;margin-top:.3rem;}
+.ac-text[contenteditable=true]{outline:none;border-bottom:1px dashed var(--border);
+  padding-bottom:.15rem;cursor:text;}
+.ac-text[contenteditable=true]:focus{border-bottom-color:var(--purple);}
 .ac-status{font-size:.6rem;letter-spacing:.12em;color:var(--dim);margin-top:.2rem;}
 
 /* PLAYER INLINE */
@@ -98,7 +107,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:.8
 
 /* STATS BAR */
 .adm-stats{display:flex;gap:1.5rem;margin-bottom:1.5rem;padding:1rem;
-  background:var(--panel);border:1px solid var(--border);border-radius:6px;}
+  background:var(--panel);border:1px solid var(--border);border-radius:6px;flex-wrap:wrap;}
 .stat-item{display:flex;flex-direction:column;gap:.2rem;}
 .stat-val{font-size:1.4rem;color:var(--purple);letter-spacing:.05em;}
 .stat-lbl{font-size:.58rem;color:var(--dim);letter-spacing:.15em;}
@@ -124,13 +133,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:.8
 </head>
 <body>
 
+<!-- Config Supabase injectée côté serveur ou depuis shared/config.js -->
+<script>
+  // Priorité : variable globale définie par shared/config.js si elle existe
+  // Sinon fallback sur les valeurs de production connues
+  if (typeof window.SUPABASE_URL === 'undefined') {
+    window.SUPABASE_URL         = 'https://ctwzasnxkfflsmzqwtmf.supabase.co';
+    window.SUPABASE_ANON        = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0d3phc254a2ZmbHNtenF3dG1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTM1MTUsImV4cCI6MjA2MzY2OTUxNX0.2cjgsg9GVzRpMoZnpWJumBIvEpTiJ2oPM4BtJ-MkqRw';
+    window.SUPABASE_PROJECT_REF = 'ctwzasnxkfflsmzqwtmf';
+  }
+</script>
+
 <!-- HEADER -->
 <header class="adm-header">
   <span class="adm-dot"></span>
   <span class="adm-logo">CHRONICLES FM</span>
   <span class="adm-sub">/ AUDIO ADMIN</span>
   <span style="flex:1"></span>
-  <a href="/admin-dashboard.html" style="color:var(--dim);font-size:.65rem;letter-spacing:.12em;text-decoration:none;">&#8592; DASHBOARD</a>
+  <span class="adm-cfg-badge" id="cfg-badge">CONFIG...</span>
+  <a href="/admin-dashboard.html" style="color:var(--dim);font-size:.65rem;letter-spacing:.12em;text-decoration:none;margin-left:.8rem;">&#8592; DASHBOARD</a>
 </header>
 
 <div class="adm-main">
@@ -164,6 +185,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:.8
       <div class="stat-item"><span class="stat-val" id="stat-total">0</span><span class="stat-lbl">FICHIERS TOTAL</span></div>
       <div class="stat-item"><span class="stat-val" id="stat-present">0</span><span class="stat-lbl">PR&Eacute;SENTS</span></div>
       <div class="stat-item"><span class="stat-val" id="stat-missing">0</span><span class="stat-lbl">MANQUANTS</span></div>
+      <div class="stat-item" style="margin-left:auto">
+        <button onclick="recheckAll()" style="background:none;border:1px solid var(--border);color:var(--dim);font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;padding:.35rem .7rem;border-radius:3px;cursor:pointer;">&#8635; RECHECK TOUT</button>
+      </div>
     </div>
 
     <!-- SECTIONS -->
@@ -172,15 +196,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:.8
       <div class="adm-grid" id="grid-intro"></div>
     </div>
     <div id="sec-ambient" class="adm-section">
-      <div class="adm-section-title">&#128225; AMBIENT — Toutes les 50s (journée)</div>
+      <div class="adm-section-title">&#128225; AMBIENT — Toutes les 50s (journ&#233;e)</div>
       <div class="adm-grid" id="grid-ambient"></div>
     </div>
     <div id="sec-night" class="adm-section">
-      <div class="adm-section-title">&#127761; NIGHT — Mode nuit 0h–6h</div>
+      <div class="adm-section-title">&#127761; NIGHT — Mode nuit 0h&#8211;6h</div>
       <div class="adm-grid" id="grid-night"></div>
     </div>
     <div id="sec-freq" class="adm-section">
-      <div class="adm-section-title">&#128251; FREQ — Changement de fréquence</div>
+      <div class="adm-section-title">&#128251; FREQ — Changement de fr&#233;quence</div>
       <div class="adm-grid" id="grid-freq"></div>
     </div>
     <div id="sec-fx" class="adm-section">
@@ -197,61 +221,61 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:.8
 /* ──────────────────────────────────────────────────────── DATA */
 const AUDIO_DATA = {
   intro: [
-    { file:'leme-intro-01.mp3', text:'Bienvenue sur Chronicles FM. Le signal est établi.' },
-    { file:'leme-intro-02.mp3', text:'Connexion établie. Lemegeton prend le relais.' },
-    { file:'leme-intro-03.mp3', text:'Chronicles FM opérationnel. Choisissez votre fréquence.' },
-    { file:'leme-intro-04.mp3', text:'Système audio initialisé. Bon voyage, agent.' },
+    { file:'leme-intro-01.mp3', text:'Bienvenue sur Chronicles FM. Le signal est \u00e9tabli.' },
+    { file:'leme-intro-02.mp3', text:'Connexion \u00e9tablie. Lemegeton prend le relais.' },
+    { file:'leme-intro-03.mp3', text:'Chronicles FM op\u00e9rationnel. Choisissez votre fr\u00e9quence.' },
+    { file:'leme-intro-04.mp3', text:'Syst\u00e8me audio initialis\u00e9. Bon voyage, agent.' },
   ],
   ambient: [
     { file:'leme-ambient-01.mp3', text:'Synchronisation des ondes en cours. Patience, agent.' },
     { file:'leme-ambient-02.mp3', text:'Le signal traverse les dimensions. BZH Chronicles on air.' },
-    { file:'leme-ambient-03.mp3', text:'Archives consultées. Fréquence verrouillée.' },
-    { file:'leme-ambient-04.mp3', text:'Lemegeton calibre les émissions. Restez connectés.' },
-    { file:'leme-ambient-05.mp3', text:'Protocole audio actif. La machine écoute avec vous.' },
-    { file:'leme-ambient-06.mp3', text:'Interférences détectées. Filtrage en cours.' },
-    { file:'leme-ambient-07.mp3', text:'Transmission depuis les serveurs de l\'Ordre. Statut : ACTIF.' },
+    { file:'leme-ambient-03.mp3', text:'Archives consult\u00e9es. Fr\u00e9quence verrouill\u00e9e.' },
+    { file:'leme-ambient-04.mp3', text:'Lemegeton calibre les \u00e9missions. Restez connect\u00e9s.' },
+    { file:'leme-ambient-05.mp3', text:'Protocole audio actif. La machine \u00e9coute avec vous.' },
+    { file:'leme-ambient-06.mp3', text:'Interf\u00e9rences d\u00e9tect\u00e9es. Filtrage en cours.' },
+    { file:'leme-ambient-07.mp3', text:'Transmission depuis les serveurs de l\u2019Ordre. Statut\u00a0: ACTIF.' },
     { file:'leme-ambient-08.mp3', text:'BZH Chronicles Radio. Toujours en orbite.' },
   ],
   night: [
-    { file:'leme-night-01.mp3', text:'Les signaux se fondent dans l\'obscurité des fréquences mortes.' },
-    { file:'leme-night-02.mp3', text:'L\'éther murmure des élégies à minuit passé.' },
-    { file:'leme-night-03.mp3', text:'Seuls les démons veillent encore sur les ondes.' },
-    { file:'leme-night-04.mp3', text:'Transmissions chiffrées depuis les catacombes numériques.' },
-    { file:'leme-night-05.mp3', text:'L\'obscurité amplifie. Les vivants dorment. Les machines écoutent.' },
-    { file:'leme-night-06.mp3', text:'Fréquences noires. Signal de l\'abîme. BZH Chronicles ne dort pas.' },
-    { file:'leme-night-07.mp3', text:'Les archives s\'ouvrent sous la nuit. Système 03:00 ACTIF.' },
+    { file:'leme-night-01.mp3', text:'Les signaux se fondent dans l\u2019obscurit\u00e9 des fr\u00e9quences mortes.' },
+    { file:'leme-night-02.mp3', text:'L\u2019\u00e9ther murmure des \u00e9l\u00e9gies \u00e0 minuit pass\u00e9.' },
+    { file:'leme-night-03.mp3', text:'Seuls les d\u00e9mons veillent encore sur les ondes.' },
+    { file:'leme-night-04.mp3', text:'Transmissions chiffr\u00e9es depuis les catacombes num\u00e9riques.' },
+    { file:'leme-night-05.mp3', text:'L\u2019obscurit\u00e9 amplifie. Les vivants dorment. Les machines \u00e9coutent.' },
+    { file:'leme-night-06.mp3', text:'Fr\u00e9quences noires. Signal de l\u2019ab\u00eeme. BZH Chronicles ne dort pas.' },
+    { file:'leme-night-07.mp3', text:'Les archives s\u2019ouvrent sous la nuit. Syst\u00e8me 03:00 ACTIF.' },
     { file:'leme-night-08.mp3', text:'Heure maudite. Lemegeton transmet depuis les limbes.' },
   ],
   freq: [
-    { file:'leme-freq-01.mp3', text:'Fréquence 01 verrouillée. Subsoniques en route. Tiens-toi bien.', freq:'BASS DIMENSION' },
-    { file:'leme-freq-02.mp3', text:'Protocole 02 activé. La machine danse. Résiste.', freq:'RAVE PROTOCOL' },
-    { file:'leme-freq-03.mp3', text:'Archive 03 ouverte. Les mots arrivent. Écoute les cicatrices.', freq:'RAP ARCHIVES' },
-    { file:'leme-freq-04.mp3', text:'Fréquence 04 instable. Surcharge sensorielle imminente.', freq:'HYPERPOP GLITCH' },
+    { file:'leme-freq-01.mp3', text:'Fr\u00e9quence 01 verrouill\u00e9e. Subsoniques en route. Tiens-toi bien.', freq:'BASS DIMENSION' },
+    { file:'leme-freq-02.mp3', text:'Protocole 02 activ\u00e9. La machine danse. R\u00e9siste.', freq:'RAVE PROTOCOL' },
+    { file:'leme-freq-03.mp3', text:'Archive 03 ouverte. Les mots arrivent. \u00c9coute les cicatrices.', freq:'RAP ARCHIVES' },
+    { file:'leme-freq-04.mp3', text:'Fr\u00e9quence 04 instable. Surcharge sensorielle imminente.', freq:'HYPERPOP GLITCH' },
     { file:'leme-freq-05.mp3', text:'Secteur 05 atteint. Zone de basse tension. Respire.', freq:'CHILL SECTOR' },
-    { file:'leme-freq-06.mp3', text:'Coffre 06 déverrouillé. Les bandes originales s\'ouvrent. Bon voyage.', freq:'OST VAULT' },
-    { file:'leme-freq-07.mp3', text:'Circuit 07 en ligne. Distorsion maximale. Les câbles brûlent.', freq:'ROCK CIRCUIT' },
-    { file:'leme-freq-08.mp3', text:'Transmission 08 reçue. Le triskel résonne dans les circuits.', freq:'FOLK TRANSMISSION' },
-    { file:'leme-freq-09.mp3', text:'Signal 09 non classifié. Dimension parallèle en écoute.', freq:'WEIRD SIGNAL' },
-    { file:'leme-freq-10.mp3', text:'Format long engagé. Pas de pause. Pas d\'interruption. Tiens.', freq:'LONG FORMAT' },
+    { file:'leme-freq-06.mp3', text:'Coffre 06 d\u00e9verrouill\u00e9. Les bandes originales s\u2019ouvrent. Bon voyage.', freq:'OST VAULT' },
+    { file:'leme-freq-07.mp3', text:'Circuit 07 en ligne. Distorsion maximale. Les c\u00e2bles br\u00fblent.', freq:'ROCK CIRCUIT' },
+    { file:'leme-freq-08.mp3', text:'Transmission 08 re\u00e7ue. Le triskel r\u00e9sonne dans les circuits.', freq:'FOLK TRANSMISSION' },
+    { file:'leme-freq-09.mp3', text:'Signal 09 non classifi\u00e9. Dimension parall\u00e8le en \u00e9coute.', freq:'WEIRD SIGNAL' },
+    { file:'leme-freq-10.mp3', text:'Format long engag\u00e9. Pas de pause. Pas d\u2019interruption. Tiens.', freq:'LONG FORMAT' },
   ],
   fx: [
-    { file:'ui-click.mp3',       text:'Clic bouton / CTA',               base:'fx' },
-    { file:'ui-hover.mp3',       text:'Hover cards CIG',                 base:'fx' },
-    { file:'ui-open.mp3',        text:'Ouverture drawer / modal',        base:'fx' },
-    { file:'ui-close.mp3',       text:'Fermeture drawer / modal',        base:'fx' },
-    { file:'ui-notify.mp3',      text:'Notification / toast',            base:'fx' },
-    { file:'ui-error.mp3',       text:'Erreur formulaire',               base:'fx' },
-    { file:'ui-success.mp3',     text:'Validation / XP gagné',          base:'fx' },
-    { file:'login-boot.mp3',     text:'Connexion réussie (~1.5s)',       base:'fx' },
-    { file:'cig-rank-up.mp3',    text:'Montée de rang CIG',             base:'fx' },
-    { file:'cig-badge.mp3',      text:'Attribution de badge',            base:'fx' },
-    { file:'glitch.mp3',         text:'Effet glitch visuel',             base:'fx' },
-    { file:'cfm-tune-in.mp3',    text:'Sélection fréquence radio',      base:'fx' },
-    { file:'cfm-static.mp3',     text:'Transition fréquences (bruit blanc)', base:'fx' },
-    { file:'cfm-play.mp3',       text:'Lancement lecture',               base:'fx' },
-    { file:'cfm-skip.mp3',       text:'Skip piste',                      base:'fx' },
-    { file:'cfm-night-on.mp3',   text:'Activation mode nuit',            base:'fx' },
-    { file:'cfm-leme-appear.mp3',text:'Apparition LemePanel (crackle)',  base:'fx' },
+    { file:'ui-click.mp3',        text:'Clic bouton / CTA',                   base:'fx' },
+    { file:'ui-hover.mp3',        text:'Hover cards CIG',                     base:'fx' },
+    { file:'ui-open.mp3',         text:'Ouverture drawer / modal',            base:'fx' },
+    { file:'ui-close.mp3',        text:'Fermeture drawer / modal',            base:'fx' },
+    { file:'ui-notify.mp3',       text:'Notification / toast',                base:'fx' },
+    { file:'ui-error.mp3',        text:'Erreur formulaire',                   base:'fx' },
+    { file:'ui-success.mp3',      text:'Validation / XP gagn\u00e9',          base:'fx' },
+    { file:'login-boot.mp3',      text:'Connexion r\u00e9ussie (~1.5s)',       base:'fx' },
+    { file:'cig-rank-up.mp3',     text:'Mont\u00e9e de rang CIG',             base:'fx' },
+    { file:'cig-badge.mp3',       text:'Attribution de badge',                base:'fx' },
+    { file:'glitch.mp3',          text:'Effet glitch visuel',                 base:'fx' },
+    { file:'cfm-tune-in.mp3',     text:'S\u00e9lection fr\u00e9quence radio', base:'fx' },
+    { file:'cfm-static.mp3',      text:'Transition fr\u00e9quences (bruit blanc)', base:'fx' },
+    { file:'cfm-play.mp3',        text:'Lancement lecture',                   base:'fx' },
+    { file:'cfm-skip.mp3',        text:'Skip piste',                         base:'fx' },
+    { file:'cfm-night-on.mp3',    text:'Activation mode nuit',               base:'fx' },
+    { file:'cfm-leme-appear.mp3', text:'Apparition LemePanel (crackle)',      base:'fx' },
   ],
 };
 
@@ -260,6 +284,18 @@ const BASE_FX   = '/audio/fx/';
 
 function audioBase(section, item) {
   return (section === 'fx' || (item && item.base === 'fx')) ? BASE_FX : BASE_LEME;
+}
+
+/* ──────────────────────────────────────────────────────── CONFIG CHECK */
+function checkConfig() {
+  const badge = document.getElementById('cfg-badge');
+  if (window.SUPABASE_URL && window.SUPABASE_URL.startsWith('https://')) {
+    badge.textContent = '\u2713 SUPABASE OK';
+    badge.className   = 'adm-cfg-badge ok';
+  } else {
+    badge.textContent = '\u26a0 SUPABASE NON CONFIG';
+    badge.className   = 'adm-cfg-badge warn';
+  }
 }
 
 /* ──────────────────────────────────────────────────────── SECTION NAV */
@@ -277,7 +313,7 @@ function toast(msg, type) {
   el.textContent = msg;
   el.className = 'show ' + (type || '');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.className = '', 3000);
+  toastTimer = setTimeout(() => el.className = '', 3500);
 }
 
 /* ──────────────────────────────────────────────────────── CHECK FILE */
@@ -302,7 +338,11 @@ function buildCard(section, item) {
              : section === 'freq'    ? '&#128251;'
              : '&#128266;';
 
-  const freqBadge = item.freq ? `<span style="font-size:.58rem;letter-spacing:.12em;color:var(--amber);display:block;margin-top:.15rem">${item.freq}</span>` : '';
+  const freqBadge = item.freq
+    ? `<span style="font-size:.58rem;letter-spacing:.12em;color:var(--amber);display:block;margin-top:.15rem">${item.freq}</span>`
+    : '';
+
+  const key = item.file.replace(/\./g,'_');
 
   card.innerHTML = `
     <div class="ac-head">
@@ -310,18 +350,18 @@ function buildCard(section, item) {
       <div class="ac-info">
         <div class="ac-filename">${item.file}</div>
         ${freqBadge}
-        <div class="ac-text">${item.text}</div>
-        <div class="ac-status" id="status-${item.file.replace(/\./g,'_')}">Vérification...</div>
+        <div class="ac-text" id="txt-${key}" title="Cliquer pour \u00e9diter">${item.text}</div>
+        <div class="ac-status" id="status-${key}">V\u00e9rification...</div>
       </div>
     </div>
-    <div class="ac-player" id="player-${item.file.replace(/\./g,'_')}" style="display:none">
-      <button class="ac-play-btn" title="Écouter">▶</button>
+    <div class="ac-player" id="player-${key}" style="display:none">
+      <button class="ac-play-btn" title="\u00c9couter">&#9654;</button>
       <audio src="${url}" preload="none"></audio>
     </div>
-    <div class="ac-upload" id="upload-${item.file.replace(/\./g,'_')}">
-      <input type="file" id="file-${item.file.replace(/\./g,'_')}" accept="audio/mpeg,audio/ogg,audio/wav,.mp3,.ogg,.wav">
-      <label for="file-${item.file.replace(/\./g,'_')}">↑ UPLOADER ${item.file}</label>
-      <div class="ac-progress" id="prog-${item.file.replace(/\./g,'_')}"><div class="ac-progress-bar"></div></div>
+    <div class="ac-upload" id="upload-${key}">
+      <input type="file" id="file-${key}" accept="audio/mpeg,audio/ogg,audio/wav,.mp3,.ogg,.wav">
+      <label for="file-${key}">&#8679; UPLOADER ${item.file}</label>
+      <div class="ac-progress" id="prog-${key}"><div class="ac-progress-bar"></div></div>
     </div>`;
 
   return card;
@@ -329,36 +369,42 @@ function buildCard(section, item) {
 
 /* ──────────────────────────────────────────────────────── PLAY BTN */
 let currentAudio = null;
-function bindPlayBtn(card, item, base) {
+function bindPlayBtn(card, item) {
   const key   = item.file.replace(/\./g,'_');
   const pzone = card.querySelector('.ac-player');
   const btn   = pzone && pzone.querySelector('.ac-play-btn');
   const audio = pzone && pzone.querySelector('audio');
   if (!btn || !audio) return;
   btn.addEventListener('click', () => {
-    if (currentAudio && currentAudio !== audio) { currentAudio.pause(); currentAudio.currentTime=0; }
+    if (currentAudio && currentAudio !== audio) {
+      currentAudio.pause(); currentAudio.currentTime = 0;
+      // reset tous les boutons play
+      document.querySelectorAll('.ac-play-btn.playing').forEach(b => {
+        b.innerHTML = '&#9654;'; b.classList.remove('playing');
+      });
+    }
     if (audio.paused) {
-      audio.play().then(() => { btn.textContent='&#9646;&#9646;'; btn.classList.add('playing'); currentAudio=audio; })
+      audio.play()
+        .then(() => { btn.innerHTML = '&#9646;&#9646;'; btn.classList.add('playing'); currentAudio = audio; })
         .catch(() => toast('Erreur lecture','error'));
     } else {
       audio.pause();
-      btn.innerHTML='&#9654;'; btn.classList.remove('playing');
+      btn.innerHTML = '&#9654;'; btn.classList.remove('playing');
     }
-    audio.onended = () => { btn.innerHTML='&#9654;'; btn.classList.remove('playing'); };
+    audio.onended = () => { btn.innerHTML = '&#9654;'; btn.classList.remove('playing'); };
   });
 }
 
 /* ──────────────────────────────────────────────────────── UPLOAD */
 function bindUpload(card, item, base) {
-  const key    = item.file.replace(/\./g,'_');
-  const input  = card.querySelector('#file-' + key);
-  const uzone  = card.querySelector('#upload-' + key);
-  const prog   = card.querySelector('#prog-' + key);
-  const bar    = prog && prog.querySelector('.ac-progress-bar');
-  const label  = uzone && uzone.querySelector('label');
+  const key   = item.file.replace(/\./g,'_');
+  const input = card.querySelector('#file-' + key);
+  const uzone = card.querySelector('#upload-' + key);
+  const prog  = card.querySelector('#prog-' + key);
+  const bar   = prog && prog.querySelector('.ac-progress-bar');
+  const label = uzone && uzone.querySelector('label');
   if (!input) return;
 
-  // Drag & drop
   uzone.addEventListener('dragover', e => { e.preventDefault(); uzone.classList.add('dragging'); });
   uzone.addEventListener('dragleave', () => uzone.classList.remove('dragging'));
   uzone.addEventListener('drop', e => {
@@ -366,7 +412,6 @@ function bindUpload(card, item, base) {
     const f = e.dataTransfer.files[0];
     if (f) uploadFile(f, item, base, card, uzone, prog, bar, label);
   });
-
   input.addEventListener('change', () => {
     const f = input.files[0];
     if (f) uploadFile(f, item, base, card, uzone, prog, bar, label);
@@ -374,24 +419,17 @@ function bindUpload(card, item, base) {
 }
 
 async function uploadFile(file, item, base, card, uzone, prog, bar, label) {
-  // Validation type
   if (!file.type.startsWith('audio/') && !file.name.match(/\.(mp3|ogg|wav)$/i)) {
-    toast('Type non supporté (MP3/OGG/WAV)', 'error');
-    return;
+    toast('Type non support\u00e9 (MP3/OGG/WAV)', 'error'); return;
   }
-  // Limite 20 Mo
   if (file.size > 20 * 1024 * 1024) {
-    toast('Fichier trop lourd (max 20 Mo)', 'error');
-    return;
+    toast('Fichier trop lourd (max 20\u00a0Mo)', 'error'); return;
   }
 
   uzone.classList.add('uploading');
   if (prog) prog.classList.add('visible');
-  if (label) label.textContent = '\u23F3 Upload en cours…';
+  if (label) label.textContent = '\u23f3 Upload en cours\u2026';
 
-  // Supabase Storage upload via fetch
-  // NOTE : remplace SUPABASE_URL et SUPABASE_ANON_KEY par les vraies valeurs
-  // ou passe par une Edge Function dédiée pour ne pas exposer la service_role key
   const SUPABASE_URL  = window.SUPABASE_URL  || '';
   const SUPABASE_ANON = window.SUPABASE_ANON || '';
   const bucket        = 'audio';
@@ -399,53 +437,46 @@ async function uploadFile(file, item, base, card, uzone, prog, bar, label) {
   const path          = folder + '/' + item.file;
 
   if (!SUPABASE_URL) {
-    // Fallback local : simule un upload (dev / test sans Supabase)
     await fakeProgress(bar);
-    uzone.classList.remove('uploading');
-    uzone.classList.add('done');
+    uzone.classList.remove('uploading'); uzone.classList.add('done');
     if (label) label.textContent = '\u2713 ' + item.file + ' (simulation)';
     toast('Simulation OK — configure SUPABASE_URL', 'success');
-    card.classList.add('has-file');
-    setStatus(card, item.file, true);
-    showPlayer(card, item.file, true);
+    markPresent(card, item.file);
     return;
   }
 
   try {
-    const session = await getSupabaseSession();
-    const token   = session ? session.access_token : SUPABASE_ANON;
-    const xhr = new XMLHttpRequest();
+    const token = await getToken(SUPABASE_ANON);
+    const xhr   = new XMLHttpRequest();
     xhr.open('POST', `${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`);
     xhr.setRequestHeader('Authorization', 'Bearer ' + token);
     xhr.setRequestHeader('Content-Type', file.type || 'audio/mpeg');
     xhr.setRequestHeader('x-upsert', 'true');
     xhr.upload.onprogress = e => {
-      if (e.lengthComputable && bar) bar.style.width = Math.round(e.loaded/e.total*100) + '%';
+      if (e.lengthComputable && bar) bar.style.width = Math.round(e.loaded / e.total * 100) + '%';
     };
     xhr.onload = () => {
       uzone.classList.remove('uploading');
       if (xhr.status >= 200 && xhr.status < 300) {
         uzone.classList.add('done');
         if (label) label.textContent = '\u2713 ' + item.file;
-        toast(item.file + ' uploadé !', 'success');
-        card.classList.add('has-file');
-        setStatus(card, item.file, true);
-        showPlayer(card, item.file, true);
+        toast(item.file + ' upload\u00e9\u00a0!', 'success');
+        markPresent(card, item.file);
       } else {
         uzone.classList.add('error');
         if (label) label.textContent = '\u2717 Erreur ' + xhr.status;
-        toast('Erreur upload : ' + xhr.status, 'error');
+        toast('Erreur upload\u00a0: ' + xhr.status, 'error');
       }
     };
     xhr.onerror = () => {
       uzone.classList.remove('uploading'); uzone.classList.add('error');
-      if (label) label.textContent = '\u2717 Erreur réseau';
-      toast('Erreur réseau', 'error');
+      if (label) label.textContent = '\u2717 Erreur r\u00e9seau';
+      toast('Erreur r\u00e9seau', 'error');
     };
     xhr.send(file);
   } catch(e) {
     uzone.classList.remove('uploading'); uzone.classList.add('error');
-    toast('Erreur : ' + e.message, 'error');
+    toast('Erreur\u00a0: ' + e.message, 'error');
   }
 }
 
@@ -453,57 +484,42 @@ function fakeProgress(bar) {
   return new Promise(resolve => {
     let p = 0;
     const t = setInterval(() => {
-      p += Math.random() * 20;
-      if (bar) bar.style.width = Math.min(p,95) + '%';
-      if (p >= 95) { clearInterval(t); if (bar) bar.style.width='100%'; setTimeout(resolve,300); }
+      p += Math.random() * 22;
+      if (bar) bar.style.width = Math.min(p, 95) + '%';
+      if (p >= 95) { clearInterval(t); if (bar) bar.style.width = '100%'; setTimeout(resolve, 300); }
     }, 120);
   });
 }
 
-async function getSupabaseSession() {
+async function getToken(fallback) {
   try {
-    const raw = localStorage.getItem('sb-' + (window.SUPABASE_PROJECT_REF||'') + '-auth-token');
-    if (raw) return JSON.parse(raw);
+    const ref = window.SUPABASE_PROJECT_REF || '';
+    const raw = localStorage.getItem('sb-' + ref + '-auth-token');
+    if (raw) { const s = JSON.parse(raw); if (s && s.access_token) return s.access_token; }
   } catch {}
-  return null;
+  return fallback;
 }
 
-/* ──────────────────────────────────────────────────────── STATUS */
+/* ──────────────────────────────────────────────────────── STATUS HELPERS */
+function markPresent(card, file) {
+  const key = file.replace(/\./g,'_');
+  card.classList.add('has-file');
+  const st = card.querySelector('#status-' + key);
+  if (st) st.textContent = '\u2713 FICHIER PR\u00c9SENT';
+  const pl = card.querySelector('#player-' + key);
+  if (pl) pl.style.display = 'flex';
+  updateStats();
+}
+
 function setStatus(card, file, present) {
   const key = file.replace(/\./g,'_');
   const el  = card.querySelector('#status-' + key);
-  if (el) { el.textContent = present ? '\u2713 FICHIER PRÉSENT' : '\u25a1 MANQUANT'; }
+  if (el) el.textContent = present ? '\u2713 FICHIER PR\u00c9SENT' : '\u25a1 MANQUANT';
+  if (present) markPresent(card, file);
+  else updateStats();
 }
 
-function showPlayer(card, file, show) {
-  const key = file.replace(/\./g,'_');
-  const el  = card.querySelector('#player-' + key);
-  if (el) el.style.display = show ? 'flex' : 'none';
-}
-
-/* ──────────────────────────────────────────────────────── INIT */
-async function initSection(section) {
-  const items = AUDIO_DATA[section];
-  const grid  = document.getElementById('grid-' + section);
-  if (!grid || !items) return;
-  grid.innerHTML = '';
-  let present = 0;
-  for (const item of items) {
-    const base = audioBase(section, item);
-    const card = buildCard(section, item);
-    grid.appendChild(card);
-    bindPlayBtn(card, item, base);
-    bindUpload(card, item, base);
-    // Check async
-    checkFile(base + item.file + '?nc=' + Date.now()).then(ok => {
-      if (ok) { present++; card.classList.add('has-file'); showPlayer(card,item.file,true); }
-      setStatus(card, item.file, ok);
-      updateStats();
-    });
-  }
-}
-
-let statCache = {};
+/* ──────────────────────────────────────────────────────── STATS */
 function updateStats() {
   let total = 0, pres = 0;
   Object.values(AUDIO_DATA).forEach(arr => {
@@ -517,10 +533,43 @@ function updateStats() {
   document.getElementById('stat-missing').textContent = total - pres;
 }
 
+async function recheckAll() {
+  toast('Re-v\u00e9rification de tous les fichiers\u2026', '');
+  for (const [section, items] of Object.entries(AUDIO_DATA)) {
+    for (const item of items) {
+      const base = audioBase(section, item);
+      const card = document.getElementById('card-' + item.file.replace(/\./g,'_'));
+      if (!card) continue;
+      card.classList.remove('has-file');
+      const ok = await checkFile(base + item.file + '?nc=' + Date.now());
+      setStatus(card, item.file, ok);
+    }
+  }
+  toast('Recheck termin\u00e9', 'success');
+}
+
+/* ──────────────────────────────────────────────────────── INIT */
+async function initSection(section) {
+  const items = AUDIO_DATA[section];
+  const grid  = document.getElementById('grid-' + section);
+  if (!grid || !items) return;
+  grid.innerHTML = '';
+  for (const item of items) {
+    const base = audioBase(section, item);
+    const card = buildCard(section, item);
+    grid.appendChild(card);
+    bindPlayBtn(card, item);
+    bindUpload(card, item, base);
+    checkFile(base + item.file + '?nc=' + Date.now()).then(ok => setStatus(card, item.file, ok));
+  }
+}
+
 async function init() {
+  checkConfig();
   for (const section of ['intro','ambient','night','freq','fx']) {
     await initSection(section);
   }
+  updateStats();
 }
 
 init();
