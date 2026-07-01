@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil Agent — Gwen Ha Star</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #0d0d14;
+      --surface: #16161f;
+      --border: #2a2a3a;
+      --text: #e8e8f0;
+      --muted: #7a7a9a;
+      --accent: #7c6af7;
+      --rarity-common: #9ca3af;
+      --rarity-rare: #60a5fa;
+      --rarity-epic: #c084fc;
+      --rarity-legendary: #fbbf24;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+    /* NAV */
+    nav { display: flex; align-items: center; gap: 12px; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--surface); }
+    nav a { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+    nav a:hover { color: var(--text); }
+    nav .sep { color: var(--border); }
+
+    /* MAIN */
+    main { max-width: 760px; margin: 0 auto; padding: 32px 20px 64px; }
+
+    /* HERO */
+    .hero { display: flex; gap: 24px; align-items: flex-start; padding: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 24px; }
+    .hero-avatar { position: relative; flex-shrink: 0; }
+    .hero-avatar img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid var(--border); }
+    .hero-avatar .avatar-placeholder { width: 96px; height: 96px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+    .hero-info { flex: 1; min-width: 0; }
+    .hero-username { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+    .hero-active-title { font-size: 0.9rem; margin-top: 4px; font-style: italic; }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; border: 1px solid currentColor; opacity: 0.9; }
+    .hero-bio { margin-top: 12px; font-size: 0.9rem; color: var(--muted); line-height: 1.6; white-space: pre-wrap; }
+    .hero-meta { margin-top: 10px; font-size: 0.78rem; color: var(--muted); }
+
+    /* STATS */
+    .stats-bar { display: flex; gap: 16px; flex-wrap: wrap; padding: 16px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px; }
+    .stat { text-align: center; }
+    .stat-value { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* TITLES */
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .section-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 14px; }
+    .rarity-group { margin-bottom: 16px; }
+    .rarity-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .titles-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+    .title-chip { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; border: 1px solid currentColor; opacity: 0.85; }
+    .title-chip.active { opacity: 1; font-weight: 700; background: color-mix(in srgb, currentColor 15%, transparent); }
+
+    /* SKELETON */
+    .skeleton { animation: pulse 1.5s ease-in-out infinite; background: var(--border); border-radius: 8px; }
+    @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+    /* NOT FOUND */
+    .not-found { text-align: center; padding: 80px 20px; }
+    .not-found h2 { font-size: 1.4rem; margin-bottom: 8px; }
+    .not-found p { color: var(--muted); }
+
+    /* RARITY COLORS */
+    .r-common    { color: var(--rarity-common); }
+    .r-rare      { color: var(--rarity-rare); }
+    .r-epic      { color: var(--rarity-epic); }
+    .r-legendary { color: var(--rarity-legendary); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/">🏠 Accueil</a>
+  <span class="sep">/</span>
+  <span>Profil</span>
+</nav>
+
+<main id="main">
+  <!-- Contenu injecté par JS -->
+  <div id="loader">
+    <div class="hero" style="gap:20px">
+      <div class="skeleton" style="width:96px;height:96px;border-radius:50%"></div>
+      <div style="flex:1">
+        <div class="skeleton" style="height:24px;width:160px;margin-bottom:8px"></div>
+        <div class="skeleton" style="height:16px;width:220px;margin-bottom:12px"></div>
+        <div class="skeleton" style="height:14px;width:100%"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  // ── Config ────────────────────────────────────────────────────────────────
+  const SUPABASE_URL = 'https://nmdjrcswlnydglrxaivx.supabase.co'
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tZGpyY3N3bG55ZGdscnhhaXZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM4MDM0MDIsImV4cCI6MjAyOTM3OTQwMn0.Qb6Z5lkNqovpFQ4K6P8A_GZq2JHxCH4B0RHb5HMjpqc'
+
+  const RARITY_COLORS = {
+    legendary: 'var(--rarity-legendary)',
+    epic:      'var(--rarity-epic)',
+    rare:      'var(--rarity-rare)',
+    common:    'var(--rarity-common)',
+  }
+  const RARITY_ORDER = ['legendary','epic','rare','common']
+  const RARITY_LABELS = { legendary: '✦ Légendaire', epic: '◆ Épique', rare: '◈ Rare', common: '○ Commun' }
+
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
+  const main = document.getElementById('main')
+
+  // ── Resolve identity ──────────────────────────────────────────────────────
+  const params = new URLSearchParams(location.search)
+  const profileId = params.get('id')
+  const username  = params.get('u')
+
+  if (!profileId && !username) {
+    showNotFound('Aucun identifiant fourni.', 'Utilise ?id=UUID ou ?u=username dans l\'URL.')
+  } else {
+    loadProfile()
+  }
+
+  async function loadProfile() {
+    // 1. Fetch profile
+    let query = supabase
+      .from('profiles')
+      .select(`
+        id, username, avatar_url, bio, role, specialty, active_title,
+        chronicles, joined_at,
+        profile_titles ( title_slug, unlocked_at, titles:title_slug ( label_fr, rarity, slug ) ),
+        profile_roles  ( role_slug,  agent_roles:role_slug  ( label_fr, color, icon ) )
+      `)
+
+    if (profileId) query = query.eq('id', profileId)
+    else           query = query.eq('username', username)
+
+    const { data, error } = await query.maybeSingle()
+
+    if (error || !data) {
+      showNotFound('Agent introuvable.', 'Ce profil n\'existe pas ou n\'est pas accessible.')
+      return
+    }
+
+    // 2. Resolve active title detail
+    let activeTitle = null
+    if (data.active_title) {
+      const { data: td } = await supabase
+        .from('titles')
+        .select('label_fr, rarity, slug')
+        .eq('slug', data.active_title)
+        .maybeSingle()
+      activeTitle = td
+    }
+
+    renderProfile(data, activeTitle)
+  }
+
+  function rarityClass(r) {
+    return 'r-' + (r || 'common')
+  }
+
+  function renderProfile(p, activeTitle) {
+    const joinedAt = p.joined_at
+      ? new Date(p.joined_at).toLocaleDateString('fr-FR', { year:'numeric', month:'long', day:'numeric' })
+      : null
+
+    // ── Avatar ──
+    const avatarHtml = p.avatar_url
+      ? `<img src="${p.avatar_url}" alt="Avatar de ${p.username}" loading="lazy" />`
+      : `<div class="avatar-placeholder">🕵️</div>`
+
+    // ── Active title ──
+    const activeTitleHtml = activeTitle
+      ? `<div class="hero-active-title ${rarityClass(activeTitle.rarity)}" style="color:${RARITY_COLORS[activeTitle.rarity] || RARITY_COLORS.common}">
+           « ${activeTitle.label_fr} »
+         </div>`
+      : ''
+
+    // ── Badges (rôles) ──
+    const rolesHtml = (p.profile_roles || []).map(pr => {
+      const r = pr.agent_roles
+      if (!r) return ''
+      const color = r.color || 'var(--accent)'
+      return `<span class="badge" style="color:${color};border-color:${color}">${r.icon || ''} ${r.label_fr}</span>`
+    }).join('')
+
+    const specialtyHtml = p.specialty
+      ? `<span class="badge" style="color:var(--muted);border-color:var(--muted)">${p.specialty}</span>`
+      : ''
+
+    // ── Titles grouped by rarity ──
+    const titlesMap = {}
+    ;(p.profile_titles || []).forEach(pt => {
+      const t = pt.titles
+      if (!t) return
+      const r = t.rarity || 'common'
+      if (!titlesMap[r]) titlesMap[r] = []
+      titlesMap[r].push(t)
+    })
+
+    const titlesHtml = RARITY_ORDER
+      .filter(r => titlesMap[r]?.length)
+      .map(r => {
+        const color = RARITY_COLORS[r]
+        const chips = titlesMap[r].map(t => {
+          const isActive = p.active_title === t.slug
+          return `<span class="title-chip ${isActive ? 'active' : ''}" style="color:${color};border-color:${color}">${t.label_fr}${isActive ? ' ✓' : ''}</span>`
+        }).join('')
+        return `
+          <div class="rarity-group">
+            <div class="rarity-label" style="color:${color}">${RARITY_LABELS[r]}</div>
+            <div class="titles-grid">${chips}</div>
+          </div>`
+      }).join('')
+
+    const titlesSectionHtml = titlesHtml
+      ? `<div class="section">
+           <div class="section-title">Titres débloqués</div>
+           ${titlesHtml}
+         </div>`
+      : ''
+
+    // ── Stats ──
+    const statsHtml = `
+      <div class="stats-bar">
+        <div class="stat">
+          <div class="stat-value">${p.chronicles ?? 0}</div>
+          <div class="stat-label">Chroniques</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">${(p.profile_titles || []).length}</div>
+          <div class="stat-label">Titres</div>
+        </div>
+      </div>`
+
+    main.innerHTML = `
+      <div class="hero">
+        <div class="hero-avatar">${avatarHtml}</div>
+        <div class="hero-info">
+          <div class="hero-username">${escHtml(p.username || 'Agent inconnu')}</div>
+          ${activeTitleHtml}
+          <div class="hero-badges">${rolesHtml}${specialtyHtml}</div>
+          ${p.bio ? `<div class="hero-bio">${escHtml(p.bio)}</div>` : ''}
+          ${joinedAt ? `<div class="hero-meta">Agent depuis le ${joinedAt}</div>` : ''}
+        </div>
+      </div>
+      ${statsHtml}
+      ${titlesSectionHtml}
+    `
+
+    // Update <title>
+    document.title = `${p.username || 'Agent'} — Gwen Ha Star`
+  }
+
+  function showNotFound(h2, p) {
+    main.innerHTML = `
+      <div class="not-found">
+        <h2>${escHtml(h2)}</h2>
+        <p>${escHtml(p)}</p>
+      </div>`
+  }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;')
+  }
+</script>
+
+</body>
+</html>
