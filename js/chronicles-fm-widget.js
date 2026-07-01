@@ -1,23 +1,25 @@
 /**
- * Chronicles FM Widget v5.1
+ * Chronicles FM Widget v5.2
  * YT IFrame API · Fisher-Yates shuffle · skip
- * + LemePanel flottant bas-droite (typewriter + scanlines)
- * + Ticker enrichi (freq / style / mood / yt / leme / night)
+ * + LemePanel flottant (typewriter + scanlines)
+ * + Ticker enrichi (freq/style/mood/yt/leme/night)
+ * + Audio voix Lemegeton (/audio/leme/) avec fallback silencieux
  */
 (function () {
   'use strict';
 
-  /* ─── CONFIG ─────────────────────────────────────────────────────── */
-  const YT_API_KEY        = 'AIzaSyAEruwkr9u1CN0OECR6onqY1Z3vW-LsvCE';
-  const DATA_URL          = '/chronicles-fm/data.json';
-  const PLAYER_ID         = 'cfm-yt-player';
-  const SCROLL_SPEED_PX   = 55;
-  const SCROLL_SEP        = '  ⬡  ';
-  const AMBIENT_INTERVAL  = 50000;
-  const NIGHT_START       = 0;
-  const NIGHT_END         = 6;
+  /* ─── CONFIG ──────────────────────────────────────────────────────────── */
+  const YT_API_KEY      = 'AIzaSyAEruwkr9u1CN0OECR6onqY1Z3vW-LsvCE';
+  const DATA_URL        = '/chronicles-fm/data.json';
+  const PLAYER_ID       = 'cfm-yt-player';
+  const AUDIO_BASE      = '/audio/leme/';
+  const SCROLL_SPEED_PX = 55;
+  const SCROLL_SEP      = '  ⬡  ';
+  const AMBIENT_INTERVAL = 50000;
+  const NIGHT_START     = 0;
+  const NIGHT_END       = 6;
 
-  /* ─── STATE ──────────────────────────────────────────────────────── */
+  /* ─── STATE ───────────────────────────────────────────────────────────── */
   let frequencies    = [];
   let currentFreqIdx = 0;
   let ytPlayer       = null;
@@ -27,6 +29,7 @@
   let ytApiReady     = false;
   let drawerOpen     = false;
   let nightMode      = false;
+  let voiceEnabled   = true;
   let ambientTimer   = null;
   let lemePanelTimer = null;
   let scrollerRAF    = null;
@@ -35,12 +38,21 @@
   let scrollerLast   = 0;
   let scrollerPaused = false;
   let scrollerTrack  = null;
+  let currentAudio   = null;
 
-  /* ─── NIGHT MODE ─────────────────────────────────────────────────── */
-  function detectNight() {
-    const h = new Date().getHours();
-    return h >= NIGHT_START && h < NIGHT_END;
-  }
+  /* ─── FREQ PHRASES (×10) ──────────────────────────────────────────────── */
+  const FREQ_PHRASES = [
+    'Frequence 01 verrouillee. Subsoniques en route. Tiens-toi bien.',
+    'Protocole 02 active. La machine danse. Resiste.',
+    'Archive 03 ouverte. Les mots arrivent. Ecoute les cicatrices.',
+    'Frequence 04 instable. Surcharge sensorielle imminente.',
+    'Secteur 05 atteint. Zone de basse tension. Respire.',
+    'Coffre 06 deverrouille. Les bandes originales s\'ouvrent. Bon voyage.',
+    'Circuit 07 en ligne. Distorsion maximale. Les cables brulent.',
+    'Transmission 08 recue. Le triskel resonne dans les circuits.',
+    'Signal 09 non classifie. Dimension parallele en ecoute.',
+    'Format long engage. Pas de pause. Pas d\'interruption. Tiens.',
+  ];
 
   const NIGHT_PHRASES = [
     'Les signaux se fondent dans l\'obscurite des frequences mortes.',
@@ -71,24 +83,88 @@
     'Systeme audio initialise. Bon voyage, agent.',
   ];
 
+  /* ─── NIGHT / RANDOM ─────────────────────────────────────────────────── */
+  function detectNight() {
+    var h = new Date().getHours();
+    return h >= NIGHT_START && h < NIGHT_END;
+  }
+
   function pickRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
-  function pickPhrase(type) {
-    if (nightMode) return pickRandom(NIGHT_PHRASES);
-    if (type === 'intro') return pickRandom(INTRO_PHRASES);
-    return pickRandom(AMBIENT_PHRASES);
+
+  function pickPhraseAndIndex(type) {
+    var arr;
+    if (nightMode)        arr = NIGHT_PHRASES;
+    else if (type === 'intro') arr = INTRO_PHRASES;
+    else                  arr = AMBIENT_PHRASES;
+    var idx = Math.floor(Math.random() * arr.length);
+    return { text: arr[idx], index: idx + 1 };
   }
 
-  /* ─── TYPEWRITER ─────────────────────────────────────────────────── */
+  function freqPhrase(freqIdx) {
+    return FREQ_PHRASES[freqIdx] || FREQ_PHRASES[0];
+  }
+
+  /* ─── AUDIO VOICE ─────────────────────────────────────────────────────── */
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+  /**
+   * Joue un fichier audio Lemegeton avec fallback silencieux.
+   * @param {string} type  'intro'|'ambient'|'night'|'freq'
+   * @param {number} index index 1-based du fichier
+   */
+  function playLemeAudio(type, index) {
+    if (!voiceEnabled) return;
+    var src = AUDIO_BASE + 'leme-' + type + '-' + pad2(index) + '.mp3';
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio = null;
+    }
+    var audio = new Audio(src);
+    audio.volume = 0.85;
+    currentAudio = audio;
+    audio.onerror = function () { currentAudio = null; };
+    var p = audio.play();
+    if (p && typeof p.catch === 'function') {
+      p.catch(function () { currentAudio = null; });
+    }
+  }
+
+  /**
+   * Joue une phrase aléatoire du type donné (ambient/night/intro).
+   * Renvoie { text, index } pour sync LemePanel.
+   */
+  function playLemePhrase(type) {
+    var result = pickPhraseAndIndex(type);
+    var audioType = nightMode ? 'night' : type;
+    playLemeAudio(audioType, result.index);
+    return result;
+  }
+
+  /* ─── TOGGLE VOICE ───────────────────────────────────────────────────── */
+  function toggleVoice() {
+    voiceEnabled = !voiceEnabled;
+    if (!voiceEnabled && currentAudio) {
+      currentAudio.pause();
+      currentAudio = null;
+    }
+    var icon = voiceEnabled ? '🔊' : '🔇';
+    var btnBar   = document.getElementById('cfm-voice-btn');
+    var btnPanel = document.getElementById('cfm-lp-voice-btn');
+    if (btnBar)   btnBar.textContent   = icon;
+    if (btnPanel) btnPanel.textContent = icon;
+  }
+
+  /* ─── TYPEWRITER ─────────────────────────────────────────────────────── */
   function typewriter(el, text, speed, onDone) {
     if (!el) return;
     speed = speed || 28;
     el.innerHTML = '';
-    const cursor = document.createElement('span');
+    var cursor = document.createElement('span');
     cursor.className = 'cfm-lp-cursor';
     cursor.textContent = '\u258c';
-    let i = 0;
+    var i = 0;
     function tick() {
       if (i < text.length) {
         el.textContent = text.slice(0, ++i);
@@ -101,22 +177,31 @@
     tick();
   }
 
-  /* ─── LEME PANEL ─────────────────────────────────────────────────── */
-  function showLemePanel(phrase, freqLabel) {
-    const panel  = document.getElementById('cfm-leme-panel');
-    const lpText = document.getElementById('cfm-lp-text');
-    const lpFoot = document.getElementById('cfm-lp-footer');
+  /* ─── LEME PANEL ─────────────────────────────────────────────────────── */
+  /**
+   * @param {string} phrase      Texte à afficher
+   * @param {string} freqLabel   Label pied-de-panel
+   * @param {string} [audioType] Type audio ('freq'|'ambient'|'night'|'intro')
+   * @param {number} [audioIdx]  Index 1-based du fichier
+   */
+  function showLemePanel(phrase, freqLabel, audioType, audioIdx) {
+    var panel  = document.getElementById('cfm-leme-panel');
+    var lpText = document.getElementById('cfm-lp-text');
+    var lpFoot = document.getElementById('cfm-lp-footer');
     if (!panel || !lpText) return;
-    if (lpFoot) lpFoot.textContent = freqLabel || (frequencies[currentFreqIdx] && frequencies[currentFreqIdx].title) || '\u2014';
+    if (lpFoot) lpFoot.textContent = freqLabel || (frequencies[currentFreqIdx] && frequencies[currentFreqIdx].title) || '—';
     panel.classList.add('visible');
     typewriter(lpText, phrase, 28);
+    if (audioType && audioIdx !== undefined) {
+      playLemeAudio(audioType, audioIdx);
+    }
     clearTimeout(lemePanelTimer);
     lemePanelTimer = setTimeout(function () {
       panel.classList.remove('visible');
     }, phrase.length * 28 + 4000);
   }
 
-  /* ─── SCROLLER ───────────────────────────────────────────────────── */
+  /* ─── SCROLLER ───────────────────────────────────────────────────────── */
   function scrollerAnimate() {
     var now = performance.now();
     var dt  = (now - scrollerLast) / 1000;
@@ -193,7 +278,7 @@
     return segs;
   }
 
-  /* ─── FISHER-YATES SHUFFLE ───────────────────────────────────────── */
+  /* ─── SHUFFLE ────────────────────────────────────────────────────────── */
   function shuffle(arr) {
     var a = arr.slice();
     for (var i = a.length - 1; i > 0; i--) {
@@ -203,7 +288,7 @@
     return a;
   }
 
-  /* ─── YT PLAYLIST IDS ────────────────────────────────────────────── */
+  /* ─── YT FETCH ───────────────────────────────────────────────────────── */
   async function fetchPlaylistVideoIds(playlistId) {
     var videoIds = [];
     var pageToken = '';
@@ -212,21 +297,16 @@
         var url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=50&playlistId=' + playlistId + '&key=' + YT_API_KEY + (pageToken ? '&pageToken=' + pageToken : '');
         var res  = await fetch(url);
         var data = await res.json();
-        if (data.items) {
-          data.items.forEach(function (item) {
-            var id = item.contentDetails && item.contentDetails.videoId;
-            if (id) videoIds.push(id);
-          });
-        }
+        if (data.items) data.items.forEach(function (item) {
+          var id = item.contentDetails && item.contentDetails.videoId;
+          if (id) videoIds.push(id);
+        });
         pageToken = data.nextPageToken || '';
       } while (pageToken);
-    } catch (e) {
-      console.warn('[CFM] fetchPlaylist error:', e);
-    }
+    } catch (e) { console.warn('[CFM] fetchPlaylist error:', e); }
     return videoIds;
   }
 
-  /* Fetch titres + ids pour le ticker yt */
   async function fetchPlaylistItems(playlistId) {
     var items = [];
     var pageToken = '';
@@ -235,20 +315,18 @@
         var url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + playlistId + '&key=' + YT_API_KEY + (pageToken ? '&pageToken=' + pageToken : '');
         var res  = await fetch(url);
         var data = await res.json();
-        if (data.items) {
-          data.items.forEach(function (item) {
-            var title   = item.snippet && item.snippet.title;
-            var videoId = item.snippet && item.snippet.resourceId && item.snippet.resourceId.videoId;
-            if (title && videoId) items.push({ title: title, videoId: videoId });
-          });
-        }
+        if (data.items) data.items.forEach(function (item) {
+          var title   = item.snippet && item.snippet.title;
+          var videoId = item.snippet && item.snippet.resourceId && item.snippet.resourceId.videoId;
+          if (title && videoId) items.push({ title: title, videoId: videoId });
+        });
         pageToken = data.nextPageToken || '';
       } while (pageToken);
     } catch (e) { /**/ }
     return items;
   }
 
-  /* ─── BUILD QUEUE ────────────────────────────────────────────────── */
+  /* ─── QUEUE ──────────────────────────────────────────────────────────── */
   async function buildQueue(freqIdx) {
     var freq = frequencies[freqIdx];
     if (!freq || !freq.youtubePlaylistId) return;
@@ -257,19 +335,16 @@
     queuePos = 0;
   }
 
-  /* ─── PLAY ───────────────────────────────────────────────────────── */
+  /* ─── YT PLAYER ──────────────────────────────────────────────────────── */
   function playNext() {
     if (!shuffledQueue.length) return;
-    if (queuePos >= shuffledQueue.length) {
-      shuffledQueue = shuffle(shuffledQueue);
-      queuePos = 0;
-    }
+    if (queuePos >= shuffledQueue.length) { shuffledQueue = shuffle(shuffledQueue); queuePos = 0; }
     var videoId = shuffledQueue[queuePos++];
     if (ytPlayer && ytApiReady) ytPlayer.loadVideoById(videoId);
   }
 
   function onPlayerStateChange(event) {
-    if (event.data === 0) playNext(); // ENDED
+    if (event.data === 0) playNext();
   }
 
   function initYTPlayer() {
@@ -299,20 +374,21 @@
     document.head.appendChild(tag);
   }
 
-  /* ─── SWITCH FREQ ────────────────────────────────────────────────── */
+  /* ─── SWITCH FREQ ────────────────────────────────────────────────────── */
   async function switchFreq(idx) {
     currentFreqIdx = idx;
     updateFreqDisplay();
     updateDrawerActive();
     var freq   = frequencies[idx];
-    var phrase = pickPhrase('ambient');
-    // Ticker de base immédiat
+    var phrase = freqPhrase(idx);
+    // Ticker immédiat + LemePanel avec audio freq
     setTickerSegments(buildSegments(freq, phrase, []));
-    showLemePanel(phrase, freq.title);
-    // Puis enrichit avec les titres YT
+    showLemePanel(phrase, freq.title, 'freq', idx + 1);
+    // Enrichit le ticker avec les titres YT en arrière-plan
     if (freq.youtubePlaylistId) {
-      var items = await fetchPlaylistItems(freq.youtubePlaylistId);
-      setTickerSegments(buildSegments(freq, phrase, items));
+      fetchPlaylistItems(freq.youtubePlaylistId).then(function (items) {
+        setTickerSegments(buildSegments(freq, phrase, items));
+      });
     }
     if (isPlaying) {
       if (ytPlayer && ytApiReady) ytPlayer.stopVideo();
@@ -321,16 +397,16 @@
     } else {
       await buildQueue(idx);
     }
-    // Ambient timer
+    // Reset ambient timer
     clearInterval(ambientTimer);
     ambientTimer = setInterval(function () {
-      var l = pickPhrase('ambient');
-      showLemePanel(l, freq.title);
-      updateTickerSegment('leme', l);
+      var result = playLemePhrase(nightMode ? 'night' : 'ambient');
+      showLemePanel(result.text, freq.title);
+      updateTickerSegment('leme', result.text);
     }, AMBIENT_INTERVAL);
   }
 
-  /* ─── PLAY / SKIP ────────────────────────────────────────────────── */
+  /* ─── PLAY / SKIP ────────────────────────────────────────────────────── */
   async function togglePlay() {
     if (!isPlaying) {
       if (!shuffledQueue.length) await buildQueue(currentFreqIdx);
@@ -350,7 +426,7 @@
     playNext();
   }
 
-  /* ─── UI HELPERS ─────────────────────────────────────────────────── */
+  /* ─── UI HELPERS ─────────────────────────────────────────────────────── */
   function updatePlayBtn() {
     var btn = document.getElementById('cfm-play-btn');
     if (btn) btn.textContent = isPlaying ? '⏸' : '▶';
@@ -379,7 +455,7 @@
     if (btn) btn.textContent = drawerOpen ? '▼ REPLIER' : '▶ OUVRIR';
   }
 
-  /* ─── BUILD DRAWER ───────────────────────────────────────────────── */
+  /* ─── BUILD DRAWER ───────────────────────────────────────────────────── */
   function buildDrawer() {
     var list = document.getElementById('cfm-freq-list');
     if (!list) return;
@@ -396,7 +472,7 @@
     });
   }
 
-  /* ─── CSS ────────────────────────────────────────────────────────── */
+  /* ─── CSS ────────────────────────────────────────────────────────────── */
   function injectCSS() {
     if (document.getElementById('cfm-styles')) return;
     var style = document.createElement('style');
@@ -412,33 +488,23 @@
       '  --cfm-bg:#04080f;--cfm-border:#150d25;--cfm-red:#7a1530;--cfm-blue:#5512a8;',
       '  --cfm-purple:#6d28d9;--cfm-green:#00cc5a;--cfm-text:#8899aa;--cfm-dim:#2a3a4a;',
       '}',
-      /* ── BAR ── */
       '#cfm-bar{position:fixed;bottom:0;left:0;right:0;z-index:9000;height:var(--cfm-h);',
       'background:rgba(6,12,22,.98);border-top:1px solid var(--cfm-border);',
       'display:flex;align-items:stretch;font-family:var(--cfm-mono);font-size:.68rem;',
       'letter-spacing:.08em;box-shadow:0 -4px 32px rgba(0,0,0,.7);}',
       'body{padding-bottom:var(--cfm-h)!important;}',
-      /* dot */
       '.cfm-dot{width:7px;height:7px;border-radius:50%;background:var(--cfm-red);',
       'box-shadow:0 0 6px var(--cfm-red);flex-shrink:0;animation:cfm-pulse 1.4s ease-in-out infinite;}',
       '@keyframes cfm-pulse{0%,100%{opacity:1}50%{opacity:.3}}',
-      /* slots */
-      '.cfm-slot{display:flex;align-items:center;padding:0 .7rem;gap:.5rem;',
-      'border-right:1px solid var(--cfm-border);flex-shrink:0;}',
-      '.cfm-brand-label{color:var(--cfm-red);font-size:.66rem;letter-spacing:.22em;',
-      'text-shadow:0 0 8px rgba(233,69,96,.5);}',
+      '.cfm-slot{display:flex;align-items:center;padding:0 .7rem;gap:.5rem;border-right:1px solid var(--cfm-border);flex-shrink:0;}',
+      '.cfm-brand-label{color:var(--cfm-red);font-size:.66rem;letter-spacing:.22em;text-shadow:0 0 8px rgba(233,69,96,.5);}',
       '#cfm-freq-num{color:var(--cfm-text);font-size:.68rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;}',
       '#cfm-w-style{color:var(--cfm-blue);font-size:.58rem;letter-spacing:.12em;white-space:nowrap;opacity:.8;}',
-      /* ticker */
-      '#cfm-ticker-slot{flex:1;min-width:0;overflow:hidden;display:flex;align-items:center;',
-      'position:relative;border-right:1px solid var(--cfm-border);}',
-      '.cfm-ticker-label{flex-shrink:0;padding:0 .5rem;color:var(--cfm-purple);font-size:.56rem;',
-      'letter-spacing:.18em;opacity:.7;border-right:1px solid var(--cfm-border);height:100%;display:flex;align-items:center;}',
+      '#cfm-ticker-slot{flex:1;min-width:0;overflow:hidden;display:flex;align-items:center;position:relative;border-right:1px solid var(--cfm-border);}',
+      '.cfm-ticker-label{flex-shrink:0;padding:0 .5rem;color:var(--cfm-purple);font-size:.56rem;letter-spacing:.18em;opacity:.7;border-right:1px solid var(--cfm-border);height:100%;display:flex;align-items:center;}',
       '#cfm-ticker-wrap{flex:1;min-width:0;overflow:hidden;height:100%;position:relative;}',
-      '#cfm-ticker-wrap::before{content:\'\';position:absolute;top:0;bottom:0;left:0;width:24px;z-index:2;',
-      'background:linear-gradient(to right,rgba(6,12,22,1),transparent);pointer-events:none;}',
-      '#cfm-ticker-wrap::after{content:\'\';position:absolute;top:0;bottom:0;right:0;width:24px;z-index:2;',
-      'background:linear-gradient(to left,rgba(6,12,22,1),transparent);pointer-events:none;}',
+      '#cfm-ticker-wrap::before{content:\'\';position:absolute;top:0;bottom:0;left:0;width:24px;z-index:2;background:linear-gradient(to right,rgba(6,12,22,1),transparent);pointer-events:none;}',
+      '#cfm-ticker-wrap::after{content:\'\';position:absolute;top:0;bottom:0;right:0;width:24px;z-index:2;background:linear-gradient(to left,rgba(6,12,22,1),transparent);pointer-events:none;}',
       '.cfm-ticker-scroll{display:inline-flex;align-items:center;white-space:nowrap;height:100%;will-change:transform;}',
       '.cfm-ticker-item{padding:0 .2rem;line-height:var(--cfm-h);cursor:default;}',
       '.cfm-ticker-item[data-type=freq]  {color:var(--cfm-text);}',
@@ -450,11 +516,10 @@
       '.cfm-ticker-item[data-type=yt]:hover{text-decoration:underline;text-underline-offset:3px;}',
       '.cfm-ticker-item[data-type=night] {color:#6d28d9;font-style:italic;text-shadow:0 0 6px rgba(109,40,217,.6);}',
       '.cfm-ticker-sep{color:var(--cfm-dim);opacity:.35;padding:0 .2rem;}',
-      '.cfm-ticker-item[data-type=leme]::before  {content:\'\u25c8 \';opacity:.6;}',
-      '.cfm-ticker-item[data-type=signal]::before{content:\'\u2b21 \';opacity:.5;}',
-      '.cfm-ticker-item[data-type=yt]::before    {content:\'\u25b6 NOW \u00b7 \';color:var(--cfm-red);font-size:.6rem;opacity:.8;}',
-      '.cfm-ticker-item[data-type=night]::before {content:\'\ud83c\udf19 \';}',
-      /* actions */
+      '.cfm-ticker-item[data-type=leme]::before  {content:\'◈ \';opacity:.6;}',
+      '.cfm-ticker-item[data-type=signal]::before{content:\'⬡ \';opacity:.5;}',
+      '.cfm-ticker-item[data-type=yt]::before    {content:\'▶ NOW · \';color:var(--cfm-red);font-size:.6rem;opacity:.8;}',
+      '.cfm-ticker-item[data-type=night]::before {content:\'🌙 \';}',
       '.cfm-slot-actions{display:flex;align-items:center;padding:0 .5rem;gap:.4rem;flex-shrink:0;}',
       '.cfm-act-btn{padding:.2rem .5rem;border:1px solid var(--cfm-border);background:none;',
       'color:var(--cfm-dim);cursor:pointer;font-family:var(--cfm-mono);font-size:.6rem;',
@@ -463,7 +528,6 @@
       '.cfm-act-btn:hover{border-color:var(--cfm-blue);color:var(--cfm-blue);}',
       '.cfm-act-btn.primary{border-color:var(--cfm-purple);color:var(--cfm-purple);}',
       '.cfm-act-btn.primary:hover{box-shadow:0 0 8px rgba(139,92,246,.3);}',
-      /* drawer */
       '#cfm-drawer{position:fixed;bottom:var(--cfm-h);left:0;right:0;z-index:8999;',
       'background:rgba(8,13,22,.98);border-top:1px solid var(--cfm-purple);',
       'box-shadow:0 -8px 40px rgba(139,92,246,.15);max-height:0;overflow:hidden;',
@@ -475,7 +539,7 @@
       '.cfm-freq-title{display:block;font-size:.76rem;font-weight:bold;color:var(--cfm-text);}',
       '.cfm-freq-sub  {display:block;font-size:.64rem;color:var(--cfm-blue);opacity:.7;}',
       '.cfm-freq-mood {display:block;font-size:.6rem;color:var(--cfm-dim);font-style:italic;}',
-      /* leme panel */
+      /* LemePanel */
       '#cfm-leme-panel{position:fixed;bottom:calc(var(--cfm-h) + 12px);right:16px;z-index:8998;',
       'width:280px;background:rgba(4,8,15,.97);border:1px solid var(--cfm-purple);',
       'border-radius:4px;overflow:hidden;',
@@ -494,6 +558,11 @@
       'text-shadow:0 0 6px rgba(139,92,246,.5);flex:1;}',
       '.cfm-lp-signal{width:6px;height:6px;border-radius:50%;background:var(--cfm-green);',
       'box-shadow:0 0 5px var(--cfm-green);animation:cfm-pulse 1.2s ease-in-out infinite;flex-shrink:0;}',
+      /* bouton voix dans le panel header */
+      '#cfm-lp-voice-btn{background:none;border:none;cursor:pointer;font-size:.85rem;',
+      'padding:0 .2rem;line-height:1;pointer-events:auto;flex-shrink:0;',
+      'opacity:.7;transition:opacity .15s;}',
+      '#cfm-lp-voice-btn:hover{opacity:1;}',
       '.cfm-lp-body{padding:.55rem .65rem .6rem;min-height:3.4rem;position:relative;z-index:3;}',
       '.cfm-lp-text{font-size:.72rem;color:var(--cfm-text);line-height:1.55;font-style:italic;',
       'letter-spacing:.03em;word-break:break-word;}',
@@ -504,19 +573,17 @@
       '.cfm-lp-footer{padding:.2rem .6rem;border-top:1px solid rgba(139,92,246,.12);',
       'font-size:.52rem;letter-spacing:.14em;color:var(--cfm-dim);position:relative;z-index:3;',
       'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
-      '.cfm-lp-footer::before{content:\'\u2b21 \';opacity:.5;}',
-      /* responsive */
+      '.cfm-lp-footer::before{content:\'⬡ \';opacity:.5;}',
       '@media(max-width:480px){#cfm-freq-num,#cfm-w-style,.cfm-brand-label{display:none;}',
       '#cfm-leme-panel{width:220px;right:8px;}}',
     ].join('\n');
     document.head.appendChild(style);
   }
 
-  /* ─── BUILD WIDGET DOM ───────────────────────────────────────────── */
+  /* ─── BUILD WIDGET DOM ───────────────────────────────────────────────── */
   function buildWidget() {
     if (document.getElementById('cfm-bar')) return;
 
-    // Barre
     var bar = document.createElement('div');
     bar.id = 'cfm-bar';
     bar.innerHTML =
@@ -525,10 +592,10 @@
         '<span class="cfm-brand-label">CHRONICLES FM</span>'+
       '</div>'+
       '<div class="cfm-slot-actions" style="border-right:1px solid var(--cfm-border)">'+
-        '<button class="cfm-act-btn" id="cfm-play-btn" title="Play/Pause">\u25b6</button>'+
-        '<button class="cfm-act-btn" id="cfm-skip-btn" title="Skip">\u23ed</button>'+
-        '<button class="cfm-act-btn" id="cfm-prev-btn" title="Freq -">\u25c0</button>'+
-        '<button class="cfm-act-btn" id="cfm-next-btn" title="Freq +">\u25b6</button>'+
+        '<button class="cfm-act-btn" id="cfm-play-btn" title="Play/Pause">▶</button>'+
+        '<button class="cfm-act-btn" id="cfm-skip-btn" title="Skip">⏭</button>'+
+        '<button class="cfm-act-btn" id="cfm-prev-btn" title="Freq -">◀</button>'+
+        '<button class="cfm-act-btn" id="cfm-next-btn" title="Freq +">▶</button>'+
       '</div>'+
       '<div class="cfm-slot" style="flex-direction:column;align-items:flex-start;min-width:0;max-width:170px;">'+
         '<span id="cfm-freq-num">—</span>'+
@@ -539,31 +606,31 @@
         '<div id="cfm-ticker-wrap"></div>'+
       '</div>'+
       '<div class="cfm-slot-actions">'+
-        '<button class="cfm-act-btn primary" id="cfm-freq-btn">\u25b6 OUVRIR</button>'+
-        '<button class="cfm-act-btn" id="cfm-night-btn" title="Mode nuit">\ud83c\udf19</button>'+
+        '<button class="cfm-act-btn" id="cfm-voice-btn" title="Voix Lemegeton (M)">🔊</button>'+
+        '<button class="cfm-act-btn primary" id="cfm-freq-btn">▶ OUVRIR</button>'+
+        '<button class="cfm-act-btn" id="cfm-night-btn" title="Mode nuit">🌙</button>'+
       '</div>';
     document.body.appendChild(bar);
 
-    // Drawer
     var drawer = document.createElement('div');
     drawer.id = 'cfm-drawer';
     drawer.innerHTML = '<div id="cfm-freq-list"></div>';
     document.body.appendChild(drawer);
 
-    // LemePanel
     var panel = document.createElement('div');
     panel.id = 'cfm-leme-panel';
     panel.innerHTML =
       '<div class="cfm-lp-header">'+
-        '<span class="cfm-lp-avatar">\ud83d\udc7e</span>'+
-        '<span class="cfm-lp-name">LEMEGETON \u00b7 CHRONIC\u0152UR</span>'+
+        '<span class="cfm-lp-avatar">👾</span>'+
+        '<span class="cfm-lp-name">LEMEGETON · CHRONICŒUR</span>'+
         '<span class="cfm-lp-signal"></span>'+
+        '<button id="cfm-lp-voice-btn" title="Voix (M)">🔊</button>'+
       '</div>'+
       '<div class="cfm-lp-body"><div class="cfm-lp-text" id="cfm-lp-text"></div></div>'+
-      '<div class="cfm-lp-footer" id="cfm-lp-footer">\u2014</div>';
+      '<div class="cfm-lp-footer" id="cfm-lp-footer">—</div>';
     document.body.appendChild(panel);
 
-    // Events
+    /* Events */
     document.getElementById('cfm-play-btn').addEventListener('click', togglePlay);
     document.getElementById('cfm-skip-btn').addEventListener('click', skip);
     document.getElementById('cfm-prev-btn').addEventListener('click', function () {
@@ -577,20 +644,30 @@
     document.getElementById('cfm-night-btn').addEventListener('click', function () {
       nightMode = !nightMode;
       document.body.classList.toggle('cfm-night', nightMode);
-      document.getElementById('cfm-night-btn').textContent = nightMode ? '\u2600' : '\ud83c\udf19';
+      document.getElementById('cfm-night-btn').textContent = nightMode ? '☀' : '🌙';
     });
 
-    // Keyboard
+    /* Bouton voix barre */
+    document.getElementById('cfm-voice-btn').addEventListener('click', toggleVoice);
+
+    /* Bouton voix panel — stopPropagation pour ne pas fermer le panel */
+    document.getElementById('cfm-lp-voice-btn').addEventListener('click', function (e) {
+      e.stopPropagation();
+      toggleVoice();
+    });
+
+    /* Keyboard */
     document.addEventListener('keydown', function (e) {
       var tag = document.activeElement && document.activeElement.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      if (e.key === 'ArrowLeft')  { e.preventDefault(); switchFreq((currentFreqIdx - 1 + frequencies.length) % frequencies.length); }
-      if (e.key === 'ArrowRight') { e.preventDefault(); switchFreq((currentFreqIdx + 1) % frequencies.length); }
+      if (e.key === 'ArrowLeft')               { e.preventDefault(); switchFreq((currentFreqIdx - 1 + frequencies.length) % frequencies.length); }
+      if (e.key === 'ArrowRight')              { e.preventDefault(); switchFreq((currentFreqIdx + 1) % frequencies.length); }
       if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); togglePlay(); }
+      if (e.key === 'm' || e.key === 'M')      { e.preventDefault(); toggleVoice(); }
     });
   }
 
-  /* ─── INIT ───────────────────────────────────────────────────────── */
+  /* ─── INIT ───────────────────────────────────────────────────────────── */
   async function init() {
     try {
       var res = await fetch(DATA_URL);
@@ -608,15 +685,13 @@
     buildDrawer();
     loadYTApi();
 
-    // Charge la première fréquence
     await switchFreq(0);
 
-    // Phrase d'intro Lemegeton
+    // Phrase d'intro Lemegeton 2s après
     setTimeout(function () {
-      var freq = frequencies[0];
-      var intro = pickPhrase('intro');
-      showLemePanel(intro, freq.title);
-      updateTickerSegment('leme', intro);
+      var result = pickPhraseAndIndex('intro');
+      showLemePanel(result.text, frequencies[0].title, 'intro', result.index);
+      updateTickerSegment('leme', result.text);
     }, 2000);
   }
 
