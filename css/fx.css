@@ -1,0 +1,246 @@
+/*
+ * fx.css — Gwen Ha Star shared visual effects
+ * Glitch text, scanlines, CRT flicker, panel boot, noise overlay
+ * Usage: <link rel="stylesheet" href="/css/fx.css">
+ */
+
+/* ─── 1. GLITCH TEXT ──────────────────────────────────────────────────────── */
+/*
+  Apply .glitch data-text="Your Text" on any element.
+  The data-text must mirror the element's text content.
+*/
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: inset(0 0 100% 0);
+}
+.glitch::before {
+  color: #ff4ecd;
+  text-shadow: -2px 0 #ff4ecd;
+  animation: glitch-top 4s steps(1) infinite;
+  animation-delay: 0.7s;
+}
+.glitch::after {
+  color: #4ef0ff;
+  text-shadow: 2px 0 #4ef0ff;
+  animation: glitch-bot 4s steps(1) infinite;
+  animation-delay: 1.4s;
+}
+
+@keyframes glitch-top {
+  0%,100%  { clip-path: inset(0 0 100% 0); transform: none; }
+  2%       { clip-path: inset(8% 0 60% 0); transform: translate(-3px, -1px) skewX(-3deg); }
+  4%       { clip-path: inset(35% 0 40% 0); transform: translate(3px, 0); }
+  6%       { clip-path: inset(0 0 100% 0); transform: none; }
+  52%      { clip-path: inset(15% 0 70% 0); transform: translate(2px, 1px); }
+  54%      { clip-path: inset(0 0 100% 0); transform: none; }
+}
+@keyframes glitch-bot {
+  0%,100%  { clip-path: inset(100% 0 0 0); transform: none; }
+  3%       { clip-path: inset(60% 0 10% 0); transform: translate(3px, 2px) skewX(2deg); }
+  5%       { clip-path: inset(80% 0 0 0); transform: translate(-2px, 0); }
+  7%       { clip-path: inset(100% 0 0 0); transform: none; }
+  55%      { clip-path: inset(70% 0 5% 0); transform: translate(-3px, -1px); }
+  57%      { clip-path: inset(100% 0 0 0); transform: none; }
+}
+
+/* ─── 2. GLITCH JITTER (small one-shot on hover) ─────────────────────────── */
+.glitch-hover {
+  display: inline-block;
+  transition: color 0.05s;
+}
+.glitch-hover:hover {
+  animation: jitter 0.3s steps(2) 1;
+}
+@keyframes jitter {
+  0%   { transform: translate(-2px, 0) skewX(-4deg); filter: hue-rotate(40deg); }
+  25%  { transform: translate(2px, 1px) skewX(2deg); }
+  50%  { transform: translate(-1px, -1px); filter: hue-rotate(-30deg); }
+  75%  { transform: translate(1px, 0); }
+  100% { transform: none; filter: none; }
+}
+
+/* ─── 3. SCANLINES OVERLAY ───────────────────────────────────────────────── */
+/*
+  Add .scanlines class to body or any container.
+  Creates a subtle CRT horizontal line effect.
+*/
+.scanlines::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0,0,0,0.08) 3px,
+    rgba(0,0,0,0.08) 4px
+  );
+  animation: scanlines-drift 12s linear infinite;
+}
+@keyframes scanlines-drift {
+  from { background-position: 0 0; }
+  to   { background-position: 0 100px; }
+}
+
+/* ─── 4. CRT FLICKER ─────────────────────────────────────────────────────── */
+/*
+  Occasional screen-brightness flicker. Apply to body.
+*/
+.crt-flicker {
+  animation: crt-flicker 8s steps(1) infinite;
+}
+@keyframes crt-flicker {
+  0%,100%  { opacity: 1; }
+  88%      { opacity: 1; }
+  88.2%    { opacity: 0.88; }
+  88.4%    { opacity: 1; }
+  91%      { opacity: 1; }
+  91.1%    { opacity: 0.92; }
+  91.3%    { opacity: 1; }
+}
+
+/* ─── 5. PANEL BOOT (fade-in + slight scale) ─────────────────────────────── */
+/*
+  Apply .panel-boot to cards/sections. They appear to "power on".
+  Use --panel-delay (CSS custom property) to stagger: style="--panel-delay:0.2s"
+*/
+.panel-boot {
+  animation: panel-boot 0.5s ease-out both;
+  animation-delay: var(--panel-delay, 0s);
+}
+@keyframes panel-boot {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+    filter: brightness(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: brightness(1);
+  }
+}
+
+/* ─── 6. PANEL FLICKER (random off/on blink on sections) ─────────────────── */
+/*
+  .panel-flicker makes a panel occasionally blink as if the backlight is unstable.
+  Safe to combine with .panel-boot.
+*/
+.panel-flicker {
+  animation:
+    panel-boot 0.5s ease-out both var(--panel-delay, 0s),
+    panel-flicker 12s steps(1) infinite var(--flicker-delay, 3s);
+}
+@keyframes panel-flicker {
+  0%,100%  { opacity: 1; }
+  30%      { opacity: 1; }
+  30.3%    { opacity: 0.05; filter: brightness(0.2); }
+  30.6%    { opacity: 1; filter: none; }
+  30.9%    { opacity: 0.6; }
+  31.2%    { opacity: 1; }
+  72%      { opacity: 1; }
+  72.2%    { opacity: 0.1; }
+  72.4%    { opacity: 1; }
+}
+
+/* ─── 7. TYPE-IN TEXT ────────────────────────────────────────────────────── */
+/*
+  .type-in — reveals text with a blinking cursor (fixed-width only).
+  Set --type-chars to the character count, e.g. style="--type-chars:20"
+*/
+.type-in {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid currentColor;
+  width: 0;
+  animation:
+    typing calc(var(--type-chars, 15) * 0.06s) steps(var(--type-chars, 15)) forwards,
+    blink-caret 0.7s step-end infinite;
+  animation-delay: var(--type-delay, 0.2s), var(--type-delay, 0.2s);
+}
+@keyframes typing     { to { width: 100%; } }
+@keyframes blink-caret{
+  from, to { border-color: transparent; }
+  50%      { border-color: currentColor; }
+}
+
+/* ─── 8. NOISE GRAIN OVERLAY ─────────────────────────────────────────────── */
+/*
+  .noise — adds a subtle animated grain over any element.
+  Uses a pseudo SVG noise filter via CSS; no external image needed.
+*/
+.noise::after {
+  content: '';
+  position: fixed;
+  inset: -200%;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  animation: noise-shift 0.15s steps(2) infinite;
+}
+@keyframes noise-shift {
+  0%   { transform: translate(0,0); }
+  25%  { transform: translate(-5%, 3%); }
+  50%  { transform: translate(4%, -2%); }
+  75%  { transform: translate(-3%, 5%); }
+  100% { transform: translate(2%, -4%); }
+}
+
+/* ─── 9. HORIZON SCAN (moving glow line) ─────────────────────────────────── */
+/*
+  .horizon-scan — sweeping glow line going down a panel, like a radar scan.
+*/
+.horizon-scan {
+  position: relative;
+  overflow: hidden;
+}
+.horizon-scan::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(124,106,247,0.6), transparent);
+  box-shadow: 0 0 12px 3px rgba(124,106,247,0.3);
+  top: -4px;
+  animation: horizon-scan 4s linear infinite;
+  animation-delay: var(--scan-delay, 0s);
+  pointer-events: none;
+}
+@keyframes horizon-scan {
+  from { top: -4px; opacity: 0.8; }
+  80%  { opacity: 0.8; }
+  to   { top: 100%; opacity: 0; }
+}
+
+/* ─── 10. CURSOR GLOW (accent dot) ──────────────────────────────────────── */
+/*
+  Add id="cursor-glow" to the body and call initCursorGlow() from fx.js (see below).
+  This is handled via JS — the CSS just styles the dot.
+*/
+#cursor-dot {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(124,106,247,0.7);
+  box-shadow: 0 0 16px 6px rgba(124,106,247,0.3);
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s, transform 0.08s ease-out;
+  opacity: 0;
+}
+body:hover #cursor-dot { opacity: 1; }
