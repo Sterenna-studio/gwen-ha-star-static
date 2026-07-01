@@ -1,0 +1,19 @@
+/* ── STAR BACKGROUND ── */
+#star-bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  display: block;
+}
+
+body.star-page {
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    #0d0f2a 0%,
+    #07090f 60%,
+    #000 100%
+  ) !important;
+}
