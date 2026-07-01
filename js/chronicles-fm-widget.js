@@ -1,8 +1,8 @@
-/** Chronicles FM Widget v5.5 — playlist player without Data API calls. */
+/** Chronicles FM Widget v5.6 — playlist player without YouTube Data API calls. */
 (function () {
   'use strict';
 
-  const DATA_URL = '/chronicles-fm/data.json';
+  const DATA_URL = '/jukebox/chronicles-fm.json';
   const PLAYER_ID = 'cfm-yt-player';
   const VOL_DEFAULT = 80;
   const VOL_STEP = 10;
@@ -10,6 +10,9 @@
   const SCROLL_SEP = '  ⬡  ';
   const SCROLL_SPEED = 55;
   const AUDIO_BASE = '/audio/leme/';
+
+  // Declare real files here only if they exist in /audio/leme/.
+  // Empty set = no request to missing leme-*.mp3 files, so no 404 spam.
   const AVAILABLE_LEME_AUDIO = new Set([]);
 
   const FREQ_PHRASES = [
@@ -22,7 +25,7 @@
     'Circuit 07 en ligne. Distorsion maximale. Les cables brulent.',
     'Transmission 08 recue. Le triskel resonne dans les circuits.',
     'Signal 09 non classifie. Dimension parallele en ecoute.',
-    'Format long engage. Pas de pause. Pas d\'interruption. Tiens.',
+    'Format long engage. Pas de pause. Pas d\'interruption. Tiens.'
   ];
   const AMBIENT_PHRASES = [
     'Synchronisation des ondes en cours. Patience, agent.',
@@ -30,19 +33,19 @@
     'Archives consultees. Frequence verrouillee.',
     'Lemegeton calibre les emissions. Restez connectes.',
     'Interferences detectees. Filtrage en cours.',
-    'BZH Chronicles Radio. Toujours en orbite.',
+    'BZH Chronicles Radio. Toujours en orbite.'
   ];
   const NIGHT_PHRASES = [
     'Les signaux se fondent dans l\'obscurite des frequences mortes.',
     'L\'ether murmure des elegies a minuit passe.',
     'Transmissions chiffrees depuis les catacombes numeriques.',
-    'Frequences noires. Signal de l\'abime. BZH Chronicles ne dort pas.',
+    'Frequences noires. Signal de l\'abime. BZH Chronicles ne dort pas.'
   ];
   const INTRO_PHRASES = [
     'Bienvenue sur Chronicles FM. Le signal est etabli.',
     'Connexion etablie. Lemegeton prend le relais.',
     'Chronicles FM operationnel. Choisissez votre frequence.',
-    'Systeme audio initialise. Bon voyage, agent.',
+    'Systeme audio initialise. Bon voyage, agent.'
   ];
 
   let frequencies = [];
@@ -70,15 +73,20 @@
   const pad2 = n => (n < 10 ? '0' : '') + n;
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
-  const freq = () => frequencies[currentFreqIdx] || null;
-  const playlistId = () => (freq() && freq().youtubePlaylistId) || '';
+  const currentFreq = () => frequencies[currentFreqIdx] || null;
+  const currentPlaylistId = () => (currentFreq() && currentFreq().youtubePlaylistId) || '';
 
   function phraseFor(type) {
     const arr = nightMode ? NIGHT_PHRASES : (type === 'intro' ? INTRO_PHRASES : AMBIENT_PHRASES);
     const i = Math.floor(Math.random() * arr.length);
     return { text: arr[i], index: i + 1 };
   }
-  function freqPhrase(i) { return FREQ_PHRASES[i] || FREQ_PHRASES[0]; }
+
+  function freqPhrase(i) {
+    if (FREQ_PHRASES[i]) return FREQ_PHRASES[i];
+    const f = frequencies[i];
+    return (f?.subtitle || 'Frequence ' + (i + 1)) + ' verrouillee. Signal Chronicles FM synchronise.';
+  }
 
   function setVolume() {
     const vol = isMuted ? 0 : masterVolume;
@@ -89,11 +97,20 @@
     const icon = isMuted || masterVolume === 0 ? '🔇' : masterVolume <= 40 ? '🔉' : '🔊';
     if (slider) slider.value = masterVolume;
     if (label) label.textContent = isMuted ? 'MUT' : masterVolume + '%';
-    ['cfm-voice-btn', 'cfm-lp-voice-btn'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = icon; });
+    ['cfm-voice-btn', 'cfm-lp-voice-btn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = icon;
+    });
   }
+
   function toggleMute() {
-    if (isMuted) { isMuted = false; masterVolume = volBeforeMute || VOL_DEFAULT; }
-    else { volBeforeMute = masterVolume; isMuted = true; }
+    if (isMuted) {
+      isMuted = false;
+      masterVolume = volBeforeMute || VOL_DEFAULT;
+    } else {
+      volBeforeMute = masterVolume;
+      isMuted = true;
+    }
     setVolume();
   }
 
@@ -123,12 +140,13 @@
       }
     })();
   }
+
   function showPanel(text, foot, audioType, audioIdx) {
     const panel = document.getElementById('cfm-leme-panel');
     const body = document.getElementById('cfm-lp-text');
     const footer = document.getElementById('cfm-lp-footer');
     if (!panel || !body) return;
-    if (footer) footer.textContent = foot || (freq() && freq().title) || '—';
+    if (footer) footer.textContent = foot || (currentFreq() && currentFreq().title) || '—';
     panel.classList.add('visible');
     typewriter(body, text);
     if (audioType && audioIdx !== undefined) playLemeAudio(audioType, audioIdx);
@@ -147,6 +165,7 @@
     }
     tickerRAF = requestAnimationFrame(animateTicker);
   }
+
   function setTicker(segs) {
     const wrap = document.getElementById('cfm-ticker-wrap');
     if (!wrap) return;
@@ -172,10 +191,12 @@
     tickerLast = performance.now();
     requestAnimationFrame(() => { tickerW = track.scrollWidth / 2; animateTicker(); });
   }
+
   function setTickerText(type, text) {
     if (!tickerTrack) return;
     tickerTrack.querySelectorAll('.cfm-ticker-item[data-type="' + type + '"]').forEach(el => { el.textContent = text; });
   }
+
   function buildTicker(freqData, lemePhrase) {
     const segs = [{ type:'freq', text:freqData.title }];
     if (freqData.style) segs.push({ type:'style', text:freqData.style.toUpperCase() });
@@ -188,34 +209,50 @@
   }
 
   function cuePlaylist() {
-    const id = playlistId();
+    const id = currentPlaylistId();
     if (!id || !ytPlayer || !ytApiReady || !ytPlayer.cuePlaylist) return;
     ytPlayer.cuePlaylist({ listType:'playlist', list:id, index:0 });
     setVolume();
   }
+
   function loadPlaylist(randomStart) {
-    const id = playlistId();
+    const id = currentPlaylistId();
     if (!id) return;
-    if (!ytPlayer || !ytApiReady || !ytPlayer.loadPlaylist) { pendingPlay = true; return; }
+    if (!ytPlayer || !ytApiReady || !ytPlayer.loadPlaylist) {
+      pendingPlay = true;
+      return;
+    }
     ytPlayer.loadPlaylist({ listType:'playlist', list:id, index:randomStart ? Math.floor(Math.random() * 25) : 0 });
     setVolume();
   }
+
   function initYTPlayer() {
     if (ytPlayer || !window.YT?.Player) return;
     ytPlayer = new window.YT.Player(PLAYER_ID, {
-      width:'260', height:'146',
+      width:'260',
+      height:'146',
       playerVars:{ autoplay:0, controls:1, rel:0, modestbranding:1, enablejsapi:1, origin:window.location.origin },
       events:{
-        onReady: () => { ytApiReady = true; setVolume(); pendingPlay || isPlaying ? loadPlaylist(false) : cuePlaylist(); pendingPlay = false; },
+        onReady: () => {
+          ytApiReady = true;
+          setVolume();
+          if (pendingPlay || isPlaying) loadPlaylist(false);
+          else cuePlaylist();
+          pendingPlay = false;
+        },
         onStateChange: e => { if (e.data === 0 && ytPlayer?.nextVideo) ytPlayer.nextVideo(); },
         onError: () => { if (isPlaying && ytPlayer?.nextVideo) setTimeout(() => ytPlayer.nextVideo(), 1200); }
       }
     });
   }
+
   function loadYTApi() {
     if (window.YT?.Player) { initYTPlayer(); return; }
     const oldReady = window.onYouTubeIframeAPIReady;
-    window.onYouTubeIframeAPIReady = () => { if (typeof oldReady === 'function') oldReady(); initYTPlayer(); };
+    window.onYouTubeIframeAPIReady = () => {
+      if (typeof oldReady === 'function') oldReady();
+      initYTPlayer();
+    };
     if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
       const tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
@@ -226,7 +263,7 @@
   async function switchFreq(idx) {
     if (!frequencies.length) return;
     currentFreqIdx = ((idx % frequencies.length) + frequencies.length) % frequencies.length;
-    const f = freq();
+    const f = currentFreq();
     const phrase = freqPhrase(currentFreqIdx);
     document.getElementById('cfm-freq-num').textContent = f.subtitle || ('Frequence ' + (currentFreqIdx + 1));
     document.getElementById('cfm-w-style').textContent = f.style || '';
@@ -241,14 +278,27 @@
       setTickerText('leme', p.text);
     }, AMBIENT_INTERVAL);
   }
+
   function togglePlay() {
     isPlaying = !isPlaying;
     document.getElementById('cfm-play-btn').textContent = isPlaying ? '⏸' : '▶';
     if (isPlaying) loadPlaylist(false);
-    else { pendingPlay = false; if (ytPlayer?.pauseVideo) ytPlayer.pauseVideo(); }
+    else {
+      pendingPlay = false;
+      if (ytPlayer?.pauseVideo) ytPlayer.pauseVideo();
+    }
   }
+
   function skip() { if (isPlaying && ytPlayer?.nextVideo) ytPlayer.nextVideo(); }
   function previous() { if (ytPlayer?.previousVideo) ytPlayer.previousVideo(); else switchFreq(currentFreqIdx - 1); }
+
+  function openSidebar() {
+    const bar = document.getElementById('cfm-bar');
+    if (!bar) return;
+    sidebarOpen = true;
+    bar.classList.add('cfm-open');
+    bar.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
 
   function injectCSS() {
     if (document.getElementById('cfm-styles')) return;
@@ -294,11 +344,28 @@
     document.getElementById('cfm-skip-btn').addEventListener('click', skip);
     document.getElementById('cfm-prev-btn').addEventListener('click', previous);
     document.getElementById('cfm-next-btn').addEventListener('click', () => switchFreq(currentFreqIdx + 1));
-    document.getElementById('cfm-freq-btn').addEventListener('click', () => { drawerOpen = !drawerOpen; document.getElementById('cfm-drawer').classList.toggle('open', drawerOpen); document.getElementById('cfm-freq-btn').textContent = drawerOpen ? '▼ REPLIER' : '▶ FRÉQUENCES'; });
-    document.getElementById('cfm-night-btn').addEventListener('click', () => { nightMode = !nightMode; document.body.classList.toggle('cfm-night', nightMode); document.getElementById('cfm-night-btn').textContent = nightMode ? '☀' : '🌙'; if (freq()) setTicker(buildTicker(freq(), freqPhrase(currentFreqIdx))); });
-    document.getElementById('cfm-vol-slider').addEventListener('input', function () { masterVolume = parseInt(this.value, 10); if (isMuted && masterVolume > 0) isMuted = false; setVolume(); });
+    document.getElementById('cfm-freq-btn').addEventListener('click', () => {
+      drawerOpen = !drawerOpen;
+      document.getElementById('cfm-drawer').classList.toggle('open', drawerOpen);
+      document.getElementById('cfm-freq-btn').textContent = drawerOpen ? '▼ REPLIER' : '▶ FRÉQUENCES';
+    });
+    document.getElementById('cfm-night-btn').addEventListener('click', () => {
+      nightMode = !nightMode;
+      document.body.classList.toggle('cfm-night', nightMode);
+      document.getElementById('cfm-night-btn').textContent = nightMode ? '☀' : '🌙';
+      if (currentFreq()) setTicker(buildTicker(currentFreq(), freqPhrase(currentFreqIdx)));
+    });
+    document.getElementById('cfm-vol-slider').addEventListener('input', function () {
+      masterVolume = parseInt(this.value, 10);
+      if (isMuted && masterVolume > 0) isMuted = false;
+      setVolume();
+    });
     document.getElementById('cfm-voice-btn').addEventListener('click', toggleMute);
     document.getElementById('cfm-lp-voice-btn').addEventListener('click', e => { e.stopPropagation(); toggleMute(); });
+
+    const hubOpen = document.getElementById('cfm-hub-open-widget');
+    if (hubOpen) hubOpen.addEventListener('click', openSidebar);
+
     document.addEventListener('keydown', e => {
       const tag = document.activeElement?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
@@ -318,7 +385,10 @@
       const item = document.createElement('div');
       item.className = 'cfm-freq-item' + (i === currentFreqIdx ? ' active' : '');
       item.innerHTML = `<span class="cfm-freq-title">${esc(f.title)}</span><span class="cfm-freq-sub">${esc(f.style || '')}</span><span class="cfm-freq-mood">${esc(f.mood || '')}</span>`;
-      item.addEventListener('click', () => { switchFreq(i); if (drawerOpen) document.getElementById('cfm-freq-btn').click(); });
+      item.addEventListener('click', () => {
+        switchFreq(i);
+        if (drawerOpen) document.getElementById('cfm-freq-btn').click();
+      });
       list.appendChild(item);
     });
   }
@@ -328,7 +398,10 @@
       const res = await fetch(DATA_URL, { cache:'no-cache' });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       frequencies = await res.json();
-    } catch (e) { console.warn('[CFM] data.json load error:', e); return; }
+    } catch (e) {
+      console.warn('[CFM] data load error:', e);
+      return;
+    }
     if (!Array.isArray(frequencies) || !frequencies.length) return;
     injectCSS();
     buildWidget();
@@ -337,7 +410,11 @@
     setVolume();
     loadYTApi();
     await switchFreq(0);
-    setTimeout(() => { const p = phraseFor('intro'); showPanel(p.text, frequencies[0].title, 'intro', p.index); setTickerText('leme', p.text); }, 2000);
+    setTimeout(() => {
+      const p = phraseFor('intro');
+      showPanel(p.text, frequencies[0].title, 'intro', p.index);
+      setTickerText('leme', p.text);
+    }, 2000);
   }
 
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
