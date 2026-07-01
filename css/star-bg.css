@@ -1,4 +1,8 @@
-/* ── STAR BACKGROUND ── */
+/* ═══════════════════════════════════════════════════════════════
+   STAR-BG.CSS — Fond étoilé animé pour star/index.html
+   Canvas position:fixed z-index:-1, gradient nébuleuse radiale
+═══════════════════════════════════════════════════════════════ */
+
 #star-bg-canvas {
   position: fixed;
   inset: 0;
@@ -9,11 +13,12 @@
   display: block;
 }
 
-body.star-page {
+.star-page {
   background: radial-gradient(
-    ellipse at 50% 40%,
+    ellipse at 50% 38%,
     #0d0f2a 0%,
-    #07090f 60%,
+    #07090f 55%,
     #000 100%
   ) !important;
+  min-height: 100dvh;
 }
