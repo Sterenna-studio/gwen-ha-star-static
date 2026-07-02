@@ -76,12 +76,30 @@ async function refresh() {
     return;
   }
   list.innerHTML = rows.map(row => `
-    <article class="aa-dedication">
+    <article class="aa-dedication" data-id="${esc(row.id)}">
       <div>
         <div class="aa-meta"><span class="aa-status ${esc(row.status)}">${esc(row.status)}</span><span>${esc(row.username || 'AGENT')}</span><span>${esc(row.cost)} C</span></div>
         <div class="aa-msg">${esc(row.message)}</div>
       </div>
+      <div class="aa-d-actions"><button class="aa-btn" data-hide="1">MASQUER</button></div>
     </article>`).join('');
+  list.querySelectorAll('[data-hide]').forEach(btn => {
+    btn.addEventListener('click', () => hideDedication(btn.closest('.aa-dedication')?.dataset.id));
+  });
+}
+
+async function hideDedication(id) {
+  if (!id) return;
+  const { data, error } = await supabase.rpc('admin_radio_update_dedication', {
+    p_id: id,
+    p_status: 'hidden',
+    p_message: null,
+  });
+  if (error || data?.ok === false) {
+    alert(data?.error || error?.message || 'Action refusée');
+    return;
+  }
+  await refresh();
 }
 
 async function submitTest(event) {
