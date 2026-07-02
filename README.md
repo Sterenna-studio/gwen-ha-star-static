@@ -64,8 +64,15 @@ gwen-ha-star-static/
 ├── cig.html                   # CIG — profil agent connecté
 │
 ├── star/                      # Cockpit connecté statique historique
+│   └── admin/
+│       ├── background.html    # Console background spatial superuser
+│       ├── background-admin.js
+│       ├── background-elements-admin.js
+│       └── background-admin.css
 ├── TCG/                       # App interne TCG
 ├── jukebox/                   # Jukebox statique
+├── docs/
+│   └── space-background-ships.md
 │
 ├── shared/                    # Socle commun Nitro
 │   ├── config.js              # Généré au déploiement, non versionné
@@ -84,8 +91,11 @@ gwen-ha-star-static/
 │   ├── data.js
 │   ├── radar.js
 │   ├── theme.js
-│   ├── auth.js                # Wrapper vers shared/session-ui.js
+│   ├── auth.js                # Wrapper vers shared/session-ui.js + overlay background
 │   ├── supabase.js            # Wrapper vers shared auth/client
+│   ├── home-sections-runtime.js
+│   ├── space-background.js
+│   ├── space-ships-library-overlay.js
 │   └── star/                  # Logique spécifique au cockpit Star statique
 │
 └── .github/workflows/
@@ -102,10 +112,55 @@ gwen-ha-star-static/
 | `/login.html` | Public | Connexion agent |
 | `/cig.html` | Connecté | Carte d'Identification Galactique |
 | `/star/` | Connecté | Cockpit membre / crew / réseau statique historique |
+| `/star/admin/background.html` | Superuser | Gestion du background spatial public |
+| `/docs/space-background-ships.md` | Technique | Guide vaisseaux, éléments, presets et agent IA |
 | `/TCG/` | Connecté | App TCG |
 | `/jukebox/` | Public / intégré | Lecteur musical |
 | `/shared/` | Technique | Modules communs Nitro |
 | `/botanica/` | Connecté | Déployé par le repo `botanica-obscura` sous Nitro |
+
+---
+
+## Background spatial public
+
+L'accueil utilise plusieurs modules complémentaires :
+
+```txt
+/js/space-background.js
+/js/space-ships-library-overlay.js
+/js/home-sections-runtime.js
+/star/admin/background.html
+```
+
+La console admin permet de modifier rapidement :
+
+- activation globale du background ;
+- densité d'étoiles ;
+- nébuleuse ;
+- petites planètes ;
+- astéroïdes ;
+- satellites ;
+- crashs / incidents ;
+- secousses écran ;
+- trafic et vitesse ;
+- bibliothèque de vaisseaux avec preview ;
+- presets `CALME`, `VIVANT`, `TEMPÊTE`, `MINIMAL` ;
+- test local de secousse.
+
+Les 4 familles historiques de vaisseaux importées depuis l'ancien moteur `ship-canvas` sont :
+
+```txt
+scout
+freighter
+needle
+carrier
+```
+
+La documentation de création rapide et le prompt pour agent IA sont dans :
+
+```txt
+/docs/space-background-ships.md
+```
 
 ---
 
@@ -158,39 +213,3 @@ Elles peuvent importer les modules `/shared` grâce au CORS configuré dans `sha
 Pour PokéGang, l'intégration Nitro doit donc rester progressive : détection, liaison de compte, cloud sync, récompenses, etc.
 
 ---
-
-## Configuration Supabase
-
-Les clés Supabase ne sont plus versionnées dans un `config.js` à la racine.
-
-Le workflow GitHub Actions génère au déploiement :
-
-```txt
-shared/config.js
-```
-
-à partir des secrets GitHub :
-
-```txt
-GHSTAR_SUPABASE_URL
-GHSTAR_SUPABASE_ANON
-```
-
-`shared/config.js` est ignoré par Git et ne doit pas être commité.
-
-> La clé `anon` / `publishable` reste visible côté navigateur après déploiement, ce qui est normal pour une app front statique Supabase. La sécurité doit être assurée par les règles RLS côté Supabase.
-
----
-
-## Déploiement
-
-Le repo est déployé avec GitHub Actions, pas via le webhook Git/VCS OVH.
-
-Flux :
-
-```txt
-git push main
-→ GitHub Actions
-→ génération shared/config.js
-→ rsync vers OVH ~/nitro/
-```
