@@ -100,3 +100,18 @@ if (!RadioPlayer.prototype.__starRadioStabilized) {
     }
   };
 }
+
+function openChroniclesSidebar() {
+  const bar = document.getElementById('cfm-bar');
+  if (!bar) return;
+  bar.classList.add('cfm-open');
+  bar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const status = document.getElementById('sb-cfm');
+  if (status && !status.__cfmSidebarStableBound) {
+    status.__cfmSidebarStableBound = true;
+    status.addEventListener('click', openChroniclesSidebar);
+  }
+});
