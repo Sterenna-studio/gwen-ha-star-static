@@ -1,6 +1,6 @@
 # Gwen Ha Star — Background spatial
 
-Ce document sert à gérer rapidement le background spatial de l'accueil : vaisseaux, étoiles, nébuleuse, planètes, astéroïdes, satellites, crashs et tests rapides.
+Ce document sert à gérer rapidement le background spatial de l'accueil : vaisseaux, étoiles, nébuleuse, planètes, astéroïdes, satellites, crashs, previews, backups et presets d'univers.
 
 ## Page admin
 
@@ -8,11 +8,12 @@ Ce document sert à gérer rapidement le background spatial de l'accueil : vaiss
 /star/admin/background.html
 ```
 
-La page contient trois zones :
+La page contient maintenant quatre zones :
 
 1. **Ambiance** : sliders globaux historiques.
 2. **Bibliothèque de vaisseaux** : modèles activables avec preview.
-3. **Éléments & tests rapides** : étoiles, planètes, astéroïdes, satellites, crashs, presets et tests.
+3. **Aperçu · Backup · Reset** : iframe live, aperçu temporaire, backups Supabase, restore, reset safe.
+4. **Éléments & tests rapides** : étoiles, planètes, astéroïdes, satellites, crashs, presets et tests.
 
 ## Ce qui est déjà historisé
 
@@ -71,21 +72,10 @@ Aucun autre modèle de vaisseau distinct n'a été retrouvé dans les anciens co
 
 ### Formes disponibles
 
-#### `scout`
-
-Petit vaisseau équilibré, lisible, fréquent. Bon pour drones, navettes et chasseurs légers.
-
-#### `freighter`
-
-Silhouette plus large avec modules. Bon pour cargos, transports, vaisseaux industriels.
-
-#### `needle`
-
-Très fin et rapide. Bon pour intercepteurs, sondes, projectiles, prototypes.
-
-#### `carrier`
-
-Grand vaisseau massif. Bon pour croiseurs, porte-nefs, boss visuel, passages rares.
+- `scout` : petit vaisseau équilibré, drones, navettes, chasseurs légers.
+- `freighter` : silhouette large avec modules, cargos, transports, industriel.
+- `needle` : très fin et rapide, intercepteurs, sondes, prototypes.
+- `carrier` : grand vaisseau massif, croiseurs, porte-nefs, passages rares.
 
 ### Création rapide à la main
 
@@ -115,7 +105,7 @@ La zone **ÉLÉMENTS & TESTS RAPIDES** pilote les mêmes champs que les sliders 
 | Trafic global | `ships` | Volume de passages. |
 | Vitesse globale | `speed` | Vitesse générale du décor. |
 
-### Presets rapides
+### Presets rapides admin
 
 | Preset | Usage |
 |---|---|
@@ -125,6 +115,46 @@ La zone **ÉLÉMENTS & TESTS RAPIDES** pilote les mêmes champs que les sliders 
 | `MINIMAL` | Background presque fixe, sans trafic. |
 
 Le bouton `TEST SHAKE` déclenche une secousse locale sans attendre un crash.
+
+---
+
+## Aperçu, backup et reset safe
+
+La zone **APERÇU · BACKUP · RESET** ajoute :
+
+| Bouton | Rôle |
+|---|---|
+| `APERÇU LIVE` | Recharge l'accueil dans une iframe avec la dernière config sauvegardée. |
+| `APERÇU NON SAUVÉ` | Envoie les valeurs visibles dans un preset local temporaire et recharge l'iframe. |
+| `BACKUP MAINTENANT` | Crée un backup persistant Supabase de la configuration live. |
+| `RESTORE DERNIER` | Restaure le dernier backup disponible. |
+| `RESET SAFE` | Crée un backup puis applique une config stable recommandée. |
+
+Les backups sont stockés dans Supabase via :
+
+```txt
+space_background_config_backups
+admin_backup_space_background_config
+admin_list_space_background_backups
+admin_restore_space_background_backup
+```
+
+---
+
+## Presets disponibles directement sur l'accueil
+
+L'accueil affiche un sélecteur `BACKGROUND` en bas de page.
+
+| Preset public | Rôle |
+|---|---|
+| `LIVE ADMIN` | Utilise la dernière configuration sauvegardée par l'admin. |
+| `DÉFAUT` | Fond local stable, indépendant de la config live. |
+| `PATROUILLE ARMORICA` | Ambiance claire, ronde, protectrice. |
+| `TRAFIC CONTREBANDE` | Plus de trafic, néons violets/rouges. |
+| `TEMPÊTE DU CODE` | Version dramatique, crashs et activité forte. |
+| `RUINES ORBITALES` | Planètes, astéroïdes, ambiance lente et ancienne. |
+
+Le choix est stocké localement dans le navigateur avec `localStorage.spaceBgPreset`. Il ne modifie pas la configuration live Supabase.
 
 ---
 
