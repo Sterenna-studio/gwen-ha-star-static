@@ -1,7 +1,8 @@
 import './radio-player-stabilizer.js';
+import '../chronicles-fm-star-skin.js';
 import { getHeroNitroApps, getQuickNitroApps } from '../../shared/nitro-apps.js';
 
-const STAR_RUNTIME_ASSET_VERSION = '20260702-radio-fix';
+const STAR_RUNTIME_ASSET_VERSION = '20260702-star-skin';
 forceCacheBustedChroniclesWidget();
 
 function forceCacheBustedChroniclesWidget() {
