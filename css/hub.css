@@ -141,3 +141,11 @@
 @media (max-width: 640px) {
   .tile.featured { grid-column: span 1; }
 }
+
+/* ── ACCUEIL PUBLIC : le jukebox Dr.Spig est conservé mais retiré des liens visibles.
+   Les musiques sont désormais exposées depuis la radio Chronicles FM. */
+body:has(.hub-hero) a[href="#jukebox"],
+body:has(.hub-hero) section#jukebox,
+body:has(.hub-hero) section#jukebox + .hub-divider {
+  display: none !important;
+}
