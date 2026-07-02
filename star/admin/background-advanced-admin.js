@@ -1,12 +1,7 @@
+import './background-universe-admin.js';
 import { supabase } from '../../shared/supabase-client.js';
 
 const SAFE={stars:1.1,nebula:.75,planets:.35,asteroids:.55,satellites:.25,crashes:.12,shake:.35,ships:1,speed:1,shipMax:6,trafficMode:'balanced'};
-const UNIVERSE={
- armorica:{stars:1.05,nebula:.65,planets:.55,asteroids:.25,satellites:.35,crashes:.08,shake:.25,ships:1.1,speed:.9},
- contrebande:{stars:1.25,nebula:.9,planets:.25,asteroids:.75,satellites:.15,crashes:.18,shake:.35,ships:1.7,speed:1.25},
- code:{stars:1.55,nebula:1.35,planets:.15,asteroids:1.25,satellites:.75,crashes:.5,shake:.85,ships:1.45,speed:1.55},
- ruines:{stars:.85,nebula:.35,planets:.8,asteroids:1.5,satellites:.55,crashes:.12,shake:.25,ships:.45,speed:.65}
-};
 let state={enabled:true,config:{}};
 
 wait();
