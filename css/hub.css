@@ -149,3 +149,89 @@ body:has(.hub-hero) section#jukebox,
 body:has(.hub-hero) section#jukebox + .hub-divider {
   display: none !important;
 }
+
+/* ── SKIN PUBLIQUE DU PANEL CHRONICLES FM ───────────────────
+   Habille le widget deployable comme une antenne Gwen Ha Star Radio
+   sans modifier la logique du player YouTube. */
+body:has(.hub-hero) #cfm-bar {
+  --cfm-bg: #06110d !important;
+  --cfm-border: #173a35 !important;
+  --cfm-blue: #00d4ff !important;
+  --cfm-green: #00ff9d !important;
+  --cfm-red: #00ff9d !important;
+  --cfm-purple: #00d4ff !important;
+  --cfm-text: #d8fff0 !important;
+  --cfm-dim: #6e9e95 !important;
+  border-color: #173a35 !important;
+  border-radius: 12px 0 0 12px !important;
+  background: rgba(6, 17, 13, .97) !important;
+  box-shadow: -8px 0 34px rgba(0,0,0,.72), 0 0 34px rgba(0,255,157,.08) !important;
+}
+body:has(.hub-hero) #cfm-bar.cfm-open { width: 340px !important; }
+body:has(.hub-hero) #cfm-tab {
+  width: 38px !important;
+  background: linear-gradient(180deg, rgba(0,255,157,.10), rgba(0,212,255,.05)) !important;
+  border-right-color: #173a35 !important;
+}
+body:has(.hub-hero) #cfm-tab-label {
+  color: #00ff9d !important;
+  letter-spacing: .2em !important;
+  font-size: 0 !important;
+}
+body:has(.hub-hero) #cfm-tab-label::before {
+  content: "STAR FM";
+  font-size: .52rem;
+}
+body:has(.hub-hero) .cfm-tab-dot {
+  background: #00ff9d !important;
+  box-shadow: 0 0 8px #00ff9d, 0 0 18px rgba(0,255,157,.35) !important;
+}
+body:has(.hub-hero) #cfm-inner {
+  min-width: 302px !important;
+  background:
+    radial-gradient(circle at 28% 0, rgba(0,255,157,.12), transparent 38%),
+    radial-gradient(circle at 88% 12%, rgba(0,212,255,.08), transparent 42%),
+    rgba(6,17,13,.97) !important;
+}
+body:has(.hub-hero) #cfm-inner::before {
+  content: "GWEN HA STAR RADIO\A CHRONICLES FM\A LIVE SYNC · YT FREQUENCY";
+  white-space: pre-line;
+  display: block;
+  min-height: 78px;
+  padding: 14px 12px 12px 78px;
+  border-bottom: 1px solid #173a35;
+  color: #d8fff0;
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: .72rem;
+  line-height: 1.45;
+  letter-spacing: .12em;
+  background:
+    url('/shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png') 14px 14px / 48px 48px no-repeat,
+    radial-gradient(circle at 18% 20%, rgba(0,255,157,.16), transparent 46%),
+    linear-gradient(135deg, rgba(0,212,255,.10), rgba(0,255,157,.04));
+  box-shadow: inset 0 -1px 0 rgba(0,255,157,.08);
+}
+body:has(.hub-hero) #cfm-inner::after {
+  content: "⬡ COCKPIT LIVE · DATA AUDIO · PAGE RADIO";
+  display: block;
+  padding: 8px 11px;
+  border-bottom: 1px solid #173a35;
+  color: #00d4ff;
+  background: rgba(0,0,0,.12);
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: .58rem;
+  letter-spacing: .12em;
+}
+body:has(.hub-hero) #cfm-bar .cfm-section,
+body:has(.hub-hero) #cfm-bar #cfm-ticker-slot,
+body:has(.hub-hero) #cfm-bar #cfm-player-wrap {
+  border-color: #173a35 !important;
+}
+body:has(.hub-hero) #cfm-bar .cfm-section-label {
+  color: #345d57 !important;
+}
+body:has(.hub-hero) #cfm-bar .cfm-act-btn.primary {
+  border-color: rgba(0,255,157,.42) !important;
+  color: #00ff9d !important;
+  background: rgba(0,255,157,.07) !important;
+}
