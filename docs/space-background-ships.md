@@ -1,25 +1,37 @@
-# Gwen Ha Star — Bibliothèque de vaisseaux du background
+# Gwen Ha Star — Background spatial
 
-Ce document sert à créer rapidement de nouveaux modèles pour le background spatial de l'accueil.
+Ce document sert à gérer rapidement le background spatial de l'accueil : vaisseaux, étoiles, nébuleuse, planètes, astéroïdes, satellites, crashs et tests rapides.
 
-## Où gérer les vaisseaux
-
-Page admin :
+## Page admin
 
 ```txt
 /star/admin/background.html
 ```
 
-La section `BIBLIOTHÈQUE DE VAISSEAUX` permet de :
+La page contient trois zones :
 
-- activer / désactiver un modèle ;
-- régler son poids de fréquence ;
-- régler sa taille ;
-- ajouter une variante rapide basée sur une forme existante.
+1. **Ambiance** : sliders globaux historiques.
+2. **Bibliothèque de vaisseaux** : modèles activables avec preview.
+3. **Éléments & tests rapides** : étoiles, planètes, astéroïdes, satellites, crashs, presets et tests.
 
-## Modèle de données
+## Ce qui est déjà historisé
 
-Un vaisseau est un objet JSON de ce type :
+Un passage sur les anciens commits a retrouvé les 4 familles historiques de vaisseaux :
+
+- `scout`
+- `freighter`
+- `needle`
+- `carrier`
+
+Ces familles viennent de l'ancien moteur inline `ship-canvas` de `index.html`. Elles ont été réintégrées dans l'overlay actuel avec leurs métadonnées utiles : `engine`, `fill`, `stroke`, `accent`, `flame`, `weight`, `size`, `speedMin`, `speedMax`.
+
+Aucun autre modèle de vaisseau distinct n'a été retrouvé dans les anciens commits inspectés. Les variantes futures doivent donc partir de ces 4 formes de base.
+
+---
+
+## Bibliothèque de vaisseaux
+
+### Modèle de données
 
 ```json
 {
@@ -29,51 +41,53 @@ Un vaisseau est un objet JSON de ce type :
   "custom": true,
   "weight": 2,
   "shape": "freighter",
+  "engine": 42,
   "size": 1.1,
   "speedMin": 90,
   "speedMax": 150,
   "stroke": "#00ffe7",
+  "fill": "rgba(0,255,231,.08)",
   "accent": "#39ff14",
   "flame": "#ffaa00"
 }
 ```
 
-## Champs
-
 | Champ | Rôle |
 |---|---|
-| `id` | Identifiant unique. Utiliser des minuscules et tirets. |
+| `id` | Identifiant unique. Minuscules et tirets. |
 | `label` | Nom visible dans l'admin. |
-| `enabled` | `true` ou `false`. Active ou coupe le modèle. |
-| `custom` | `true` pour un modèle ajouté à la main. |
-| `weight` | Poids de fréquence. `0` = quasi jamais / désactivé, `8` = très fréquent. |
-| `shape` | Forme de base : `scout`, `freighter`, `needle`, `carrier`. |
-| `size` | Taille visuelle. Exemple : `0.7`, `1`, `1.4`. |
+| `enabled` | Active ou coupe le modèle. |
+| `custom` | `true` pour un modèle ajouté. |
+| `weight` | Fréquence relative. `0` = inactif, `8` = fréquent. |
+| `shape` | `scout`, `freighter`, `needle`, `carrier`. |
+| `engine` | Point arrière de propulsion. Hérité de l'ancien moteur. |
+| `size` | Taille visuelle. Conseillé : `0.4` à `1.8`. |
 | `speedMin` | Vitesse minimale. |
 | `speedMax` | Vitesse maximale. |
-| `stroke` | Couleur principale du contour. |
-| `accent` | Couleur secondaire / ailes / détails. |
-| `flame` | Couleur de propulsion / particules. |
+| `stroke` | Couleur principale. |
+| `fill` | Remplissage translucide. |
+| `accent` | Couleur secondaire. |
+| `flame` | Couleur propulsion / particules. |
 
-## Formes disponibles
+### Formes disponibles
 
-### `scout`
+#### `scout`
 
-Petit vaisseau équilibré, lisible, fréquent. Bon pour les drones, navettes, chasseurs légers.
+Petit vaisseau équilibré, lisible, fréquent. Bon pour drones, navettes et chasseurs légers.
 
-### `freighter`
+#### `freighter`
 
 Silhouette plus large avec modules. Bon pour cargos, transports, vaisseaux industriels.
 
-### `needle`
+#### `needle`
 
 Très fin et rapide. Bon pour intercepteurs, sondes, projectiles, prototypes.
 
-### `carrier`
+#### `carrier`
 
 Grand vaisseau massif. Bon pour croiseurs, porte-nefs, boss visuel, passages rares.
 
-## Création rapide à la main
+### Création rapide à la main
 
 1. Ouvrir `/star/admin/background.html`.
 2. Cliquer sur `+ VAISSEAU`.
@@ -83,34 +97,66 @@ Grand vaisseau massif. Bon pour croiseurs, porte-nefs, boss visuel, passages rar
 6. Sauvegarder.
 7. Recharger l'accueil.
 
-Pour un contrôle plus fin, éditer `shipLibrary` dans Supabase via la config `space_background_config`, clé `home`.
+---
+
+## Bibliothèque d'éléments
+
+La zone **ÉLÉMENTS & TESTS RAPIDES** pilote les mêmes champs que les sliders historiques, mais sous forme d'éléments activables.
+
+| Élément | Champ config | Usage |
+|---|---|---|
+| Champ d'étoiles | `stars` | Densité du ciel. |
+| Nébuleuse | `nebula` | Halo cyan/vert. |
+| Petites planètes | `planets` | Disques et anneaux lents. |
+| Astéroïdes | `asteroids` | Rochers traversants. |
+| Satellites | `satellites` | Petits objets orbitaux. |
+| Crashs / incidents | `crashes` | Explosions et particules. |
+| Secousses écran | `shake` | Tremblement lors des incidents. |
+| Trafic global | `ships` | Volume de passages. |
+| Vitesse globale | `speed` | Vitesse générale du décor. |
+
+### Presets rapides
+
+| Preset | Usage |
+|---|---|
+| `CALME` | Fond discret, peu d'événements. |
+| `VIVANT` | Valeur équilibrée recommandée. |
+| `TEMPÊTE` | Beaucoup de vie, crashs, astéroïdes, vitesse. |
+| `MINIMAL` | Background presque fixe, sans trafic. |
+
+Le bouton `TEST SHAKE` déclenche une secousse locale sans attendre un crash.
+
+---
 
 ## Prompt pour agent IA
 
 ```txt
 Tu travailles sur le repo gwen-ha-star-static.
-Objectif : ajouter un nouveau modèle de vaisseau au background spatial de l'accueil.
+Objectif : proposer des variantes de background spatial pour Gwen Ha Star / BZH Chronicles.
 
 Contraintes :
-- Ne pas casser les modèles existants : scout, freighter, needle, carrier.
-- Ajouter ou modifier uniquement la clé config.shipLibrary.
-- Le modèle doit respecter ce format :
-  { id, label, enabled, custom, weight, shape, size, speedMin, speedMax, stroke, accent, flame }
-- shape doit être l'une de ces valeurs : scout, freighter, needle, carrier.
-- Utiliser des couleurs hexadécimales.
-- Garder weight entre 0 et 8.
-- Garder size entre 0.4 et 1.8.
-- Garder speedMin inférieur à speedMax.
+- Ne pas casser les 4 formes historiques : scout, freighter, needle, carrier.
+- Pour les vaisseaux, utiliser ce format :
+  { id, label, enabled, custom, weight, shape, engine, size, speedMin, speedMax, stroke, fill, accent, flame }
+- shape doit être : scout, freighter, needle ou carrier.
+- weight entre 0 et 8.
+- size entre 0.4 et 1.8.
+- speedMin doit être inférieur à speedMax.
+- Pour l'ambiance globale, utiliser uniquement les champs :
+  stars, nebula, planets, asteroids, satellites, crashes, shake, ships, speed.
 
-Propose 3 variantes cohérentes avec l'univers Gwen Ha Star / BZH Chronicles :
-1. un petit vaisseau courant ;
-2. un cargo ou vaisseau utilitaire ;
-3. un grand vaisseau rare.
+Propose :
+1. trois nouveaux vaisseaux cohérents avec l'univers BZH Chronicles ;
+2. un preset calme ;
+3. un preset très vivant ;
+4. un preset dramatique / crash / tempête.
 
-Pour chaque variante, fournis uniquement l'objet JSON prêt à insérer dans shipLibrary.
+Réponds en JSON uniquement.
 ```
 
-## Exemples rapides
+---
+
+## Exemples de vaisseaux
 
 ```json
 {
@@ -120,10 +166,12 @@ Pour chaque variante, fournis uniquement l'objet JSON prêt à insérer dans shi
   "custom": true,
   "weight": 3,
   "shape": "scout",
+  "engine": 34,
   "size": 0.85,
   "speedMin": 180,
   "speedMax": 280,
   "stroke": "#00ffe7",
+  "fill": "rgba(0,255,231,.08)",
   "accent": "#39ff14",
   "flame": "#ffaa00"
 }
@@ -137,10 +185,12 @@ Pour chaque variante, fournis uniquement l'objet JSON prêt à insérer dans shi
   "custom": true,
   "weight": 2,
   "shape": "freighter",
+  "engine": 42,
   "size": 1.15,
   "speedMin": 80,
   "speedMax": 130,
   "stroke": "#bf5fff",
+  "fill": "rgba(191,95,255,.08)",
   "accent": "#00ffe7",
   "flame": "#ff2d55"
 }
@@ -154,10 +204,12 @@ Pour chaque variante, fournis uniquement l'objet JSON prêt à insérer dans shi
   "custom": true,
   "weight": 1,
   "shape": "carrier",
+  "engine": 56,
   "size": 1.35,
   "speedMin": 60,
   "speedMax": 105,
   "stroke": "#ffaa00",
+  "fill": "rgba(255,170,0,.07)",
   "accent": "#ff2d55",
   "flame": "#ffaa00"
 }
