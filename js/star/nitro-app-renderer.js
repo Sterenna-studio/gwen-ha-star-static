@@ -1,6 +1,24 @@
 import './radio-player-stabilizer.js';
 import { getHeroNitroApps, getQuickNitroApps } from '../../shared/nitro-apps.js';
 
+const STAR_RUNTIME_ASSET_VERSION = '20260702-radio-fix';
+forceCacheBustedChroniclesWidget();
+
+function forceCacheBustedChroniclesWidget() {
+  if (typeof document === 'undefined') return;
+  const scripts = document.querySelectorAll('script[src*="chronicles-fm-widget.js"]');
+  scripts.forEach(script => {
+    const rawSrc = script.getAttribute('src') || '';
+    if (!rawSrc || rawSrc.includes('?v=') || rawSrc.includes('&v=')) return;
+
+    const next = document.createElement('script');
+    next.type = 'module';
+    next.src = rawSrc + (rawSrc.includes('?') ? '&' : '?') + 'v=' + STAR_RUNTIME_ASSET_VERSION;
+    next.dataset.cacheBust = STAR_RUNTIME_ASSET_VERSION;
+    script.replaceWith(next);
+  });
+}
+
 export function renderNitroQuickAccess(containerId = 'quick-access-grid') {
   const el = document.getElementById(containerId);
   if (!el) return;
