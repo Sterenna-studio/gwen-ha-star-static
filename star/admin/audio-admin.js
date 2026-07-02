@@ -41,9 +41,18 @@ async function boot() {
       </nav>
     </header>
     <section class="aa-grid" id="aa-stats"></section>
+    <section class="aa-section aa-card">
+      <div class="aa-section-title">// TEST DÉDICACE</div>
+      <form class="aa-composer" id="aa-form">
+        <textarea class="aa-textarea" id="aa-message" maxlength="100" placeholder="Message antenne, 100 caractères max"></textarea>
+        <button class="aa-btn primary" type="submit">ENVOYER</button>
+      </form>
+      <div class="aa-toast" id="aa-toast"></div>
+    </section>
     <section class="aa-section"><div class="aa-section-head"><div class="aa-section-title">// FILE DES DÉDICACES</div></div><div class="aa-list" id="aa-list"></div></section>`;
 
   document.getElementById('aa-refresh')?.addEventListener('click', refresh);
+  document.getElementById('aa-form')?.addEventListener('submit', submitTest);
   await refresh();
 }
 
@@ -73,4 +82,27 @@ async function refresh() {
         <div class="aa-msg">${esc(row.message)}</div>
       </div>
     </article>`).join('');
+}
+
+async function submitTest(event) {
+  event.preventDefault();
+  const input = document.getElementById('aa-message');
+  const toast = document.getElementById('aa-toast');
+  const message = input?.value?.trim() ?? '';
+  if (message.length < 3 || message.length > 100) {
+    toast.textContent = 'Message entre 3 et 100 caractères.';
+    toast.classList.add('aa-error');
+    return;
+  }
+  toast.classList.remove('aa-error');
+  toast.textContent = 'Envoi...';
+  const { error } = await supabase.rpc('submit_radio_dedication', { p_message: message });
+  if (error) {
+    toast.textContent = 'Envoi impossible.';
+    toast.classList.add('aa-error');
+    return;
+  }
+  input.value = '';
+  toast.textContent = 'Dédicace ajoutée.';
+  await refresh();
 }
