@@ -81,18 +81,22 @@ async function refresh() {
         <div class="aa-meta"><span class="aa-status ${esc(row.status)}">${esc(row.status)}</span><span>${esc(row.username || 'AGENT')}</span><span>${esc(row.cost)} C</span></div>
         <div class="aa-msg">${esc(row.message)}</div>
       </div>
-      <div class="aa-d-actions"><button class="aa-btn" data-hide="1">MASQUER</button></div>
+      <div class="aa-d-actions">
+        <button class="aa-btn" data-status="queued">QUEUE</button>
+        <button class="aa-btn" data-status="played">JOUÉ</button>
+        <button class="aa-btn" data-status="hidden">MASQUER</button>
+      </div>
     </article>`).join('');
-  list.querySelectorAll('[data-hide]').forEach(btn => {
-    btn.addEventListener('click', () => hideDedication(btn.closest('.aa-dedication')?.dataset.id));
+  list.querySelectorAll('[data-status]').forEach(btn => {
+    btn.addEventListener('click', () => setDedicationStatus(btn.closest('.aa-dedication')?.dataset.id, btn.dataset.status));
   });
 }
 
-async function hideDedication(id) {
-  if (!id) return;
+async function setDedicationStatus(id, status) {
+  if (!id || !status) return;
   const { data, error } = await supabase.rpc('admin_radio_update_dedication', {
     p_id: id,
-    p_status: 'hidden',
+    p_status: status,
     p_message: null,
   });
   if (error || data?.ok === false) {
