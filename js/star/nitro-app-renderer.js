@@ -1,3 +1,4 @@
+import './radio-player-stabilizer.js';
 import { getHeroNitroApps, getQuickNitroApps } from '../../shared/nitro-apps.js';
 
 export function renderNitroQuickAccess(containerId = 'quick-access-grid') {
