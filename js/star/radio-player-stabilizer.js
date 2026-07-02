@@ -1,3 +1,4 @@
+import './radio-player-gate.js';
 import { supabase } from '../supabase.js';
 import { RadioPlayer } from './widgets.js';
 
