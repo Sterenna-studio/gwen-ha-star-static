@@ -62,11 +62,12 @@ Options -Indexes
 
 </IfModule>
 
-# ── PATCH RADIO LIVE STAR ──────────────────────────────────────
-# Injection légère avant le dashboard pour corriger la récursion _syncClockTrack/_play
-# sans réécrire star/index.html ni désactiver le comportement LIVE/dédicaces.
+# ── PATCHS HTML LÉGERS ──────────────────────────────────────
 <IfModule mod_substitute.c>
   AddOutputFilterByType SUBSTITUTE text/html
+  # Accueil public : layout simplifié Twitch+YouTube puis Web Radio.
+  Substitute "s|</head>|<link rel=\"stylesheet\" href=\"/css/home-sections.css?v=20260702\"></head>|n"
+  # Radio live Star : stabilizer runtime non destructif.
   Substitute "s|<script type=\"module\">|<script type=\"module\" src=\"/js/star/radio-player-stabilizer.js\"></script>\n  <script type=\"module\">|n"
 </IfModule>
 
