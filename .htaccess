@@ -56,17 +56,24 @@ Options -Indexes
 
 </IfModule>
 
-# ── COMPRESSION GZIP ────────────────────────────────────────────
+# ── PATCH RADIO LIVE STAR ──────────────────────────────────────
+# Injection légère avant le dashboard pour corriger la récursion _syncClockTrack/_play
+# sans réécrire star/index.html ni désactiver le comportement LIVE/dédicaces.
+<IfModule mod_substitute.c>
+  AddOutputFilterByType SUBSTITUTE text/html
+  Substitute "s|<script type=\"module\">|<script type=\"module\" src=\"/js/star/radio-player-stabilizer.js\"></script>\n  <script type=\"module\">|n"
+</IfModule>
+
+# ── COMPRESSION GZIP ───────────────────────────────────────────
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
   AddOutputFilterByType DEFLATE image/svg+xml font/woff font/woff2
 </IfModule>
 
-# ── MIME TYPES ──────────────────────────────────────────────────
+# ── MIME TYPES ─────────────────────────────────────────────────
 <IfModule mod_mime.c>
   AddType application/javascript .js .mjs
   AddType text/css               .css
   AddType font/woff2             .woff2
   AddType font/woff              .woff
-  AddType application/json       .json
 </IfModule>
