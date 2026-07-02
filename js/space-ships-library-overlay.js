@@ -1,3 +1,4 @@
+import './home-sections-runtime.js';
 import { supabase } from '../shared/supabase-client.js';
 
 const BASE=[
