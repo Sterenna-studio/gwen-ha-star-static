@@ -3,6 +3,7 @@
  * Shared Nitro session UI now lives in /shared/session-ui.js.
  */
 import './space-preset-switcher.js';
+import './space-custom-preview.js';
 import './space-ships-library-overlay.js';
 import { mountSessionWidget } from '../shared/session-ui.js';
 import { renderPublicNitroApps } from './hub/nitro-public-renderer.js';
