@@ -52,3 +52,11 @@
   text-decoration: none;
   margin-top: var(--space-1);
 }
+
+.jk-track {
+  width: 100%;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
