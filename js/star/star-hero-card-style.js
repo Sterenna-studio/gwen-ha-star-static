@@ -1,4 +1,6 @@
-const STYLE_ID = 'star-hero-card-style-v1';
+import './korigan-chat-state.js';
+
+const STYLE_ID = 'star-hero-card-style-v2';
 
 if (!document.getElementById(STYLE_ID)) {
   const style = document.createElement('style');
@@ -43,10 +45,7 @@ if (!document.getElementById(STYLE_ID)) {
         linear-gradient(135deg, color-mix(in oklch, var(--hero-accent, var(--c-primary)) 12%, transparent), transparent 46%),
         radial-gradient(circle at 18% 0%, color-mix(in oklch, var(--hero-accent-2, var(--c-cyan)) 20%, transparent), transparent 38%),
         color-mix(in oklch, var(--c-surface) 92%, #02040a);
-      box-shadow:
-        0 14px 34px rgba(0,0,0,.28),
-        inset 0 1px 0 rgba(255,255,255,.04),
-        0 0 0 1px rgba(255,255,255,.018);
+      box-shadow: 0 14px 34px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.04), 0 0 0 1px rgba(255,255,255,.018);
       overflow: hidden;
       transform: translateZ(0);
       transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, filter .22s ease;
@@ -56,36 +55,17 @@ if (!document.getElementById(STYLE_ID)) {
     .hero-card--nitro:focus-visible {
       transform: translateY(-4px);
       border-color: color-mix(in oklch, var(--hero-accent, var(--c-primary)) 68%, var(--c-border));
-      box-shadow:
-        0 18px 44px rgba(0,0,0,.36),
-        0 0 28px color-mix(in oklch, var(--hero-accent, var(--c-primary)) 22%, transparent),
-        inset 0 1px 0 rgba(255,255,255,.07);
+      box-shadow: 0 18px 44px rgba(0,0,0,.36), 0 0 28px color-mix(in oklch, var(--hero-accent, var(--c-primary)) 22%, transparent), inset 0 1px 0 rgba(255,255,255,.07);
       outline: none;
     }
 
     .hero-card--nitro::before,
-    .hero-card--nitro::after {
-      content: '';
-      position: absolute;
-      pointer-events: none;
-      z-index: 3;
-    }
-
+    .hero-card--nitro::after { content: ''; position: absolute; pointer-events: none; z-index: 3; }
     .hero-card--nitro::before {
       inset: 9px;
       border: 1px solid color-mix(in oklch, var(--hero-accent, var(--c-primary)) 22%, transparent);
       border-radius: 12px;
-      mask:
-        linear-gradient(#000 0 0) top left / 34px 1px no-repeat,
-        linear-gradient(#000 0 0) top left / 1px 34px no-repeat,
-        linear-gradient(#000 0 0) top right / 34px 1px no-repeat,
-        linear-gradient(#000 0 0) top right / 1px 34px no-repeat,
-        linear-gradient(#000 0 0) bottom left / 34px 1px no-repeat,
-        linear-gradient(#000 0 0) bottom left / 1px 34px no-repeat,
-        linear-gradient(#000 0 0) bottom right / 34px 1px no-repeat,
-        linear-gradient(#000 0 0) bottom right / 1px 34px no-repeat;
     }
-
     .hero-card--nitro::after {
       content: var(--hero-glyph, 'NITRO');
       right: 16px;
@@ -100,9 +80,7 @@ if (!document.getElementById(STYLE_ID)) {
       position: relative;
       min-height: 112px;
       overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 42%, color-mix(in oklch, var(--hero-accent, var(--c-primary)) 22%, transparent), transparent 34%),
-        linear-gradient(180deg, rgba(255,255,255,.04), transparent 60%);
+      background: radial-gradient(circle at 50% 42%, color-mix(in oklch, var(--hero-accent, var(--c-primary)) 22%, transparent), transparent 34%), linear-gradient(180deg, rgba(255,255,255,.04), transparent 60%);
       border-bottom: 1px solid color-mix(in oklch, var(--hero-accent, var(--c-primary)) 20%, transparent);
     }
 
@@ -110,9 +88,7 @@ if (!document.getElementById(STYLE_ID)) {
       position: absolute;
       inset: 0;
       opacity: .42;
-      background-image:
-        linear-gradient(color-mix(in oklch, var(--hero-accent, var(--c-primary)) 18%, transparent) 1px, transparent 1px),
-        linear-gradient(90deg, color-mix(in oklch, var(--hero-accent, var(--c-primary)) 18%, transparent) 1px, transparent 1px);
+      background-image: linear-gradient(color-mix(in oklch, var(--hero-accent, var(--c-primary)) 18%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklch, var(--hero-accent, var(--c-primary)) 18%, transparent) 1px, transparent 1px);
       background-size: 20px 20px;
       transform: perspective(420px) rotateX(58deg) translateY(18px) scale(1.15);
       transform-origin: bottom;
@@ -129,24 +105,11 @@ if (!document.getElementById(STYLE_ID)) {
       place-items: center;
       border-radius: 22px;
       border: 1px solid color-mix(in oklch, var(--hero-accent, var(--c-primary)) 62%, transparent);
-      background:
-        radial-gradient(circle at 35% 24%, rgba(255,255,255,.18), transparent 28%),
-        color-mix(in oklch, var(--hero-accent, var(--c-primary)) 12%, rgba(5,8,14,.88));
-      box-shadow:
-        0 0 24px color-mix(in oklch, var(--hero-accent, var(--c-primary)) 34%, transparent),
-        inset 0 0 24px rgba(255,255,255,.035);
+      background: radial-gradient(circle at 35% 24%, rgba(255,255,255,.18), transparent 28%), color-mix(in oklch, var(--hero-accent, var(--c-primary)) 12%, rgba(5,8,14,.88));
+      box-shadow: 0 0 24px color-mix(in oklch, var(--hero-accent, var(--c-primary)) 34%, transparent), inset 0 0 24px rgba(255,255,255,.035);
       font-size: 34px;
       line-height: 1;
       animation: star-hero-float 4.2s ease-in-out infinite;
-    }
-
-    .nitro-hero-orb::before {
-      content: '';
-      position: absolute;
-      inset: -10px;
-      border-radius: 26px;
-      border: 1px solid color-mix(in oklch, var(--hero-accent, var(--c-primary)) 20%, transparent);
-      transform: rotate(8deg);
     }
 
     .nitro-hero-spark {
@@ -172,92 +135,20 @@ if (!document.getElementById(STYLE_ID)) {
       text-align: left;
       animation: none;
     }
-
-    .hero-card--nitro .hero-eyebrow {
-      margin: 0;
-      font: 600 9px var(--font-mono);
-      letter-spacing: .22em;
-      color: color-mix(in oklch, var(--hero-accent, var(--c-primary)) 72%, var(--c-text-muted));
-      opacity: .86;
-    }
-
-    .hero-title--nitro {
-      margin: 0;
-      font-family: var(--font-display);
-      font-size: clamp(1.38rem, 1.1rem + 1.1vw, 2.05rem);
-      line-height: .88;
-      letter-spacing: .08em;
-      color: var(--c-text);
-      text-shadow: 0 0 18px color-mix(in oklch, var(--hero-accent, var(--c-primary)) 28%, transparent);
-    }
-
-    .hero-title-accent {
-      color: var(--hero-accent, var(--c-primary));
-      text-shadow: 0 0 18px color-mix(in oklch, var(--hero-accent, var(--c-primary)) 50%, transparent);
-    }
-
-    .hero-card--nitro .hero-sub {
-      margin: 0;
-      min-height: 30px;
-      font: 10px/1.35 var(--font-mono);
-      letter-spacing: .12em;
-      color: var(--c-text-muted);
-    }
-
-    .hero-footer {
-      margin-top: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .hero-badge--nitro,
-    .hero-cta {
-      font: 700 9px var(--font-mono);
-      letter-spacing: .16em;
-      white-space: nowrap;
-    }
-
-    .hero-badge--nitro {
-      color: var(--hero-accent, var(--c-primary));
-      border: 1px solid color-mix(in oklch, var(--hero-accent, var(--c-primary)) 42%, transparent);
-      background: color-mix(in oklch, var(--hero-accent, var(--c-primary)) 8%, transparent);
-      border-radius: 999px;
-      padding: 4px 8px;
-    }
-
-    .hero-cta {
-      color: var(--c-text-faint);
-      transition: color .2s, transform .2s;
-    }
+    .hero-card--nitro .hero-eyebrow { margin: 0; font: 600 9px var(--font-mono); letter-spacing: .22em; color: color-mix(in oklch, var(--hero-accent, var(--c-primary)) 72%, var(--c-text-muted)); opacity: .86; }
+    .hero-title--nitro { margin: 0; font-family: var(--font-display); font-size: clamp(1.38rem, 1.1rem + 1.1vw, 2.05rem); line-height: .88; letter-spacing: .08em; color: var(--c-text); text-shadow: 0 0 18px color-mix(in oklch, var(--hero-accent, var(--c-primary)) 28%, transparent); }
+    .hero-title-accent { color: var(--hero-accent, var(--c-primary)); text-shadow: 0 0 18px color-mix(in oklch, var(--hero-accent, var(--c-primary)) 50%, transparent); }
+    .hero-card--nitro .hero-sub { margin: 0; min-height: 30px; font: 10px/1.35 var(--font-mono); letter-spacing: .12em; color: var(--c-text-muted); }
+    .hero-footer { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .hero-badge--nitro, .hero-cta { font: 700 9px var(--font-mono); letter-spacing: .16em; white-space: nowrap; }
+    .hero-badge--nitro { color: var(--hero-accent, var(--c-primary)); border: 1px solid color-mix(in oklch, var(--hero-accent, var(--c-primary)) 42%, transparent); background: color-mix(in oklch, var(--hero-accent, var(--c-primary)) 8%, transparent); border-radius: 999px; padding: 4px 8px; }
+    .hero-cta { color: var(--c-text-faint); transition: color .2s, transform .2s; }
     .hero-card--nitro:hover .hero-cta { color: var(--hero-accent, var(--c-primary)); transform: translateX(2px); }
+    .hero-scanlines { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: .16; background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(0,0,0,.65) 3px 4px); mix-blend-mode: multiply; }
 
-    .hero-scanlines {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      opacity: .16;
-      background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(0,0,0,.65) 3px 4px);
-      mix-blend-mode: multiply;
-    }
-
-    @keyframes star-hero-float {
-      0%,100% { transform: translate(-50%, -50%) translateY(0); }
-      50% { transform: translate(-50%, -50%) translateY(-5px); }
-    }
-    @keyframes star-hero-blip {
-      0%,100% { opacity: .22; transform: scale(.72); }
-      45% { opacity: .98; transform: scale(1.18); }
-    }
-
-    @media (max-width: 680px) {
-      .bento-hero-row { grid-template-columns: 1fr; }
-      .hero-card--nitro { min-height: 216px; grid-template-rows: 96px 1fr; }
-      .hero-scene--nitro { min-height: 96px; }
-      .nitro-hero-orb { width: 64px; height: 64px; font-size: 28px; border-radius: 18px; }
-    }
+    @keyframes star-hero-float { 0%,100% { transform: translate(-50%, -50%) translateY(0); } 50% { transform: translate(-50%, -50%) translateY(-5px); } }
+    @keyframes star-hero-blip { 0%,100% { opacity: .22; transform: scale(.72); } 45% { opacity: .98; transform: scale(1.18); } }
+    @media (max-width: 680px) { .bento-hero-row { grid-template-columns: 1fr; } .hero-card--nitro { min-height: 216px; grid-template-rows: 96px 1fr; } .hero-scene--nitro { min-height: 96px; } .nitro-hero-orb { width: 64px; height: 64px; font-size: 28px; border-radius: 18px; } }
   `;
   document.head.appendChild(style);
 }
