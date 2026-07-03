@@ -18,6 +18,9 @@ const home = document.querySelector('.hub-hero');
 if (home) boot();
 
 async function boot() {
+  ensureHomeEffectsStylesheet();
+  disableLegacyShakeClass();
+
   const old = document.getElementById('ship-canvas');
   if (old) old.style.opacity = '0';
 
@@ -166,6 +169,25 @@ async function boot() {
   resize(); addEventListener('resize', resize);
   spawnShip(false); setTimeout(()=>spawnShip(true), 1400);
   requestAnimationFrame(frame);
+}
+
+function ensureHomeEffectsStylesheet() {
+  if (document.getElementById('home-effects-css')) return;
+  const link = document.createElement('link');
+  link.id = 'home-effects-css';
+  link.rel = 'stylesheet';
+  link.href = '/css/home-effects.css?v=20260703-no-shake';
+  document.head.appendChild(link);
+}
+
+function disableLegacyShakeClass() {
+  document.body.classList.remove('shaking');
+  const observer = new MutationObserver(() => {
+    if (document.body.classList.contains('shaking')) {
+      document.body.classList.remove('shaking');
+    }
+  });
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 }
 
 async function loadConfig() {
