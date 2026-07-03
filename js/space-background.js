@@ -173,6 +173,7 @@ async function boot() {
 
 function ensureHomeStylesheets() {
   ensureStylesheet('home-public-css', '/css/home-public.css?v=20260703-extract-1');
+  ensureStylesheet('home-radio-css', '/css/home-radio.css?v=20260703-extract-1');
   ensureStylesheet('home-effects-css', '/css/home-effects.css?v=20260703-no-shake');
 }
 
