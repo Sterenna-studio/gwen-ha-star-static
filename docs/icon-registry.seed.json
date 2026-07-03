@@ -1,0 +1,93 @@
+{
+  "repository": "Sterenna-studio/sterenna-icons",
+  "version": "0.1.0",
+  "naming": {
+    "pattern": "<scope>-<project>",
+    "exports": [
+      "favicon.ico",
+      "favicon.svg",
+      "favicon-32.png",
+      "apple-touch-icon.png",
+      "site.webmanifest"
+    ]
+  },
+  "icons": [
+    {
+      "iconId": "star-gwen-ha-star",
+      "repo": "Sterenna-studio/gwen-ha-star-static",
+      "priority": "P0",
+      "themeColor": "#070b14",
+      "visualBase": "logo Gwen Ha Star"
+    },
+    {
+      "iconId": "bzh-universe",
+      "repo": "Sterenna-studio/bzh-universe",
+      "priority": "P0",
+      "themeColor": "#070b14",
+      "visualBase": "triskel / BZH cyber"
+    },
+    {
+      "iconId": "nitro-clicker",
+      "repo": "Sterenna-studio/nitro-clicker",
+      "priority": "P0",
+      "themeColor": "#070b14",
+      "visualBase": "éclair / monnaie / pixel"
+    },
+    {
+      "iconId": "botanica-obscura",
+      "repo": "Sterenna-studio/botanica-obscura",
+      "priority": "P0",
+      "themeColor": "#08120d",
+      "visualBase": "feuille obscure / graine"
+    },
+    {
+      "iconId": "nitro-skill-arena",
+      "repo": "Sterenna-studio/skill-arena",
+      "priority": "P0",
+      "themeColor": "#100814",
+      "visualBase": "arène / lame / skill"
+    },
+    {
+      "iconId": "nitro-titan-rocket-run",
+      "repo": "Sterenna-studio/titan-rocket-run",
+      "priority": "P0",
+      "themeColor": "#070b14",
+      "visualBase": "fusée Titan"
+    },
+    {
+      "iconId": "pokegang",
+      "repo": "Sterenna-studio/pokegang-game",
+      "priority": "P0",
+      "themeColor": "#101018",
+      "visualBase": "pokéball/gang stylisé"
+    },
+    {
+      "iconId": "chronicles-tcg",
+      "repo": "Sterenna-studio/chronicles-tcg",
+      "priority": "P0",
+      "themeColor": "#070b14",
+      "visualBase": "carte / BZH power"
+    },
+    {
+      "iconId": "bzh-breach-storm",
+      "repo": "Sterenna-studio/bzh-breach-storm",
+      "priority": "P1",
+      "themeColor": "#090711",
+      "visualBase": "faille / tempête"
+    },
+    {
+      "iconId": "bzh-nemeton-lockdown",
+      "repo": "Sterenna-studio/bzh-nemeton-lockdown",
+      "priority": "P1",
+      "themeColor": "#07120b",
+      "visualBase": "arbre sacré / verrou"
+    },
+    {
+      "iconId": "spirit-overdrive",
+      "repo": "Sterenna-studio/spirit-overdrive",
+      "priority": "P1",
+      "themeColor": "#080816",
+      "visualBase": "esprit / vitesse"
+    }
+  ]
+}
