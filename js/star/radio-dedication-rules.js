@@ -1,3 +1,4 @@
+import './star-hero-card-style.js';
 import { RadioPlayer } from './widgets.js';
 
 const DEDICATION_COST = 20;
