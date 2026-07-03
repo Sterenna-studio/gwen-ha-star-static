@@ -1,6 +1,6 @@
 # ═══════════════════════════════════════════════════════════════
 #  .htaccess — Gwen Ha Star Static
-#  Cache-Control intelligent (CORS géré par Cloudflare)
+#  Cache-Control, MIME, gzip et headers de sécurité légers
 # ═══════════════════════════════════════════════════════════════
 
 Options -Indexes
@@ -33,8 +33,17 @@ Options -Indexes
   </IfModule>
 </FilesMatch>
 
-# ── CACHE CONTROL ──────────────────────────────────────────────
+# ── HEADERS HTTP ───────────────────────────────────────────────
 <IfModule mod_headers.c>
+
+  # Sécurité légère et compatible avec les embeds Twitch / YouTube / Supabase.
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+
+  # CSP volontairement en Report-Only pour ne pas casser les CDN/embeds en production.
+  Header always set Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline' https://esm.sh https://*.supabase.co https://www.youtube.com https://player.twitch.tv; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' https://nitro.sterenna.fr; connect-src 'self' https://*.supabase.co https://esm.sh; frame-src https://www.youtube.com https://player.twitch.tv; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
 
   # HTML → jamais en cache — Cloudflare revalide toujours (plus de purge manuelle)
   <FilesMatch "\.html$">
@@ -49,7 +58,6 @@ Options -Indexes
   </FilesMatch>
 
   # CSS / JS → revalidation obligatoire tant que les fichiers ne sont pas tous versionnés.
-  # Évite de servir un ancien widget Chronicles FM encore en cache avec l'appel YouTube Data API.
   <FilesMatch "\.(css|js)$">
     Header set Cache-Control "no-cache, must-revalidate"
     Header set Pragma "no-cache"
@@ -60,15 +68,6 @@ Options -Indexes
     Header set Cache-Control "public, max-age=604800"
   </FilesMatch>
 
-</IfModule>
-
-# ── PATCHS HTML LÉGERS ──────────────────────────────────────
-<IfModule mod_substitute.c>
-  AddOutputFilterByType SUBSTITUTE text/html
-  # Accueil public : layout simplifié Twitch+YouTube puis Web Radio.
-  Substitute "s|</head>|<link rel=\"stylesheet\" href=\"/css/home-sections.css?v=20260702\"></head>|n"
-  # Radio live Star : stabilizer runtime non destructif.
-  Substitute "s|<script type=\"module\">|<script type=\"module\" src=\"/js/star/radio-player-stabilizer.js\"></script>\n  <script type=\"module\">|n"
 </IfModule>
 
 # ── COMPRESSION GZIP ───────────────────────────────────────────
