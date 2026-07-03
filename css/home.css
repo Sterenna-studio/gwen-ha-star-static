@@ -1,0 +1,9 @@
+/* ═══════════════════════════════════════════════════════════════
+   HOME.CSS — Agrégateur des styles dédiés à la page d'accueil
+   Objectif : remplacer progressivement le gros <style> inline de index.html
+   par des fichiers CSS dédiés, lisibles et maintenables.
+═══════════════════════════════════════════════════════════════ */
+
+@import url('./home-public.css');
+@import url('./home-radio.css');
+@import url('./home-effects.css');
