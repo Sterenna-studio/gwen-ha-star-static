@@ -1,4 +1,5 @@
 import './korigan-chat-state.js';
+import './star-rewards-panel.js';
 
 const STYLE_ID = 'star-hero-card-style-v2';
 
