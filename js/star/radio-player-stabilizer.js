@@ -1,4 +1,5 @@
 import './radio-player-gate.js';
+import './radio-dedication-rules.js';
 import { supabase } from '../supabase.js';
 import { RadioPlayer } from './widgets.js';
 
