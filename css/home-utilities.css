@@ -1,0 +1,54 @@
+/* ═══════════════════════════════════════════════════════════════
+   HOME-UTILITIES.CSS — Petites classes utilitaires de la home
+   Remplace les anciens style="..." de index.html.
+═══════════════════════════════════════════════════════════════ */
+
+.tool-card--pokegang { --card-accent: var(--c-amber); }
+.tool-card--tcg { --card-accent: #a78bfa; }
+.tool-card--twitch { --card-accent: #9146ff; }
+.tool-card--youtube { --card-accent: #ff0000; }
+.tool-card--jukebox { --card-accent: var(--c-green); }
+.tool-card--web-radio { --card-accent: var(--c-primary); }
+.tool-card--chronicles-fm { --card-accent: #e94560; }
+
+.tool-card-name-wrap,
+.tool-card-name--glitch {
+  position: relative;
+}
+
+.hub-title-side {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--c-text-muted);
+}
+
+.hub-note {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--c-text-faint);
+  letter-spacing: .08em;
+  margin-top: var(--space-3);
+}
+
+.hub-link-muted {
+  color: var(--c-text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.hub-link-primary {
+  color: var(--c-primary);
+}
+
+.yt-playlist-label--spaced {
+  margin-top: var(--space-2);
+}
+
+.yt-channel-more {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--c-text-muted);
+  letter-spacing: .08em;
+  text-decoration: none;
+  margin-top: var(--space-1);
+}
