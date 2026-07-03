@@ -53,11 +53,11 @@ Sterenna-studio/3615-gateways
 
 ---
 
-## Architecture cible
+## Architecture actuelle
 
 ```txt
 gwen-ha-star-static/
-├── index.html                 # Hub public Nitro / Gwen Ha Star
+├── index.html                 # Hub public Nitro / Gwen Ha Star, HTML structurel seulement
 ├── login.html                 # Connexion Supabase / Nitro
 ├── reset.html                 # Réinitialisation mot de passe
 ├── update-password.html       # Mise à jour mot de passe Supabase
@@ -69,13 +69,14 @@ gwen-ha-star-static/
 │       ├── background-admin.js
 │       ├── background-elements-admin.js
 │       └── background-admin.css
-├── TCG/                       # App interne TCG
-├── jukebox/                   # Jukebox statique
+├── TCG/                       # App interne TCG, selon modèle de déploiement actif
+├── jukebox/                   # Jukebox statique et Chronicles FM
 ├── docs/
 │   └── space-background-ships.md
 │
 ├── shared/                    # Socle commun Nitro
 │   ├── config.js              # Généré au déploiement, non versionné
+│   ├── supabase-config.js     # Résolution/config runtime avec garde d'erreur
 │   ├── supabase-client.js     # Client Supabase partagé
 │   ├── auth.js                # Helpers login/session/logout
 │   ├── guards.js              # requireAuth / requireGuest
@@ -85,16 +86,19 @@ gwen-ha-star-static/
 │   ├── logos/
 │   └── images/
 │
-├── css/                       # Styles globaux Nitro
-├── js/                        # Logique propre au hub
-│   ├── main.js
-│   ├── data.js
-│   ├── radar.js
+├── css/
+│   ├── home.css               # Agrégateur CSS de la home
+│   ├── home-public.css        # Layout public, cards, Twitch/YT, jukebox
+│   ├── home-radio.css         # Web Radio + Chronicles FM
+│   ├── home-effects.css       # Effets home, dont no-shake
+│   └── home-utilities.css     # Classes remplaçant les anciens style="..."
+│
+├── js/
+│   ├── home.js                # Runtime public de la home
 │   ├── theme.js
 │   ├── auth.js                # Wrapper vers shared/session-ui.js + overlay background
 │   ├── supabase.js            # Wrapper vers shared auth/client
-│   ├── home-sections-runtime.js
-│   ├── space-background.js
+│   ├── space-background.js    # Background spatial public moderne
 │   ├── space-ships-library-overlay.js
 │   └── star/                  # Logique spécifique au cockpit Star statique
 │
@@ -114,21 +118,35 @@ gwen-ha-star-static/
 | `/star/` | Connecté | Cockpit membre / crew / réseau statique historique |
 | `/star/admin/background.html` | Superuser | Gestion du background spatial public |
 | `/docs/space-background-ships.md` | Technique | Guide vaisseaux, éléments, presets et agent IA |
-| `/TCG/` | Connecté | App TCG |
+| `/TCG/` | Connecté | App TCG, selon déploiement actif |
 | `/jukebox/` | Public / intégré | Lecteur musical |
 | `/shared/` | Technique | Modules communs Nitro |
 | `/botanica/` | Connecté | Déployé par le repo `botanica-obscura` sous Nitro |
 
 ---
 
+## Home publique
+
+La home est désormais séparée en trois couches :
+
+```txt
+index.html       → structure HTML et appels de modules seulement
+css/home.css     → agrégateur CSS dédié
+js/home.js       → comportement Twitch, Jukebox, Radio, carte Chronicles
+```
+
+Le gros `<style>` inline et le vieux runtime `ship-canvas` ont été retirés.
+
+La variante simplifiée `home-sections` a été supprimée : la home canonique affiche la structure complète, sans injection serveur via `.htaccess`.
+
+---
+
 ## Background spatial public
 
-L'accueil utilise plusieurs modules complémentaires :
+L'accueil utilise principalement :
 
 ```txt
 /js/space-background.js
-/js/space-ships-library-overlay.js
-/js/home-sections-runtime.js
 /star/admin/background.html
 ```
 
@@ -141,11 +159,11 @@ La console admin permet de modifier rapidement :
 - astéroïdes ;
 - satellites ;
 - crashs / incidents ;
-- secousses écran ;
 - trafic et vitesse ;
 - bibliothèque de vaisseaux avec preview ;
-- presets `CALME`, `VIVANT`, `TEMPÊTE`, `MINIMAL` ;
-- test local de secousse.
+- presets `CALME`, `VIVANT`, `TEMPÊTE`, `MINIMAL`.
+
+Les secousses écran sont désactivées côté home publique : `shake` est forcé à `0` et `body.shaking` est neutralisé.
 
 Les 4 familles historiques de vaisseaux importées depuis l'ancien moteur `ship-canvas` sont :
 
@@ -171,6 +189,7 @@ Le dossier `/shared/` est la couche commune utilisée par les apps Nitro.
 ### Modules principaux
 
 ```txt
+/shared/supabase-config.js
 /shared/supabase-client.js
 /shared/auth.js
 /shared/guards.js
@@ -213,3 +232,28 @@ Elles peuvent importer les modules `/shared` grâce au CORS configuré dans `sha
 Pour PokéGang, l'intégration Nitro doit donc rester progressive : détection, liaison de compte, cloud sync, récompenses, etc.
 
 ---
+
+## Déploiement OVH
+
+Le workflow `.github/workflows/deploy-ovh.yml` :
+
+1. génère `shared/config.js` depuis les secrets GitHub ;
+2. synchronise le site statique vers `~/nitro/` en SSH/rsync ;
+3. lance un smoke test public sur les endpoints essentiels.
+
+Les dossiers exclus du rsync sont volontaires quand ils sont déployés par un autre repo ou une autre app. Toute nouvelle app Nitro doit documenter son modèle de déploiement avant d'être ajoutée à la navigation publique.
+
+---
+
+## Serveur et sécurité
+
+Le `.htaccess` gère :
+
+- MIME JS/CSS/audio ;
+- cache HTML/JSON/CSS/JS en revalidation ;
+- cache images/fonts 7 jours ;
+- gzip ;
+- headers de sécurité légers ;
+- CSP en `Report-Only` pour observer les violations sans casser les embeds Twitch/YouTube/Supabase.
+
+Les anciennes injections HTML serveur via `mod_substitute` sont supprimées.
