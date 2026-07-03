@@ -1,0 +1,13 @@
+/* ═══════════════════════════════════════════════════════════════
+   HOME-EFFECTS.CSS — Effets visuels dédiés à la page d'accueil
+   Objectif : éviter de piloter ces effets depuis du CSS inline.
+═══════════════════════════════════════════════════════════════ */
+
+/* Le shaking écran est volontairement désactivé sur la home publique.
+   Cette règle neutralise aussi l'ancien script inline qui ajoute encore
+   temporairement la classe body.shaking lors du passage de gros vaisseaux. */
+body.shaking,
+body:has(.hub-hero).shaking {
+  animation: none !important;
+  transform: none !important;
+}
