@@ -10,7 +10,7 @@ const DEFAULTS = {
   satellites: 0.25,
   crashes: 0.12,
   nebula: 0.7,
-  shake: 0.45,
+  shake: 0,
   trafficMode: 'balanced',
 };
 
@@ -41,7 +41,7 @@ async function boot() {
 
   let cfg = await loadConfig();
   if (!cfg.enabled) return;
-  cfg = { ...DEFAULTS, ...(cfg.config || {}) };
+  cfg = { ...DEFAULTS, ...(cfg.config || {}), shake: 0 };
 
   let W = 0, H = 0, DPR = 1, last = performance.now(), nextShip = 0, nextRock = 0, nextSat = 0, nextCrash = 0;
   let stars = [], ships = [], particles = [], rocks = [], satellites = [], planets = [];
@@ -104,12 +104,10 @@ async function boot() {
     if (cfg.crashes <= 0) return;
     const x = rnd(W*.1,W*.9), y = rnd(H*.08,H*.45);
     for (let i=0;i<34;i++) particles.push({ x, y, vx:rnd(-130,130), vy:rnd(-90,170), life:rnd(.45,1.4), max:1.4, size:rnd(1,4), color:pick(['#ff2d55','#ffaa00','#00ffe7']) });
-    if (Math.random() < cfg.shake) shake();
   }
 
   function shake() {
-    document.body.classList.add('shaking');
-    setTimeout(() => document.body.classList.remove('shaking'), 320);
+    // Screen shake intentionally disabled site-wide for the public home.
   }
 
   function drawShip(s) {
