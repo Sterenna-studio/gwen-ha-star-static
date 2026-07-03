@@ -18,7 +18,7 @@ const home = document.querySelector('.hub-hero');
 if (home) boot();
 
 async function boot() {
-  ensureHomeEffectsStylesheet();
+  ensureHomeStylesheets();
   disableLegacyShakeClass();
 
   const old = document.getElementById('ship-canvas');
@@ -171,12 +171,17 @@ async function boot() {
   requestAnimationFrame(frame);
 }
 
-function ensureHomeEffectsStylesheet() {
-  if (document.getElementById('home-effects-css')) return;
+function ensureHomeStylesheets() {
+  ensureStylesheet('home-public-css', '/css/home-public.css?v=20260703-extract-1');
+  ensureStylesheet('home-effects-css', '/css/home-effects.css?v=20260703-no-shake');
+}
+
+function ensureStylesheet(id, href) {
+  if (document.getElementById(id)) return;
   const link = document.createElement('link');
-  link.id = 'home-effects-css';
+  link.id = id;
   link.rel = 'stylesheet';
-  link.href = '/css/home-effects.css?v=20260703-no-shake';
+  link.href = href;
   document.head.appendChild(link);
 }
 
