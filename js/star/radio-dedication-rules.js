@@ -12,6 +12,7 @@ if (!RadioPlayer.prototype.__starDedicationRulesPatched) {
   RadioPlayer.prototype.render = async function dedicationRulesRender(...args) {
     const result = await baseRender.apply(this, args);
     applyDedicationUiRules(this);
+    placeRadioBeforePokegang();
     return result;
   };
 
@@ -57,3 +58,18 @@ function applyDedicationUiRules(player) {
     });
   }
 }
+
+function placeRadioBeforePokegang() {
+  const radio = document.querySelector('.bc.bc-radio');
+  const pokegang = document.querySelector('.bc.bc-pg');
+  if (!radio || !pokegang || !pokegang.parentNode || radio.nextElementSibling === pokegang) return;
+  pokegang.parentNode.insertBefore(radio, pokegang);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', placeRadioBeforePokegang, { once: true });
+} else {
+  placeRadioBeforePokegang();
+}
+
+window.addEventListener('load', placeRadioBeforePokegang, { once: true });
