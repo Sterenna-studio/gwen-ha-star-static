@@ -81,3 +81,30 @@ jobs:
             --exclude='/ARCHITECTURE.md' \
             -e "ssh -i ~/.ssh/ovh_key" \
             ./ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/"
+
+      - name: Smoke test public deployment
+        env:
+          GHSTAR_PUBLIC_URL: ${{ vars.GHSTAR_PUBLIC_URL || 'https://nitro.sterenna.fr' }}
+        run: |
+          set -euo pipefail
+          BASE_URL="${GHSTAR_PUBLIC_URL%/}"
+          paths=(
+            "/"
+            "/css/home.css"
+            "/css/home-public.css"
+            "/css/home-radio.css"
+            "/css/home-utilities.css"
+            "/js/home.js"
+            "/js/space-background.js"
+            "/js/chronicles-fm-widget.js"
+            "/shared/supabase-client.js"
+            "/jukebox/chronicles-fm.json"
+          )
+
+          for path in "${paths[@]}"; do
+            url="$BASE_URL$path"
+            echo "Checking $url"
+            curl --fail --silent --show-error --location --retry 3 --retry-delay 5 --max-time 25 "$url" > /dev/null
+          done
+
+          echo "Smoke tests passed for $BASE_URL"
