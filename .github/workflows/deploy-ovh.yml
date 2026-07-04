@@ -94,6 +94,7 @@ jobs:
             "/css/home-public.css"
             "/css/home-radio.css"
             "/css/home-utilities.css"
+            "/css/home-sections.css"
             "/js/home.js"
             "/js/space-background.js"
             "/js/chronicles-fm-widget.js"
