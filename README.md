@@ -91,7 +91,8 @@ gwen-ha-star-static/
 │   ├── home-public.css        # Layout public, cards, Twitch/YT, jukebox
 │   ├── home-radio.css         # Web Radio + Chronicles FM
 │   ├── home-effects.css       # Effets home, dont no-shake
-│   └── home-utilities.css     # Classes remplaçant les anciens style="..."
+│   ├── home-utilities.css     # Classes remplaçant les anciens style="..."
+│   └── home-sections.css      # Regroupement accueil : Twitch + YouTube puis Radio
 │
 ├── js/
 │   ├── home.js                # Runtime public de la home
@@ -137,7 +138,7 @@ js/home.js       → comportement Twitch, Jukebox, Radio, carte Chronicles
 
 Le gros `<style>` inline et le vieux runtime `ship-canvas` ont été retirés.
 
-La variante simplifiée `home-sections` a été supprimée : la home canonique affiche la structure complète, sans injection serveur via `.htaccess`.
+Le regroupement récent de l'accueil est conservé via `css/home-sections.css` : Twitch + YouTube sont présentés ensemble, puis Chronicles FM / Web Radio. Ce regroupement est chargé explicitement par `css/home.css`, sans injection serveur via `.htaccess`.
 
 ---
 
