@@ -1,0 +1,80 @@
+/* Public home grouping: Twitch + YouTube first, then one Chronicles FM radio block.
+   Loaded explicitly from css/home.css, no server-side HTML injection. */
+
+body:has(.hub-hero) main {
+  display: flex;
+  flex-direction: column;
+}
+
+body:has(.hub-hero) main > .hub-divider {
+  display: none !important;
+}
+
+body:has(.hub-hero) main > .hub-hero { order: 0; }
+body:has(.hub-hero) main > section:nth-of-type(2) { order: 1; }
+body:has(.hub-hero) main > section:nth-of-type(3) { order: 2; padding-bottom: var(--space-5); }
+body:has(.hub-hero) main > section:nth-of-type(7) { order: 3; padding-top: 0; }
+body:has(.hub-hero) main > section#web-radio { order: 4; }
+
+body:has(.hub-hero) a[href="#jukebox"],
+body:has(.hub-hero) a[href="#chronicles-fm"],
+body:has(.hub-hero) section#jukebox,
+body:has(.hub-hero) section#chronicles-fm {
+  display: none !important;
+}
+
+body:has(.hub-hero) main > section:nth-of-type(3) .hub-section-label,
+body:has(.hub-hero) main > section:nth-of-type(3) .hub-section-title,
+body:has(.hub-hero) main > section:nth-of-type(7) .hub-section-label,
+body:has(.hub-hero) main > section:nth-of-type(7) .hub-section-title,
+body:has(.hub-hero) section#web-radio .hub-section-label,
+body:has(.hub-hero) section#web-radio .hub-section-title {
+  font-size: 0 !important;
+  margin-bottom: 0;
+}
+
+body:has(.hub-hero) main > section:nth-of-type(3) .hub-section-label::before {
+  content: "// 02 · LIVE & VIDÉO";
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .2em;
+  color: var(--c-primary);
+  opacity: .7;
+  margin-bottom: var(--space-2);
+}
+
+body:has(.hub-hero) main > section:nth-of-type(3) .hub-section-title::before {
+  content: "Twitch + YouTube";
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--c-text);
+  margin-bottom: var(--space-6);
+}
+
+body:has(.hub-hero) section#web-radio .hub-section-label::before {
+  content: "// 03 · WEB RADIO · YOUTUBE";
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .2em;
+  color: var(--c-primary);
+  opacity: .7;
+  margin-bottom: var(--space-2);
+}
+
+body:has(.hub-hero) section#web-radio .hub-section-title::before {
+  content: "Chronicles FM";
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--c-text);
+  margin-bottom: var(--space-6);
+}
+
+body:has(.hub-hero) section#web-radio .radio-hub-card {
+  max-width: 900px;
+}
