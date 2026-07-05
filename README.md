@@ -116,7 +116,7 @@ gwen-ha-star-static/
 │   ├── home-radio.css            # Web Radio + Chronicles FM
 │   ├── home-effects.css          # Effets home, dont no-shake
 │   ├── home-utilities.css        # Classes remplaçant les anciens style="..."
-│   └── home-sections.css         # Regroupement accueil : Twitch + YouTube puis Radio
+│   └── home-sections.css         # Garde-fou d'ordre v3.0, sans réordonnancement CSS
 │
 ├── js/
 │   ├── home.js                   # Runtime public de la home v3.0
@@ -182,10 +182,10 @@ Le hero `GWEN HA STAR` est une introduction non numérotée. Les sections numér
 
 1. `// 01 · ACCÈS DIRECT` — Outils & Univers.
 2. `// 02 · STREAM LIVE` — Twitch live.
-3. `// 03 · JUKEBOX` — Jukebox Dr.Spig.
-4. `// 04 · WEB RADIO LIVE` — Web Radio / playlists YouTube.
-5. `// 05 · CHRONICLES FM` — Présentation radio pirate.
-6. `// 06 · CHAÎNE` — YouTube @mutenrock.
+3. `// 03 · CHAÎNE` — YouTube @mutenrock.
+4. `// 04 · JUKEBOX` — Jukebox Dr.Spig.
+5. `// 05 · WEB RADIO LIVE` — Web Radio / playlists YouTube.
+6. `// 06 · CHRONICLES FM` — Présentation radio pirate.
 
 Règles retenues :
 
