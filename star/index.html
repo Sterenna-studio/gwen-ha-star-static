@@ -180,9 +180,15 @@
       </div>
 
       <!-- ACTIVITÉ -->
-      <div class="bc bc-activity">
+      <div class="bc bc-activity" data-dashboard-widget="activity">
         <div class="bc-label bc-label--cyan"><span class="bc-dot"></span>ACTIVITÉ RÉSEAU</div>
-        <div id="widget-activity"></div>
+        <div id="widget-activity" data-widget-state="loading">
+          <div class="widget-empty widget-empty--loading">
+            <span class="widget-empty-icon">◈</span>
+            <p>Connexion au flux réseau...</p>
+            <span class="widget-empty-sub">ACTIVITY_LOG · SYNC</span>
+          </div>
+        </div>
       </div>
 
       <!-- JUKEBOX -->
@@ -200,7 +206,7 @@
   <!-- Stabilisation radio Star chargée explicitement, plus via injection .htaccess. -->
   <script type="module" src="../js/star/radio-player-stabilizer.js"></script>
 
-  <script type="module" src="../js/star/cockpit.js?v=202607-star-hud-intro"></script>
+  <script type="module" src="../js/star/cockpit.js?v=202607-star-activity-widget"></script>
 
   <!-- ── CHRONICLES FM WIDGET ── -->
   <script type="module" src="../js/chronicles-fm-widget.js"></script>

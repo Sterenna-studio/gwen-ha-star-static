@@ -516,6 +516,19 @@
 }
 
 /* ── ACTIVITY FEED ───────────────────────────────────────────────────────────────── */
+#widget-activity {
+  min-height: 152px;
+}
+#widget-activity[data-widget-state="loading"] .widget-empty-icon,
+#widget-activity[data-widget-state="listening"] .widget-empty-icon {
+  color: var(--c-cyan);
+  opacity: 0.75;
+  animation: activity-pulse 1.5s ease-in-out infinite;
+}
+@keyframes activity-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.42; }
+  50% { transform: scale(1.12); opacity: 0.9; }
+}
 .activity-feed {
   list-style: none;
   display: flex; flex-direction: column; gap: var(--space-2);
