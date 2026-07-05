@@ -119,10 +119,19 @@ export const SFX = _sfx;
 
 // ── VIDEO DU JOUR ──────────────────────────────────────────────────────────────────
 export class VideoDay {
-  constructor(containerId) { this.el = document.getElementById(containerId); }
+  constructor(containerId, options = {}) {
+    this.el = document.getElementById(containerId);
+    this.preferredContent = options.preferredContent ?? null;
+    this.fallbackContent = options.fallbackContent ?? null;
+  }
 
   async load() {
     if (!this.el) return;
+    if (this.preferredContent) {
+      this._renderVideo(this.preferredContent);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('daily_content')
@@ -130,9 +139,9 @@ export class VideoDay {
         .order('date', { ascending: false })
         .limit(1)
         .maybeSingle();
-      if (error || !data) { this._renderEmpty(); return; }
+      if (error || !data) { this._renderFallback(); return; }
       this._renderVideo(data);
-    } catch { this._renderEmpty(); }
+    } catch { this._renderFallback(); }
   }
 
   _embedUrl(platform, url) {
@@ -146,7 +155,7 @@ export class VideoDay {
 
   _renderVideo({ title, url, platform, note }) {
     const embed = this._embedUrl(platform, url);
-    if (!embed) { this._renderEmpty(); return; }
+    if (!embed) { this._renderFallback(); return; }
     this.el.innerHTML = `
       <div class="widget-video-inner">
         <div class="widget-video-title">${title ?? ''}</div>
@@ -157,6 +166,17 @@ export class VideoDay {
         </div>
         ${note ? `<div class="widget-video-note">${note}</div>` : ''}
       </div>`;
+  }
+
+  _renderFallback() {
+    if (this.fallbackContent) {
+      const fallbackContent = this.fallbackContent;
+      this.fallbackContent = null;
+      this._renderVideo(fallbackContent);
+      this.fallbackContent = fallbackContent;
+      return;
+    }
+    this._renderEmpty();
   }
 
   _renderEmpty() {

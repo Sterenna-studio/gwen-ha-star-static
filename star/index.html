@@ -16,6 +16,19 @@
 </head>
 <body class="star-page">
   <div class="scanlines" aria-hidden="true"></div>
+  <div class="star-airlock" id="star-airlock" aria-hidden="true">
+    <div class="star-airlock-view">
+      <div class="star-airlock-logo"></div>
+      <div class="star-airlock-console">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+    <div class="star-airlock-door star-airlock-door--left"></div>
+    <div class="star-airlock-door star-airlock-door--right"></div>
+    <div class="star-airlock-seam"></div>
+  </div>
 
   <!-- STATUS BAR -->
   <div class="status-bar" role="status" aria-live="polite">
@@ -104,12 +117,12 @@
           </div>
           <div class="brand-name">GWEN·HA·STAR</div>
           <div class="brand-tagline">// RÉSEAU · CREW · STERENNA</div>
-          <div class="brand-color-set">
-            <div class="brand-color-swatch" title="Cyan / Blue"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png" alt="Logo cyan" width="28" height="28" loading="lazy"></div>
-            <div class="brand-color-swatch" title="Gold / Orange"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_gold_orange.png" alt="Logo gold" width="28" height="28" loading="lazy"></div>
-            <div class="brand-color-swatch" title="Green / Lime"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_green_lime.png" alt="Logo green" width="28" height="28" loading="lazy"></div>
-            <div class="brand-color-swatch" title="Red"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_red.png" alt="Logo red" width="28" height="28" loading="lazy"></div>
-            <div class="brand-color-swatch" title="White / Silver"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_white_silver.png" alt="Logo white" width="28" height="28" loading="lazy"></div>
+          <div class="brand-color-set" aria-label="Couleur du HUD">
+            <button class="brand-color-swatch" type="button" data-hud-accent="cyan" title="HUD cyan / blue" aria-label="HUD cyan / blue"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png" alt="Logo cyan" width="28" height="28" loading="lazy"></button>
+            <button class="brand-color-swatch" type="button" data-hud-accent="gold" title="HUD gold / orange" aria-label="HUD gold / orange"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_gold_orange.png" alt="Logo gold" width="28" height="28" loading="lazy"></button>
+            <button class="brand-color-swatch" type="button" data-hud-accent="green" title="HUD green / lime" aria-label="HUD green / lime"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_green_lime.png" alt="Logo green" width="28" height="28" loading="lazy"></button>
+            <button class="brand-color-swatch" type="button" data-hud-accent="red" title="HUD red" aria-label="HUD red"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_red.png" alt="Logo red" width="28" height="28" loading="lazy"></button>
+            <button class="brand-color-swatch" type="button" data-hud-accent="silver" title="HUD white / silver" aria-label="HUD white / silver"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_white_silver.png" alt="Logo white" width="28" height="28" loading="lazy"></button>
           </div>
           <div class="bzh-tcg-row bzh-tcg-row--brand">
             <div class="bzh-logo-box">
@@ -183,7 +196,7 @@
   <!-- Stabilisation radio Star chargée explicitement, plus via injection .htaccess. -->
   <script type="module" src="../js/star/radio-player-stabilizer.js"></script>
 
-  <script type="module" src="../js/star/cockpit.js?v=202607-star-refactor"></script>
+  <script type="module" src="../js/star/cockpit.js?v=202607-star-hud-intro"></script>
 
   <!-- ── CHRONICLES FM WIDGET ── -->
   <script type="module" src="../js/chronicles-fm-widget.js"></script>

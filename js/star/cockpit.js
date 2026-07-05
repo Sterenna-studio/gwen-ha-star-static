@@ -4,6 +4,22 @@ import { requireAuth } from './guard.js';
 import { getProfile } from './profile-cache.js';
 import { renderNitroHeroCards } from './nitro-app-renderer.js';
 
+const HUD_ACCENT_STORAGE_KEY = 'star-hud-accent';
+const HUD_ACCENTS = new Set(['cyan', 'gold', 'green', 'red', 'silver']);
+
+function startAirlockIntro() {
+  const el = document.getElementById('star-airlock');
+  if (!el) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) {
+    el.remove();
+    return;
+  }
+
+  setTimeout(() => el.remove(), 1900);
+}
+
 function startClock() {
   const el = document.getElementById('sb-clock');
   const tick = () => {
@@ -38,6 +54,34 @@ function bindChroniclesToggle() {
   });
 }
 
+function bindHudColorSwatches() {
+  const swatches = document.querySelectorAll('.brand-color-swatch[data-hud-accent]');
+  if (!swatches.length) return;
+
+  const applyAccent = accent => {
+    const safeAccent = HUD_ACCENTS.has(accent) ? accent : 'cyan';
+    document.body.dataset.hudAccent = safeAccent;
+    swatches.forEach(swatch => {
+      const active = swatch.dataset.hudAccent === safeAccent;
+      swatch.classList.toggle('brand-color-swatch--active', active);
+      swatch.setAttribute('aria-pressed', String(active));
+    });
+    try {
+      localStorage.setItem(HUD_ACCENT_STORAGE_KEY, safeAccent);
+    } catch {}
+  };
+
+  let savedAccent = 'cyan';
+  try {
+    savedAccent = localStorage.getItem(HUD_ACCENT_STORAGE_KEY) || savedAccent;
+  } catch {}
+  applyAccent(savedAccent);
+
+  swatches.forEach(swatch => {
+    swatch.addEventListener('click', () => applyAccent(swatch.dataset.hudAccent));
+  });
+}
+
 async function loadMembers() {
   const el = document.getElementById('kpi-members');
   try {
@@ -67,10 +111,12 @@ function populateWelcome(user, profile) {
 }
 
 async function bootCockpit() {
+  startAirlockIntro();
   startClock();
   startUptime();
   bindSignOut();
   bindChroniclesToggle();
+  bindHudColorSwatches();
 
   renderNitroHeroCards('nitro-hero-cards');
 
