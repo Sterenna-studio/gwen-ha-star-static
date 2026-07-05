@@ -25,19 +25,21 @@ function render(){
  const target=document.querySelector('.bg-elements-wrap')||document.getElementById('ship-grid');
  const panel=document.createElement('section');
  panel.id='advanced-bg-tools';
- panel.innerHTML='<p class="bg-kicker" style="margin-top:18px">// APERÇU · BACKUP · RESET</p><section class="bg-card bg-note advanced-tools"><div class="element-presets"><button class="bg-btn" id="preview-live">APERÇU LIVE</button><button class="bg-btn" id="preview-unsaved">APERÇU NON SAUVÉ</button><button class="bg-btn" id="backup-now">BACKUP MAINTENANT</button><button class="bg-btn" id="restore-last">RESTORE DERNIER</button><button class="bg-btn primary" id="reset-safe">RESET SAFE</button></div><p class="bg-muted">Le reset safe crée d’abord un backup persistant Supabase, puis applique une configuration stable. L’aperçu non sauvegardé utilise un preset local temporaire dans l’iframe.</p><div class="advanced-preview"><iframe id="home-preview" src="/" loading="lazy" title="Aperçu accueil"></iframe></div><div class="backup-list" id="backup-list"></div></section>';
+ panel.innerHTML='<p class="bg-kicker" style="margin-top:18px">// APERÇU · BACKUP · RESET</p><section class="bg-card bg-note advanced-tools"><div class="element-presets"><button class="bg-btn" id="preview-live">APERÇU LIVE</button><button class="bg-btn" id="preview-unsaved">APERÇU NON SAUVÉ</button><button class="bg-btn" id="backup-now">BACKUP MAINTENANT</button><button class="bg-btn" id="export-config">EXPORT JSON</button><button class="bg-btn" id="restore-last">RESTORE DERNIER</button><button class="bg-btn primary" id="reset-safe">RESET SAFE</button></div><p class="bg-muted">Le reset safe crée d’abord un backup persistant Supabase, puis applique une configuration stable. L’aperçu non sauvegardé utilise un preset local temporaire dans l’iframe. L’export JSON télécharge une sauvegarde portable de la configuration visible.</p><div class="advanced-preview"><iframe id="home-preview" src="/" loading="lazy" title="Aperçu accueil"></iframe></div><div class="backup-list" id="backup-list"></div></section>';
  target.insertAdjacentElement('beforebegin',panel);
  panel.querySelector('#preview-live').onclick=previewLive;
  panel.querySelector('#preview-unsaved').onclick=previewUnsaved;
  panel.querySelector('#backup-now').onclick=backupNow;
+ panel.querySelector('#export-config').onclick=exportConfig;
  panel.querySelector('#restore-last').onclick=restoreLast;
  panel.querySelector('#reset-safe').onclick=resetSafe;
 }
 function gatherVisibleConfig(){
- const cfg={...state.config};
+ const live=window.starSpaceBackgroundConfig&&typeof window.starSpaceBackgroundConfig==='object'?window.starSpaceBackgroundConfig:null;
+ const cfg={...state.config,...(live||{})};
  document.querySelectorAll('[id^="f-"]').forEach(el=>{cfg[el.id.slice(2)]=Number(el.value)});
  document.querySelectorAll('[data-element-range]').forEach(el=>{cfg[el.dataset.elementRange]=Number(el.value)});
- cfg.shipLibrary=state.config.shipLibrary||cfg.shipLibrary;
+ cfg.shipLibrary=live?.shipLibrary||state.config.shipLibrary||cfg.shipLibrary;
  return cfg;
 }
 function setToast(msg){const el=document.getElementById('toast'); if(el) el.textContent=msg;}
@@ -58,6 +60,24 @@ async function backupNow(label='Backup manuel'){
  setToast('Backup créé.');
  await refreshBackups();
  return data.id;
+}
+function exportConfig(){
+ const payload={
+  schema:'gwen-ha-star/space-background@1',
+  exportedAt:new Date().toISOString(),
+  target:'/',
+  source:'space_background_config:home',
+  enabled:document.getElementById('enabled')?.checked ?? state.enabled,
+  config:gatherVisibleConfig()
+ };
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement('a');
+ link.href=url;
+ link.download='space-background-home-config.json';
+ link.click();
+ URL.revokeObjectURL(url);
+ setToast('Export JSON généré.');
 }
 async function resetSafe(){
  await load();

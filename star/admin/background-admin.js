@@ -18,6 +18,12 @@ let cfg = { ...DEFAULTS }, enabled = true;
 
 boot();
 
+function publishConfig(){
+  if(typeof window === 'undefined') return;
+  window.starSpaceBackgroundConfig = cfg;
+  window.starSpaceBackgroundEnabled = enabled;
+}
+
 async function boot(){
   const auth = await requireAuth({ redirectTo:'/login.html' });
   if(!auth) return;
@@ -32,7 +38,7 @@ async function boot(){
 }
 
 function renderShell(){
-  app.innerHTML = '<header class="bg-top"><div><p class="bg-kicker">// GWEN HA STAR · SPACE MANAGEMENT</p><h1 class="bg-title">BACKGROUND <span>SPACE</span></h1><p class="bg-sub">Management des vaisseaux de fond : trafic, étoiles, astéroïdes, planètes, satellites, crashs et bibliothèque de modèles.</p></div><nav class="bg-actions"><a class="bg-btn" href="/">← ACCUEIL</a><a class="bg-btn ship-doc" href="/docs/space-background-ships.md">DOC SHIPS</a><a class="bg-btn" href="/star/">COCKPIT</a><button class="bg-btn" id="add-ship">+ VAISSEAU</button><button class="bg-btn primary" id="save">SAUVER</button></nav></header><section class="bg-card bg-note"><label class="bg-label"><span>ACTIVER LE BACKGROUND SPATIAL</span><input type="checkbox" id="enabled"></label><p class="bg-muted">Les valeurs sont appliquées à l’accueil après sauvegarde et rechargement de la page publique.</p><div class="bg-toast" id="toast"></div></section><p class="bg-kicker">// AMBIANCE</p><section class="bg-grid" id="grid"></section><p class="bg-kicker" style="margin-top:18px">// BIBLIOTHÈQUE DE VAISSEAUX</p><section class="bg-grid ship-grid" id="ship-grid"></section>';
+  app.innerHTML = '<header class="bg-top"><div><p class="bg-kicker">// GWEN HA STAR · SPACE MANAGEMENT</p><h1 class="bg-title">BACKGROUND <span>SPACE</span></h1><p class="bg-sub">Management des vaisseaux de fond : trafic, étoiles, astéroïdes, planètes, satellites, crashs et bibliothèque de modèles.</p></div><nav class="bg-actions"><a class="bg-btn" href="/">← ACCUEIL</a><a class="bg-btn ship-doc" href="/docs/space-background-ships.md">DOC SHIPS</a><a class="bg-btn" href="/star/">COCKPIT</a><a class="bg-btn" href="/star/admin/cockpit-background.html">BG STAR</a><a class="bg-btn" href="/star/admin/hero-cards.html">HERO CARDS</a><button class="bg-btn" id="add-ship">+ VAISSEAU</button><button class="bg-btn primary" id="save">SAUVER</button></nav></header><section class="bg-card bg-note"><label class="bg-label"><span>ACTIVER LE BACKGROUND SPATIAL</span><input type="checkbox" id="enabled"></label><p class="bg-muted">Les valeurs sont appliquées à l’accueil après sauvegarde et rechargement de la page publique.</p><div class="bg-toast" id="toast"></div></section><p class="bg-kicker">// AMBIANCE</p><section class="bg-grid" id="grid"></section><p class="bg-kicker" style="margin-top:18px">// BIBLIOTHÈQUE DE VAISSEAUX</p><section class="bg-grid ship-grid" id="ship-grid"></section>';
   document.getElementById('save').onclick = saveConfig;
   document.getElementById('add-ship').onclick = addShip;
 }
@@ -43,6 +49,7 @@ async function loadConfig(){
   enabled = data.enabled !== false;
   cfg = { ...DEFAULTS, ...(data.config || {}) };
   cfg.shipLibrary = normalizeShips(cfg.shipLibrary);
+  publishConfig();
 }
 
 function normalizeShips(list){
@@ -115,6 +122,7 @@ async function saveConfig(){
   if(error || data?.ok === false){ toast(data?.error || error?.message || 'Sauvegarde impossible', true); return; }
   cfg = { ...DEFAULTS, ...(data.config || cfg) };
   cfg.shipLibrary = normalizeShips(cfg.shipLibrary);
+  publishConfig();
   toast('Configuration sauvegardée. Recharge l’accueil pour voir le résultat.');
   renderFields();
   renderShips();

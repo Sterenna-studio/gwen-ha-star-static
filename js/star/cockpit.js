@@ -3,6 +3,7 @@ import { supabase, signOut } from '../supabase.js';
 import { requireAuth } from './guard.js';
 import { getProfile } from './profile-cache.js';
 import { renderNitroHeroCards } from './nitro-app-renderer.js';
+import { initCockpitBackgroundConfig } from './cockpit-background-config.js';
 
 const HUD_ACCENT_STORAGE_KEY = 'star-hud-accent';
 const HUD_ACCENTS = new Set(['cyan', 'gold', 'green', 'red', 'silver']);
@@ -111,6 +112,7 @@ function populateWelcome(user, profile) {
 }
 
 async function bootCockpit() {
+  initCockpitBackgroundConfig(document.body);
   startAirlockIntro();
   startClock();
   startUptime();

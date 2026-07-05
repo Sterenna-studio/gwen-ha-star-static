@@ -5,6 +5,18 @@
 
 /* ── LAYOUT ──────────────────────────────────────────────── */
 .star-page {
+  --star-bg-cyan-glow:.12;
+  --star-bg-violet-glow:.13;
+  --star-bg-star-opacity:.34;
+  --star-bg-star-speed:42s;
+  --star-bg-frame-width:min(980px, 92vw);
+  --star-bg-frame-opacity:.62;
+  --star-bg-panel-opacity:.92;
+  --star-bg-panel-blur:10px;
+  --star-bg-holo-opacity:.36;
+  --star-bg-porthole-opacity:.78;
+  --star-bg-porthole-scale:1;
+  --star-bg-porthole-speed:28s;
   min-height:100dvh;
   display:flex;
   flex-direction:column;
@@ -20,8 +32,8 @@
   z-index:-3;
   pointer-events:none;
   background:
-    linear-gradient(115deg, rgba(0,255,204,.12), transparent 34%),
-    linear-gradient(245deg, rgba(139,92,246,.13), transparent 38%),
+    linear-gradient(115deg, rgba(0,255,204,var(--star-bg-cyan-glow)), transparent 34%),
+    linear-gradient(245deg, rgba(139,92,246,var(--star-bg-violet-glow)), transparent 38%),
     linear-gradient(180deg, rgba(8,16,28,.96), rgba(2,4,10,.98));
 }
 .star-page::after {
@@ -30,14 +42,14 @@
   inset:0;
   z-index:-2;
   pointer-events:none;
-  opacity:.34;
+  opacity:var(--star-bg-star-opacity);
   background-image:
     radial-gradient(circle at 12% 22%, rgba(255,255,255,.72) 0 1px, transparent 1.5px),
     radial-gradient(circle at 74% 18%, rgba(255,255,255,.6) 0 1px, transparent 1.5px),
     radial-gradient(circle at 48% 72%, rgba(0,255,204,.48) 0 1px, transparent 1.5px),
     radial-gradient(circle at 86% 66%, rgba(255,255,255,.58) 0 1px, transparent 1.5px);
   background-size:220px 180px, 320px 240px, 260px 210px, 370px 280px;
-  animation:starfield-drift 42s linear infinite;
+  animation:starfield-drift var(--star-bg-star-speed) linear infinite;
 }
 .star-main {
   flex:1;
@@ -64,8 +76,8 @@
     0 0 46px color-mix(in oklch, var(--c-primary) 12%, transparent),
     inset 0 1px 0 rgba(255,255,255,.07),
     inset 0 0 54px rgba(0,0,0,.28);
-  opacity:.92;
-  backdrop-filter:blur(10px) saturate(1.18);
+  opacity:var(--star-bg-panel-opacity);
+  backdrop-filter:blur(var(--star-bg-panel-blur)) saturate(1.18);
 }
 .star-main::after {
   content:"";
@@ -78,7 +90,7 @@
     linear-gradient(110deg, transparent 0 42%, rgba(255,255,255,.09) 48%, transparent 55%),
     repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 5px);
   mix-blend-mode:screen;
-  opacity:.36;
+  opacity:var(--star-bg-holo-opacity);
 }
 @keyframes starfield-drift {
   from { background-position:0 0, 0 0, 0 0, 0 0; }
@@ -98,13 +110,13 @@
   position:absolute;
   left:50%;
   top:0;
-  width:min(980px, 92vw);
+  width:var(--star-bg-frame-width);
   height:100%;
   transform:translateX(-50%);
   background:
     linear-gradient(90deg, transparent, rgba(255,255,255,.045) 12%, transparent 16% 84%, rgba(255,255,255,.045) 88%, transparent),
     linear-gradient(180deg, rgba(255,255,255,.035), transparent 22% 72%, rgba(255,255,255,.035));
-  opacity:.62;
+  opacity:var(--star-bg-frame-opacity);
 }
 .star-porthole {
   position:absolute;
@@ -122,7 +134,9 @@
     0 0 34px rgba(0,0,0,.62),
     inset 0 0 24px rgba(0,0,0,.72),
     inset 0 0 22px color-mix(in oklch, var(--c-primary) 16%, transparent);
-  opacity:.78;
+  opacity:var(--star-bg-porthole-opacity);
+  transform:scale(var(--star-bg-porthole-scale));
+  transform-origin:center;
 }
 .star-porthole::before {
   content:"";
@@ -135,7 +149,7 @@
     radial-gradient(circle at 46% 76%, rgba(0,255,204,.7) 0 1px, transparent 1.5px);
   background-size:74px 64px;
   opacity:.62;
-  animation:porthole-stars 28s linear infinite;
+  animation:porthole-stars var(--star-bg-porthole-speed) linear infinite;
 }
 .star-porthole::after {
   content:"";
@@ -147,12 +161,13 @@
 }
 .star-porthole--left { left:max(18px, calc((100vw - 1420px) / 2)); }
 .star-porthole--right { right:max(18px, calc((100vw - 1420px) / 2)); top:182px; }
+.star-page.star-bg-portholes-disabled .star-porthole { display:none; }
 @keyframes porthole-stars {
   from { background-position:0 0; }
   to { background-position:-74px 64px; }
 }
 @media(max-width:1180px) {
-  .star-porthole { opacity:.28; transform:scale(.82); }
+  .star-porthole { opacity:calc(var(--star-bg-porthole-opacity) * .36); transform:scale(calc(var(--star-bg-porthole-scale) * .82)); }
   .star-porthole--left { left:-54px; }
   .star-porthole--right { right:-54px; }
 }

@@ -1,0 +1,394 @@
+body.star-admin-page,
+body.star-bg-admin-page {
+  min-height:100vh;
+  margin:0;
+  color:var(--c-text);
+  font-family:var(--font-mono);
+  background:var(--c-bg);
+}
+
+.star-admin-shell {
+  width:min(1240px, calc(100% - 32px));
+  margin:0 auto;
+  padding:24px 0 56px;
+}
+
+.star-admin-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:18px;
+  margin-bottom:18px;
+}
+
+.star-admin-kicker {
+  margin:0 0 6px;
+  color:var(--c-primary);
+  font-size:10px;
+  letter-spacing:.22em;
+}
+
+.star-admin-title {
+  margin:0;
+  font-family:var(--font-display);
+  font-size:clamp(2.2rem, 5vw, 4.2rem);
+  line-height:.92;
+  letter-spacing:.06em;
+}
+
+.star-admin-title span {
+  color:var(--c-primary);
+  text-shadow:var(--glow-primary);
+}
+
+.star-admin-sub,
+.star-admin-muted {
+  color:var(--c-text-muted);
+  font-size:11px;
+  line-height:1.6;
+  letter-spacing:.08em;
+}
+
+.star-admin-actions,
+.star-admin-presets {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:8px;
+}
+
+.star-admin-btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:36px;
+  border:1px solid var(--c-border);
+  border-radius:8px;
+  background:color-mix(in oklch, var(--c-surface) 82%, transparent);
+  color:var(--c-text-muted);
+  padding:8px 12px;
+  font:700 10px var(--font-mono);
+  letter-spacing:.12em;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.star-admin-btn:hover,
+.star-admin-btn:focus-visible {
+  color:var(--c-primary);
+  border-color:var(--c-primary);
+  outline:none;
+}
+
+.star-admin-btn.primary {
+  color:var(--c-primary);
+  border-color:var(--c-primary);
+  box-shadow:0 0 16px color-mix(in oklch, var(--c-primary) 14%, transparent);
+}
+
+.star-admin-btn.danger {
+  color:var(--c-red);
+  border-color:color-mix(in oklch, var(--c-red) 55%, var(--c-border));
+}
+
+.star-admin-card {
+  border:1px solid color-mix(in oklch, var(--c-primary) 16%, var(--c-border));
+  border-radius:12px;
+  background:color-mix(in oklch, var(--c-surface) 88%, transparent);
+  box-shadow:0 16px 36px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.035);
+  padding:14px;
+}
+
+.star-admin-locked {
+  max-width:680px;
+  margin:18vh auto 0;
+  text-align:center;
+}
+
+.star-admin-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:12px;
+}
+
+.star-admin-kpis {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.star-admin-kpi strong {
+  display:block;
+  color:var(--c-primary);
+  font-family:var(--font-display);
+  font-size:1.8rem;
+  line-height:1;
+}
+
+.star-admin-kpi span {
+  color:var(--c-text-muted);
+  font-size:9px;
+  letter-spacing:.16em;
+}
+
+.hero-admin-layout {
+  display:grid;
+  grid-template-columns:minmax(0, 1fr);
+  gap:18px;
+}
+
+.hero-admin-list {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+  gap:12px;
+}
+
+.hero-admin-card {
+  position:relative;
+  overflow:hidden;
+  min-height:220px;
+  border-color:color-mix(in oklch, var(--card-color, var(--c-primary)) 34%, var(--c-border));
+}
+
+.hero-admin-card::before {
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:88px;
+  background:
+    radial-gradient(circle at 50% 36%, color-mix(in oklch, var(--card-color, var(--c-primary)) 24%, transparent), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,.055), transparent);
+  pointer-events:none;
+}
+
+.hero-admin-orb {
+  position:relative;
+  z-index:1;
+  display:grid;
+  place-items:center;
+  width:58px;
+  height:58px;
+  margin:8px auto 16px;
+  border:1px solid color-mix(in oklch, var(--card-color, var(--c-primary)) 58%, transparent);
+  border-radius:18px;
+  color:var(--card-color, var(--c-primary));
+  font-size:28px;
+  background:color-mix(in oklch, var(--card-color, var(--c-primary)) 10%, var(--c-bg));
+  box-shadow:0 0 22px color-mix(in oklch, var(--card-color, var(--c-primary)) 24%, transparent);
+}
+
+.hero-admin-name {
+  margin:0 0 6px;
+  font-family:var(--font-display);
+  font-size:1.35rem;
+  line-height:.94;
+  letter-spacing:.08em;
+}
+
+.hero-admin-meta {
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin:10px 0;
+}
+
+.star-admin-badge {
+  display:inline-flex;
+  align-items:center;
+  border:1px solid color-mix(in oklch, var(--badge-color, var(--c-primary)) 42%, transparent);
+  border-radius:999px;
+  color:var(--badge-color, var(--c-primary));
+  padding:4px 8px;
+  font-size:9px;
+  letter-spacing:.12em;
+}
+
+.hero-admin-table {
+  width:100%;
+  border-collapse:collapse;
+}
+
+.hero-admin-registry {
+  overflow:auto;
+}
+
+.hero-admin-table th,
+.hero-admin-table td {
+  border-bottom:1px solid var(--c-divider);
+  padding:9px 10px;
+  text-align:left;
+  vertical-align:top;
+  font-size:10px;
+}
+
+.hero-admin-table th {
+  color:var(--c-text-faint);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+.hero-admin-table td {
+  color:var(--c-text-muted);
+}
+
+.hero-admin-table a {
+  color:var(--c-primary);
+  text-decoration:none;
+}
+
+.hero-admin-warning {
+  color:var(--c-amber);
+  border-color:color-mix(in oklch, var(--c-amber) 45%, var(--c-border));
+}
+
+.star-bg-admin-page {
+  overflow-x:hidden;
+}
+
+.star-bg-admin-shell {
+  position:relative;
+  z-index:5;
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:minmax(280px, 390px) minmax(0, 1fr);
+  gap:18px;
+  width:min(1320px, calc(100% - 32px));
+  margin:0 auto;
+  padding:22px 0 56px;
+}
+
+.star-bg-admin-panel {
+  align-self:start;
+  display:grid;
+  gap:12px;
+  max-height:calc(100vh - 44px);
+  overflow:auto;
+  padding-right:4px;
+}
+
+.star-bg-stage {
+  min-height:calc(100vh - 78px);
+  border:1px solid color-mix(in oklch, var(--c-primary) 20%, transparent);
+  border-radius:18px;
+  background:
+    linear-gradient(90deg, color-mix(in oklch, var(--c-primary) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--c-primary) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(5,12,22,.36), rgba(4,8,15,.12));
+  background-size:38px 38px, 38px 38px, auto;
+  box-shadow:inset 0 0 48px rgba(0,0,0,.28), 0 20px 60px rgba(0,0,0,.24);
+  position:relative;
+  overflow:hidden;
+}
+
+.star-bg-stage::before {
+  content:"BACKGROUND ONLY";
+  position:absolute;
+  left:18px;
+  top:16px;
+  color:color-mix(in oklch, var(--c-primary) 58%, transparent);
+  font-size:10px;
+  letter-spacing:.24em;
+}
+
+.star-bg-stage::after {
+  content:"/star/index.html";
+  position:absolute;
+  right:18px;
+  bottom:16px;
+  color:var(--c-text-faint);
+  font-size:10px;
+  letter-spacing:.18em;
+}
+
+.star-bg-controls {
+  display:grid;
+  gap:10px;
+}
+
+.star-bg-control {
+  display:grid;
+  gap:7px;
+}
+
+.star-bg-control label {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  color:var(--c-text-muted);
+  font-size:10px;
+  letter-spacing:.13em;
+}
+
+.star-bg-control output {
+  color:var(--c-primary);
+}
+
+.star-bg-control input[type="range"] {
+  width:100%;
+  accent-color:var(--c-primary);
+}
+
+.star-bg-control input[type="checkbox"] {
+  accent-color:var(--c-primary);
+}
+
+.star-bg-import {
+  display:none;
+}
+
+.star-bg-toast {
+  min-height:18px;
+  color:var(--c-primary);
+  font-size:10px;
+  line-height:1.5;
+  letter-spacing:.1em;
+}
+
+.star-bg-preview-only .star-bg-admin-panel,
+.star-bg-preview-only .star-bg-stage::before,
+.star-bg-preview-only .star-bg-stage::after {
+  display:none;
+}
+
+.star-bg-preview-only .star-bg-admin-shell {
+  display:block;
+  width:100%;
+  padding:0;
+}
+
+.star-bg-preview-only .star-bg-stage {
+  min-height:100vh;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+
+.star-bg-exit-preview {
+  position:fixed;
+  right:14px;
+  top:14px;
+  z-index:30;
+  display:none;
+}
+
+.star-bg-preview-only .star-bg-exit-preview {
+  display:inline-flex;
+}
+
+@media(max-width:880px) {
+  .star-admin-top,
+  .star-bg-admin-shell {
+    display:grid;
+  }
+
+  .star-admin-actions,
+  .star-admin-presets {
+    justify-content:flex-start;
+  }
+
+  .star-bg-admin-panel {
+    max-height:none;
+  }
+}

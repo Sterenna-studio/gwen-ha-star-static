@@ -2,6 +2,11 @@
 
 Console : `/star/admin/background.html`
 
+Consoles cockpit Star :
+
+- `/star/admin/hero-cards.html` : audit visuel des hero cards injectées depuis `shared/nitro-apps.js`, avec export JSON du registre.
+- `/star/admin/cockpit-background.html` : aperçu du background seul de `/star/index.html`, réglage des variables CSS, sauvegarde locale et export/import JSON.
+
 Modules :
 
 - `/star/admin/background-admin.js`
@@ -20,6 +25,7 @@ Fonctions admin :
 - aperçu live dans iframe ;
 - aperçu non sauvegardé ;
 - backup persistant ;
+- export JSON portable ;
 - restore dernier backup ;
 - reset safe avec backup préalable.
 
