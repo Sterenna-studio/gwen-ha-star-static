@@ -29,10 +29,10 @@ Les sections numérotées commencent ensuite dans cet ordre :
 
 1. `// 01 · ACCÈS DIRECT` — Outils & Univers.
 2. `// 02 · STREAM LIVE` — Twitch live.
-3. `// 03 · JUKEBOX` — Jukebox Dr.Spig.
-4. `// 04 · WEB RADIO LIVE` — Web Radio / playlists YouTube.
-5. `// 05 · CHRONICLES FM` — Présentation radio pirate.
-6. `// 06 · CHAÎNE` — YouTube @mutenrock.
+3. `// 03 · CHAÎNE` — YouTube @mutenrock.
+4. `// 04 · JUKEBOX` — Jukebox Dr.Spig.
+5. `// 05 · WEB RADIO LIVE` — Web Radio / playlists YouTube.
+6. `// 06 · CHRONICLES FM` — Présentation radio pirate.
 
 ## À ne pas réactiver sans décision
 
