@@ -22,10 +22,16 @@ const HUB_VERSIONS = [
     note: 'Version publiée avec background configurable',
   },
   {
+    id: 'background-presets',
+    label: 'Background presets',
+    href: '/versions/background-presets/',
+    note: 'Version avec LIVE ADMIN + presets du fond spatial',
+  },
+  {
     id: 'themes-v24',
-    label: 'Thèmes · v2.4',
+    label: 'Thèmes UI · v2.4',
     href: '/versions/themes/',
-    note: 'Version avec bouton de thème et anti-FOUT',
+    note: 'Version avec bouton de thème UI et anti-FOUT',
   },
   {
     id: 'prod-modular',
