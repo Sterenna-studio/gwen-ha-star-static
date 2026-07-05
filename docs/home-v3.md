@@ -21,15 +21,18 @@ La home publique officielle est désormais la version modulaire actuelle.
 - La console `HUB VERSION` reste réservée aux superusers Supabase.
 - Le background public reste piloté par la config admin Supabase `space_background_config` avec `id = 'home'`.
 
-## Sections visibles
+## Ordre de la home
 
-1. Hero Gwen Ha Star.
-2. Outils & Univers.
-3. Twitch live.
-4. Jukebox Dr.Spig.
-5. Web Radio Live / playlists YouTube.
-6. Chronicles FM / présentation radio pirate.
-7. YouTube @mutenrock.
+Le hero `GWEN HA STAR` est une introduction non numérotée.
+
+Les sections numérotées commencent ensuite dans cet ordre :
+
+1. `// 01 · ACCÈS DIRECT` — Outils & Univers.
+2. `// 02 · STREAM LIVE` — Twitch live.
+3. `// 03 · JUKEBOX` — Jukebox Dr.Spig.
+4. `// 04 · WEB RADIO LIVE` — Web Radio / playlists YouTube.
+5. `// 05 · CHRONICLES FM` — Présentation radio pirate.
+6. `// 06 · CHAÎNE` — YouTube @mutenrock.
 
 ## À ne pas réactiver sans décision
 
