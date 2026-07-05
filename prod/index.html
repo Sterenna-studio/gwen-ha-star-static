@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GWEN HA STAR</title>
+  <link rel="icon" type="image/png" href="./shared/logos/star_logo/star_logo_color_set/star_logo_white_silver.png"/>
+
+  <!-- ANTI-FOUT : applique le thème AVANT le premier paint -->
+  <script>
+    (function(){
+      var t = sessionStorage.getItem('ghs-theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/theme.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/auth.css"/>
+  <link rel="stylesheet" href="css/hub.css"/>
+  <link rel="stylesheet" href="css/home.css?v=20260703-extract-3"/>
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo" aria-label="Accueil">
+        <svg width="28" height="28" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+          <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" stroke="var(--c-primary)" stroke-width="1.5" fill="none"/>
+          <polygon points="18,8 28,13 28,23 18,28 8,23 8,13" stroke="var(--c-primary)" stroke-width="0.8" fill="none" opacity="0.4"/>
+          <circle cx="18" cy="18" r="3" fill="var(--c-primary)"/>
+        </svg>
+        <span class="logo-text">GWEN·HA·STAR</span>
+      </a>
+      <button class="theme-cycle-btn" type="button" aria-label="Changer de thème">◐</button>
+      <div class="header-auth" id="header-auth"></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hub-hero">
+      <p class="hub-hero-eyebrow">// RÉSEAU · COMMUNAUTÉ · STERENNA</p>
+      <h1 class="hub-hero-title">GWEN <span>HA</span> STAR</h1>
+      <p class="hub-hero-sub">Hub central de la communauté. Streams, jeux, crew, archives — tout est ici.</p>
+      <a href="/star/index.html" class="btn-chronicles">
+        ⬡ ENTRER DANS LES CHRONICLES
+        <span class="btn-chronicles-arrow">→</span>
+      </a>
+    </section>
+
+    <section class="hub-section">
+      <p class="hub-section-label">// 01 · ACCÈS DIRECT</p>
+      <h2 class="hub-section-title">Outils &amp; Univers</h2>
+      <div class="tools-grid">
+        <a href="https://pokegang.sterenna.fr" target="_blank" rel="noopener noreferrer" class="tool-card tool-card--pokegang featured">
+          <div class="tool-card-icon">⚡</div>
+          <div>
+            <div class="tool-card-name">POKEGANG</div>
+            <div class="tool-card-desc">L'univers Pokémon de la communauté — collection, gang, lore et plus encore.</div>
+            <span class="tool-card-tag ext">↗ POKEGANG.STERENNA.FR</span>
+          </div>
+        </a>
+
+        <a href="https://nitro.sterenna.fr/TCG" target="_blank" rel="noopener noreferrer" class="tool-card tool-card--tcg">
+          <div class="tool-card-icon">🃏</div>
+          <div class="tool-card-name">TCG</div>
+          <div class="tool-card-desc">Trading Card Game de la communauté. Construis ton deck, affronte le crew.</div>
+          <span class="tool-card-tag nitro">↗ NITRO</span>
+        </a>
+
+        <a href="https://twitch.tv/mutenrock" target="_blank" rel="noopener noreferrer" class="tool-card tool-card--twitch">
+          <div class="tool-card-icon">📡</div>
+          <div class="tool-card-name">TWITCH</div>
+          <div class="live-badge"><span class="live-dot"></span>MUTENROCK</div>
+          <div class="tool-card-desc">Stream live — gaming, coding sessions, collab crew.</div>
+          <span class="tool-card-tag stream">⬤ STREAM</span>
+        </a>
+
+        <a href="https://www.youtube.com/@mutenrock" target="_blank" rel="noopener noreferrer" class="tool-card tool-card--youtube">
+          <div class="tool-card-icon">▶</div>
+          <div class="tool-card-name">YOUTUBE</div>
+          <div class="tool-card-desc">Vidéos, VODs, archives. Chaîne officielle @mutenrock.</div>
+          <span class="tool-card-tag ext">↗ YT</span>
+        </a>
+
+        <a href="#jukebox" class="tool-card tool-card--jukebox">
+          <div class="tool-card-icon">🎵</div>
+          <div class="tool-card-name">JUKEBOX</div>
+          <div class="tool-card-desc">Musiques de la communauté par Dr.Spig — écoute directement depuis le hub.</div>
+          <span class="tool-card-tag int">⬡ INTÉGRÉ</span>
+        </a>
+
+        <a href="#web-radio" class="tool-card tool-card--web-radio">
+          <div class="tool-card-icon">📡</div>
+          <div class="tool-card-name">WEB RADIO</div>
+          <div class="live-badge"><span class="live-dot"></span>LIVE SYNC</div>
+          <div class="tool-card-desc">Chronicles FM — lecteur YouTube intégré avec sélection des fréquences.</div>
+          <span class="tool-card-tag int">▶ YT RADIO</span>
+        </a>
+
+        <a href="#chronicles-fm" class="tool-card tool-card--chronicles-fm">
+          <div class="tool-card-icon">📻</div>
+          <div class="tool-card-name">CHRONICLES FM</div>
+          <div class="live-badge"><span class="live-dot"></span>WEB RADIO</div>
+          <div class="tool-card-desc">Radio pirate BZH Chronicles — 13 fréquences, playlists YT, animée par Lemegeton.</div>
+          <span class="tool-card-tag stream">⬤ RADIO</span>
+        </a>
+
+        <a href="/star/index.html" class="tool-card card-chronicles">
+          <div class="tool-card-icon">⬡</div>
+          <div class="tool-card-name-wrap">
+            <div class="tool-card-name tool-card-name--glitch" id="glitch-name">
+              CHRONICLES
+              <span class="glitch-layer-1" aria-hidden="true">CHRONICLES</span>
+              <span class="glitch-layer-2" aria-hidden="true">CHRONICLES</span>
+            </div>
+          </div>
+          <div class="tool-card-desc" id="chronicles-desc">Portail membres &amp; connexion — tableau de bord, CIG, crew, activité réseau.</div>
+          <span class="tool-card-tag int" id="chronicles-tag">⬡ PORTAIL</span>
+        </a>
+      </div>
+    </section>
+
+    <div class="hub-divider"></div>
+
+    <section class="hub-section">
+      <p class="hub-section-label">// 02 · STREAM LIVE</p>
+      <h2 class="hub-section-title">Twitch <span class="hub-title-side">@mutenrock</span></h2>
+      <div class="twitch-wrap" id="twitch-wrap">
+        <button class="twitch-placeholder" id="twitch-load" type="button">
+          <span class="twitch-placeholder-title">TWITCH · MUTENROCK</span>
+          <span class="twitch-placeholder-sub">CHARGER LE PLAYER</span>
+        </button>
+      </div>
+      <p class="hub-note">⬤ Embed live — rejoins le chat sur <a href="https://twitch.tv/mutenrock" target="_blank" rel="noopener noreferrer" class="hub-link-muted">twitch.tv/mutenrock</a></p>
+    </section>
+
+    <div class="hub-divider"></div>
+
+    <section class="hub-section" id="jukebox">
+      <p class="hub-section-label">// 03 · JUKEBOX</p>
+      <h2 class="hub-section-title">Musiques <span class="hub-title-side">Dr.Spig</span></h2>
+      <div class="jukebox-card">
+        <div class="jukebox-top">
+          <div class="jukebox-art" id="jk-art">
+            <img id="jk-cover" alt="Cover du morceau en cours" loading="lazy"/>
+          </div>
+          <div class="jukebox-meta">
+            <div class="jukebox-station" id="jk-station">BZH SUMMER - BIG BANGER</div>
+            <div class="jukebox-artist">Dr.Spig</div>
+            <div class="jukebox-sub">GWEN HA STAR · JUKEBOX</div>
+          </div>
+          <div class="jukebox-live"><span class="jukebox-live-dot"></span>NOW PLAYING</div>
+        </div>
+        <div class="jukebox-controls">
+          <button class="jk-play-btn" id="jk-play" type="button" aria-label="Play / Pause">▶</button>
+          <div class="jk-progress">
+            <div class="jk-bar-bg" id="jk-bar-bg"><div class="jk-bar-fill" id="jk-bar"></div></div>
+            <div class="jk-labels"><span id="jk-time">0:00</span><span id="jk-dur">—</span></div>
+          </div>
+          <input type="range" class="jk-vol" id="jk-vol" min="0" max="1" step="0.05" value="0.7" aria-label="Volume"/>
+        </div>
+        <div class="jk-tracks" id="jk-tracks"></div>
+        <p class="jk-hint">⬡ Musiques originales de la communauté — par Dr.Spig. <a href="https://nitro.sterenna.fr/jukebox/" target="_blank" rel="noopener noreferrer" class="hub-link-primary">Voir le jukebox complet →</a></p>
+      </div>
+    </section>
+
+    <div class="hub-divider"></div>
+
+    <section class="hub-section" id="web-radio">
+      <p class="hub-section-label">// 04 · WEB RADIO LIVE</p>
+      <h2 class="hub-section-title">Chronicles FM <span class="hub-title-side">Playlists YouTube</span></h2>
+      <div class="radio-hub-card">
+        <div class="radio-hub-head">
+          <div class="radio-hub-icon">📡</div>
+          <div class="radio-hub-meta">
+            <div class="radio-hub-name">WEB RADIO · YOUTUBE</div>
+            <div class="radio-hub-sub" id="radio-yt-sub">CHARGEMENT DES FRÉQUENCES</div>
+          </div>
+          <div class="radio-hub-live"><span class="radio-hub-live-dot"></span>ON AIR</div>
+        </div>
+        <div class="radio-hub-controls">
+          <select class="radio-hub-select" id="radio-yt-select" aria-label="Fréquence Chronicles FM">
+            <option>Chargement...</option>
+          </select>
+          <button class="radio-hub-btn" id="radio-yt-play" type="button">▶ LANCER</button>
+          <a class="radio-hub-btn" id="radio-yt-open" href="/jukebox/chronicles-fm.html">↗ YOUTUBE</a>
+        </div>
+        <div class="radio-hub-frame" id="radio-yt-frame">
+          <button class="radio-hub-placeholder" id="radio-yt-placeholder" type="button">
+            <strong>CHRONICLES FM</strong>
+            <span>SÉLECTIONNE UNE FRÉQUENCE PUIS LANCE LE PLAYER YOUTUBE</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="hub-divider"></div>
+
+    <section class="hub-section" id="chronicles-fm">
+      <p class="hub-section-label">// 05 · WEB RADIO</p>
+      <h2 class="hub-section-title">Chronicles FM <span class="hub-title-side">Radio pirate</span></h2>
+      <div class="cfm-hub-card">
+        <div class="cfm-hub-top">
+          <div class="cfm-hub-icon">📻</div>
+          <div class="cfm-hub-meta">
+            <div class="cfm-hub-name">CHRONICLES FM</div>
+            <div class="cfm-hub-sub">BZH CHRONICLES RADIO · LES FRÉQUENCES DU CODE</div>
+          </div>
+          <div class="cfm-hub-live"><span class="cfm-hub-live-dot"></span>ON AIR</div>
+        </div>
+        <div class="cfm-hub-desc">
+          Radio pirate captée entre les ruines du Code, les néons cyberpunk et les échos néo-bretons.
+          13 fréquences thématiques. Animée par Lemegeton, le chronicœur de l'onde.
+        </div>
+        <div class="cfm-hub-freqs" id="cfm-hub-freq-pills"></div>
+        <div class="cfm-hub-actions">
+          <a href="/jukebox/chronicles-fm.html" class="cfm-hub-btn cfm-hub-btn--primary">📻 TOUTES LES FRÉQUENCES</a>
+          <button class="cfm-hub-btn cfm-hub-btn--ghost" id="cfm-hub-open-widget" type="button">▶ OUVRIR LA RADIO</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="hub-divider"></div>
+
+    <section class="hub-section">
+      <p class="hub-section-label">// 06 · CHAÎNE</p>
+      <h2 class="hub-section-title">YouTube <span class="hub-title-side">@mutenrock</span></h2>
+      <div class="yt-layout">
+        <div>
+          <div class="yt-wrap">
+            <iframe
+              src="https://www.youtube.com/embed/videoseries?list=PLO9dEY6ZTilz4v4_sMq4iu53GtgPPfKOw&rel=0&modestbranding=1"
+              title="Playlist MutenRock — BZH Chronicles"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen loading="lazy">
+            </iframe>
+          </div>
+          <p class="yt-playlist-label yt-playlist-label--spaced">⬡ PLAYLIST · BZH CHRONICLES</p>
+        </div>
+        <div class="yt-channel-card">
+          <div class="yt-channel-avatar">
+            <img src="https://yt3.googleusercontent.com/ytc/AIdro_mCgJGGP3r9NZfvtl4wJMb9Xv6S6jKQnD0kQcXK=s176-c-k-c0x00ffffff-no-rj"
+              alt="Avatar MutenRock" width="80" height="80" loading="lazy"
+              onerror="this.src='https://yt3.googleusercontent.com/default-user/176x176.jpg'"/>
+          </div>
+          <div class="yt-channel-name">MutenRock</div>
+          <div class="yt-channel-handle">@mutenrock</div>
+          <div class="yt-channel-desc">Gaming · Streams · BZH Chronicles<br>Communauté Gwen Ha Star</div>
+          <a href="https://www.youtube.com/@mutenrock?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="yt-channel-btn">▶ S'ABONNER</a>
+          <a href="https://youtube.com/playlist?list=PLO9dEY6ZTilz4v4_sMq4iu53GtgPPfKOw" target="_blank" rel="noopener noreferrer" class="yt-channel-more">↗ Voir la playlist complète</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
+      <span class="footer-version">HUB · v2.8</span>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/home.js?v=20260704-home-runtime"></script>
+  <script type="module" src="/js/chronicles-fm-widget.js"></script>
+  <script type="module" src="/js/space-background.js?v=20260703-space-clean"></script>
+</body>
+</html>
