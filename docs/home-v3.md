@@ -32,9 +32,9 @@ Les sections numérotées commencent ensuite dans cet ordre :
 3. `// 03 · CHAÎNE` — YouTube @mutenrock.
 4. `// 04 · MUSIQUES & RADIO` — Jukebox Dr.Spig, Web Radio / playlists YouTube et Chronicles FM.
 
-La section `MUSIQUES & RADIO` contient trois modules internes avec ancres conservées :
+La section `MUSIQUES & RADIO` contient trois modules internes :
 
-- `#jukebox` — lecteur des musiques originales Dr.Spig ;
+- `#jukebox` — lecteur intégré des musiques originales Dr.Spig, sans lien direct vers la page Jukebox complète depuis l'accueil ;
 - `#web-radio` — lecteur YouTube des fréquences Chronicles FM ;
 - `#chronicles-fm` — présentation radio pirate et accès aux fréquences complètes.
 
