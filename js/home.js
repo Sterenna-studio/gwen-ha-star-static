@@ -27,24 +27,26 @@ function initChroniclesCard() {
 function initTwitchPlayer() {
   const twitchWrap = $('#twitch-wrap');
   const twitchLoad = $('#twitch-load');
-  let twitchMounted = false;
+  let twitchMounted = twitchWrap?.dataset.twitchMounted === 'true';
 
   function mountTwitchPlayer() {
-    if (!twitchWrap || twitchMounted) return;
+    if (!twitchWrap || twitchMounted || twitchWrap.querySelector('iframe')) return;
+
     twitchMounted = true;
+    twitchWrap.dataset.twitchMounted = 'true';
+
     const parent = encodeURIComponent(window.location.hostname || 'localhost');
-    twitchWrap.innerHTML = `
-      <iframe
-        src="https://player.twitch.tv/?channel=mutenrock&parent=${parent}&muted=true&autoplay=false"
-        allow="fullscreen; picture-in-picture"
-        allowfullscreen
-        loading="lazy"
-        title="Stream Twitch MutenRock">
-      </iframe>`;
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://player.twitch.tv/?channel=mutenrock&parent=${parent}&muted=true&autoplay=false`;
+    iframe.allow = 'fullscreen; picture-in-picture';
+    iframe.loading = 'lazy';
+    iframe.title = 'Stream Twitch MutenRock';
+
+    twitchWrap.replaceChildren(iframe);
   }
 
-  twitchLoad?.addEventListener('click', mountTwitchPlayer);
-  if (twitchWrap && 'IntersectionObserver' in window) {
+  twitchLoad?.addEventListener('click', mountTwitchPlayer, { once: true });
+  if (twitchWrap && 'IntersectionObserver' in window && !twitchMounted) {
     const twitchObserver = new IntersectionObserver(entries => {
       const entry = entries[0];
       if (entry?.isIntersecting && entry.intersectionRatio >= 0.35) {
@@ -184,14 +186,13 @@ function initChroniclesRadio() {
       radioYtOpen.target = '_blank';
       radioYtOpen.rel = 'noopener noreferrer';
     }
-    radioYtFrame.innerHTML = `
-      <iframe
-        src="${ytPlaylistUrl(playlist.youtubePlaylistId, autoplay)}"
-        title="${escAttr(playlist.title)}"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen
-        loading="lazy">
-      </iframe>`;
+
+    const iframe = document.createElement('iframe');
+    iframe.src = ytPlaylistUrl(playlist.youtubePlaylistId, autoplay);
+    iframe.title = playlist.title ?? 'Playlist YouTube';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture; web-share';
+    iframe.loading = 'lazy';
+    radioYtFrame.replaceChildren(iframe);
   }
 
   function initRadioYt(playlists) {
