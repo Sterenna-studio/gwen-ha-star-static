@@ -75,17 +75,17 @@ async function bootCockpit() {
   renderNitroHeroCards('nitro-hero-cards');
 
   const auth = await requireAuth();
-  if (auth) {
-    const { user, profile } = auth;
-    populateWelcome(user, profile);
-    loadMembers();
+  if (!auth) return;
 
-    const cachedProfile = await getProfile(supabase, user.id);
-    const el = document.getElementById('kpi-chronicles');
-    if (el) el.textContent = (cachedProfile?.chronicles ?? 0).toLocaleString('fr-FR');
-  }
+  const { user, profile } = auth;
+  populateWelcome(user, profile);
+  loadMembers();
 
-  initDashboard();
+  const cachedProfile = await getProfile(supabase, user.id);
+  const el = document.getElementById('kpi-chronicles');
+  if (el) el.textContent = (cachedProfile?.chronicles ?? 0).toLocaleString('fr-FR');
+
+  await initDashboard(auth);
 }
 
 await bootCockpit();

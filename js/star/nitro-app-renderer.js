@@ -1,5 +1,6 @@
 import './radio-player-stabilizer.js';
 import './radio-dedication-rules.js';
+import './star-hero-card-style.js';
 import '../chronicles-fm-star-skin.js';
 import { getHeroNitroApps, getQuickNitroApps } from '../../shared/nitro-apps.js';
 
