@@ -14,8 +14,33 @@ const DEFAULTS = {
   trafficMode: 'balanced',
 };
 
+const HUB_VERSIONS = [
+  {
+    id: 'public-20260703',
+    label: 'Public · 03/07',
+    href: '/',
+    note: 'Version publiée avec background configurable',
+  },
+  {
+    id: 'prod-modular',
+    label: 'Prod module · refacto',
+    href: '/prod/',
+    note: 'Version CSS/JS extraits',
+  },
+  {
+    id: 'background-admin',
+    label: 'Config background',
+    href: '/star/admin/background.html',
+    note: 'Console admin du fond spatial',
+  },
+];
+
 const home = document.querySelector('.hub-hero');
-if (home) boot();
+if (home) {
+  installHubVersionSelector();
+  fixAvatarFallbacks();
+  boot();
+}
 
 async function boot() {
   ensureHomeStylesheet();
@@ -169,6 +194,116 @@ async function boot() {
   resize(); addEventListener('resize', resize);
   spawnShip(false); setTimeout(()=>spawnShip(true), 1400);
   requestAnimationFrame(frame);
+}
+
+function installHubVersionSelector() {
+  if (document.getElementById('hub-version-switcher')) return;
+
+  const currentPath = normalizePath(window.location.pathname);
+  const wrapper = document.createElement('aside');
+  wrapper.id = 'hub-version-switcher';
+  wrapper.setAttribute('aria-label', 'Sélecteur de version du hub');
+  wrapper.innerHTML = `
+    <div class="hvs-kicker">HUB VERSION</div>
+    <label class="hvs-label" for="hvs-select">Retrouver une version</label>
+    <select id="hvs-select">
+      ${HUB_VERSIONS.map(version => `
+        <option value="${escapeAttr(version.href)}" ${normalizePath(version.href) === currentPath ? 'selected' : ''}>
+          ${escapeHtml(version.label)}
+        </option>`).join('')}
+    </select>
+    <div class="hvs-note" id="hvs-note"></div>`;
+
+  const style = document.createElement('style');
+  style.id = 'hub-version-switcher-style';
+  style.textContent = `
+    #hub-version-switcher{
+      position:fixed;
+      right:14px;
+      bottom:14px;
+      z-index:80;
+      width:min(260px,calc(100vw - 28px));
+      padding:10px;
+      border:1px solid rgba(0,255,231,.32);
+      border-radius:14px;
+      background:rgba(4,8,16,.84);
+      box-shadow:0 10px 32px rgba(0,0,0,.42),0 0 22px rgba(0,255,231,.08);
+      backdrop-filter:blur(10px);
+      color:var(--c-text,#f2f6ff);
+      font-family:var(--font-mono,monospace);
+    }
+    #hub-version-switcher .hvs-kicker{font-size:8px;letter-spacing:.22em;color:var(--c-primary,#00ffe7);opacity:.72;margin-bottom:4px}
+    #hub-version-switcher .hvs-label{display:block;font-size:9px;letter-spacing:.08em;color:var(--c-text-muted,#94a3b8);margin-bottom:7px}
+    #hub-version-switcher select{
+      width:100%;
+      min-height:34px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.06);
+      color:inherit;
+      font:inherit;
+      font-size:10px;
+      padding:0 9px;
+      cursor:pointer;
+    }
+    #hub-version-switcher option{background:#050a12;color:#f2f6ff}
+    #hub-version-switcher .hvs-note{min-height:1.2em;margin-top:7px;font-size:8px;line-height:1.45;color:var(--c-text-faint,#64748b)}
+    @media(max-width:720px){#hub-version-switcher{left:10px;right:10px;bottom:10px;width:auto}}
+  `;
+
+  document.head.appendChild(style);
+  document.body.appendChild(wrapper);
+
+  const select = wrapper.querySelector('#hvs-select');
+  const note = wrapper.querySelector('#hvs-note');
+  const updateNote = () => {
+    const selected = HUB_VERSIONS.find(version => version.href === select.value);
+    if (note) note.textContent = selected?.note || '';
+  };
+
+  select.addEventListener('change', () => {
+    const target = select.value;
+    if (target && normalizePath(target) !== currentPath) window.location.href = target;
+    else updateNote();
+  });
+  updateNote();
+}
+
+function fixAvatarFallbacks() {
+  const fallbackSvg = encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 176 176">
+      <rect width="176" height="176" rx="88" fill="#101827"/>
+      <circle cx="88" cy="70" r="30" fill="#00ffe7" opacity="0.72"/>
+      <path d="M36 148c9-31 28-48 52-48s43 17 52 48" fill="#00ffe7" opacity="0.45"/>
+    </svg>`);
+  const fallback = `data:image/svg+xml;charset=utf-8,${fallbackSvg}`;
+
+  document.querySelectorAll('img').forEach(img => {
+    const attr = img.getAttribute('onerror') || '';
+    if (attr.includes('googleusercontent.com/default-user') || attr.includes('default-user/176x176.jpg')) {
+      img.removeAttribute('onerror');
+      img.addEventListener('error', () => {
+        if (img.src !== fallback) img.src = fallback;
+      }, { once: true });
+    }
+  });
+}
+
+function normalizePath(path) {
+  if (!path) return '/';
+  if (/^https?:\/\//.test(path)) {
+    try { return normalizePath(new URL(path).pathname); } catch { return path; }
+  }
+  return path.endsWith('/') ? path : `${path}/`;
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
 }
 
 function ensureHomeStylesheet() {
