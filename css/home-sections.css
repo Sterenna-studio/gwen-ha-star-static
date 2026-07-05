@@ -2,13 +2,29 @@
    The public home order is now defined by index.html.
 
    Do not force CSS order, hide sections, or rewrite section labels here.
-   Previous versions grouped Twitch + YouTube and hid Jukebox / Chronicles FM;
    v3.0 keeps every numbered section visible in source order:
 
    // 01 · ACCÈS DIRECT
    // 02 · STREAM LIVE
    // 03 · CHAÎNE
-   // 04 · JUKEBOX
-   // 05 · WEB RADIO LIVE
-   // 06 · CHRONICLES FM
+   // 04 · MUSIQUES & RADIO
 */
+
+.music-radio-section .hub-note {
+  max-width: 780px;
+  margin-bottom: var(--space-6);
+}
+
+.music-radio-stack {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.music-radio-module {
+  scroll-margin-top: 110px;
+}
+
+.music-radio-module--web-radio .radio-hub-card,
+.music-radio-module--chronicles-fm .cfm-hub-card {
+  max-width: none;
+}
