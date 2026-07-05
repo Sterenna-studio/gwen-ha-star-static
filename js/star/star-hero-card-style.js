@@ -31,6 +31,9 @@ if (!document.getElementById(STYLE_ID)) {
     .bc-nitro-hero[data-app="clicker"] { --hero-accent: var(--c-cyan); --hero-accent-2: #8b5cf6; --hero-glyph: 'CORE'; }
     .bc-nitro-hero[data-app="arena"] { --hero-accent: var(--c-primary); --hero-accent-2: #00d4ff; --hero-glyph: 'SKILL'; }
     .bc-nitro-hero[data-app="dedale"] { --hero-accent: var(--c-amber); --hero-accent-2: #b87333; --hero-glyph: 'S.T.E.A.M'; }
+    .bc-nitro-hero[data-app="tcg"] { --hero-accent: var(--c-purple); --hero-accent-2: #ffd166; --hero-glyph: 'TCG'; }
+    .bc-nitro-hero[data-app="bzh-universe"] { --hero-accent: var(--c-acid, #b7ff3c); --hero-accent-2: #38bdf8; --hero-glyph: 'BZH'; }
+    .bc-nitro-hero[data-app="pokegang"] { --hero-accent: var(--c-red); --hero-accent-2: #facc15; --hero-glyph: 'POKEGANG'; }
 
     .hero-card--nitro {
       position: relative;

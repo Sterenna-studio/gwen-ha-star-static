@@ -63,9 +63,10 @@ function buildHeroCards() {
   const apps = getHeroNitroApps();
   return apps.map(app => {
     const kind = app.id.replace(/[^a-z0-9-]/gi, '-');
+    const ext = app.url.startsWith('http');
     return `
       <div class="bc bc-hero bc-nitro-hero" data-app="${app.id}" data-nitro-rendered="true">
-        <a href="${app.url}" class="hero-card hero-card--nitro hero-card--${kind}" aria-label="Accéder à ${app.name}">
+        <a href="${app.url}" class="hero-card hero-card--nitro hero-card--${kind}" aria-label="Accéder à ${app.name}" ${ext ? 'target="_blank" rel="noopener noreferrer"' : ''}>
           <div class="hero-scene hero-scene--nitro hero-scene--${kind}" aria-hidden="true">
             <div class="hsc-grid"></div>
             <div class="nitro-hero-orb">${app.icon}</div>
