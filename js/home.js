@@ -45,17 +45,8 @@ function initTwitchPlayer() {
     twitchWrap.replaceChildren(iframe);
   }
 
+  // Keep Twitch/IVS quiet by default: only load the external player after a direct user action.
   twitchLoad?.addEventListener('click', mountTwitchPlayer, { once: true });
-  if (twitchWrap && 'IntersectionObserver' in window && !twitchMounted) {
-    const twitchObserver = new IntersectionObserver(entries => {
-      const entry = entries[0];
-      if (entry?.isIntersecting && entry.intersectionRatio >= 0.35) {
-        mountTwitchPlayer();
-        twitchObserver.disconnect();
-      }
-    }, { threshold: [0.35] });
-    twitchObserver.observe(twitchWrap);
-  }
 }
 
 function initJukebox() {
