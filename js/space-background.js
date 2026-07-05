@@ -22,6 +22,12 @@ const HUB_VERSIONS = [
     note: 'Version publiée avec background configurable',
   },
   {
+    id: 'themes-v24',
+    label: 'Thèmes · v2.4',
+    href: '/versions/themes/',
+    note: 'Version avec bouton de thème et anti-FOUT',
+  },
+  {
     id: 'prod-modular',
     label: 'Prod module · refacto',
     href: '/prod/',
