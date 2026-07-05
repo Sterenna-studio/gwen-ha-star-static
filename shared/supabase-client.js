@@ -63,8 +63,21 @@ function installHubVersionConsoleStyle() {
   const style = document.createElement('style');
   style.id = id;
   style.textContent = `
+    #hub-version-switcher {
+      left: 14px !important;
+      right: auto !important;
+    }
+
     body:not([data-ghs-superuser="true"]) #hub-version-switcher {
       display: none !important;
+    }
+
+    @media (max-width: 720px) {
+      #hub-version-switcher {
+        left: 10px !important;
+        right: 10px !important;
+        width: auto !important;
+      }
     }
   `;
   document.head.appendChild(style);
