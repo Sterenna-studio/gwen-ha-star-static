@@ -24,9 +24,9 @@
       <div class="sb-item" id="sb-supa"><span class="sb-dot amber"></span><span>SUPABASE · LINK</span></div>
       <div class="sb-item" id="sb-pg"><span class="sb-dot off"></span><span>POKEGANG · EXTERNE</span></div>
       <!-- Chronicles FM status -->
-      <div class="sb-item" id="sb-cfm" style="cursor:pointer" title="Chronicles FM — cliquer pour ouvrir">
-        <span class="sb-dot" style="background:#e94560;box-shadow:0 0 4px #e94560"></span>
-        <span style="color:#e94560">CHRONICLES FM</span>
+      <div class="sb-item sb-cfm-trigger" id="sb-cfm" title="Chronicles FM — cliquer pour ouvrir">
+        <span class="sb-dot sb-cfm-dot"></span>
+        <span class="sb-cfm-label">CHRONICLES FM</span>
       </div>
     </div>
     <div class="sb-right">
@@ -46,34 +46,34 @@
         <div class="w-role" id="w-role">◆ AGENT</div>
       </div>
       <div class="w-actions">
-        <a href="../cig.html" class="btn btn-ghost btn-sm" style="font-size:9px;letter-spacing:.12em">⬡ MA CIG</a>
-        <button id="btn-signout-strip" class="btn btn-ghost btn-sm" style="font-size:9px;letter-spacing:.12em;color:var(--c-red)">✕ DÉCO</button>
+        <a href="../cig.html" class="btn btn-ghost btn-sm w-action-btn">⬡ MA CIG</a>
+        <button id="btn-signout-strip" class="btn btn-ghost btn-sm w-action-btn w-action-btn--danger">✕ DÉCO</button>
       </div>
     </div>
 
     <!-- KPI strip -->
     <div class="kpi-strip">
-      <div class="kpi" style="--kpi-c:var(--c-primary)">
+      <div class="kpi kpi--members">
         <span class="kpi-lbl">MEMBRES</span>
         <span class="kpi-val" id="kpi-members">·</span>
         <span class="kpi-sub">CREW · ACTIFS</span>
       </div>
-      <div class="kpi" style="--kpi-c:var(--c-amber)">
+      <div class="kpi kpi--projects">
         <span class="kpi-lbl">PROJETS LIVE</span>
         <span class="kpi-val">03</span>
         <span class="kpi-sub">STERENNA · POKEGANG · BOTANICA</span>
       </div>
-      <div class="kpi" style="--kpi-c:var(--c-cyan)">
+      <div class="kpi kpi--pokegang">
         <span class="kpi-lbl">RÉPUTATION PG</span>
         <span class="kpi-val" id="kpi-pg-rep">—</span>
         <span class="kpi-sub">POKEGANG · EXTERNE</span>
       </div>
-      <div class="kpi" style="--kpi-c:var(--c-gold, #ffd700)">
+      <div class="kpi kpi--chronicles">
         <span class="kpi-lbl">MONNAIE</span>
         <span class="kpi-val" id="kpi-chronicles">·</span>
         <span class="kpi-sub">CHRONICLES · CASINO</span>
       </div>
-      <div class="kpi" style="--kpi-c:var(--c-purple)">
+      <div class="kpi kpi--session">
         <span class="kpi-lbl">SESSION</span>
         <span class="kpi-val" id="kpi-uptime">·</span>
         <span class="kpi-sub">UPTIME · HUB</span>
@@ -85,7 +85,7 @@
 
       <!-- Quick access -->
       <div class="bc bc-qa">
-        <div class="bc-label" style="color:var(--c-primary)"><span class="bc-dot"></span>ACCÈS RAPIDE</div>
+        <div class="bc-label bc-label--primary"><span class="bc-dot"></span>ACCÈS RAPIDE</div>
         <div id="quick-access-grid"></div>
       </div>
 
@@ -97,7 +97,7 @@
 
       <!-- IDENTITÉ / LOGO -->
       <div class="bc bc-brand">
-        <div class="bc-label" style="color:var(--c-cyan)"><span class="bc-dot"></span>IDENTITÉ · RÉSEAU</div>
+        <div class="bc-label bc-label--cyan"><span class="bc-dot"></span>IDENTITÉ · RÉSEAU</div>
         <div class="brand-panel">
           <div class="brand-logo-wrap">
             <img src="../shared/logos/star_logo/star_logo_original.png" alt="Gwen Ha Star — logo officiel" width="90" height="90" loading="lazy">
@@ -111,7 +111,7 @@
             <div class="brand-color-swatch" title="Red"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_red.png" alt="Logo red" width="28" height="28" loading="lazy"></div>
             <div class="brand-color-swatch" title="White / Silver"><img src="../shared/logos/star_logo/star_logo_color_set/star_logo_white_silver.png" alt="Logo white" width="28" height="28" loading="lazy"></div>
           </div>
-          <div class="bzh-tcg-row" style="width:100%;margin-top:var(--space-2)">
+          <div class="bzh-tcg-row bzh-tcg-row--brand">
             <div class="bzh-logo-box">
               <img src="../shared/logos/bzh_power.png" alt="BZH Power" width="110" height="80" loading="lazy">
               <span class="bzh-lbl">BZH POWER</span>
@@ -125,7 +125,7 @@
 
       <!-- POKEGANG -->
       <div class="bc bc-pg">
-        <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>POKEGANG · RÉSEAU</div>
+        <div class="bc-label bc-label--amber"><span class="bc-dot"></span>POKEGANG · RÉSEAU</div>
         <div class="pg-widget">
           <a href="https://pokegang.sterenna.fr" target="_blank" rel="noopener noreferrer" class="pg-play-btn" aria-label="Jouer à PokeGang">
             <span class="pg-play-icon" aria-hidden="true">◉</span>
@@ -152,25 +152,25 @@
 
       <!-- POKEGANG · CLASSEMENT (API publique pokegang_leaderboard) -->
       <div class="bc bc-pgboard">
-        <div class="bc-label" style="color:var(--c-amber)"><span class="bc-dot"></span>CLASSEMENT POKEGANG · TOP GANGS</div>
+        <div class="bc-label bc-label--amber"><span class="bc-dot"></span>CLASSEMENT POKEGANG · TOP GANGS</div>
         <div id="pg-leaderboard"></div>
       </div>
 
       <!-- VIDÉO -->
       <div class="bc bc-video">
-        <div class="bc-label" style="color:var(--c-red)"><span class="bc-dot"></span>VIDEO DU JOUR</div>
+        <div class="bc-label bc-label--red"><span class="bc-dot"></span>VIDEO DU JOUR</div>
         <div id="widget-video"></div>
       </div>
 
       <!-- ACTIVITÉ -->
       <div class="bc bc-activity">
-        <div class="bc-label" style="color:var(--c-cyan)"><span class="bc-dot"></span>ACTIVITÉ RÉSEAU</div>
+        <div class="bc-label bc-label--cyan"><span class="bc-dot"></span>ACTIVITÉ RÉSEAU</div>
         <div id="widget-activity"></div>
       </div>
 
       <!-- JUKEBOX -->
       <div class="bc bc-radio">
-        <div class="bc-label" style="color:var(--c-purple)"><span class="bc-dot"></span>WEB RADIO · LIVE</div>
+        <div class="bc-label bc-label--purple"><span class="bc-dot"></span>WEB RADIO · LIVE</div>
         <div id="widget-radio"></div>
       </div>
 
@@ -180,88 +180,10 @@
   <!-- BOTTOM NAV BAR -->
   <header id="star-header-user" role="banner"></header>
 
-  <style>
-  .bento-hero-row {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: var(--space-3, 12px);
-  }
-  .bento-hero-row .bc-nitro-hero {
-    flex: 1 1 220px;
-    min-height: unset !important;
-    padding: var(--space-4) var(--space-5) !important;
-  }
-  </style>
-
   <!-- Stabilisation radio Star chargée explicitement, plus via injection .htaccess. -->
   <script type="module" src="../js/star/radio-player-stabilizer.js"></script>
 
-  <script type="module">
-    import { initDashboard }        from '../js/star/dashboard.js';
-    import { supabase, signOut }    from '../js/supabase.js';
-    import { requireAuth }          from '../js/star/guard.js';
-    import { getProfile }           from '../js/star/profile-cache.js';
-    import { renderNitroHeroCards } from '../js/star/nitro-app-renderer.js';
-
-    (function(){
-      const el = document.getElementById('sb-clock');
-      const tick = () => { if(el) el.textContent = new Date().toLocaleTimeString('fr-FR'); };
-      tick(); setInterval(tick,1000);
-    })();
-
-    (function(){
-      const t0=Date.now(), el=document.getElementById('kpi-uptime');
-      setInterval(()=>{
-        if(!el) return;
-        const s=Math.floor((Date.now()-t0)/1000);
-        el.textContent=`${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
-      },1000);
-    })();
-
-    document.getElementById('btn-signout-strip')?.addEventListener('click',()=>signOut());
-
-    // Chronicles FM status bar click
-    document.getElementById('sb-cfm')?.addEventListener('click', () => {
-      const bar = document.getElementById('cfm-widget');
-      if (bar) bar.classList.toggle('cfm-visible');
-    });
-
-    async function loadMembers(){
-      const el=document.getElementById('kpi-members');
-      try{
-        const{count}=await supabase.from('profiles').select('id',{count:'exact',head:true});
-        if(el) el.textContent=count??'?';
-      }catch{if(el)el.textContent='?';}
-    }
-
-    function populateWelcome(user,profile){
-      const username=profile?.username??user.email?.split('@')[0]??'AGENT';
-      const role=profile?.active_title??'Agent';
-      document.getElementById('w-name').textContent=username.toUpperCase();
-      document.getElementById('w-role').textContent='◆ '+role.toUpperCase();
-      document.getElementById('sb-username').textContent=username.toUpperCase();
-      const av=document.getElementById('w-avatar');
-      if(av){
-        if(profile?.avatar_url) av.innerHTML=`<img src="${profile.avatar_url}" alt="Avatar" width="50" height="50" loading="lazy">`;
-        else av.textContent=username.charAt(0).toUpperCase();
-      }
-    }
-
-    renderNitroHeroCards('nitro-hero-cards');
-
-    const auth=await requireAuth();
-    if(auth){
-      const{user,profile}=auth;
-      populateWelcome(user,profile);
-      loadMembers();
-      const cachedProfile = await getProfile(supabase, user.id);
-      const el = document.getElementById('kpi-chronicles');
-      if(el) el.textContent = (cachedProfile?.chronicles ?? 0).toLocaleString('fr-FR');
-    }
-    initDashboard();
-  </script>
+  <script type="module" src="../js/star/cockpit.js?v=202607-star-refactor"></script>
 
   <!-- ── CHRONICLES FM WIDGET ── -->
   <script type="module" src="../js/chronicles-fm-widget.js"></script>

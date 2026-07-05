@@ -25,6 +25,9 @@
 .sb-dot.off   { background:var(--c-text-faint); box-shadow:none; animation:none; }
 .sb-clock { color:var(--c-primary); font-size:13px; font-variant-numeric:tabular-nums; letter-spacing:.12em; }
 .sb-user  { color:var(--c-cyan); font-size:12px; }
+.sb-cfm-trigger { cursor:pointer; }
+.sb-cfm-dot { background:#e94560; box-shadow:0 0 4px #e94560; }
+.sb-cfm-label { color:#e94560; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
 
 /* ── BOTTOM BAR ─────────────────────────────────────────── */
@@ -70,6 +73,8 @@
 .w-name   { font-family:var(--font-display); font-size:var(--text-xl); font-weight:700; color:var(--c-text); line-height:1.1; }
 .w-role   { font-family:var(--font-mono); font-size:9px; letter-spacing:.15em; color:var(--c-amber); margin-top:2px; }
 .w-actions{ display:flex; gap:var(--space-2); flex-shrink:0; }
+.w-action-btn { font-size:9px; letter-spacing:.12em; }
+.w-action-btn--danger { color:var(--c-red); }
 @media(max-width:600px){ .w-actions { display:none } }
 
 /* ── KPI STRIP ───────────────────────────────────────────── */
@@ -89,6 +94,11 @@
 .kpi-lbl { font-family:var(--font-mono); font-size:9px; letter-spacing:.18em; color:var(--c-text-muted); }
 .kpi-val { font-family:var(--font-display); font-size:var(--text-xl); line-height:1; color:var(--kpi-c,var(--c-primary)); text-shadow:0 0 18px var(--kpi-c,var(--c-primary)); }
 .kpi-sub { font-family:var(--font-mono); font-size:8px; letter-spacing:.1em; color:var(--c-text-faint); }
+.kpi--members { --kpi-c:var(--c-primary); }
+.kpi--projects { --kpi-c:var(--c-amber); }
+.kpi--pokegang { --kpi-c:var(--c-cyan); }
+.kpi--chronicles { --kpi-c:var(--c-gold, #ffd700); }
+.kpi--session { --kpi-c:var(--c-purple); }
 
 /* ── BENTO GRID ──────────────────────────────────────────── */
 .bento { display:grid; grid-template-columns:repeat(12,1fr); gap:var(--space-4)); }
@@ -102,7 +112,25 @@
   font-family:var(--font-mono); font-size:9px; letter-spacing:.2em;
   color:var(--c-primary); opacity:.65; margin-bottom:var(--space-3);
 }
+.bc-label--primary { color:var(--c-primary); }
+.bc-label--cyan { color:var(--c-cyan); }
+.bc-label--amber { color:var(--c-amber); }
+.bc-label--red { color:var(--c-red); }
+.bc-label--purple { color:var(--c-purple); }
 .bc-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+.bento-hero-row {
+  grid-column:1 / -1;
+  display:flex;
+  flex-direction:row;
+  flex-wrap:wrap;
+  gap:var(--space-3, 12px);
+}
+.bento-hero-row .bc-nitro-hero {
+  flex:1 1 220px;
+  min-height:unset !important;
+  padding:var(--space-4) var(--space-5) !important;
+}
 
 .bc-qa       { grid-column:span 12; }
 .bc-brand    { grid-column:span 4;  }
@@ -167,6 +195,7 @@
 
 /* ── BZH / TCG ───────────────────────────────────────────── */
 .bzh-tcg-row { display:flex; gap:var(--space-3); align-items:stretch; }
+.bzh-tcg-row--brand { width:100%; margin-top:var(--space-2); }
 .bzh-logo-box {
   flex:1; display:flex; flex-direction:column; align-items:center;
   justify-content:center; gap:var(--space-2);
