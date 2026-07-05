@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="css/components.css"/>
   <link rel="stylesheet" href="css/auth.css"/>
   <link rel="stylesheet" href="css/hub.css"/>
-  <link rel="stylesheet" href="css/home.css?v=20260705-v3-order"/>
+  <link rel="stylesheet" href="css/home.css?v=20260705-v3-music-radio"/>
 </head>
 <body>
   <div class="scanlines" aria-hidden="true"></div>
@@ -173,87 +173,85 @@
 
     <div class="hub-divider"></div>
 
-    <section class="hub-section" id="jukebox">
-      <p class="hub-section-label">// 04 · JUKEBOX</p>
-      <h2 class="hub-section-title">Musiques <span class="hub-title-side">Dr.Spig</span></h2>
-      <div class="jukebox-card">
-        <div class="jukebox-top">
-          <div class="jukebox-art" id="jk-art">
-            <img id="jk-cover" alt="Cover du morceau en cours" loading="lazy"/>
-          </div>
-          <div class="jukebox-meta">
-            <div class="jukebox-station" id="jk-station">BZH SUMMER - BIG BANGER</div>
-            <div class="jukebox-artist">Dr.Spig</div>
-            <div class="jukebox-sub">GWEN HA STAR · JUKEBOX</div>
-          </div>
-          <div class="jukebox-live"><span class="jukebox-live-dot"></span>NOW PLAYING</div>
-        </div>
-        <div class="jukebox-controls">
-          <button class="jk-play-btn" id="jk-play" type="button" aria-label="Play / Pause">▶</button>
-          <div class="jk-progress">
-            <div class="jk-bar-bg" id="jk-bar-bg"><div class="jk-bar-fill" id="jk-bar"></div></div>
-            <div class="jk-labels"><span id="jk-time">0:00</span><span id="jk-dur">—</span></div>
-          </div>
-          <input type="range" class="jk-vol" id="jk-vol" min="0" max="1" step="0.05" value="0.7" aria-label="Volume"/>
-        </div>
-        <div class="jk-tracks" id="jk-tracks"></div>
-        <p class="jk-hint">⬡ Musiques originales de la communauté — par Dr.Spig. <a href="https://nitro.sterenna.fr/jukebox/" target="_blank" rel="noopener noreferrer" class="hub-link-primary">Voir le jukebox complet →</a></p>
-      </div>
-    </section>
+    <section class="hub-section music-radio-section">
+      <p class="hub-section-label">// 04 · MUSIQUES &amp; RADIO</p>
+      <h2 class="hub-section-title">Chronicles FM <span class="hub-title-side">Jukebox · Playlists · Radio pirate</span></h2>
+      <p class="hub-note">Un seul espace pour écouter les musiques Dr.Spig, lancer les fréquences YouTube et découvrir l'identité radio BZH Chronicles.</p>
 
-    <div class="hub-divider"></div>
-
-    <section class="hub-section" id="web-radio">
-      <p class="hub-section-label">// 05 · WEB RADIO LIVE</p>
-      <h2 class="hub-section-title">Chronicles FM <span class="hub-title-side">Playlists YouTube</span></h2>
-      <div class="radio-hub-card">
-        <div class="radio-hub-head">
-          <div class="radio-hub-icon">📡</div>
-          <div class="radio-hub-meta">
-            <div class="radio-hub-name">WEB RADIO · YOUTUBE</div>
-            <div class="radio-hub-sub" id="radio-yt-sub">CHARGEMENT DES FRÉQUENCES</div>
+      <div class="music-radio-stack">
+        <article class="music-radio-module music-radio-module--jukebox" id="jukebox" aria-label="Jukebox Dr.Spig">
+          <div class="jukebox-card">
+            <div class="jukebox-top">
+              <div class="jukebox-art" id="jk-art">
+                <img id="jk-cover" alt="Cover du morceau en cours" loading="lazy"/>
+              </div>
+              <div class="jukebox-meta">
+                <div class="jukebox-station" id="jk-station">BZH SUMMER - BIG BANGER</div>
+                <div class="jukebox-artist">Dr.Spig</div>
+                <div class="jukebox-sub">GWEN HA STAR · JUKEBOX</div>
+              </div>
+              <div class="jukebox-live"><span class="jukebox-live-dot"></span>NOW PLAYING</div>
+            </div>
+            <div class="jukebox-controls">
+              <button class="jk-play-btn" id="jk-play" type="button" aria-label="Play / Pause">▶</button>
+              <div class="jk-progress">
+                <div class="jk-bar-bg" id="jk-bar-bg"><div class="jk-bar-fill" id="jk-bar"></div></div>
+                <div class="jk-labels"><span id="jk-time">0:00</span><span id="jk-dur">—</span></div>
+              </div>
+              <input type="range" class="jk-vol" id="jk-vol" min="0" max="1" step="0.05" value="0.7" aria-label="Volume"/>
+            </div>
+            <div class="jk-tracks" id="jk-tracks"></div>
+            <p class="jk-hint">⬡ Musiques originales de la communauté — par Dr.Spig. <a href="https://nitro.sterenna.fr/jukebox/" target="_blank" rel="noopener noreferrer" class="hub-link-primary">Voir le jukebox complet →</a></p>
           </div>
-          <div class="radio-hub-live"><span class="radio-hub-live-dot"></span>ON AIR</div>
-        </div>
-        <div class="radio-hub-controls">
-          <select class="radio-hub-select" id="radio-yt-select" aria-label="Fréquence Chronicles FM">
-            <option>Chargement...</option>
-          </select>
-          <button class="radio-hub-btn" id="radio-yt-play" type="button">▶ LANCER</button>
-          <a class="radio-hub-btn" id="radio-yt-open" href="/jukebox/chronicles-fm.html">↗ YOUTUBE</a>
-        </div>
-        <div class="radio-hub-frame" id="radio-yt-frame">
-          <button class="radio-hub-placeholder" id="radio-yt-placeholder" type="button">
-            <strong>CHRONICLES FM</strong>
-            <span>SÉLECTIONNE UNE FRÉQUENCE PUIS LANCE LE PLAYER YOUTUBE</span>
-          </button>
-        </div>
-      </div>
-    </section>
+        </article>
 
-    <div class="hub-divider"></div>
-
-    <section class="hub-section" id="chronicles-fm">
-      <p class="hub-section-label">// 06 · CHRONICLES FM</p>
-      <h2 class="hub-section-title">Chronicles FM <span class="hub-title-side">Radio pirate</span></h2>
-      <div class="cfm-hub-card">
-        <div class="cfm-hub-top">
-          <div class="cfm-hub-icon">📻</div>
-          <div class="cfm-hub-meta">
-            <div class="cfm-hub-name">CHRONICLES FM</div>
-            <div class="cfm-hub-sub">BZH CHRONICLES RADIO · LES FRÉQUENCES DU CODE</div>
+        <article class="music-radio-module music-radio-module--web-radio" id="web-radio" aria-label="Web Radio Chronicles FM">
+          <div class="radio-hub-card">
+            <div class="radio-hub-head">
+              <div class="radio-hub-icon">📡</div>
+              <div class="radio-hub-meta">
+                <div class="radio-hub-name">WEB RADIO · YOUTUBE</div>
+                <div class="radio-hub-sub" id="radio-yt-sub">CHARGEMENT DES FRÉQUENCES</div>
+              </div>
+              <div class="radio-hub-live"><span class="radio-hub-live-dot"></span>ON AIR</div>
+            </div>
+            <div class="radio-hub-controls">
+              <select class="radio-hub-select" id="radio-yt-select" aria-label="Fréquence Chronicles FM">
+                <option>Chargement...</option>
+              </select>
+              <button class="radio-hub-btn" id="radio-yt-play" type="button">▶ LANCER</button>
+              <a class="radio-hub-btn" id="radio-yt-open" href="/jukebox/chronicles-fm.html">↗ YOUTUBE</a>
+            </div>
+            <div class="radio-hub-frame" id="radio-yt-frame">
+              <button class="radio-hub-placeholder" id="radio-yt-placeholder" type="button">
+                <strong>CHRONICLES FM</strong>
+                <span>SÉLECTIONNE UNE FRÉQUENCE PUIS LANCE LE PLAYER YOUTUBE</span>
+              </button>
+            </div>
           </div>
-          <div class="cfm-hub-live"><span class="cfm-hub-live-dot"></span>ON AIR</div>
-        </div>
-        <div class="cfm-hub-desc">
-          Radio pirate captée entre les ruines du Code, les néons cyberpunk et les échos néo-bretons.
-          13 fréquences thématiques. Animée par Lemegeton, le chronicœur de l'onde.
-        </div>
-        <div class="cfm-hub-freqs" id="cfm-hub-freq-pills"></div>
-        <div class="cfm-hub-actions">
-          <a href="/jukebox/chronicles-fm.html" class="cfm-hub-btn cfm-hub-btn--primary">📻 TOUTES LES FRÉQUENCES</a>
-          <button class="cfm-hub-btn cfm-hub-btn--ghost" id="cfm-hub-open-widget" type="button">▶ OUVRIR LA RADIO</button>
-        </div>
+        </article>
+
+        <article class="music-radio-module music-radio-module--chronicles-fm" id="chronicles-fm" aria-label="Chronicles FM radio pirate">
+          <div class="cfm-hub-card">
+            <div class="cfm-hub-top">
+              <div class="cfm-hub-icon">📻</div>
+              <div class="cfm-hub-meta">
+                <div class="cfm-hub-name">CHRONICLES FM</div>
+                <div class="cfm-hub-sub">BZH CHRONICLES RADIO · LES FRÉQUENCES DU CODE</div>
+              </div>
+              <div class="cfm-hub-live"><span class="cfm-hub-live-dot"></span>ON AIR</div>
+            </div>
+            <div class="cfm-hub-desc">
+              Radio pirate captée entre les ruines du Code, les néons cyberpunk et les échos néo-bretons.
+              13 fréquences thématiques. Animée par Lemegeton, le chronicœur de l'onde.
+            </div>
+            <div class="cfm-hub-freqs" id="cfm-hub-freq-pills"></div>
+            <div class="cfm-hub-actions">
+              <a href="/jukebox/chronicles-fm.html" class="cfm-hub-btn cfm-hub-btn--primary">📻 TOUTES LES FRÉQUENCES</a>
+              <button class="cfm-hub-btn cfm-hub-btn--ghost" id="cfm-hub-open-widget" type="button">▶ OUVRIR LA RADIO</button>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
   </main>
