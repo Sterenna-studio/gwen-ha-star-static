@@ -178,15 +178,14 @@ Scripts actifs sur `/` :
 /js/space-background.js
 ```
 
-Sections visibles :
+Le hero `GWEN HA STAR` est une introduction non numérotée. Les sections numérotées commencent ensuite dans cet ordre :
 
-1. Hero Gwen Ha Star.
-2. Outils & Univers.
-3. Twitch live.
-4. Jukebox Dr.Spig.
-5. Web Radio Live / playlists YouTube.
-6. Chronicles FM / présentation radio pirate.
-7. YouTube @mutenrock.
+1. `// 01 · ACCÈS DIRECT` — Outils & Univers.
+2. `// 02 · STREAM LIVE` — Twitch live.
+3. `// 03 · JUKEBOX` — Jukebox Dr.Spig.
+4. `// 04 · WEB RADIO LIVE` — Web Radio / playlists YouTube.
+5. `// 05 · CHRONICLES FM` — Présentation radio pirate.
+6. `// 06 · CHAÎNE` — YouTube @mutenrock.
 
 Règles retenues :
 
