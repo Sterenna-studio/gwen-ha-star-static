@@ -30,9 +30,13 @@ Les sections numérotées commencent ensuite dans cet ordre :
 1. `// 01 · ACCÈS DIRECT` — Outils & Univers.
 2. `// 02 · STREAM LIVE` — Twitch live.
 3. `// 03 · CHAÎNE` — YouTube @mutenrock.
-4. `// 04 · JUKEBOX` — Jukebox Dr.Spig.
-5. `// 05 · WEB RADIO LIVE` — Web Radio / playlists YouTube.
-6. `// 06 · CHRONICLES FM` — Présentation radio pirate.
+4. `// 04 · MUSIQUES & RADIO` — Jukebox Dr.Spig, Web Radio / playlists YouTube et Chronicles FM.
+
+La section `MUSIQUES & RADIO` contient trois modules internes avec ancres conservées :
+
+- `#jukebox` — lecteur des musiques originales Dr.Spig ;
+- `#web-radio` — lecteur YouTube des fréquences Chronicles FM ;
+- `#chronicles-fm` — présentation radio pirate et accès aux fréquences complètes.
 
 ## À ne pas réactiver sans décision
 
