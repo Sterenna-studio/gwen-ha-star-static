@@ -11,218 +11,7 @@
   <link rel="stylesheet" href="css/theme.css"/>
   <link rel="stylesheet" href="css/components.css"/>
   <link rel="stylesheet" href="css/auth.css"/>
-  <style>
-    .cig-page { min-height:100dvh; display:flex; flex-direction:column; background:var(--c-bg); }
-    .cig-main { flex:1; max-width:860px; width:100%; margin:0 auto; padding:var(--space-8) var(--space-4) var(--space-16); }
-
-    /* BREADCRUMB */
-    .breadcrumb { display:flex; align-items:center; gap:var(--space-2); font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; color:var(--c-text-faint); margin-bottom:var(--space-8); }
-    .breadcrumb a { color:var(--c-text-faint); text-decoration:none; transition:color 180ms; }
-    .breadcrumb a:hover { color:var(--c-primary); }
-    .breadcrumb-sep { opacity:.4; }
-    .breadcrumb-current { color:var(--c-primary); }
-
-    /* MODE LECTURE BADGE */
-    .view-mode-banner { display:flex; align-items:center; gap:var(--space-3); padding:var(--space-3) var(--space-4); background:rgba(253,203,110,.06); border:1px solid rgba(253,203,110,.2); border-radius:var(--radius-md); margin-bottom:var(--space-6); font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; color:var(--c-amber); }
-    .view-mode-banner a { color:var(--c-amber); text-decoration:underline; text-underline-offset:3px; }
-
-    /* HERO */
-    .cig-hero { position:relative; background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-xl); padding:var(--space-8); margin-bottom:var(--space-6); overflow:hidden; }
-    .cig-hero::before { content:""; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--c-primary),var(--c-amber),var(--c-primary)); background-size:200% 100%; animation:shimmer-bar 3s linear infinite; }
-    @keyframes shimmer-bar { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-    .cig-hero-inner { display:flex; gap:var(--space-6); align-items:flex-start; }
-    @media(max-width:600px){ .cig-hero-inner{flex-direction:column;align-items:center;text-align:center} }
-
-    /* AVATAR */
-    .cig-avatar-wrap { position:relative; flex-shrink:0; }
-    .cig-avatar { width:88px; height:88px; border-radius:50%; border:2px solid var(--c-primary); object-fit:cover; background:var(--c-surface-2); }
-    .cig-avatar-fallback { width:88px; height:88px; border-radius:50%; border:2px solid var(--c-primary); background:var(--c-surface-2); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:var(--text-xl); font-weight:700; color:var(--c-primary); text-shadow:var(--glow-primary); }
-    .cig-role-dot { position:absolute; bottom:4px; right:4px; width:14px; height:14px; border-radius:50%; border:2px solid var(--c-bg); background:var(--c-green); box-shadow:0 0 6px var(--c-green); }
-    .cig-role-dot.superuser { background:var(--c-amber); box-shadow:0 0 6px var(--c-amber); }
-    .cig-role-dot.guest     { background:var(--c-text-faint); box-shadow:none; }
-    .cig-avatar-upload {
-      position:absolute; inset:0; border-radius:50%;
-      display:flex; align-items:flex-end; justify-content:center;
-      padding-bottom:10px;
-      background:transparent; cursor:pointer; border:none;
-      opacity:0; transition:opacity .2s, background .2s;
-      font-size:18px; z-index:3;
-    }
-    .cig-avatar-wrap:hover .cig-avatar-upload { opacity:1; background:rgba(0,0,0,.52); }
-    .cig-avatar-upload:focus-visible { opacity:1; outline:2px solid var(--c-primary); }
-    .cig-avatar-upload.uploading { opacity:1; background:rgba(0,0,0,.65); cursor:wait; }
-    .cig-avatar-upload-label { font-family:var(--font-mono); font-size:8px; letter-spacing:.12em; color:#fff; line-height:1; text-align:center; pointer-events:none; }
-    .readonly-mode .cig-avatar-upload { display:none; }
-
-    /* INFO */
-    .cig-info { flex:1; }
-    .cig-tag { font-family:var(--font-mono); font-size:9px; letter-spacing:.2em; color:var(--c-green-d); margin-bottom:var(--space-2); }
-    .cig-username { font-family:var(--font-display); font-size:var(--text-2xl); font-weight:700; color:var(--c-text); line-height:1; margin-bottom:var(--space-2); }
-    .cig-active-title { font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.1em; margin-bottom:var(--space-3); }
-    .cig-bio { font-size:var(--text-sm); color:var(--c-text-muted); line-height:1.6; max-width:52ch; margin-bottom:var(--space-4); }
-    .cig-meta { display:flex; flex-wrap:wrap; gap:var(--space-3); }
-    .cig-meta-item { display:flex; align-items:center; gap:var(--space-1); font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; color:var(--c-text-faint); }
-    .cig-meta-item strong { color:var(--c-text-muted); }
-    /* Badges rôle + spécialité dans le hero */
-    .cig-hero-badges { display:flex; flex-wrap:wrap; gap:var(--space-2); margin-bottom:var(--space-3); }
-    .cig-badge { font-family:var(--font-mono); font-size:9px; letter-spacing:.15em; padding:2px var(--space-3); border-radius:var(--radius-full); border:1px solid currentColor; }
-    .cig-badge.role-superuser { color:var(--c-amber); background:rgba(253,203,110,.06); }
-    .cig-badge.role-all       { color:var(--c-primary); background:rgba(62,207,207,.06); }
-    .cig-badge.role-guest     { color:var(--c-text-faint); background:transparent; }
-    .cig-badge.specialty      { color:var(--c-text-muted); border-color:var(--c-border); background:var(--c-surface-2); }
-    .cig-role-badge { position:absolute; top:var(--space-4); right:var(--space-4); font-family:var(--font-mono); font-size:9px; letter-spacing:.15em; padding:3px var(--space-3); border-radius:var(--radius-full); border:1px solid currentColor; }
-    .cig-role-badge.superuser { color:var(--c-amber); background:rgba(253,203,110,.06); }
-    .cig-role-badge.guest     { color:var(--c-text-faint); background:transparent; }
-
-    /* GRID */
-    .cig-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); }
-    @media(max-width:640px){ .cig-grid{grid-template-columns:1fr} }
-
-    /* CARD */
-    .cig-card { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-lg); padding:var(--space-5) var(--space-6); }
-    .cig-card-tag { font-family:var(--font-mono); font-size:9px; letter-spacing:.18em; color:var(--c-primary); opacity:.7; margin-bottom:var(--space-3); }
-    .cig-card-title { font-family:var(--font-display); font-size:var(--text-lg); font-weight:700; color:var(--c-text); margin-bottom:var(--space-4); }
-
-    /* FIELDS */
-    .field-group { display:flex; flex-direction:column; gap:var(--space-1); margin-bottom:var(--space-4); }
-    .field-group:last-child { margin-bottom:0; }
-    .field-label { font-family:var(--font-mono); font-size:9px; letter-spacing:.15em; color:var(--c-text-faint); }
-    .field-input, .field-textarea { background:var(--c-surface-2); border:1px solid var(--c-border); border-radius:var(--radius-md); padding:var(--space-2) var(--space-3); font-family:var(--font-mono); font-size:var(--text-xs); color:var(--c-text); width:100%; transition:border-color 180ms; }
-    .field-input:focus, .field-textarea:focus { outline:none; border-color:var(--c-primary); box-shadow:0 0 0 2px var(--c-primary-hl); }
-    .field-input[readonly] { opacity:.5; cursor:not-allowed; }
-    .field-hint { font-family:var(--font-mono); font-size:9px; letter-spacing:.08em; color:var(--c-text-faint); margin-top:2px; }
-    .field-hint.err { color:var(--c-red); }
-    .field-input.invalid { border-color:var(--c-red); }
-    .bio-counter { font-family:var(--font-mono); font-size:9px; letter-spacing:.08em; color:var(--c-text-faint); text-align:right; margin-top:2px; transition:color 180ms; }
-    .bio-counter.warn { color:var(--c-amber); }
-    .bio-counter.max  { color:var(--c-red); }
-
-    /* SYNCED / MODIFIED indicator */
-    .sync-indicator { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-mono); font-size:9px; letter-spacing:.12em; }
-    .sync-indicator.synced   { color:var(--c-green); }
-    .sync-indicator.modified { color:var(--c-amber); }
-    .sync-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
-    .sync-indicator.modified .sync-dot { animation:blink-dot .9s ease-in-out infinite alternate; }
-    @keyframes blink-dot { from{opacity:1} to{opacity:.3} }
-
-    /* MODE LECTURE */
-    .readonly-mode .field-input:not([readonly]),
-    .readonly-mode .field-textarea { pointer-events:none; opacity:.6; }
-    .readonly-mode .btn-save, .readonly-mode .btn-danger { display:none; }
-    .readonly-mode .title-chip { pointer-events:none; }
-    .readonly-mode .title-chip:not(.locked):not(.active) { opacity:.5; }
-
-    /* TITLES */
-    .titles-list { display:flex; flex-direction:column; gap:var(--space-3); list-style:none; }
-    .titles-chips { display:flex; flex-wrap:wrap; gap:var(--space-2); }
-    .titles-section-label { font-family:var(--font-mono); font-size:9px; letter-spacing:.18em; color:var(--c-text-faint); margin:0; }
-    .titles-section-label .titles-count { opacity:.45; }
-    .title-chip { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; padding:3px var(--space-3); border-radius:var(--radius-full); border:1px solid var(--c-border); color:var(--c-text-muted); cursor:pointer; transition:all 180ms; white-space:nowrap; }
-    .title-chip:hover { border-color:var(--c-amber); color:var(--c-amber); }
-    .title-chip.active { border-color:var(--c-amber); color:var(--c-amber); background:rgba(253,203,110,.08); }
-    .title-chip.locked { opacity:.38; cursor:default; border-style:dashed; }
-    .title-chip.locked:hover { border-color:var(--c-border); color:var(--c-text-muted); }
-    .title-chip[data-rarity="rare"]      { border-color:color-mix(in oklch,var(--c-primary) 55%,var(--c-border)); }
-    .title-chip[data-rarity="epic"]      { border-color:color-mix(in oklch,#a78bfa 55%,var(--c-border)); color:#c4b5fd; }
-    .title-chip[data-rarity="legendary"] { border-color:color-mix(in oklch,var(--c-amber) 60%,var(--c-border)); color:var(--c-amber); }
-    .title-chip.locked[data-rarity]      { border-color:var(--c-border); color:var(--c-text-muted); }
-    .title-chip.active[data-rarity="legendary"] { background:rgba(253,203,110,.12); }
-
-    /* SAVE */
-    .save-row { display:flex; align-items:center; gap:var(--space-3); margin-top:var(--space-4); flex-wrap:wrap; }
-    .btn-save { display:inline-flex; align-items:center; gap:var(--space-2); padding:var(--space-2) var(--space-5); background:var(--c-primary); color:var(--c-bg); border:none; border-radius:var(--radius-md); font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; cursor:pointer; transition:all 180ms; }
-    .btn-save:hover { background:var(--c-primary-h); box-shadow:var(--glow-primary); }
-    .btn-save:disabled { opacity:.5; cursor:not-allowed; }
-    .btn-reset { display:inline-flex; align-items:center; gap:var(--space-2); padding:var(--space-2) var(--space-4); background:transparent; color:var(--c-text-faint); border:1px solid var(--c-border); border-radius:var(--radius-md); font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; cursor:pointer; transition:all 180ms; }
-    .btn-reset:hover { border-color:var(--c-text-muted); color:var(--c-text-muted); }
-    .save-status { font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; opacity:0; transition:opacity 300ms; }
-    .save-status.ok  { color:var(--c-green);  opacity:1; }
-    .save-status.err { color:var(--c-red);    opacity:1; }
-
-    /* DANGER */
-    .danger-card { border-color:rgba(255,71,87,.2); }
-    .danger-toggle { display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; }
-    .danger-toggle-arrow { font-family:var(--font-mono); font-size:12px; color:var(--c-text-faint); transition:transform 200ms; }
-    .danger-toggle-arrow.open { transform:rotate(90deg); }
-    .danger-body { overflow:hidden; max-height:0; transition:max-height 250ms ease; }
-    .danger-body.open { max-height:200px; }
-    .btn-danger { display:inline-flex; align-items:center; gap:var(--space-2); padding:var(--space-2) var(--space-5); background:transparent; color:var(--c-red); border:1px solid rgba(255,71,87,.35); border-radius:var(--radius-md); font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; cursor:pointer; transition:all 180ms; }
-    .btn-danger:hover { background:rgba(255,71,87,.1); border-color:var(--c-red); }
-
-    /* SKELETON */
-    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
-    .skel { border-radius:var(--radius-sm); background:linear-gradient(90deg,var(--c-surface-2) 25%,var(--c-surface) 50%,var(--c-surface-2) 75%); background-size:200% 100%; animation:shimmer 1.5s ease-in-out infinite; }
-
-    /* CHRONICLES */
-    .cig-chronicles {
-      grid-column: span 2;
-      background: var(--c-surface);
-      border: 1px solid color-mix(in oklch, var(--c-amber) 35%, var(--c-border));
-      border-radius: var(--radius-lg);
-      padding: var(--space-5) var(--space-6);
-      position: relative; overflow: hidden;
-    }
-    .cig-chronicles::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, var(--c-amber), var(--c-primary), var(--c-amber));
-      background-size: 200% 100%; animation: shimmer-bar 4s linear infinite;
-    }
-    @media(max-width:640px) { .cig-chronicles { grid-column: span 1; } }
-    .chr-inner { display: flex; align-items: center; gap: var(--space-6); flex-wrap: wrap; }
-    .chr-coin {
-      width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0;
-      background: radial-gradient(circle at 38% 35%, color-mix(in oklch, var(--c-amber) 80%, #fff) 0%, var(--c-amber) 45%, color-mix(in oklch, var(--c-amber) 55%, #000) 100%);
-      border: 2px solid color-mix(in oklch, var(--c-amber) 60%, var(--c-border));
-      box-shadow: 0 0 20px color-mix(in oklch, var(--c-amber) 35%, transparent), inset 0 1px 0 rgba(255,255,255,.25);
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-display); font-size: 1.5rem; font-weight: 900;
-      color: color-mix(in oklch, var(--c-amber) 20%, #000);
-      animation: chr-coin-glow 3s ease-in-out infinite alternate;
-    }
-    @keyframes chr-coin-glow {
-      from { box-shadow: 0 0 14px color-mix(in oklch, var(--c-amber) 30%, transparent); }
-      to   { box-shadow: 0 0 32px color-mix(in oklch, var(--c-amber) 60%, transparent), 0 0 60px color-mix(in oklch, var(--c-amber) 20%, transparent); }
-    }
-    .chr-info { flex: 1; min-width: 180px; }
-    .chr-lbl { font-family: var(--font-mono); font-size: 9px; letter-spacing: .22em; color: var(--c-amber); opacity: .7; margin-bottom: 4px; }
-    .chr-val { font-family: var(--font-display); font-size: 2.2rem; font-weight: 900; color: var(--c-amber); line-height: 1; text-shadow: 0 0 18px color-mix(in oklch, var(--c-amber) 55%, transparent); font-variant-numeric: tabular-nums; }
-    .chr-sub { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; color: var(--c-text-faint); margin-top: 4px; }
-    .chr-rank-block { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: var(--space-3) var(--space-5); background: var(--c-surface-2); border: 1px solid color-mix(in oklch, var(--c-amber) 25%, var(--c-border)); border-radius: var(--radius-lg); }
-    .chr-rank-lbl { font-family: var(--font-mono); font-size: 8px; letter-spacing: .18em; color: var(--c-text-faint); }
-    .chr-rank-val { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; color: var(--c-amber); line-height: 1; }
-    .chr-rank-val.gold   { color: #ffd700; text-shadow: 0 0 12px #ffd700; }
-    .chr-rank-val.silver { color: #c0c0c0; text-shadow: 0 0 10px #c0c0c0; }
-    .chr-rank-val.bronze { color: #cd7f32; text-shadow: 0 0 10px #cd7f32; }
-    .chr-rank-name { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; color: var(--c-text-muted); }
-
-    /* LEADERBOARD */
-    .cig-leaderboard { grid-column: span 2; background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius-lg); padding: var(--space-5) var(--space-6); overflow: hidden; }
-    @media(max-width:640px) { .cig-leaderboard { grid-column: span 1; } }
-    .lb-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
-    .lb-refresh { font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; color: var(--c-primary); cursor: pointer; background: none; border: none; padding: 2px var(--space-2); border-radius: var(--radius-sm); transition: background 150ms; }
-    .lb-refresh:hover { background: var(--c-surface-2); }
-    .lb-list { display: flex; flex-direction: column; gap: 6px; }
-    .lb-row { display: grid; grid-template-columns: 28px 32px 1fr auto auto; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: var(--radius-md); transition: border-color 150ms, background 150ms; cursor: default; }
-    .lb-row:hover { border-color: color-mix(in oklch, var(--c-amber) 30%, var(--c-border)); background: var(--c-surface); }
-    .lb-row.lb-me   { border-color: color-mix(in oklch, var(--c-primary) 50%, var(--c-border)); background: color-mix(in oklch, var(--c-primary) 4%, var(--c-surface-2)); }
-    .lb-row.lb-top1 { border-color: color-mix(in oklch, #ffd700 40%, var(--c-border)); }
-    .lb-row.lb-top2 { border-color: color-mix(in oklch, #c0c0c0 30%, var(--c-border)); }
-    .lb-row.lb-top3 { border-color: color-mix(in oklch, #cd7f32 30%, var(--c-border)); }
-    .lb-pos { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; text-align: center; color: var(--c-text-faint); }
-    .lb-pos.gold   { color: #ffd700; text-shadow: 0 0 8px #ffd700; }
-    .lb-pos.silver { color: #c0c0c0; }
-    .lb-pos.bronze { color: #cd7f32; }
-    .lb-avatar { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--c-border); background: var(--c-surface); overflow: hidden; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--c-primary); flex-shrink: 0; }
-    .lb-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .lb-name { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; color: var(--c-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .lb-name .lb-me-tag { font-size: 8px; letter-spacing: .12em; color: var(--c-primary); margin-left: 6px; opacity: .8; }
-    .lb-title { font-family: var(--font-mono); font-size: 8px; letter-spacing: .1em; color: var(--c-text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .lb-bar-wrap { width: 80px; flex-shrink: 0; }
-    .lb-bar { height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--c-amber), var(--c-primary)); transition: width .6s cubic-bezier(.22,1,.36,1); }
-    .lb-credits { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; color: var(--c-amber); text-align: right; white-space: nowrap; min-width: 70px; }
-    .lb-empty { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; color: var(--c-text-faint); text-align: center; padding: var(--space-6); }
-    .lb-skel-row { height: 40px; border-radius: var(--radius-md); }
-  </style>
+  <link rel="stylesheet" href="css/cig.css"/>
 </head>
 <body class="cig-page">
   <div class="scanlines" aria-hidden="true"></div>
@@ -270,6 +59,8 @@
 
     <!-- Contenu réel -->
     <div id="cig-content" style="display:none">
+
+      <!-- HERO -->
       <div class="cig-hero" id="cig-hero">
         <div class="cig-hero-inner">
           <div class="cig-avatar-wrap">
@@ -284,9 +75,7 @@
           <div class="cig-info">
             <p class="cig-tag" id="cig-tag">// AGENT · CIG</p>
             <h1 class="cig-username" id="cig-username">---</h1>
-            <!-- Titre actif coloré selon rareté -->
             <p class="cig-active-title" id="cig-active-title">◆ RECRUE</p>
-            <!-- Badges rôle + spécialité -->
             <div class="cig-hero-badges" id="cig-hero-badges"></div>
             <p class="cig-bio" id="cig-bio"></p>
             <div class="cig-meta">
@@ -299,6 +88,40 @@
         <span class="cig-role-badge guest" id="cig-role-badge">GUEST</span>
       </div>
 
+      <!-- GIG ID CARD · Carte d'Identification Galactique -->
+      <div class="gig-id-card" id="gig-id-card">
+        <div class="gig-id-card__scanner" aria-hidden="true"></div>
+        <div class="gig-id-card__top">
+          <span class="gig-id-card__org">GWEN·HA·STAR // RÉSEAU STELLAIRE</span>
+          <span class="gig-id-card__type">CARTE D'IDENTIFICATION GALACTIQUE</span>
+        </div>
+        <div class="gig-id-card__body">
+          <div class="gig-id-card__avatar-zone">
+            <div class="gig-id-card__avatar" id="gig-card-avatar">?</div>
+            <div class="gig-id-card__avatar-glow" aria-hidden="true"></div>
+          </div>
+          <div class="gig-id-card__data">
+            <p class="gig-id-card__pseudo" id="gig-card-pseudo">——</p>
+            <p class="gig-id-card__title"  id="gig-card-title">◆ RECRUE</p>
+            <div class="gig-id-card__rows">
+              <div class="gig-id-card__row">
+                <span class="gig-id-card__lbl">CHRONICLES</span>
+                <span class="gig-id-card__val" id="gig-card-chr">—</span>
+              </div>
+              <div class="gig-id-card__row">
+                <span class="gig-id-card__lbl">1ÈRE IDENTIFICATION</span>
+                <span class="gig-id-card__val" id="gig-card-date">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="gig-id-card__footer">
+          <span class="gig-id-card__uid" id="gig-card-uid">UID ··· ···· ····</span>
+          <span class="gig-id-card__status">● ACTIF</span>
+        </div>
+      </div>
+
+      <!-- GRID -->
       <div class="cig-grid" id="cig-grid">
         <!-- 05 · CHRONICLES CRÉDITS -->
         <div class="cig-chronicles" id="cig-chronicles">
@@ -356,7 +179,6 @@
           <p class="cig-card-tag">// 02 · TITRES</p>
           <h2 class="cig-card-title">Titre actif</h2>
           <p style="font-family:var(--font-mono);font-size:10px;color:var(--c-text-muted);margin-bottom:var(--space-2);letter-spacing:.06em">Sélectionne ton titre affiché</p>
-          <!-- Live preview -->
           <p id="title-preview" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;margin-bottom:var(--space-4);min-height:1.4em"></p>
           <div class="titles-list" id="titles-list"></div>
           <div class="save-row">
@@ -432,521 +254,10 @@
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 STERENNA · Pierre H</span>
-      <span class="footer-version">CIG · v2.0</span>
+      <span class="footer-version">CIG · v3.0</span>
     </div>
   </footer>
 
-  <script type="module">
-    import { supabase, getSession, signOut } from './js/supabase.js';
-
-    // ─── RARITY CONFIG ────────────────────────────────────────────────────────
-    const RARITY_COLORS = {
-      common:    '#8a9ab5',
-      uncommon:  '#3ecfcf',
-      rare:      '#3ecfcf',
-      epic:      '#7b5cf0',
-      legendary: '#f9ca24',
-    };
-    const RARITY_LABEL = {
-      common:    'COMMUN',
-      uncommon:  'COMMUN',
-      rare:      'RARE',
-      epic:      'ÉPIQUE',
-      legendary: 'LÉGENDAIRE',
-    };
-    const RARITY_ORDER = ['legendary','epic','rare','uncommon','common'];
-
-    const USERNAME_REGEX = /^[a-zA-Z0-9_-]{3,24}$/;
-    const BIO_WARN = 180;
-    const BIO_MAX  = 200;
-
-    const $    = id => document.getElementById(id);
-    const show = id => { const e=$(id); if(e) e.style.display=''; };
-    const hide = id => { const e=$(id); if(e) e.style.display='none'; };
-
-    function setStatus(elId, msg, type) {
-      const el = $(elId);
-      if (!el) return;
-      el.textContent = msg;
-      el.className = 'save-status ' + type;
-      setTimeout(() => { el.className = 'save-status'; }, 3000);
-    }
-
-    function formatDate(iso) {
-      if (!iso) return '—';
-      return new Date(iso).toLocaleDateString('fr-FR', { year:'numeric', month:'long', day:'numeric' });
-    }
-
-    function rarityColor(rarity) {
-      return RARITY_COLORS[rarity] ?? RARITY_COLORS.common;
-    }
-
-    // ─── LEADERBOARD ──────────────────────────────────────────────────────────
-    async function loadLeaderboard(myId) {
-      const listEl = $('lb-list');
-      if (!listEl) return;
-      listEl.innerHTML = Array.from({length:5}, () => '<div class="skel lb-skel-row"></div>').join('');
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('id, username, avatar_url, active_title, chronicles')
-          .not('chronicles', 'is', null)
-          .order('chronicles', { ascending: false })
-          .limit(10);
-        if (error) throw error;
-        if (!data?.length) { listEl.innerHTML = '<p class="lb-empty">AUCUN JOUEUR CLASSÉ</p>'; return; }
-        const maxCredits = data[0].chronicles ?? 1;
-        listEl.innerHTML = data.map((p, i) => {
-          const rank     = i + 1;
-          const isMe     = p.id === myId;
-          const username = (p.username ?? 'AGENT').toUpperCase();
-          const credits  = (p.chronicles ?? 0).toLocaleString('fr-FR');
-          const barPct   = Math.round(((p.chronicles ?? 0) / maxCredits) * 100);
-          const posClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
-          const medal    = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
-          const rowClass = `lb-row${isMe ? ' lb-me' : ''}${rank <= 3 ? ` lb-top${rank}` : ''}`;
-          const avatarHTML = p.avatar_url
-            ? `<div class="lb-avatar"><img src="${p.avatar_url}" alt="${username}" loading="lazy"/></div>`
-            : `<div class="lb-avatar">${username.charAt(0)}</div>`;
-          return `
-          <div class="${rowClass}" title="${username}">
-            <span class="lb-pos ${posClass}">${medal}</span>
-            ${avatarHTML}
-            <div style="min-width:0">
-              <div class="lb-name">${username}${isMe ? '<span class="lb-me-tag">▶ MOI</span>' : ''}</div>
-              <div class="lb-title">${(p.active_title ?? 'RECRUE').toUpperCase()}</div>
-            </div>
-            <div class="lb-bar-wrap"><div class="lb-bar" style="width:${barPct}%"></div></div>
-            <span class="lb-credits">${credits} C</span>
-          </div>`;
-        }).join('');
-        if (myId) {
-          const myIdx = data.findIndex(p => p.id === myId);
-          if (myIdx !== -1) {
-            const rank = myIdx + 1;
-            const rankEl = $('chr-rank-val'), nameEl = $('chr-rank-name'), blockEl = $('chr-rank-block');
-            if (rankEl)  { rankEl.textContent = `#${rank}`; rankEl.className = 'chr-rank-val ' + (rank===1?'gold':rank===2?'silver':rank===3?'bronze':''); }
-            if (nameEl)  nameEl.textContent = rank <= 3 ? ['🥇 1ER','🥈 2ÈME','🥉 3ÈME'][rank-1] : `TOP ${rank}`;
-            if (blockEl) blockEl.style.display = '';
-          }
-        }
-      } catch(e) {
-        console.error(e);
-        listEl.innerHTML = '<p class="lb-empty">ERREUR CHARGEMENT LEADERBOARD</p>';
-      }
-    }
-
-    // ─── FILL CIG ─────────────────────────────────────────────────────────────
-    function fillCIG(profile, joinedTitles, user, readOnly) {
-      const username    = profile.username    ?? user.email?.split('@')[0] ?? 'AGENT';
-      const role        = profile.role        ?? 'guest';
-      const activeTitle = profile.active_title ?? 'Recrue';
-      const specialty   = profile.specialty   ?? '';
-
-      // Construire la liste des titres débloqués depuis la jointure
-      const ownedMap = new Map(); // slug → TitleRecord
-      joinedTitles.forEach(pt => { if (pt.titles) ownedMap.set(pt.titles.slug ?? pt.title_slug, pt.titles); });
-
-      $('bc-name').textContent      = username.toUpperCase();
-      $('cig-username').textContent = username.toUpperCase();
-      $('cig-bio').textContent      = profile.bio ?? '';
-      $('cig-email').textContent    = readOnly ? '—' : (user.email ?? '—');
-      $('cig-joined').textContent   = formatDate(profile.joined_at ?? profile.created_at);
-      $('cig-lang').textContent     = (profile.lang ?? 'fr').toUpperCase();
-
-      // Titre actif coloré selon rareté
-      const activeTitleObj = [...ownedMap.values()].find(t =>
-        (t.label_fr ?? t.label ?? t.slug ?? '').toLowerCase() === activeTitle.toLowerCase()
-      );
-      const activeTitleRarity  = activeTitleObj?.rarity ?? 'common';
-      const activeTitleDisplay = activeTitleObj?.label_fr ?? activeTitleObj?.label ?? activeTitle;
-      const titleEl = $('cig-active-title');
-      titleEl.textContent  = '◆ ' + activeTitleDisplay.toUpperCase();
-      titleEl.style.color  = rarityColor(activeTitleRarity);
-
-      // Badges rôle + spécialité dans le hero
-      const badgesEl = $('cig-hero-badges');
-      badgesEl.innerHTML = '';
-      const roleBadge = document.createElement('span');
-      roleBadge.className = `cig-badge role-${role}`;
-      roleBadge.textContent = role.toUpperCase();
-      badgesEl.appendChild(roleBadge);
-      if (specialty) {
-        const specBadge = document.createElement('span');
-        specBadge.className = 'cig-badge specialty';
-        specBadge.textContent = specialty.toUpperCase();
-        badgesEl.appendChild(specBadge);
-      }
-
-      $('cig-tag').textContent         = `// AGENT · ${role.toUpperCase()}`;
-      $('cig-role-dot').className      = 'cig-role-dot ' + role;
-      $('cig-role-badge').className    = 'cig-role-badge ' + role;
-      $('cig-role-badge').textContent  = role.toUpperCase();
-
-      // Chronicles
-      const chrVal = $('chr-val');
-      if (chrVal) chrVal.textContent = (profile.chronicles ?? 0).toLocaleString('fr-FR') + ' C';
-
-      // Avatar
-      if (profile.avatar_url) {
-        const img = $('cig-avatar-img');
-        img.src = profile.avatar_url;
-        img.style.display = 'block';
-        $('cig-avatar-fallback').style.display = 'none';
-      } else {
-        $('cig-avatar-fallback').textContent = username.charAt(0).toUpperCase();
-      }
-
-      // Champs éditables
-      $('f-username').value   = profile.username   ?? '';
-      $('f-specialty').value  = profile.specialty  ?? '';
-      $('f-bio').value        = profile.bio        ?? '';
-      $('f-avatar-url').value = profile.avatar_url ?? '';
-      if (!readOnly) {
-        $('f-uuid').value   = profile.id ?? user.id;
-        $('f-email').value  = user.email ?? '';
-        $('f-role').value   = role.toUpperCase();
-        $('f-joined').value = formatDate(profile.joined_at ?? profile.created_at);
-      }
-
-      // Bio counter init
-      updateBioCounter($('f-bio').value.length);
-
-      // Titres groupés par rareté depuis les données Supabase
-      const list = $('titles-list');
-      list.innerHTML = '';
-
-      // Catalogue côté client (fallback si Supabase ne renvoie pas les titres)
-      const FALLBACK_CATALOG = [
-        { slug:'recrue',       label_fr:'Recrue',       rarity:'common'    },
-        { slug:'agent',        label_fr:'Agent',        rarity:'common'    },
-        { slug:'veteran',      label_fr:'Vétéran',      rarity:'common'    },
-        { slug:'speculateur',  label_fr:'Spéculateur',  rarity:'common'    },
-        { slug:'grand-joueur', label_fr:'Grand Joueur', rarity:'rare'      },
-        { slug:'lore-master',  label_fr:'Lore Master',  rarity:'rare'      },
-        { slug:'explorateur',  label_fr:'Explorateur',  rarity:'rare'      },
-        { slug:'bankroll',     label_fr:'Bankroll',     rarity:'epic'      },
-        { slug:'champion',     label_fr:'Champion',     rarity:'epic'      },
-        { slug:'legende',      label_fr:'Légende',      rarity:'legendary' },
-        { slug:'fondateur',    label_fr:'Fondateur',    rarity:'legendary' },
-        { slug:'protocole',    label_fr:'Protocole',    rarity:'legendary' },
-      ];
-      const ownedArr = ownedMap.size > 0
-        ? Array.from(ownedMap.values())
-        : joinedTitles.map(pt => FALLBACK_CATALOG.find(t => t.slug === pt.title_slug) ?? { slug: pt.title_slug, label_fr: pt.title_slug, rarity: 'common' });
-
-      // Grouper par rareté
-      const groups = {};
-      RARITY_ORDER.forEach(r => { groups[r] = []; });
-      ownedArr.forEach(t => {
-        const r = t.rarity ?? 'common';
-        if (!groups[r]) groups[r] = [];
-        groups[r].push(t);
-      });
-
-      let totalOwned = 0;
-      RARITY_ORDER.forEach(rarity => {
-        const titles = groups[rarity];
-        if (!titles.length) return;
-        totalOwned += titles.length;
-        const sectionLabel = document.createElement('p');
-        sectionLabel.className = 'titles-section-label';
-        const col = rarityColor(rarity);
-        sectionLabel.innerHTML = `<span style="color:${col}">${RARITY_LABEL[rarity] ?? rarity.toUpperCase()}</span> <span class="titles-count">(${titles.length})</span>`;
-        list.appendChild(sectionLabel);
-        const row = document.createElement('div');
-        row.className = 'titles-chips';
-        titles.forEach(t => {
-          const label    = t.label_fr ?? t.label ?? t.slug ?? '?';
-          const isActive = label.toLowerCase() === activeTitle.toLowerCase() ||
-                           (t.slug ?? '').toLowerCase() === activeTitle.toLowerCase();
-          const chip = document.createElement('span');
-          chip.className = 'title-chip' + (isActive ? ' active' : '');
-          if (rarity !== 'common' && rarity !== 'uncommon') chip.dataset.rarity = rarity;
-          chip.textContent = label.toUpperCase();
-          chip.style.setProperty('--chip-color', col);
-          if (!readOnly) {
-            chip.addEventListener('click', () => {
-              list.querySelectorAll('.title-chip:not(.locked)').forEach(c => c.classList.remove('active'));
-              chip.classList.add('active');
-              // Live preview
-              updateTitlePreview(label, rarity);
-            });
-          }
-          row.appendChild(chip);
-        });
-        list.appendChild(row);
-      });
-
-      if (totalOwned === 0) {
-        const none = document.createElement('span');
-        none.style.cssText = 'font-family:var(--font-mono);font-size:9px;color:var(--c-text-faint);opacity:.5';
-        none.textContent = 'aucun titre débloqué';
-        list.appendChild(none);
-      }
-
-      // Live preview initial
-      updateTitlePreview(activeTitleDisplay, activeTitleRarity);
-
-      if (readOnly) {
-        $('cig-grid').classList.add('readonly-mode');
-        show('view-banner');
-        hide('card-danger');
-      }
-    }
-
-    function updateTitlePreview(label, rarity) {
-      const el = $('title-preview');
-      if (!el) return;
-      const col = rarityColor(rarity);
-      const rl  = RARITY_LABEL[rarity] ?? '';
-      el.innerHTML = `<span style="color:${col}">◆ ${label.toUpperCase()}</span> <span style="font-size:8px;opacity:.6;color:${col}">${rl}</span>`;
-    }
-
-    function updateBioCounter(len) {
-      const el = $('bio-counter');
-      if (!el) return;
-      el.textContent = `${len} / ${BIO_MAX}`;
-      el.className   = 'bio-counter' + (len >= BIO_MAX ? ' max' : len >= BIO_WARN ? ' warn' : '');
-    }
-
-    function setSyncState(modified) {
-      const ind   = $('sync-indicator');
-      const label = $('sync-label');
-      if (!ind || !label) return;
-      if (modified) {
-        ind.className   = 'sync-indicator modified';
-        label.textContent = 'MODIFIED';
-      } else {
-        ind.className   = 'sync-indicator synced';
-        label.textContent = 'SYNCED';
-      }
-    }
-
-    function injectHeaderAuth(user, profile) {
-      const authZone = $('header-auth');
-      if (!authZone) return;
-      const username = profile?.username ?? user.email?.split('@')[0] ?? 'AGENT';
-      authZone.innerHTML = `
-        <div class="auth-connected">
-          <span class="auth-badge" title="${user.email}">
-            <span class="auth-dot"></span>
-            <span class="auth-label">${username.toUpperCase()}</span>
-          </span>
-          <a href="/cig.html" class="btn-auth btn-auth-cig">⬡ MON ESPACE</a>
-          <button class="btn-auth btn-auth-signout" id="hdr-logout" aria-label="Déconnexion">✕</button>
-        </div>`;
-      $('hdr-logout')?.addEventListener('click', () => signOut());
-    }
-
-    // ─── INIT ─────────────────────────────────────────────────────────────────
-    async function init() {
-      const params   = new URLSearchParams(window.location.search);
-      const targetId = params.get('id');
-      const session  = await getSession();
-
-      if (!session && !targetId) {
-        hide('cig-skeleton');
-        show('cig-unauth');
-        return;
-      }
-
-      const myId     = session?.user?.id ?? null;
-      const readOnly = !!(targetId && targetId !== myId);
-      const profileId = targetId ?? myId;
-
-      // ── Requête unifiée : profiles + profile_titles + titles en 1 round-trip
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select(`
-          *,
-          profile_titles (
-            title_slug,
-            titles (*)
-          )
-        `)
-        .eq('id', profileId)
-        .single();
-
-      if (error && error.code !== 'PGRST116') console.error(error);
-
-      const joinedTitles = profile?.profile_titles ?? [];
-      const user = readOnly ? { id: profileId, email: null } : session.user;
-
-      hide('cig-skeleton');
-      fillCIG(profile ?? {}, joinedTitles, user, readOnly);
-      if (session) injectHeaderAuth(session.user, session.user.id === profileId ? profile : null);
-      show('cig-content');
-      await loadLeaderboard(myId);
-      $('lb-refresh')?.addEventListener('click', () => loadLeaderboard(myId));
-
-      if (readOnly) return;
-
-      // ── Snapshot pour Reset ─────────────────────────────────────────────────
-      const snapshot = {
-        username:   profile?.username   ?? '',
-        specialty:  profile?.specialty  ?? '',
-        bio:        profile?.bio        ?? '',
-        avatar_url: profile?.avatar_url ?? '',
-      };
-
-      // ── Validation username ──────────────────────────────────────────────────
-      function validateUsername(val) {
-        const hint = $('username-hint');
-        const input = $('f-username');
-        if (!USERNAME_REGEX.test(val)) {
-          input.classList.add('invalid');
-          if (hint) { hint.textContent = '⚠ 3–24 car. · lettres, chiffres, _ et - uniquement'; hint.className = 'field-hint err'; }
-          return false;
-        }
-        input.classList.remove('invalid');
-        if (hint) { hint.textContent = '3–24 car. · lettres, chiffres, _ et -'; hint.className = 'field-hint'; }
-        return true;
-      }
-
-      $('f-username').addEventListener('input', () => {
-        validateUsername($('f-username').value);
-        setSyncState(true);
-      });
-      $('f-specialty').addEventListener('input', () => setSyncState(true));
-      $('f-bio').addEventListener('input', () => {
-        updateBioCounter($('f-bio').value.length);
-        setSyncState(true);
-      });
-      $('f-avatar-url').addEventListener('input', () => setSyncState(true));
-
-      // ── Reset ────────────────────────────────────────────────────────────────
-      $('btn-reset-profile').addEventListener('click', () => {
-        $('f-username').value   = snapshot.username;
-        $('f-specialty').value  = snapshot.specialty;
-        $('f-bio').value        = snapshot.bio;
-        $('f-avatar-url').value = snapshot.avatar_url;
-        validateUsername(snapshot.username);
-        updateBioCounter(snapshot.bio.length);
-        setSyncState(false);
-      });
-
-      // ── Danger Zone toggle ───────────────────────────────────────────────────
-      const dangerToggle = $('danger-toggle');
-      const dangerBody   = $('danger-body');
-      const dangerArrow  = $('danger-arrow');
-      function toggleDanger() {
-        const open = dangerBody.classList.toggle('open');
-        dangerArrow.classList.toggle('open', open);
-        dangerToggle.setAttribute('aria-expanded', String(open));
-      }
-      dangerToggle?.addEventListener('click', toggleDanger);
-      dangerToggle?.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDanger(); } });
-
-      // ── beforeunload guard ───────────────────────────────────────────────────
-      let isDirty = false;
-      const markDirty = () => { isDirty = true; setSyncState(true); };
-      $('f-username').addEventListener('input', markDirty);
-      $('f-specialty').addEventListener('input', markDirty);
-      $('f-bio').addEventListener('input', markDirty);
-      $('f-avatar-url').addEventListener('input', markDirty);
-      window.addEventListener('beforeunload', e => {
-        if (isDirty) { e.preventDefault(); e.returnValue = ''; }
-      });
-
-      // ── Upload avatar ────────────────────────────────────────────────────────
-      const uploadBtn   = $('cig-avatar-upload-btn');
-      const fileInput   = $('cig-avatar-file');
-      const uploadLabel = $('cig-upload-label');
-      uploadBtn?.addEventListener('click', () => fileInput?.click());
-      fileInput?.addEventListener('change', async () => {
-        const file = fileInput.files[0];
-        if (!file) return;
-        if (file.size > 3 * 1024 * 1024) {
-          setStatus('status-profile', '⚠ IMAGE TROP LOURDE (max 3 Mo)', 'err');
-          fileInput.value = ''; return;
-        }
-        uploadBtn.classList.add('uploading');
-        uploadBtn.disabled = true;
-        uploadLabel.textContent = '⏳';
-        try {
-          const ext  = file.name.split('.').pop().toLowerCase() || 'jpg';
-          const path = `${myId}/avatar.${ext}`;
-          const { error: upErr } = await supabase.storage.from('avatars').upload(path, file, { upsert: true, contentType: file.type });
-          if (upErr) throw upErr;
-          const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
-          const finalUrl = `${publicUrl}?t=${Date.now()}`;
-          const { error: saveErr } = await supabase.from('profiles').update({ avatar_url: finalUrl }).eq('id', myId);
-          if (saveErr) throw saveErr;
-          $('f-avatar-url').value = finalUrl;
-          $('cig-avatar-img').src = finalUrl;
-          $('cig-avatar-img').style.display = 'block';
-          $('cig-avatar-fallback').style.display = 'none';
-          snapshot.avatar_url = finalUrl;
-          setStatus('status-profile', '✓ PHOTO MISE À JOUR', 'ok');
-        } catch (err) {
-          console.error('Upload avatar:', err);
-          setStatus('status-profile', '⚠ ERREUR : ' + (err.message ?? 'upload échoué'), 'err');
-        } finally {
-          uploadBtn.classList.remove('uploading');
-          uploadBtn.disabled = false;
-          uploadLabel.textContent = '📷 UPLOAD';
-          fileInput.value = '';
-        }
-      });
-
-      // ── Sauvegarder profil ───────────────────────────────────────────────────
-      $('btn-save-profile').addEventListener('click', async () => {
-        const usernameVal = $('f-username').value.trim();
-        if (!validateUsername(usernameVal)) return;
-        $('btn-save-profile').disabled = true;
-        const updates = {
-          username:   usernameVal || null,
-          specialty:  $('f-specialty').value.trim()  || null,
-          bio:        $('f-bio').value.trim()         || null,
-          avatar_url: $('f-avatar-url').value.trim() || null,
-        };
-        const { error } = await supabase.from('profiles').update(updates).eq('id', myId);
-        $('btn-save-profile').disabled = false;
-        if (error) {
-          setStatus('status-profile', '⚠ ' + error.message, 'err');
-        } else {
-          setStatus('status-profile', '✓ SAUVEGARDÉ', 'ok');
-          // Mettre à jour snapshot
-          Object.assign(snapshot, updates);
-          isDirty = false;
-          setSyncState(false);
-          // Mettre à jour hero
-          const newUsername = updates.username ?? session.user.email?.split('@')[0] ?? 'AGENT';
-          $('cig-username').textContent = newUsername.toUpperCase();
-          $('cig-bio').textContent      = updates.bio ?? '';
-          if (updates.avatar_url) {
-            $('cig-avatar-img').src = updates.avatar_url;
-            $('cig-avatar-img').style.display = 'block';
-            $('cig-avatar-fallback').style.display = 'none';
-          }
-        }
-      });
-
-      // ── Sauvegarder titre ────────────────────────────────────────────────────
-      $('btn-save-title').addEventListener('click', async () => {
-        const activeChip = $('titles-list').querySelector('.title-chip.active');
-        if (!activeChip) return;
-        const newTitle = activeChip.textContent;
-        const rarity   = activeChip.dataset.rarity ?? 'common';
-        $('btn-save-title').disabled = true;
-        const { error } = await supabase.from('profiles').update({ active_title: newTitle }).eq('id', myId);
-        $('btn-save-title').disabled = false;
-        if (error) {
-          setStatus('status-title', '⚠ ' + error.message, 'err');
-        } else {
-          setStatus('status-title', '✓ APPLIQUÉ', 'ok');
-          const titleEl = $('cig-active-title');
-          titleEl.textContent = '◆ ' + newTitle;
-          titleEl.style.color = rarityColor(rarity);
-        }
-      });
-
-      // ── Déconnexion ──────────────────────────────────────────────────────────
-      $('btn-logout').addEventListener('click', () => signOut());
-    }
-
-    init();
-  </script>
+  <script type="module" src="js/cig.js"></script>
 </body>
 </html>
