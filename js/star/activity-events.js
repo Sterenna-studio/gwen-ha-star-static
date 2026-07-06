@@ -1,4 +1,11 @@
 import { supabase } from '../supabase.js';
+import {
+  getActivityAudience,
+  getAmbientActivityEvent,
+  getDefaultActivityChannel,
+  normalizeActivityChannel,
+  normalizeActivityEventType,
+} from './activity-feed-schema.js';
 
 const LOCAL_ACTIVITY_KEY = 'star-local-activity-events';
 const MAX_LOCAL_EVENTS = 24;
@@ -15,17 +22,27 @@ export function getLocalActivityEvents(storage = getStorage()) {
 }
 
 export async function publishActivityEvent(auth, type, message, detail = {}) {
+  const eventType = normalizeActivityEventType(type);
+  const channel = normalizeActivityChannel(detail.channel, getDefaultActivityChannel(eventType));
+  const targetUserId = detail.target_user_id ?? detail.targetUserId ?? (
+    channel === 'personal' ? auth?.user?.id ?? null : null
+  );
+
   const item = normalizeActivityEvent({
-    type,
+    type: eventType,
     created_at: new Date().toISOString(),
     user_id: auth?.user?.id ?? null,
     payload: {
       ...detail,
       message,
-      actor: getActorName(auth),
-      role: auth?.profile?.role ?? auth?.meta?.role ?? 'superuser',
-      source: detail.source ?? 'star-admin',
-      client_event_id: createEventId(),
+      event_type: eventType,
+      channel,
+      audience: getActivityAudience(channel),
+      actor: detail.actor ?? getActorName(auth),
+      role: auth?.profile?.role ?? auth?.meta?.role ?? 'member',
+      source: detail.source ?? 'star-cockpit',
+      target_user_id: targetUserId,
+      client_event_id: detail.client_event_id ?? createEventId(),
     },
   });
 
@@ -48,6 +65,64 @@ export async function publishActivityEvent(auth, type, message, detail = {}) {
   }
 }
 
+export function publishTitleUnlocked(auth, titleLabel, detail = {}) {
+  return publishActivityEvent(auth, 'title_unlocked', `Titre obtenu : ${titleLabel}`, {
+    ...detail,
+    channel: detail.channel ?? 'personal',
+    title: titleLabel,
+  });
+}
+
+export function publishChroniclesGain(auth, amount, reason = 'gain cockpit', detail = {}) {
+  const value = Number(amount) || 0;
+  const sign = value >= 0 ? '+' : '';
+  return publishActivityEvent(auth, 'chronicles_gain', `${sign}${value} Chronicles · ${reason}`, {
+    ...detail,
+    channel: detail.channel ?? 'personal',
+    amount: value,
+    reason,
+  });
+}
+
+export function publishGitPush(auth, git = {}, detail = {}) {
+  const repo = git.repo ?? detail.repo ?? 'repo';
+  const branch = git.branch ?? detail.branch ?? 'main';
+  const commit = git.commit ?? detail.commit ?? null;
+  const suffix = commit ? ` · ${String(commit).slice(0, 7)}` : '';
+
+  return publishActivityEvent(auth, 'git_push', `Push git ${repo}:${branch}${suffix}`, {
+    ...detail,
+    ...git,
+    channel: detail.channel ?? 'crew',
+    repo,
+    branch,
+    commit,
+  });
+}
+
+export function publishLemegetonPhrase(auth, phrase, detail = {}) {
+  return publishActivityEvent(auth, 'lemegeton_phrase', `Lemegeton : ${phrase}`, {
+    ...detail,
+    channel: detail.channel ?? 'global',
+    phrase,
+  });
+}
+
+export function publishMiniEvent(auth, eventId = null, detail = {}) {
+  const preset = typeof eventId === 'object' && eventId
+    ? eventId
+    : getAmbientActivityEvent(eventId);
+
+  if (!preset) return Promise.resolve(false);
+
+  return publishActivityEvent(auth, preset.type, preset.message, {
+    ...(preset.detail ?? {}),
+    ...detail,
+    channel: detail.channel ?? preset.channel,
+    mini_event_id: preset.id ?? eventId,
+  });
+}
+
 function saveLocalActivityEvent(item, storage = getStorage()) {
   if (!storage) return;
 
@@ -67,17 +142,23 @@ function saveLocalActivityEvent(item, storage = getStorage()) {
 function normalizeActivityEvent(item) {
   if (!item || typeof item !== 'object') return null;
 
-  const type = String(item.type ?? '').trim();
+  const type = normalizeActivityEventType(item.payload?.event_type ?? item.type);
   if (!type) return null;
 
   const createdAt = item.created_at || new Date().toISOString();
   const payload = item.payload && typeof item.payload === 'object' ? item.payload : {};
+  const channel = normalizeActivityChannel(payload.channel, getDefaultActivityChannel(type));
 
   return {
     type,
     created_at: createdAt,
     user_id: item.user_id ?? null,
-    payload,
+    payload: {
+      ...payload,
+      event_type: type,
+      channel,
+      audience: payload.audience ?? getActivityAudience(channel),
+    },
   };
 }
 
@@ -92,7 +173,7 @@ function getActorName(auth) {
     auth?.user?.user_metadata?.username ||
     auth?.user?.user_metadata?.name ||
     auth?.user?.email?.split('@')[0] ||
-    'superuser'
+    'member'
   );
 }
 

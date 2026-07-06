@@ -1,36 +1,46 @@
 import { supabase } from '../supabase.js';
 import { getLocalActivityEvents } from './activity-events.js';
+import {
+  ACTIVITY_CHANNEL_FILTERS,
+  filterActivityItemsByChannel,
+  getActivityChannel,
+  getActivityChannelLabel,
+  getActivityEventMeta,
+  getActivityEventType,
+} from './activity-feed-schema.js';
 
 let activityChannel = null;
+let activeActivityChannel = 'all';
+let latestActivityItems = [];
+let latestHighlightId = null;
+let currentAuthContext = null;
 
-export async function loadActivity() {
+export async function loadActivity(authContext = null) {
   const el = document.getElementById('widget-activity');
   if (!el) return;
 
+  currentAuthContext = authContext;
   setActivityState(el, 'loading');
 
   try {
     const { data, error } = await supabase
       .from('activity_log')
-      .select('type, payload, created_at')
+      .select('type, payload, created_at, user_id')
       .order('created_at', { ascending: false })
-      .limit(12);
+      .limit(40);
 
     if (error) throw error;
 
-    const items = mergeActivityItems(data, getLocalActivityEvents());
-
-    if (items.length === 0) {
-      renderActivityPlaceholder(el);
-    } else {
-      renderActivityFeed(el, items);
-    }
+    latestActivityItems = mergeActivityItems(data, getLocalActivityEvents());
+    latestHighlightId = null;
+    renderActivityWidget(el, latestActivityItems);
 
     subscribeActivity(el);
   } catch {
-    const localItems = getLocalActivityEvents();
-    if (localItems.length) {
-      renderActivityFeed(el, localItems);
+    latestActivityItems = mergeActivityItems([], getLocalActivityEvents());
+    latestHighlightId = null;
+    if (latestActivityItems.length) {
+      renderActivityWidget(el, latestActivityItems);
     } else {
       renderActivityPlaceholder(el, {
         state: 'offline',
@@ -39,19 +49,6 @@ export async function loadActivity() {
       });
     }
   }
-}
-
-function activityIcon(type) {
-  const icons = {
-    admin_background: '▧',
-    admin_hero_cards: '⬡',
-    admin_space_background: '✦',
-    cig_updated: '✎',
-    member_join: '⬡',
-    project: '◈',
-    default: '·',
-  };
-  return icons[type] ?? icons.default;
 }
 
 function timeAgo(iso) {
@@ -72,72 +69,137 @@ function setActivityState(el, state) {
 function mergeActivityItems(remote = [], local = []) {
   const seen = new Set();
   return [...(remote ?? []), ...(local ?? [])]
+    .filter(Boolean)
     .filter(item => {
-      const id = item?.payload?.client_event_id ?? `${item?.type}:${item?.created_at}:${item?.payload?.message ?? ''}`;
+      const id = getActivityItemId(item);
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     })
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 12);
+    .slice(0, 40);
 }
 
-function renderActivityFeed(el, items) {
+function renderActivityWidget(el, items, options = {}) {
   setActivityState(el, 'ready');
+  latestHighlightId = options.highlightId ?? latestHighlightId;
 
+  const visibleItems = filterActivityItemsByChannel(
+    items,
+    activeActivityChannel,
+    currentAuthContext,
+  ).slice(0, 12);
+
+  const children = [createActivityTabs()];
+  if (visibleItems.length) {
+    children.push(createActivityFeed(visibleItems));
+  } else {
+    children.push(createActivityEmptyNode({
+      state: 'listening',
+      message: activeActivityChannel === 'all'
+        ? 'Aucune activité récente'
+        : `Aucun signal ${getActivityChannelLabel(activeActivityChannel).toLowerCase()}`,
+      sub: `${getActivityFilterLabel(activeActivityChannel)} · EN ÉCOUTE`,
+    }));
+  }
+
+  el.replaceChildren(...children);
+}
+
+function createActivityTabs() {
+  const nav = document.createElement('div');
+  nav.className = 'activity-channel-tabs';
+  nav.setAttribute('aria-label', 'Canaux du flux activité');
+
+  ACTIVITY_CHANNEL_FILTERS.forEach(filter => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'activity-channel-tab';
+    btn.dataset.activityChannel = filter.id;
+    btn.setAttribute('aria-pressed', String(activeActivityChannel === filter.id));
+    btn.textContent = filter.label;
+    btn.addEventListener('click', () => {
+      activeActivityChannel = filter.id;
+      const target = document.getElementById('widget-activity') ?? nav.parentElement;
+      if (target) renderActivityWidget(target, latestActivityItems);
+    });
+    nav.appendChild(btn);
+  });
+
+  return nav;
+}
+
+function createActivityFeed(items) {
   const feed = document.createElement('ul');
   feed.className = 'activity-feed';
   feed.setAttribute('role', 'log');
   feed.setAttribute('aria-live', 'polite');
-  items.forEach(item => feed.appendChild(createActivityItem(item)));
-
-  el.replaceChildren(feed);
+  items.forEach(item => feed.appendChild(createActivityItem(item, getActivityItemId(item) === latestHighlightId)));
+  return feed;
 }
 
 function prependActivity(el, item) {
-  const feed = el.querySelector('.activity-feed');
-  if (!feed) {
-    renderActivityFeed(el, [item]);
-    return;
-  }
-
-  setActivityState(el, 'ready');
-  const li = createActivityItem(item, true);
-  feed.prepend(li);
-  while (feed.children.length > 12) feed.lastElementChild.remove();
+  latestHighlightId = getActivityItemId(item);
+  latestActivityItems = mergeActivityItems([item], latestActivityItems);
+  renderActivityWidget(el, latestActivityItems, { highlightId: latestHighlightId });
 }
 
 function createActivityItem(item, isNew = false) {
+  const eventType = getActivityEventType(item);
+  const channel = getActivityChannel(item);
+  const eventMeta = getActivityEventMeta(eventType);
+
   const li = document.createElement('li');
   li.className = `activity-item${isNew ? ' activity-item--new' : ''}`;
-  li.dataset.type = item?.type ?? 'default';
+  li.dataset.type = eventType;
+  li.dataset.channel = channel;
 
   const icon = document.createElement('span');
   icon.className = 'activity-icon';
   icon.setAttribute('aria-hidden', 'true');
-  icon.textContent = activityIcon(item?.type);
+  icon.textContent = eventMeta.icon;
+
+  const copy = document.createElement('span');
+  copy.className = 'activity-copy';
+
+  const meta = document.createElement('span');
+  meta.className = 'activity-meta';
+
+  const channelPill = document.createElement('span');
+  channelPill.className = `activity-channel-pill activity-channel-pill--${channel}`;
+  channelPill.textContent = getActivityChannelLabel(channel);
+
+  const kind = document.createElement('span');
+  kind.className = 'activity-event-kind';
+  kind.textContent = eventMeta.label;
 
   const text = document.createElement('span');
   text.className = 'activity-text';
-  text.textContent = item?.payload?.message ?? item?.type ?? 'Activité réseau';
+  text.textContent = item?.payload?.message ?? eventType ?? 'Activité réseau';
+
+  meta.append(channelPill, kind);
+  copy.append(meta, text);
 
   const time = document.createElement('time');
   time.className = 'activity-time';
   time.dateTime = item?.created_at ?? '';
   time.textContent = item?.created_at ? timeAgo(item.created_at) : 'maintenant';
 
-  li.append(icon, text, time);
+  li.append(icon, copy, time);
   return li;
 }
 
 function renderActivityPlaceholder(el, options = {}) {
+  setActivityState(el, options.state ?? 'listening');
+  el.replaceChildren(createActivityTabs(), createActivityEmptyNode(options));
+}
+
+function createActivityEmptyNode(options = {}) {
   const {
     state = 'listening',
     message = 'Aucune activité récente',
     sub = 'ACTIVITY_LOG · EN ÉCOUTE',
   } = options;
-
-  setActivityState(el, state);
 
   const root = document.createElement('div');
   root.className = `widget-empty widget-empty--${state}`;
@@ -154,7 +216,7 @@ function renderActivityPlaceholder(el, options = {}) {
   meta.textContent = sub;
 
   root.append(icon, text, meta);
-  el.replaceChildren(root);
+  return root;
 }
 
 function subscribeActivity(el) {
@@ -173,4 +235,13 @@ function subscribeActivity(el) {
         setActivityState(target, 'listening');
       }
     });
+}
+
+function getActivityFilterLabel(channel) {
+  if (channel === 'all') return 'TOUT';
+  return getActivityChannelLabel(channel);
+}
+
+function getActivityItemId(item) {
+  return item?.payload?.client_event_id ?? `${item?.type}:${item?.created_at}:${item?.payload?.message ?? ''}`;
 }

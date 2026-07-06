@@ -296,6 +296,8 @@ async function importJson(event) {
 
 function trackBackgroundActivity(action, message) {
   void publishActivityEvent(authContext, 'admin_background', message, {
+    channel: 'crew',
+    source: 'star-admin.cockpit-background',
     action,
     target: '/star/index.html',
     config: {

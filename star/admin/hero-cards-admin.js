@@ -42,6 +42,8 @@ function render(auth, heroApps, quickApps, duplicateIds) {
     });
 
     void publishActivityEvent(auth, 'admin_hero_cards', 'Hero cards exportées depuis la console admin', {
+      channel: 'crew',
+      source: 'star-admin.hero-cards',
       action: 'export',
       heroCards: heroApps.length,
       quickAccess: quickApps.length,

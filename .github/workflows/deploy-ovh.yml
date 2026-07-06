@@ -117,3 +117,66 @@ jobs:
           done
 
           echo "Smoke tests passed for $BASE_URL"
+
+      - name: Publish Star activity git push
+        env:
+          GHSTAR_SUPABASE_URL: ${{ secrets.GHSTAR_SUPABASE_URL }}
+          GHSTAR_SUPABASE_SERVICE_ROLE: ${{ secrets.GHSTAR_SUPABASE_SERVICE_ROLE }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+          url = os.environ.get('GHSTAR_SUPABASE_URL', '').rstrip('/')
+          key = os.environ.get('GHSTAR_SUPABASE_SERVICE_ROLE', '')
+
+          if not url or not key:
+              print('Star activity git_push skipped: missing GHSTAR_SUPABASE_URL or GHSTAR_SUPABASE_SERVICE_ROLE')
+              raise SystemExit(0)
+
+          repo = os.environ.get('GITHUB_REPOSITORY', 'Sterenna-studio/gwen-ha-star-static')
+          branch = os.environ.get('GITHUB_REF_NAME', 'main')
+          commit = os.environ.get('GITHUB_SHA', '')
+          actor = os.environ.get('GITHUB_ACTOR', 'github-actions')
+
+          payload = {
+              'event_type': 'git_push',
+              'channel': 'crew',
+              'audience': 'crew',
+              'message': f"Push git {repo}:{branch} · {commit[:7]} deploy OK",
+              'actor': actor,
+              'role': 'automation',
+              'source': 'github-actions.deploy-ovh',
+              'repo': repo,
+              'branch': branch,
+              'commit': commit,
+              'run_id': os.environ.get('GITHUB_RUN_ID'),
+              'run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
+          }
+
+          body = json.dumps({
+              'type': 'git_push',
+              'payload': payload,
+              'user_id': None,
+          }).encode('utf-8')
+
+          request = urllib.request.Request(
+              f'{url}/rest/v1/activity_log',
+              data=body,
+              method='POST',
+              headers={
+                  'apikey': key,
+                  'Authorization': f'Bearer {key}',
+                  'Content-Type': 'application/json',
+                  'Prefer': 'return=minimal',
+              },
+          )
+
+          try:
+              with urllib.request.urlopen(request, timeout=15) as response:
+                  print(f'Star activity git_push published: HTTP {response.status}')
+          except (urllib.error.URLError, urllib.error.HTTPError) as exc:
+              print(f'Star activity git_push warning: {exc}')
+          PY

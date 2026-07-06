@@ -21,7 +21,7 @@ export async function initDashboard(authContext = null) {
 
   await Promise.all([
     loadVideo(),
-    loadActivity(),
+    loadActivity(auth),
     loadPokegangFromSupabase(user.id),
     loadPokegangLeaderboard(user.id),
   ]);
