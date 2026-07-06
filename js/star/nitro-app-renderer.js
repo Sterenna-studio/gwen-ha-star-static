@@ -1,6 +1,8 @@
 import './radio-player-stabilizer.js';
 import './radio-dedication-rules.js';
 import './star-hero-card-style.js';
+import './korigan-chat-state.js';
+import './star-rewards-panel.js';
 import '../chronicles-fm-star-skin.js';
 import { getHeroNitroApps, getQuickNitroApps } from '../../shared/nitro-apps.js';
 
@@ -47,19 +49,19 @@ export function renderNitroQuickAccess(containerId = 'quick-access-grid') {
 export function renderNitroHeroCards(containerId = 'nitro-hero-cards') {
   const el = document.getElementById(containerId);
   if (!el) return;
-  el.innerHTML = buildHeroCards();
+  el.innerHTML = buildNitroHeroCardsMarkup();
 }
 
 export function renderNitroHeroCardsAuto() {
   const firstHero = document.querySelector('.bc-hero');
   if (!firstHero) return;
   const tpl = document.createElement('template');
-  tpl.innerHTML = buildHeroCards();
+  tpl.innerHTML = buildNitroHeroCardsMarkup();
   firstHero.before(tpl.content);
   document.querySelectorAll('.bc-hero:not([data-nitro-rendered="true"])').forEach(node => node.remove());
 }
 
-function buildHeroCards() {
+export function buildNitroHeroCardsMarkup() {
   const apps = getHeroNitroApps();
   return apps.map(app => {
     const kind = app.id.replace(/[^a-z0-9-]/gi, '-');

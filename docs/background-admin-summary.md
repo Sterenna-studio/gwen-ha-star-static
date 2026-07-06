@@ -5,6 +5,7 @@ Console : `/star/admin/background.html`
 Consoles cockpit Star :
 
 - `/star/admin/hero-cards.html` : audit visuel des hero cards injectées depuis `shared/nitro-apps.js`, avec export JSON du registre.
+- `/star/admin/hero-card-style.html` : réglage direct du style des hero cards, preview cockpit, sauvegarde locale et export/import JSON.
 - `/star/admin/cockpit-background.html` : aperçu du background seul de `/star/index.html`, réglage des variables CSS, sauvegarde locale et export/import JSON.
 - Les actions importantes de ces consoles publient un événement `activity_log` et un fallback local, affiché par `#widget-activity` dans `/star/index.html`.
 - Le flux activity est documenté dans `/docs/star-activity-feed.md` : canaux `personal`, `crew`, `global`, types d'événements et SQL RLS.

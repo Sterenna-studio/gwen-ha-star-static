@@ -124,6 +124,7 @@ function renderPanel() {
       <nav class="star-admin-actions" aria-label="Navigation admin">
         <a class="star-admin-btn" href="/star/">COCKPIT</a>
         <a class="star-admin-btn" href="/star/admin/hero-cards.html">HERO CARDS</a>
+        <a class="star-admin-btn" href="/star/admin/hero-card-style.html">HERO STYLE</a>
         <a class="star-admin-btn" href="/star/admin/background.html">BG PUBLIC</a>
       </nav>
     </header>

@@ -64,6 +64,7 @@ function renderTop() {
     </div>
     <nav class="star-admin-actions" aria-label="Navigation admin">
       <a class="star-admin-btn" href="/star/">COCKPIT</a>
+      <a class="star-admin-btn primary" href="/star/admin/hero-card-style.html">HERO STYLE</a>
       <a class="star-admin-btn" href="/star/admin/cockpit-background.html">BACKGROUND STAR</a>
       <a class="star-admin-btn" href="/star/admin/background.html">BACKGROUND PUBLIC</a>
       <button class="star-admin-btn primary" type="button" id="export-heroes">EXPORT JSON</button>

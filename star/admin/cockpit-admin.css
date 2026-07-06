@@ -242,6 +242,77 @@ body.star-bg-admin-page {
   border-color:color-mix(in oklch, var(--c-amber) 45%, var(--c-border));
 }
 
+.hero-style-admin-shell {
+  width:min(1380px, calc(100% - 32px));
+}
+
+.hero-style-presets {
+  margin-bottom:14px;
+}
+
+.hero-style-layout {
+  display:grid;
+  grid-template-columns:minmax(270px, 360px) minmax(0, 1fr);
+  gap:14px;
+  align-items:start;
+}
+
+.hero-style-controls {
+  display:grid;
+  gap:10px;
+  max-height:calc(100vh - 190px);
+  overflow:auto;
+  padding-right:10px;
+}
+
+.hero-style-control {
+  padding:4px 0 8px;
+  border-bottom:1px solid var(--c-divider);
+}
+
+.hero-style-control:last-child {
+  border-bottom:0;
+}
+
+.hero-style-preview-panel {
+  min-width:0;
+}
+
+.hero-style-preview-stage {
+  min-height:620px;
+  padding:14px;
+  border:1px solid color-mix(in oklch, var(--c-primary) 18%, var(--c-border));
+  border-radius:12px;
+  background:
+    linear-gradient(90deg, color-mix(in oklch, var(--c-primary) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--c-primary) 5%, transparent) 1px, transparent 1px),
+    radial-gradient(circle at 50% 0, color-mix(in oklch, var(--c-cyan) 8%, transparent), transparent 44%),
+    color-mix(in oklch, var(--c-surface) 88%, #02040a);
+  background-size:36px 36px, 36px 36px, auto, auto;
+  overflow:auto;
+  box-shadow:inset 0 0 42px rgba(0,0,0,.28);
+}
+
+.hero-style-preview-stage .bento-hero-row {
+  grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.hero-style-save {
+  margin-top:14px;
+}
+
+.hero-style-import {
+  display:none;
+}
+
+.hero-style-toast {
+  min-height:18px;
+  margin-top:10px;
+  color:var(--c-primary);
+  font-size:10px;
+  line-height:1.5;
+}
+
 .star-bg-admin-page {
   overflow-x:hidden;
 }
@@ -386,6 +457,14 @@ body.star-bg-admin-page {
   .star-admin-actions,
   .star-admin-presets {
     justify-content:flex-start;
+  }
+
+  .hero-style-layout {
+    grid-template-columns:1fr;
+  }
+
+  .hero-style-controls {
+    max-height:none;
   }
 
   .star-bg-admin-panel {
