@@ -114,3 +114,7 @@ Si l'app utilise le shared Nitro, elle n'a normalement pas besoin de secrets Sup
 
 > Pour **afficher les données** d'une app dans le cockpit Star (widget),
 > voir [integrer-widget-star.md](integrer-widget-star.md).
+
+> Pour le branchement futur Discord/Twitch via Korigan, voir
+> [korigan-bot-bridge.md](korigan-bot-bridge.md). La connexion réelle des bots
+> reste côté Korigan ; Star n'affiche qu'un statut safe.

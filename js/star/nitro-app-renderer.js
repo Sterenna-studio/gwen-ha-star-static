@@ -2,6 +2,7 @@ import './radio-player-stabilizer.js';
 import './radio-dedication-rules.js';
 import './star-hero-card-style.js';
 import './korigan-chat-state.js';
+import './korigan-bot-bridge.js';
 import './star-rewards-panel.js';
 import '../chronicles-fm-star-skin.js';
 import { getHeroNitroApps, getQuickNitroApps } from '../../shared/nitro-apps.js';
