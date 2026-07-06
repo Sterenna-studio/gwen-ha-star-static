@@ -72,3 +72,4 @@ Notes :
 - Un workflow GitHub ne doit pas exposer de cle service role au navigateur. Il doit publier via une action serveur/RPC protegee.
 - `.github/workflows/deploy-ovh.yml` publie `git_push` apres smoke test si le secret `GHSTAR_SUPABASE_SERVICE_ROLE` est configure.
 - Les projets Supabase recents peuvent demander des grants explicites pour que la Data API expose la table.
+- `scripts/sql/004_activity_log_recent_backfill.sql` remplit un historique recent idempotent avec des resumes Supabase et des signaux ambient synthetiques.
