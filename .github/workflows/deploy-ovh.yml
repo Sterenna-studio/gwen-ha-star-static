@@ -74,6 +74,7 @@ jobs:
             --exclude='/skill-arena/' \
             --exclude='/dedale/' \
             --exclude='/clicker/' \
+            --exclude='/corebots/' \
             --exclude='/TCG/' \
             --exclude='/bzh-universe/' \
             --exclude='/titan-rocket-run/' \
