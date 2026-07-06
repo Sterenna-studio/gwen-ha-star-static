@@ -79,7 +79,6 @@ jobs:
             --exclude='/bzh-universe/' \
             --exclude='/titan-rocket-run/' \
             --exclude='/botanica/' \
-            --exclude='/rpg/' \
             --exclude='/geotia/' \
             --exclude='/goetia/' \
             --exclude='/ARCHITECTURE.md' \
