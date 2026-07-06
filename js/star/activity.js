@@ -1,4 +1,5 @@
 import { supabase } from '../supabase.js';
+import { getLocalActivityEvents } from './activity-events.js';
 
 let activityChannel = null;
 
@@ -17,24 +18,39 @@ export async function loadActivity() {
 
     if (error) throw error;
 
-    if (!data || data.length === 0) {
+    const items = mergeActivityItems(data, getLocalActivityEvents());
+
+    if (items.length === 0) {
       renderActivityPlaceholder(el);
     } else {
-      renderActivityFeed(el, data);
+      renderActivityFeed(el, items);
     }
 
     subscribeActivity(el);
   } catch {
-    renderActivityPlaceholder(el, {
-      state: 'offline',
-      message: 'Flux activité indisponible',
-      sub: 'ACTIVITY_LOG · OFFLINE',
-    });
+    const localItems = getLocalActivityEvents();
+    if (localItems.length) {
+      renderActivityFeed(el, localItems);
+    } else {
+      renderActivityPlaceholder(el, {
+        state: 'offline',
+        message: 'Flux activité indisponible',
+        sub: 'ACTIVITY_LOG · OFFLINE',
+      });
+    }
   }
 }
 
 function activityIcon(type) {
-  const icons = { cig_updated: '✎', member_join: '⬡', project: '◈', default: '·' };
+  const icons = {
+    admin_background: '▧',
+    admin_hero_cards: '⬡',
+    admin_space_background: '✦',
+    cig_updated: '✎',
+    member_join: '⬡',
+    project: '◈',
+    default: '·',
+  };
   return icons[type] ?? icons.default;
 }
 
@@ -51,6 +67,19 @@ function timeAgo(iso) {
 
 function setActivityState(el, state) {
   el.dataset.widgetState = state;
+}
+
+function mergeActivityItems(remote = [], local = []) {
+  const seen = new Set();
+  return [...(remote ?? []), ...(local ?? [])]
+    .filter(item => {
+      const id = item?.payload?.client_event_id ?? `${item?.type}:${item?.created_at}:${item?.payload?.message ?? ''}`;
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    })
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 12);
 }
 
 function renderActivityFeed(el, items) {

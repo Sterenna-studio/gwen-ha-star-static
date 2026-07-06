@@ -1,4 +1,5 @@
 import { NITRO_APPS, getHeroNitroApps, getQuickNitroApps } from '../../shared/nitro-apps.js';
+import { publishActivityEvent } from '../../js/star/activity-events.js';
 import { requireStarSuperuser } from './admin-guard.js';
 
 const app = document.getElementById('app');
@@ -12,10 +13,10 @@ async function boot() {
   const heroApps = getHeroNitroApps();
   const quickApps = getQuickNitroApps();
   const duplicateIds = getDuplicateIds(NITRO_APPS);
-  render(heroApps, quickApps, duplicateIds);
+  render(auth, heroApps, quickApps, duplicateIds);
 }
 
-function render(heroApps, quickApps, duplicateIds) {
+function render(auth, heroApps, quickApps, duplicateIds) {
   app.replaceChildren(
     renderTop(),
     renderKpis(heroApps, quickApps, duplicateIds),
@@ -38,6 +39,14 @@ function render(heroApps, quickApps, duplicateIds) {
       heroCards: heroApps,
       quickAccess: quickApps,
       registry: NITRO_APPS,
+    });
+
+    void publishActivityEvent(auth, 'admin_hero_cards', 'Hero cards exportées depuis la console admin', {
+      action: 'export',
+      heroCards: heroApps.length,
+      quickAccess: quickApps.length,
+      duplicateIds: duplicateIds.length,
+      target: '/star/index.html',
     });
   });
 }

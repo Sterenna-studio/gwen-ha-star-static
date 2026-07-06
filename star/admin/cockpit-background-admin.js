@@ -6,11 +6,13 @@ import {
   normalizeCockpitBackgroundConfig,
   saveCockpitBackgroundConfig,
 } from '../../js/star/cockpit-background-config.js';
+import { publishActivityEvent } from '../../js/star/activity-events.js';
 import { requireStarSuperuser } from './admin-guard.js';
 
 const app = document.getElementById('app');
 const exitPreview = document.getElementById('exit-preview');
 let state = loadCockpitBackgroundConfig();
+let authContext = null;
 
 const CONTROLS = [
   ['cyanGlow', 'Halo cyan', 0, 0.35, 0.01],
@@ -98,6 +100,7 @@ async function boot() {
   const auth = await requireStarSuperuser(app, { title: 'COCKPIT BACKGROUND' });
   if (!auth) return;
 
+  authContext = auth;
   render();
   bindPreviewOnly();
 }
@@ -220,11 +223,13 @@ function bindActions() {
     state = saveCockpitBackgroundConfig(state);
     applyState();
     toast('Configuration sauvegardée localement pour /star/index.html.');
+    trackBackgroundActivity('save-local', 'Configuration background cockpit sauvegardée pour Star');
   });
 
   document.getElementById('export-json')?.addEventListener('click', () => {
     downloadJson('star-cockpit-background-config.json', exportCockpitBackgroundConfig(state));
     toast('Export JSON généré.');
+    trackBackgroundActivity('export', 'Configuration background cockpit exportée en JSON');
   });
 
   document.getElementById('import-json')?.addEventListener('click', () => {
@@ -242,6 +247,7 @@ function bindActions() {
     saveCockpitBackgroundConfig(state);
     render();
     toast('Configuration locale réinitialisée.');
+    trackBackgroundActivity('reset', 'Configuration background cockpit réinitialisée');
   });
 }
 
@@ -280,11 +286,26 @@ async function importJson(event) {
     state = normalizeCockpitBackgroundConfig(parsed.config ?? parsed);
     render();
     toast('Config importée en preview. Clique sur SAUVER LOCAL pour l’appliquer à ce navigateur.');
+    trackBackgroundActivity('import', 'Configuration background cockpit importée en preview');
   } catch (error) {
     toast(`Import impossible : ${error.message}`, true);
   } finally {
     event.target.value = '';
   }
+}
+
+function trackBackgroundActivity(action, message) {
+  void publishActivityEvent(authContext, 'admin_background', message, {
+    action,
+    target: '/star/index.html',
+    config: {
+      starOpacity: state.starOpacity,
+      starSpeed: state.starSpeed,
+      frameWidth: state.frameWidth,
+      portholes: state.portholes,
+      portholeOpacity: state.portholeOpacity,
+    },
+  });
 }
 
 function formatValue(key, value) {
