@@ -216,43 +216,49 @@
 
 /* ═══════════════════════════════════════════════════════════════
    GIG ID CARD — Carte d'Identification Galactique (composant visuel)
+   Variables CSS pilotables via admin/cig-style.html
 ═══════════════════════════════════════════════════════════════ */
 .gig-id-card {
   position: relative; overflow: hidden;
-  background: linear-gradient(135deg,
+  background: var(--cig-card-bg, linear-gradient(135deg,
     color-mix(in oklch, var(--c-primary) 8%, var(--c-surface)) 0%,
     var(--c-surface) 50%,
-    color-mix(in oklch, var(--c-amber) 6%, var(--c-surface)) 100%);
-  border: 1px solid color-mix(in oklch, var(--c-primary) 40%, var(--c-border));
-  border-radius: var(--radius-xl);
+    color-mix(in oklch, var(--c-amber) 6%, var(--c-surface)) 100%));
+  border: 1px solid var(--cig-border, color-mix(in oklch, var(--c-primary) 40%, var(--c-border)));
+  border-radius: var(--cig-card-radius, var(--radius-xl));
   padding: var(--space-5) var(--space-6);
   margin-bottom: var(--space-6);
-  box-shadow:
+  box-shadow: var(--cig-glow,
     0 0 40px color-mix(in oklch, var(--c-primary) 8%, transparent),
-    inset 0 1px 0 rgba(255,255,255,.04);
+    inset 0 1px 0 rgba(255,255,255,.04));
 }
 .gig-id-card::before {
   content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--c-primary), var(--c-amber), #a78bfa, var(--c-primary));
+  background: linear-gradient(90deg,
+    var(--cig-accent, var(--c-primary)),
+    var(--cig-accent-2, var(--c-amber)),
+    #a78bfa,
+    var(--cig-accent, var(--c-primary)));
   background-size: 300% 100%;
   animation: shimmer-bar 4s linear infinite;
 }
 .gig-id-card__scanner {
   position: absolute; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--c-primary), transparent);
-  opacity: .25; animation: gig-scan-line 5s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, var(--cig-accent, var(--c-primary)), transparent);
+  opacity: var(--cig-scanner-opacity, .25);
+  animation: gig-scan-line var(--cig-scanner-speed, 5s) ease-in-out infinite;
 }
 @keyframes gig-scan-line {
   0%   { top: 0%;   opacity: 0; }
-  10%  { opacity: .25; }
-  90%  { opacity: .25; }
+  10%  { opacity: var(--cig-scanner-opacity, .25); }
+  90%  { opacity: var(--cig-scanner-opacity, .25); }
   100% { top: 100%; opacity: 0; }
 }
 .gig-id-card__top {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: var(--space-4);
 }
-.gig-id-card__org  { font-family: var(--font-mono); font-size: 8px; letter-spacing: .22em; color: var(--c-primary); opacity: .7; }
+.gig-id-card__org  { font-family: var(--font-mono); font-size: 8px; letter-spacing: .22em; color: var(--cig-accent, var(--c-primary)); opacity: .7; }
 .gig-id-card__type { font-family: var(--font-mono); font-size: 8px; letter-spacing: .18em; color: var(--c-text-faint); }
 .gig-id-card__body {
   display: flex; gap: var(--space-5); align-items: center;
@@ -262,18 +268,18 @@
 .gig-id-card__avatar-zone { position: relative; flex-shrink: 0; }
 .gig-id-card__avatar {
   width: 72px; height: 72px;
-  border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in oklch, var(--c-primary) 50%, var(--c-border));
+  border-radius: var(--cig-avatar-radius, var(--radius-lg));
+  border: 1px solid color-mix(in oklch, var(--cig-accent, var(--c-primary)) 50%, var(--c-border));
   background: var(--c-surface-2);
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display); font-size: 1.6rem; font-weight: 700;
-  color: var(--c-primary); overflow: hidden;
+  color: var(--cig-accent, var(--c-primary)); overflow: hidden;
 }
 .gig-id-card__avatar img { width: 100%; height: 100%; object-fit: cover; }
 .gig-id-card__avatar-glow {
   position: absolute; inset: -4px;
-  border-radius: calc(var(--radius-lg) + 4px);
-  background: radial-gradient(circle, color-mix(in oklch, var(--c-primary) 22%, transparent) 0%, transparent 70%);
+  border-radius: calc(var(--cig-avatar-radius, var(--radius-lg)) + 4px);
+  background: radial-gradient(circle, color-mix(in oklch, var(--cig-accent, var(--c-primary)) 22%, transparent) 0%, transparent 70%);
   pointer-events: none;
   animation: gig-avatar-pulse 3s ease-in-out infinite alternate;
 }
@@ -283,12 +289,16 @@
 }
 .gig-id-card__data { flex: 1; }
 .gig-id-card__pseudo {
-  font-family: var(--font-display); font-size: var(--text-xl); font-weight: 900;
+  font-family: var(--font-display);
+  font-size: var(--cig-pseudo-size, var(--text-xl));
+  font-weight: 900;
   color: var(--c-text); letter-spacing: .06em; line-height: 1; margin-bottom: var(--space-1);
-  text-shadow: 0 0 20px color-mix(in oklch, var(--c-primary) 30%, transparent);
+  text-shadow: 0 0 20px color-mix(in oklch, var(--cig-accent, var(--c-primary)) 30%, transparent);
 }
 .gig-id-card__title {
-  font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em;
+  font-family: var(--font-mono);
+  font-size: var(--cig-title-size, 10px);
+  letter-spacing: var(--cig-mono-tracking, .14em);
   color: var(--c-amber); margin-bottom: var(--space-3);
 }
 .gig-id-card__rows { display: flex; flex-direction: column; gap: 5px; }
@@ -298,7 +308,7 @@
 .gig-id-card__footer {
   display: flex; justify-content: space-between; align-items: center;
   padding-top: var(--space-3);
-  border-top: 1px solid color-mix(in oklch, var(--c-primary) 15%, var(--c-border));
+  border-top: 1px solid color-mix(in oklch, var(--cig-accent, var(--c-primary)) 15%, var(--c-border));
 }
 .gig-id-card__uid    { font-family: var(--font-mono); font-size: 9px; letter-spacing: .18em; color: var(--c-text-faint); opacity: .6; }
 .gig-id-card__status { font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; color: var(--c-green); }

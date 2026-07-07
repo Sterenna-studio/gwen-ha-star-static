@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Style CIG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/base.css" />
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/components.css" />
+  <link rel="stylesheet" href="../../css/auth.css" />
+  <link rel="stylesheet" href="../../css/cig.css" />
+  <link rel="stylesheet" href="cig-style-admin.css" />
+</head>
+<body class="cig-page admin-cig-style-page">
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <span class="logo-text">GWEN·HA·STAR</span>
+      </a>
+      <nav class="header-nav">
+        <a href="../../star/index.html" class="nav-link">↖ STAR</a>
+        <a href="../../cig.html" class="nav-link">⬡ CIG</a>
+      </nav>
+      <div class="header-auth" id="header-auth"></div>
+    </div>
+  </header>
+
+  <main class="admin-cig-style-main">
+    <section class="admin-style-panel cig-card">
+      <p class="cig-card-tag">// ADMIN · CIG STYLE</p>
+      <h1 class="cig-card-title">Style de la carte CIG</h1>
+
+      <div class="admin-style-grid">
+        <label class="field-group">
+          <span class="field-label">ACCENT</span>
+          <input id="accent" class="field-input" type="color" value="#3ecfcf" />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">ACCENT 2</span>
+          <input id="accent2" class="field-input" type="color" value="#f9ca24" />
+        </label>
+
+        <label class="field-group admin-style-full">
+          <span class="field-label">BORDER</span>
+          <input id="border" class="field-input" type="text" value="rgba(62,207,207,.35)" />
+        </label>
+
+        <label class="field-group admin-style-full">
+          <span class="field-label">CARD BG</span>
+          <input id="cardBg" class="field-input" type="text" value="linear-gradient(135deg, rgba(62,207,207,.08) 0%, rgba(16,20,26,1) 50%, rgba(249,202,36,.06) 100%)" />
+        </label>
+
+        <label class="field-group admin-style-full">
+          <span class="field-label">GLOW (box-shadow)</span>
+          <input id="glow" class="field-input" type="text" value="0 0 40px rgba(62,207,207,.10), inset 0 1px 0 rgba(255,255,255,.04)" />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">SCANNER OPACITY <span id="scannerOpacity-val">0.25</span></span>
+          <input id="scannerOpacity" class="field-input" type="range" min="0" max="1" step="0.01" value="0.25" />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">SCANNER SPEED (s) <span id="scannerSpeed-val">5</span></span>
+          <input id="scannerSpeed" class="field-input" type="range" min="2" max="12" step="0.5" value="5" />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">AVATAR RADIUS (px) <span id="avatarRadius-val">18</span></span>
+          <input id="avatarRadius" class="field-input" type="range" min="4" max="36" step="1" value="18" />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">CARD RADIUS (px) <span id="cardRadius-val">24</span></span>
+          <input id="cardRadius" class="field-input" type="range" min="8" max="40" step="1" value="24" />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">PSEUDO SIZE (rem) <span id="pseudoSize-val">1.4</span></span>
+          <input id="pseudoSize" class="field-input" type="range" min="1" max="2.2" step="0.05" value="1.4" />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">TITLE SIZE (px) <span id="titleSize-val">10</span></span>
+          <input id="titleSize" class="field-input" type="range" min="8" max="16" step="0.5" value="10" />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">MONO TRACKING (em) <span id="monoTracking-val">0.14</span></span>
+          <input id="monoTracking" class="field-input" type="range" min="0.08" max="0.30" step="0.01" value="0.14" />
+        </label>
+      </div>
+
+      <div class="save-row">
+        <button class="btn-save" id="btn-save-style">&rarr; SAUVEGARDER</button>
+        <button class="btn-reset" id="btn-reset-style">&#x21BA; RESET</button>
+        <span class="save-status" id="style-status"></span>
+      </div>
+    </section>
+
+    <section class="admin-style-preview cig-card">
+      <p class="cig-card-tag">// PREVIEW LIVE</p>
+      <h2 class="cig-card-title">Aperçu carte CIG</h2>
+
+      <div class="gig-id-card" id="preview-gig-card">
+        <div class="gig-id-card__scanner" aria-hidden="true"></div>
+        <div class="gig-id-card__top">
+          <span class="gig-id-card__org">GWEN·HA·STAR // RÉSEAU STELLAIRE</span>
+          <span class="gig-id-card__type">CARTE D'IDENTIFICATION GALACTIQUE</span>
+        </div>
+        <div class="gig-id-card__body">
+          <div class="gig-id-card__avatar-zone">
+            <div class="gig-id-card__avatar">G</div>
+            <div class="gig-id-card__avatar-glow" aria-hidden="true"></div>
+          </div>
+          <div class="gig-id-card__data">
+            <p class="gig-id-card__pseudo">GWENHA</p>
+            <p class="gig-id-card__title" style="color:var(--c-amber)">◆ FONDATEUR</p>
+            <div class="gig-id-card__rows">
+              <div class="gig-id-card__row">
+                <span class="gig-id-card__lbl">CHRONICLES</span>
+                <span class="gig-id-card__val">92 400 C</span>
+              </div>
+              <div class="gig-id-card__row">
+                <span class="gig-id-card__lbl">1ÈRE ID</span>
+                <span class="gig-id-card__val">7 juillet 2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="gig-id-card__footer">
+          <span class="gig-id-card__uid">UID A1B2C3D4 ···</span>
+          <span class="gig-id-card__status">● ACTIF</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="cig-style-admin.js"></script>
+</body>
+</html>

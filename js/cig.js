@@ -46,6 +46,34 @@ function rarityColor(rarity) {
   return RARITY_COLORS[rarity] ?? RARITY_COLORS.common;
 }
 
+// ── LOAD & APPLY CIG STYLE VARS ────────────────────────────────────────────────
+async function loadCIGStyle() {
+  try {
+    const { data, error } = await supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'cig_style')
+      .maybeSingle();
+    if (error) throw error;
+    const style = data?.value ?? {};
+    const r = document.documentElement;
+    if (style.accent)         r.style.setProperty('--cig-accent',         style.accent);
+    if (style.accent2)        r.style.setProperty('--cig-accent-2',        style.accent2);
+    if (style.border)         r.style.setProperty('--cig-border',          style.border);
+    if (style.cardBg)         r.style.setProperty('--cig-card-bg',         style.cardBg);
+    if (style.glow)           r.style.setProperty('--cig-glow',            style.glow);
+    if (style.scannerOpacity) r.style.setProperty('--cig-scanner-opacity', style.scannerOpacity);
+    if (style.scannerSpeed)   r.style.setProperty('--cig-scanner-speed',   `${style.scannerSpeed}s`);
+    if (style.avatarRadius)   r.style.setProperty('--cig-avatar-radius',   `${style.avatarRadius}px`);
+    if (style.cardRadius)     r.style.setProperty('--cig-card-radius',     `${style.cardRadius}px`);
+    if (style.pseudoSize)     r.style.setProperty('--cig-pseudo-size',     `${style.pseudoSize}rem`);
+    if (style.titleSize)      r.style.setProperty('--cig-title-size',      `${style.titleSize}px`);
+    if (style.monoTracking)   r.style.setProperty('--cig-mono-tracking',   `${style.monoTracking}em`);
+  } catch (e) {
+    console.warn('CIG style load failed (non-blocking):', e);
+  }
+}
+
 // ── FILL GIG ID CARD ───────────────────────────────────────────────────────────
 function fillGIGCard(profile, username, activeTitleDisplay, activeTitleRarity) {
   const avatarEl = $('gig-card-avatar');
@@ -324,6 +352,9 @@ function injectHeaderAuth(user, profile) {
 
 // ── INIT ───────────────────────────────────────────────────────────────────────
 async function init() {
+  // Charger le style CIG depuis Supabase avant tout rendu
+  await loadCIGStyle();
+
   const params   = new URLSearchParams(window.location.search);
   const targetId = params.get('id');
   const session  = await getSession();
