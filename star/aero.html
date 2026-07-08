@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AERO COCKPIT — Gwen Ha Star</title>
+  <link rel="icon" type="image/png" href="../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/star-aero.css?v=20260709-frutiger-aero" />
+</head>
+<body class="star-aero-page">
+  <div class="aero-hyperflash" aria-hidden="true"></div>
+
+  <div class="aero-shell">
+    <header class="aero-topbar aero-gloss">
+      <a class="aero-brand" href="./index.html" aria-label="Retour au cockpit Star">
+        <span class="aero-brand-orb">
+          <img src="../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png" alt="" width="36" height="36" />
+        </span>
+        <span>
+          <span class="aero-kicker">// Gwen Ha Star · Star experimental</span>
+          <span class="aero-brand-title">AQUA ORBIT COCKPIT</span>
+        </span>
+      </a>
+
+      <section class="aero-flight-strip" aria-label="Statuts de vol">
+        <div class="aero-pill">
+          <span class="aero-label">Mode</span>
+          <span class="aero-pill-value" id="aero-mode-value">FRUTIGER AERO</span>
+        </div>
+        <div class="aero-pill">
+          <span class="aero-label">Orbital</span>
+          <span class="aero-pill-value" id="aero-orbital-value">ALT 384 KM</span>
+        </div>
+        <div class="aero-pill">
+          <span class="aero-label">Vector</span>
+          <span class="aero-pill-value" id="aero-vector-value">21.8° / BREIZH</span>
+        </div>
+        <div class="aero-pill">
+          <span class="aero-label">Local</span>
+          <span class="aero-pill-value" id="aero-clock-value">--:--:--</span>
+        </div>
+      </section>
+
+      <nav class="aero-nav" aria-label="Navigation Star Aero">
+        <a href="../index.html">Hub</a>
+        <a href="./index.html">Star</a>
+        <a href="../cig.html">CIG</a>
+      </nav>
+    </header>
+
+    <main class="aero-grid" id="main-content">
+      <section class="aero-stack" aria-label="Navigation orbitale">
+        <article class="aero-panel aero-gloss">
+          <div class="aero-panel-head">
+            <div>
+              <p class="aero-kicker">Navigation</p>
+              <h1>Radar orbital</h1>
+            </div>
+            <span class="aero-chip">SCAN 360</span>
+          </div>
+
+          <div class="aero-radar" aria-hidden="true">
+            <div class="aero-radar-sweep"></div>
+            <div class="aero-radar-cross"></div>
+            <span class="aero-blip aero-blip-1"></span>
+            <span class="aero-blip aero-blip-2"></span>
+            <span class="aero-blip aero-blip-3"></span>
+            <span class="aero-blip aero-blip-4"></span>
+          </div>
+
+          <div class="aero-data-list">
+            <div><span>LAT</span><strong>48.117N</strong></div>
+            <div><span>LONG</span><strong>003.432W</strong></div>
+            <div><span>COURSE</span><strong>GWEN-HA-STAR / 07</strong></div>
+            <div><span>TRAFFIC</span><strong id="aero-traffic-value">12 BLIPS</strong></div>
+          </div>
+        </article>
+
+        <article class="aero-panel aero-panel-compact aero-gloss">
+          <div class="aero-panel-head">
+            <div>
+              <p class="aero-kicker">Mission</p>
+              <h2>Route Chronicles</h2>
+            </div>
+            <span class="aero-chip">CREW</span>
+          </div>
+
+          <div class="aero-data-list">
+            <div><span>OBJECTIF</span><strong>PORTAIL MEMBRE</strong></div>
+            <div><span>RADIO</span><strong>CHRONICLES FM</strong></div>
+            <div><span>APPS</span><strong>TCG · BOTANICA · POKEGANG</strong></div>
+            <div><span>STYLE</span><strong>AERO GLASS / VISTA ORBIT</strong></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="aero-center" aria-label="Vue principale du cockpit">
+        <article class="aero-porthole" id="aero-porthole">
+          <div class="aero-bubble-field" aria-hidden="true">
+            <span class="aero-bubble aero-bubble-1"></span>
+            <span class="aero-bubble aero-bubble-2"></span>
+            <span class="aero-bubble aero-bubble-3"></span>
+            <span class="aero-bubble aero-bubble-4"></span>
+            <span class="aero-bubble aero-bubble-5"></span>
+          </div>
+          <div class="aero-planet" aria-hidden="true"></div>
+          <div class="aero-orbit-ring" aria-hidden="true"></div>
+
+          <div class="aero-hud-frame" aria-label="Données HUD">
+            <div class="aero-hud-card">
+              <span class="aero-label">Speed</span>
+              <strong id="aero-speed-readout">07 240 km/h</strong>
+            </div>
+            <div class="aero-hud-card aero-hud-card-right">
+              <span class="aero-label">Aqua shield</span>
+              <strong id="aero-shield-readout">98%</strong>
+            </div>
+            <div class="aero-hud-card aero-hud-card-bottom">
+              <span class="aero-label">Viewport</span>
+              <strong>PLANÈTE OCÉAN · BREIZH ORBIT</strong>
+            </div>
+          </div>
+          <div class="aero-scan-overlay" aria-hidden="true"></div>
+        </article>
+
+        <div class="aero-console-strip" aria-label="Identité visuelle du concept">
+          <article class="aero-mini aero-gloss">
+            <span class="aero-label">Atmosphère</span>
+            <strong>Bleu humide</strong>
+            <p>Reflets, condensation, verre actif.</p>
+          </article>
+          <article class="aero-mini aero-gloss">
+            <span class="aero-label">Interface</span>
+            <strong>Glossy HUD</strong>
+            <p>Lisible, ronde, non cyberpunk.</p>
+          </article>
+          <article class="aero-mini aero-gloss">
+            <span class="aero-label">Intégration</span>
+            <strong>/star/aero</strong>
+            <p>Base pour cockpit connecté Nitro.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="aero-stack" aria-label="Systèmes du vaisseau">
+        <article class="aero-panel aero-gloss">
+          <div class="aero-panel-head">
+            <div>
+              <p class="aero-kicker">Life support</p>
+              <h2>Systèmes vitaux</h2>
+            </div>
+            <span class="aero-chip">NOMINAL</span>
+          </div>
+
+          <div class="aero-gauge-list">
+            <div class="aero-gauge" data-aero-gauge="96">
+              <div><span>OXYGÈNE</span><strong class="aero-gauge-value">96%</strong></div>
+              <span class="aero-bar"><span class="aero-bar-fill"></span></span>
+            </div>
+            <div class="aero-gauge" data-aero-gauge="82">
+              <div><span>ÉNERGIE</span><strong class="aero-gauge-value">82%</strong></div>
+              <span class="aero-bar"><span class="aero-bar-fill"></span></span>
+            </div>
+            <div class="aero-gauge" data-aero-gauge="74">
+              <div><span>CARBURANT</span><strong class="aero-gauge-value">74%</strong></div>
+              <span class="aero-bar"><span class="aero-bar-fill"></span></span>
+            </div>
+            <div class="aero-gauge" data-aero-gauge="99">
+              <div><span>GRAVITÉ DOUCE</span><strong class="aero-gauge-value">99%</strong></div>
+              <span class="aero-bar"><span class="aero-bar-fill"></span></span>
+            </div>
+          </div>
+        </article>
+
+        <article class="aero-panel aero-panel-compact aero-gloss">
+          <div class="aero-panel-head">
+            <div>
+              <p class="aero-kicker">Console</p>
+              <h2>Journal de bord</h2>
+            </div>
+            <span class="aero-chip">LIVE</span>
+          </div>
+
+          <div class="aero-alerts" id="aero-alerts">
+            <div class="aero-alert"><span class="aero-led"></span><span>Aqua shield stabilisé</span><time>00:07</time></div>
+            <div class="aero-alert"><span class="aero-led aero-led-warning"></span><span>Trafic orbital proche</span><time>00:12</time></div>
+            <div class="aero-alert"><span class="aero-led"></span><span>Chronicles FM synchronisé</span><time>00:19</time></div>
+            <div class="aero-alert"><span class="aero-led aero-led-danger"></span><span>Hyperdrive en attente</span><time>STBY</time></div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="aero-dock aero-gloss">
+      <div class="aero-throttle">
+        <label for="aero-throttle" class="aero-label">Propulsion lumineuse</label>
+        <input id="aero-throttle" type="range" min="0" max="100" value="62" />
+      </div>
+
+      <div class="aero-controls" aria-label="Commandes cockpit">
+        <button class="aero-btn aero-btn-primary" type="button" data-aero-action="stabilize">Stabilize</button>
+        <button class="aero-btn" type="button" data-aero-action="scan">Scan</button>
+        <button class="aero-btn" type="button" data-aero-action="dock">Docking</button>
+        <button class="aero-btn aero-btn-warning" type="button" data-aero-action="hyper">Hyperdrive</button>
+        <button class="aero-btn" type="button" data-aero-action="aqua">Aqua Orbit</button>
+      </div>
+
+      <div class="aero-status-card">
+        <strong id="aero-action-status">SYSTÈMES AU VERT</strong>
+        <span>UI Frutiger Aero spatial · prototype Star</span>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="../js/star/aero.js?v=20260709-frutiger-aero"></script>
+</body>
+</html>
