@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nested Loops — simulation web inspirée de Chuck Hoberman / MoMath</title>
+  <style>
+    :root{
+      --bg:#070912;
+      --panel:#101523dd;
+      --ink:#ecf6ff;
+      --muted:#9caec7;
+      --cyan:#6de8ff;
+      --violet:#b58cff;
+      --amber:#ffd479;
+      --pink:#ff74b8;
+      --green:#7dffbf;
+      --danger:#ff6b6b;
+      --line:rgba(255,255,255,.12);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:radial-gradient(circle at 50% 35%,#151f3a 0%,#080a12 55%,#04050a 100%);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+    canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block;background:transparent;cursor:grab}
+    canvas:active{cursor:grabbing}
+    .ui{
+      position:fixed;left:16px;top:16px;width:min(390px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;
+      background:linear-gradient(180deg,rgba(16,21,35,.94),rgba(9,12,22,.88));border:1px solid rgba(255,255,255,.12);border-radius:18px;
+      box-shadow:0 24px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(16px);
+      padding:14px 14px 12px;transition:transform .25s ease,opacity .25s ease
+    }
+    .ui.hidden{transform:translateX(calc(-100% - 32px));opacity:.05;pointer-events:none}
+    .topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    h1{font-size:18px;line-height:1.1;margin:2px 0 6px;font-weight:800;letter-spacing:.02em}
+    .sub{font-size:12px;line-height:1.4;color:var(--muted);margin:0 0 12px}
+    .badge{display:inline-flex;gap:6px;align-items:center;border:1px solid rgba(109,232,255,.22);background:rgba(109,232,255,.08);color:#dffbff;border-radius:999px;padding:4px 8px;font-size:11px;margin-bottom:10px}
+    .collapseBtn,.miniBtn,.togglePanel{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--ink);border-radius:999px;padding:8px 10px;font-size:12px;line-height:1;cursor:pointer;user-select:none}
+    .collapseBtn:hover,.miniBtn:hover,.togglePanel:hover{background:rgba(255,255,255,.11)}
+    .section{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
+    .sectionTitle{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#a7bdd8;margin:0 0 8px}
+    .grid{display:grid;grid-template-columns:1fr 76px;gap:8px 10px;align-items:center}
+    label{font-size:12px;color:#d5e4ff;display:flex;align-items:center;gap:6px}
+    input[type="range"]{width:100%;accent-color:#74e8ff;cursor:ew-resize}
+    .val{font-variant-numeric:tabular-nums;color:#bcd1ff;font-size:12px;text-align:right}
+    .row{display:grid;grid-template-columns:1fr;gap:5px;margin-bottom:5px}
+    .chips,.toggles{display:flex;flex-wrap:wrap;gap:8px}
+    .toggles{margin-top:12px}
+    button,.toggle{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--ink);border-radius:999px;padding:8px 10px;font-size:12px;line-height:1;cursor:pointer;user-select:none}
+    button:hover,.toggle:hover{background:rgba(255,255,255,.11)}
+    button.active,.toggle.active,.chip.active{background:linear-gradient(90deg,rgba(109,232,255,.24),rgba(181,140,255,.18));border-color:rgba(109,232,255,.38)}
+    .chip{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:var(--ink);border-radius:999px;padding:7px 10px;font-size:12px;cursor:pointer}
+    .equation{margin-top:12px;padding:10px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.08);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:11px;color:#cfe2ff;line-height:1.45}
+    .hint{position:fixed;right:16px;bottom:14px;max-width:min(560px,calc(100vw - 32px));font-size:12px;color:rgba(236,246,255,.82);background:rgba(5,8,16,.58);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:10px 13px;backdrop-filter:blur(12px);line-height:1.35}
+    .togglePanel{position:fixed;left:16px;bottom:14px;background:rgba(9,12,22,.74);backdrop-filter:blur(12px)}
+    .kbd{display:inline-block;border:1px solid rgba(255,255,255,.16);border-bottom-width:2px;border-radius:8px;padding:1px 6px;background:rgba(255,255,255,.06);font-size:11px;color:#e6f0ff}
+    @media (max-width:760px){.ui{width:calc(100vw - 24px);left:12px;top:12px}.hint{display:none}.togglePanel{left:12px;bottom:12px}}
+  </style>
+</head>
+<body>
+<canvas id="stage" aria-label="Simulation cinétique Nested Loops"></canvas>
+
+<section id="ui" class="ui">
+  <div class="topbar">
+    <div>
+      <div class="badge">● simulation paramétrique, pas une copie mécanique exacte</div>
+      <h1>Nested Loops — Hoberman / MoMath</h1>
+    </div>
+    <button id="collapseBtn" class="collapseBtn" title="Masquer le panneau">⟵ panneau</button>
+  </div>
+  <p class="sub">Vue par défaut à plat pour mieux lire la géométrie. Utilise la molette directement sur les sliders pour ajuster rapidement les paramètres, puis teste plusieurs logiques de liaison : sculpture, courbes, miroir, multi et continu.</p>
+
+  <div class="section">
+    <p class="sectionTitle">Paramètres</p>
+    <div class="grid">
+      <div class="row"><label for="speed">Vitesse</label><input id="speed" type="range" min="0" max="2.5" value="0.62" step="0.01"></div><div class="val" id="speedVal"></div>
+      <div class="row"><label for="spread">Écart des anneaux</label><input id="spread" type="range" min="0.45" max="1.55" value="1.00" step="0.01"></div><div class="val" id="spreadVal"></div>
+      <div class="row"><label for="twist">Décalage / twist</label><input id="twist" type="range" min="-2" max="2" value="0.62" step="0.01"></div><div class="val" id="twistVal"></div>
+      <div class="row"><label for="tilt">Inclinaison 3D</label><input id="tilt" type="range" min="0" max="1" value="0.56" step="0.01"></div><div class="val" id="tiltVal"></div>
+      <div class="row"><label for="depth">Perspective</label><input id="depth" type="range" min="0" max="1" value="0" step="0.01"></div><div class="val" id="depthVal"></div>
+      <div class="row"><label for="trail">Trace lumineuse</label><input id="trail" type="range" min="0" max="0.96" value="0.82" step="0.01"></div><div class="val" id="trailVal"></div>
+      <div class="row"><label for="points">Points par cercle</label><input id="points" type="range" min="3" max="16" value="8" step="1"></div><div class="val" id="pointsVal"></div>
+      <div class="row"><label for="rings">Nombre de cercles</label><input id="rings" type="range" min="2" max="7" value="4" step="1"></div><div class="val" id="ringsVal"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <p class="sectionTitle">Modes / raccourcis</p>
+    <div id="modeChips" class="chips">
+      <button class="chip active" data-mode="sculpture">1 Sculpture</button>
+      <button class="chip" data-mode="courbes">2 Courbes</button>
+      <button class="chip" data-mode="mirror">3 Miroir</button>
+      <button class="chip" data-mode="multi">4 Multi</button>
+      <button class="chip" data-mode="continu">5 Continu</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <p class="sectionTitle">Outils</p>
+    <div class="toggles">
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn">Reset vue</button>
+      <button id="flatBtn">Vue à plat</button>
+      <button id="guidesBtn" class="active">Guides</button>
+      <button id="nodesBtn" class="active">Nœuds</button>
+      <button id="ghostBtn" class="active">Fantômes</button>
+    </div>
+  </div>
+
+  <div class="equation">
+    point(r,p) = projection3D(<br>
+    &nbsp;&nbsp;R<sub>r</sub>·cos(t + p·2π/N + r·twist),<br>
+    &nbsp;&nbsp;R<sub>r</sub>·sin(t + p·2π/N + r·twist),<br>
+    &nbsp;&nbsp;sin(t·0.8 + r + p·0.5)·depth<br>
+    )
+  </div>
+</section>
+<button id="togglePanel" class="togglePanel">masquer panneau</button>
+<div class="hint">
+  Canvas : glisser pour orienter · molette : zoom.<br>
+  Sur un slider : molette = valeur ±1 pas. Raccourcis : <span class="kbd">1</span> à <span class="kbd">5</span> pour les modes, <span class="kbd">M</span> miroir, <span class="kbd">U</span> multi, <span class="kbd">C</span> continu, <span class="kbd">G</span> guides, <span class="kbd">N</span> nœuds, <span class="kbd">F</span> fantômes, <span class="kbd">H</span> panneau, <span class="kbd">Espace</span> pause.
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('stage');
+  const ctx = canvas.getContext('2d', { alpha: true });
+  const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  const ui = document.getElementById('ui');
+  const togglePanel = document.getElementById('togglePanel');
+  const collapseBtn = document.getElementById('collapseBtn');
+  const modeChips = [...document.querySelectorAll('[data-mode]')];
+
+  const ids = ['speed','spread','twist','tilt','depth','trail','points','rings'];
+  const sliders = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+  const vals = Object.fromEntries(ids.map(id => [id, document.getElementById(id + 'Val')]));
+  const state = {
+    paused:false,
+    mode:'sculpture',
+    guides:true,
+    nodes:true,
+    ghost:true,
+    t:0,
+    zoom:1,
+    yaw:0.18,
+    pitch:0.55,
+    dragging:false,
+    lx:0,ly:0
+  };
+
+  const palette = ['#6de8ff','#b58cff','#ff74b8','#ffd479','#7dffbf','#97a8ff','#ff9f7d'];
+
+  function resize(){
+    canvas.width = Math.floor(innerWidth * dpr);
+    canvas.height = Math.floor(innerHeight * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    clearAll();
+  }
+  addEventListener('resize', resize, {passive:true});
+  resize();
+
+  function n(id){ return Number(sliders[id].value); }
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+  function updateVals(){
+    vals.speed.textContent = n('speed').toFixed(2) + '×';
+    vals.spread.textContent = n('spread').toFixed(2);
+    vals.twist.textContent = n('twist').toFixed(2);
+    vals.tilt.textContent = Math.round(n('tilt')*100) + '%';
+    vals.depth.textContent = Math.round(n('depth')*100) + '%';
+    vals.trail.textContent = Math.round(n('trail')*100) + '%';
+    vals.points.textContent = n('points');
+    vals.rings.textContent = n('rings');
+  }
+  ids.forEach(id => sliders[id].addEventListener('input', updateVals));
+  updateVals();
+
+  function clearAll(){
+    ctx.save();
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.restore();
+  }
+
+  function fade(){
+    const trail = n('trail');
+    if(trail <= 0.02){ clearAll(); return; }
+    ctx.save();
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = `rgba(5,7,14,${1 - trail})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.restore();
+  }
+
+  function viewCenter(){
+    if(ui.classList.contains('hidden')) return {x: innerWidth/2, y: innerHeight/2};
+    const rect = ui.getBoundingClientRect();
+    const leftEdge = rect.right + 18;
+    const x = leftEdge < innerWidth ? leftEdge + (innerWidth - leftEdge) / 2 : innerWidth/2;
+    return {x, y: innerHeight/2};
+  }
+
+  function rotate3([x,y,z]){
+    const cy = Math.cos(state.yaw), sy = Math.sin(state.yaw);
+    const cp = Math.cos(state.pitch), sp = Math.sin(state.pitch);
+    let x1 = x*cy + z*sy;
+    let z1 = -x*sy + z*cy;
+    let y1 = y*cp - z1*sp;
+    let z2 = y*sp + z1*cp;
+    return [x1,y1,z2];
+  }
+
+  function project([x,y,z]){
+    const center = viewCenter();
+    const base = Math.min(innerWidth,innerHeight) * 0.37 * state.zoom;
+    const persp = 1 / (1 + z * 0.0016 * n('depth'));
+    return {
+      x: center.x + x * base * persp,
+      y: center.y + y * base * persp,
+      z,
+      s: persp
+    };
+  }
+
+  function computePoints(t){
+    const rings = n('rings');
+    const pts = n('points');
+    const spread = n('spread');
+    const twist = n('twist');
+    const tilt = n('tilt');
+    const depth = n('depth');
+    const all = [];
+    const minR = 0.20;
+    const maxR = 0.90 * spread;
+    for(let r=0;r<rings;r++){
+      const q = rings === 1 ? 0 : r/(rings-1);
+      const R = minR + (maxR-minR) * q;
+      const ring = [];
+      for(let p=0;p<pts;p++){
+        const a = t + p * Math.PI*2/pts + r * twist;
+        const breathe = 1 + 0.11 * Math.sin(t*2 + p*.73 + r*1.4);
+        const x = R * breathe * Math.cos(a);
+        const y = R * breathe * Math.sin(a) * (1 - tilt*.22);
+        const z = (Math.sin(a + r*.7) * 0.34 + Math.sin(t*.75 + r*1.1 + p*.45)*0.16) * depth * 380;
+        const pr = project(rotate3([x,y,z]));
+        pr.r = r; pr.p = p; pr.base = [x,y,z];
+        ring.push(pr);
+      }
+      all.push(ring);
+    }
+    return all;
+  }
+
+  function line(a,b,color,alpha,width){
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+    ctx.strokeStyle = hexAlpha(color,alpha);
+    ctx.lineWidth = width * Math.min(a.s,b.s);
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  }
+
+  function hexAlpha(hex,a){
+    const v = hex.replace('#','');
+    const r=parseInt(v.slice(0,2),16), g=parseInt(v.slice(2,4),16), b=parseInt(v.slice(4,6),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  function drawGlowPoint(p,color,rad){
+    const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,rad*4);
+    g.addColorStop(0,hexAlpha(color,.85));
+    g.addColorStop(.28,hexAlpha(color,.22));
+    g.addColorStop(1,hexAlpha(color,0));
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(p.x,p.y,rad*4,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = hexAlpha('#ffffff',.9);
+    ctx.beginPath(); ctx.arc(p.x,p.y,rad*.7,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(p.x,p.y,rad,0,Math.PI*2); ctx.fill();
+  }
+
+  function drawGuides(points){
+    if(!state.guides) return;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const pts = n('points');
+    for(let r=0;r<points.length;r++){
+      const color = palette[r%palette.length];
+      ctx.beginPath();
+      for(let i=0;i<=pts;i++){
+        const p = points[r][i%pts];
+        if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y);
+      }
+      ctx.strokeStyle = hexAlpha(color,.17);
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawGhosts(t){
+    if(!state.ghost) return;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for(const off of [-1.15,-.58,.58,1.15]){
+      const ghosts = computePoints(t+off);
+      for(let r=0;r<ghosts.length-1;r++){
+        const color = palette[(r+2)%palette.length];
+        for(let p=0;p<ghosts[r].length;p++){
+          const a = ghosts[r][p];
+          const b = ghosts[r+1][(p+1)%ghosts[r].length];
+          line(a,b,color,.035,1.2);
+        }
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawRingOutlines(points){
+    for(let r=0;r<points.length;r++){
+      const col = palette[r%palette.length];
+      for(let p=0;p<points[r].length;p++) line(points[r][p], points[r][(p+1)%points[r].length], col, .28, 1.9);
+    }
+  }
+
+  function drawSculpture(points){
+    const pts = n('points');
+    for(let r=0;r<points.length-1;r++){
+      const c1 = palette[r%palette.length];
+      const c2 = palette[(r+1)%palette.length];
+      for(let p=0;p<pts;p++){
+        const a = points[r][p];
+        const b = points[r+1][p];
+        const c = points[r+1][(p+1)%pts];
+        const d = points[r][(p+1)%pts];
+        line(a,b,c1,.62,3.2);
+        line(a,c,c2,.42,2.2);
+        line(d,b,'#ffffff',.18,1.2);
+      }
+    }
+    drawRingOutlines(points);
+  }
+
+  function drawCourbes(points){
+    const pts = n('points');
+    for(let p=0;p<pts;p++){
+      const col = palette[p%palette.length];
+      ctx.beginPath();
+      for(let r=0;r<points.length;r++){
+        const q = points[r][p];
+        if(r===0) ctx.moveTo(q.x,q.y); else ctx.lineTo(q.x,q.y);
+      }
+      ctx.strokeStyle = hexAlpha(col,.72);
+      ctx.lineWidth = 2.5;
+      ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke();
+    }
+    for(let r=0;r<points.length-1;r++){
+      for(let p=0;p<pts;p++) line(points[r][p], points[r+1][(p+1)%pts], '#ffffff', .11, 1.2);
+    }
+  }
+
+  function drawMirror(points){
+    const pts = n('points');
+    for(let r=0;r<points.length-1;r++){
+      const col = palette[(r+1)%palette.length];
+      for(let p=0;p<pts;p++){
+        const a = points[r][p];
+        const b = points[r+1][(pts - p) % pts];
+        const c = points[r+1][(pts - 1 - p + pts) % pts];
+        line(a,b,col,.62,2.8);
+        line(a,c,'#ffffff',.14,1.3);
+      }
+    }
+    drawRingOutlines(points);
+  }
+
+  function drawMulti(points){
+    const pts = n('points');
+    for(let r=0;r<points.length-1;r++){
+      const col = palette[r%palette.length];
+      for(let p=0;p<pts;p++){
+        const a = points[r][p];
+        line(a, points[r+1][p], col,.52,2.3);
+        line(a, points[r+1][(p+1)%pts], '#ffffff',.18,1.4);
+        line(a, points[r+1][(p-1+pts)%pts], palette[(r+2)%palette.length],.26,1.6);
+      }
+    }
+    drawRingOutlines(points);
+  }
+
+  function drawContinu(points){
+    const pts = n('points');
+    const chain = [];
+    for(let p=0;p<pts;p++){
+      if(p % 2 === 0){
+        for(let r=0;r<points.length;r++) chain.push(points[r][p]);
+      } else {
+        for(let r=points.length-1;r>=0;r--) chain.push(points[r][p]);
+      }
+    }
+    ctx.beginPath();
+    chain.forEach((pt,i)=>{ if(i===0) ctx.moveTo(pt.x,pt.y); else ctx.lineTo(pt.x,pt.y); });
+    ctx.strokeStyle = hexAlpha('#6de8ff',.78);
+    ctx.lineWidth = 3.2;
+    ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.stroke();
+    for(let i=0;i<chain.length-1;i++) line(chain[i], chain[i+1], palette[i%palette.length], .34, 1.8);
+    drawRingOutlines(points);
+  }
+
+  function drawModes(points){
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    if(state.mode === 'sculpture') drawSculpture(points);
+    else if(state.mode === 'courbes') drawCourbes(points);
+    else if(state.mode === 'mirror') drawMirror(points);
+    else if(state.mode === 'multi') drawMulti(points);
+    else if(state.mode === 'continu') drawContinu(points);
+    ctx.restore();
+  }
+
+  function drawNodes(points){
+    if(!state.nodes) return;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for(let r=0;r<points.length;r++){
+      const col = palette[r%palette.length];
+      for(const p of points[r]) drawGlowPoint(p,col,3.2 + r*.35);
+    }
+    ctx.restore();
+  }
+
+  function drawCenterHalo(){
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const center = viewCenter();
+    const radius = Math.min(innerWidth, innerHeight)*0.26*state.zoom;
+    const g = ctx.createRadialGradient(center.x,center.y,0,center.x,center.y,radius*1.4);
+    g.addColorStop(0,'rgba(109,232,255,.08)');
+    g.addColorStop(.42,'rgba(181,140,255,.035)');
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(center.x,center.y,radius*1.4,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
+  function setMode(mode){
+    state.mode = mode;
+    modeChips.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+    clearAll();
+  }
+  modeChips.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
+
+  let last = performance.now();
+  function frame(now){
+    const dt = Math.min(.05,(now-last)/1000); last = now;
+    if(!state.paused) state.t += dt * n('speed');
+    fade();
+    drawCenterHalo();
+    const points = computePoints(state.t);
+    drawGhosts(state.t);
+    drawGuides(points);
+    drawModes(points);
+    drawNodes(points);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  document.getElementById('pauseBtn').onclick = e => {
+    state.paused = !state.paused;
+    e.currentTarget.classList.toggle('active', state.paused);
+    e.currentTarget.textContent = state.paused ? 'Reprendre' : 'Pause';
+  };
+  document.getElementById('resetBtn').onclick = () => { state.zoom=1; state.yaw=.18; state.pitch=.55; clearAll(); };
+  document.getElementById('flatBtn').onclick = () => {
+    sliders.depth.value = 0;
+    sliders.tilt.value = 0;
+    state.yaw = 0;
+    state.pitch = 0;
+    state.zoom = 1;
+    updateVals();
+    clearAll();
+  };
+  document.getElementById('guidesBtn').onclick = e => { state.guides=!state.guides; e.currentTarget.classList.toggle('active', state.guides); };
+  document.getElementById('nodesBtn').onclick = e => { state.nodes=!state.nodes; e.currentTarget.classList.toggle('active', state.nodes); };
+  document.getElementById('ghostBtn').onclick = e => { state.ghost=!state.ghost; e.currentTarget.classList.toggle('active', state.ghost); clearAll(); };
+
+  function toggleUi(){
+    ui.classList.toggle('hidden');
+    const hidden = ui.classList.contains('hidden');
+    togglePanel.textContent = hidden ? 'afficher panneau' : 'masquer panneau';
+    collapseBtn.textContent = hidden ? '⟶ panneau' : '⟵ panneau';
+    clearAll();
+  }
+  togglePanel.onclick = toggleUi;
+  collapseBtn.onclick = toggleUi;
+
+  canvas.addEventListener('pointerdown', e=>{state.dragging=true; state.lx=e.clientX; state.ly=e.clientY; canvas.setPointerCapture(e.pointerId);});
+  canvas.addEventListener('pointermove', e=>{
+    if(!state.dragging) return;
+    const dx=e.clientX-state.lx, dy=e.clientY-state.ly;
+    state.lx=e.clientX; state.ly=e.clientY;
+    state.yaw += dx*.006;
+    state.pitch = clamp(state.pitch + dy*.006, -1.25, 1.25);
+  });
+  canvas.addEventListener('pointerup', e=>{state.dragging=false; try{canvas.releasePointerCapture(e.pointerId)}catch(_){};});
+  canvas.addEventListener('wheel', e=>{
+    if(e.target.closest('.ui')) return;
+    e.preventDefault();
+    state.zoom = clamp(state.zoom * (e.deltaY > 0 ? .92 : 1.08), .45, 2.3);
+    clearAll();
+  }, {passive:false});
+
+  ids.forEach(id => {
+    const slider = sliders[id];
+    slider.addEventListener('wheel', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const step = Number(slider.step || 1);
+      const min = Number(slider.min);
+      const max = Number(slider.max);
+      const dir = e.deltaY > 0 ? -1 : 1;
+      const next = clamp(Number(slider.value) + step * dir, min, max);
+      slider.value = String(Number.isInteger(step) ? Math.round(next) : Number(next.toFixed(4)));
+      slider.dispatchEvent(new Event('input', {bubbles:true}));
+      clearAll();
+    }, {passive:false});
+  });
+
+  addEventListener('keydown', e=>{
+    const key = e.key.toLowerCase();
+    if(e.key === ' '){ e.preventDefault(); document.getElementById('pauseBtn').click(); }
+    if(key === 'g') document.getElementById('guidesBtn').click();
+    if(key === 'n') document.getElementById('nodesBtn').click();
+    if(key === 'f') document.getElementById('ghostBtn').click();
+    if(key === 'h') toggleUi();
+    if(key === 'm') setMode('mirror');
+    if(key === 'u') setMode('multi');
+    if(key === 'c') setMode('continu');
+    if(key === 's') setMode('sculpture');
+    if(key === 'v') setMode('courbes');
+    if(key === 't') { sliders.trail.value = n('trail') > .1 ? 0 : .82; updateVals(); clearAll(); }
+    if(/^[1-5]$/.test(e.key)){
+      const modes = ['sculpture','courbes','mirror','multi','continu'];
+      setMode(modes[Number(e.key)-1]);
+    }
+  });
+})();
+</script>
+</body>
+</html>
