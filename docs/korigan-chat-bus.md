@@ -6,82 +6,64 @@ Point important : `gwen-ha-star-static` ne contient pas le bus temps réel. Il c
 
 ---
 
-## État réel vérifié côté Korigan
+## Source d’autorité
 
-Le runtime actif est :
+Le nouveau guide Korigan côté runtime est :
 
 ```txt
-MutenRock/Korigan/services/3615-gateways
+MutenRock/Korigan/docs/3615/GWEN_HA_STAR_STATIC_INTEGRATION.md
 ```
 
-Le service est séparé de la Next app Korigan :
+Il indique que `gwen-ha-star-static` reste un site public statique et ne doit pas posséder les secrets, bots, sockets Telnet ou l’état du Chat Bus. Korigan possède la frontière runtime.
+
+---
+
+## Endpoints officiels consommés par Star
+
+Korigan expose maintenant les contrats safe suivants :
 
 ```txt
-Korigan Next app
-  -> /star/3615 wrapper page
-
-services/3615-gateways
-  -> HTTP status API
-  -> WebSocket /minitel/ws
-  -> Telnet :3615
-  -> terminal-native Gwen Ha Star and Lemegeton screens
+GET /api/korigan/chat/state
+GET /api/korigan/bots/status
 ```
 
-Endpoints réels principaux :
+En local côté runtime :
 
 ```txt
-GET /                         service status
-GET /minitel/status           runtime details
-GET /minitel/messages         short PC/Minitel message history
-POST /minitel/messages        append an operator message
-GET /minitel/operator         lightweight operator panel
-GET /minitel/operator/events  live operator event stream
-GET /minitel/providers        redacted provider/tool status
-POST /minitel/providers/:provider/:action
-GET /minitel/vdt              VDT catalog/state metadata
-POST /minitel/vdt/send        broadcast allowlisted VDT to Telnet clients
-WS  /minitel/ws               WebSocket transport
-TCP :3615                     Telnet/Minitel entrypoint
+http://127.0.0.1:8085/api/korigan/chat/state
+http://127.0.0.1:8085/api/korigan/bots/status
 ```
 
-Le nom **Chat Bus** dans Star correspond donc aujourd’hui à :
+Sur Nitro, les mêmes chemins doivent être exposés en same-origin :
 
 ```txt
-GET /minitel/messages
-GET /minitel/status
-GET /minitel/operator/events
-WS /minitel/ws
-TCP :3615
+https://nitro.sterenna.fr/api/korigan/chat/state
+https://nitro.sterenna.fr/api/korigan/bots/status
 ```
 
 ---
 
-## État Star après correction
+## État Star après alignement
 
-`js/star/korigan-chat-state.js` se connecte maintenant directement au runtime Korigan réel.
+`js/star/korigan-chat-state.js` priorise maintenant le contrat officiel :
 
-Ordre d’auto-détection :
+```txt
+/api/korigan/chat/state
+https://nitro.sterenna.fr/api/korigan/chat/state
+```
+
+Puis garde les endpoints `/minitel/*` comme fallback de debug :
 
 ```txt
 /minitel/messages
-/korigan/minitel/messages
-https://nitro.sterenna.fr/minitel/messages
-https://nitro.sterenna.fr/korigan/minitel/messages
 /minitel/status
-/korigan/minitel/status
-https://nitro.sterenna.fr/minitel/status
-https://nitro.sterenna.fr/korigan/minitel/status
-/api/korigan/chat/state
-/korigan/api/chat/state
-https://nitro.sterenna.fr/api/korigan/chat/state
-https://nitro.sterenna.fr/korigan/api/chat/state
 ```
 
-Les anciens endpoints `/api/korigan/chat/state` restent supportés comme compatibilité, mais Star tente d’abord les endpoints réels `/minitel/*`.
+Le but : en production Nitro, le widget doit fonctionner sans override manuel `localStorage` si Nginx proxy correctement `/api/korigan/` vers le runtime 3615.
 
 ---
 
-## Flux actuel
+## Flux attendu en production
 
 ```txt
 /star/ cockpit statique
@@ -90,11 +72,11 @@ js/star/nitro-app-renderer.js
   ↓ importe automatiquement
 js/star/korigan-chat-state.js
   ↓ poll HTTP JSON toutes les 15s
-GET /minitel/messages
-  ↓ si indisponible
-GET /minitel/status
-  ↓ si indisponible
-endpoints de compatibilité /api/korigan/chat/state
+GET /api/korigan/chat/state
+  ↓ proxy Nginx
+http://127.0.0.1:8085/api/korigan/chat/state
+  ↓
+Korigan / services/3615-gateways
 ```
 
 Le bouton `ENDPOINT` permet toujours de forcer une URL manuelle, stockée dans :
@@ -107,100 +89,89 @@ Le bouton `RESCAN` relance un scan forcé.
 
 ---
 
-## Formats acceptés par Star
+## Contrat `GET /api/korigan/chat/state`
 
-Le widget sait désormais normaliser trois formats.
-
-### 1. Format Korigan réel — `/minitel/messages`
-
-Payload attendu côté Korigan :
-
-```json
-{
-  "ok": true,
-  "stats": {
-    "wsClients": 1,
-    "telnetClients": 1
-  },
-  "messages": [
-    {
-      "nick": "OPERATEUR",
-      "transport": "operator",
-      "kind": "message",
-      "text": "HELLO",
-      "targetSessionId": "",
-      "createdAt": 1783600000000
-    }
-  ],
-  "sessions": [
-    {
-      "id": "s0001",
-      "nick": "ANONYME",
-      "transport": "telnet",
-      "connectedAt": 1783600000000,
-      "lastSeenAt": 1783600010000
-    }
-  ],
-  "providers": {},
-  "localConfig": {}
-}
-```
-
-Mapping Star :
-
-```txt
-stats.wsClients      -> clients.pc.count + ws.count
-stats.telnetClients  -> clients.minitel.count
-messages[-6:]        -> log visible
-messages.at(-1)      -> lastMessage
-sessions             -> items clients si transport connu
-```
-
-### 2. Format Korigan réel — `/minitel/status`
-
-Payload utile :
-
-```json
-{
-  "ok": true,
-  "gateway": "3615 GATEWAYS",
-  "node": "ZYRA",
-  "mode": "v0.2-modules",
-  "transports": ["telnet", "websocket", "http"],
-  "wsClients": 1,
-  "telnetClients": 1
-}
-```
-
-Mapping Star :
-
-```txt
-wsClients      -> clients.pc.count + ws.count
-telnetClients  -> clients.minitel.count
-mode           -> status affiché dans le log
-```
-
-### 3. Format compatibilité — `/api/korigan/chat/state`
-
-Toujours accepté :
+Réponse safe attendue :
 
 ```json
 {
   "ok": true,
   "status": "online",
-  "updatedAt": "2026-07-09T12:34:56.000Z",
-  "ws": { "connected": true },
-  "clients": {
-    "pc": { "count": 1 },
-    "phone": { "count": 0 },
-    "minitel": { "count": 1 },
-    "count": 2
+  "state": "online",
+  "updatedAt": "2026-07-09T01:23:19.268Z",
+  "timestamp": "2026-07-09T01:23:19.268Z",
+  "ws": {
+    "connected": true,
+    "url": "/minitel/ws"
   },
-  "queue": { "pending": 0 },
-  "lastMessage": { "from": "MINITEL", "text": "READY" },
+  "clients": {
+    "pc": {
+      "count": 0,
+      "items": []
+    },
+    "phone": {
+      "count": 0,
+      "items": []
+    },
+    "minitel": {
+      "count": 0,
+      "items": []
+    },
+    "count": 0
+  },
+  "queue": {
+    "pending": 0,
+    "length": 0,
+    "failed": 0
+  },
+  "lastMessage": null,
   "messages": []
 }
 ```
+
+Notes de mapping côté Korigan :
+
+```txt
+clients.pc.count       -> clients WebSocket actifs
+clients.minitel.count  -> sessions Telnet actives
+clients.phone.count    -> réservé, actuellement 0
+messages               -> messages console récents, safe, tronqués
+queue                  -> file/outbox, actuellement 0 si non utilisée
+```
+
+---
+
+## Fallbacks acceptés par Star
+
+Le widget sait encore normaliser les formats historiques/debug :
+
+```txt
+GET /minitel/messages
+GET /minitel/status
+```
+
+`/minitel/messages` fournit :
+
+```txt
+stats.wsClients
+stats.telnetClients
+messages
+sessions
+providers
+localConfig
+```
+
+`/minitel/status` fournit :
+
+```txt
+wsClients
+telnetClients
+mode
+transports
+modules
+```
+
+Ces fallbacks sont utiles en local ou en diagnostic, mais le contrat officiel Star ↔ Korigan reste `/api/korigan/chat/state`.
 
 ---
 
@@ -227,30 +198,70 @@ OFFLINE   aucun endpoint disponible
 Le log indique aussi la source normalisée :
 
 ```txt
+source=korigan-compat-chat-state
 source=korigan-minitel-messages
 source=korigan-minitel-status
-source=korigan-compat-chat-state
 ```
 
 ---
 
-## CORS / déploiement
+## Nginx Nitro
 
-Si Star et Korigan sont sur des origins différents, Korigan doit autoriser l’origin Nitro.
+Dans le bloc HTTP de `nitro.sterenna.fr`, Korigan recommande :
 
-Exemple :
+```nginx
+location /minitel/ {
+    proxy_pass http://127.0.0.1:8085/minitel/;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
 
-```txt
-GATEWAY_CORS_ORIGINS=https://nitro.sterenna.fr
+location /api/korigan/ {
+    proxy_pass http://127.0.0.1:8085/api/korigan/;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Cache-Control "no-store";
+}
 ```
 
-Réponses recommandées :
+Same-origin proxying est préféré à un appel direct cross-origin.
+
+---
+
+## Tests de fumée
+
+Sur le host runtime :
+
+```bash
+curl --fail http://127.0.0.1:8085/api/korigan/chat/state
+curl --fail http://127.0.0.1:8085/api/korigan/bots/status
+```
+
+Depuis Nitro public après reload Nginx :
+
+```bash
+curl --fail https://nitro.sterenna.fr/api/korigan/chat/state
+curl --fail https://nitro.sterenna.fr/api/korigan/bots/status
+curl --fail https://nitro.sterenna.fr/minitel/status
+```
+
+Dans le cockpit :
 
 ```txt
-Content-Type: application/json
-Cache-Control: no-store
-Access-Control-Allow-Origin: https://nitro.sterenna.fr
+https://nitro.sterenna.fr/star/
+→ KORIGAN · CHAT STATE
+→ RESCAN
 ```
+
+Le widget devrait résoudre l’endpoint sans override manuel.
 
 ---
 
@@ -267,18 +278,28 @@ Star doit rester observateur.
 - stack traces serveur ;
 - provider config complète.
 
-Le runtime Korigan sanitise déjà les messages courts et garde l’historique en mémoire seulement. Star ne doit pas devenir le runtime du bus, ni piloter directement les providers live.
+Les endpoints publics peuvent exposer uniquement :
+
+```txt
+booléens
+compteurs
+timestamps
+messages courts sanitizés
+statuts redacted
+```
 
 ---
 
-## Prochaine amélioration propre
-
-Le lien réel fonctionne maintenant via `/minitel/messages` / `/minitel/status`.
-
-À terme, il reste préférable d’ajouter un endpoint de synthèse côté Korigan :
+## Fichiers liés
 
 ```txt
-GET /api/korigan/chat/state
+js/star/korigan-chat-state.js
+js/star/korigan-bot-bridge.js
+docs/korigan-bot-bridge.md
 ```
 
-Cet endpoint permettrait de garder Star totalement découplé du détail interne `3615-gateways`, mais il n’est plus bloquant pour afficher un état réel.
+Le contrat Bot Bridge est documenté séparément dans :
+
+```txt
+docs/korigan-bot-bridge.md
+```
