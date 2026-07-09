@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sterenna QG Panel — Admin Star</title>
+  <link rel="icon" type="image/png" href="../../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="admin-body">
+  <nav class="panel-nav" aria-label="Navigation Sterenna QG">
+    <a href="../index.html">← Star</a>
+    <a href="./">Dashboard</a>
+  </nav>
+  <div class="admin-container">
+    <h1 class="pixel-title">STERENNA QG // ADMIN CONSOLE</h1>
+
+    <fieldset>
+      <legend>Source audio</legend>
+      <label for="sourceType">Type :</label>
+      <select id="sourceType">
+        <option value="none">Aucune</option>
+        <option value="mic">Micro / entrée PC</option>
+        <option value="file">Fichier audio local</option>
+        <option value="url">Flux audio (URL)</option>
+      </select>
+
+      <div id="micControls" class="source-block hidden">
+        <p>Utilise <code>getUserMedia</code> (choisis par ex. “stéréo mix” si dispo).</p>
+        <button id="startMic">Démarrer le micro / entrée</button>
+        <button id="stopMic">Arrêter</button>
+      </div>
+
+      <div id="fileControls" class="source-block hidden">
+        <label for="audioFile">Choisir un fichier audio :</label>
+        <input type="file" id="audioFile" accept="audio/*" />
+        <audio id="filePlayer" controls></audio>
+      </div>
+
+      <div id="urlControls" class="source-block hidden">
+        <label for="audioUrl">URL du flux audio :</label>
+        <input type="text" id="audioUrl" placeholder="http://..." />
+        <button id="loadUrl">Charger</button>
+        <audio id="urlPlayer" controls></audio>
+        <p class="note">
+          Certains flux web refusent l’analyse (CORS).
+        </p>
+      </div>
+
+      <div class="source-block">
+        <label>
+          <input type="checkbox" id="simulationToggle" />
+          Mode simulation (visualiseur avec données aléatoires)
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Hublot du Gwen Ah Star</legend>
+      <label for="hublotUrl">URL image / gif :</label>
+      <input type="text" id="hublotUrl" placeholder="https://..." />
+      <button id="applyHublot">Appliquer au hublot</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>Thème & moniteurs</legend>
+      <div class="theme-row">
+        <label>
+          <input type="checkbox" id="alertMode" />
+          Mode alerte
+        </label>
+        <label>
+          <input type="checkbox" id="nightMode" />
+          Mode nuit
+        </label>
+        <label>
+          <input type="checkbox" id="bzhMode" checked />
+          BZH / Gwen Ah Star ON
+        </label>
+      </div>
+
+      <div class="theme-row">
+        <label for="monitorStyle">Style des moniteurs :</label>
+        <select id="monitorStyle">
+          <option value="default">Standard néon</option>
+          <option value="scanlines">Scanlines CRT</option>
+          <option value="wireframe">Wireframe HUD</option>
+        </select>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Fond 3D (vaisseaux)</legend>
+      <div class="theme-row">
+        <label>
+          <input type="checkbox" id="bg3dEnabled" checked />
+          Activer le fond 3D
+        </label>
+      </div>
+      <div class="theme-row">
+        <label for="shipRate">Fréquence des vaisseaux :</label>
+        <input id="shipRate" type="range" min="0.2" max="3" step="0.1" value="1" />
+        <span id="shipRateValue">1.0×</span>
+      </div>
+      <p class="note">Astuce : baisse la fréquence si la tablette rame.</p>
+    </fieldset>
+
+    <p>État : <span id="status">aucune source</span></p>
+    <p class="note">
+      Laisse cette fenêtre ouverte (elle peut être en arrière-plan) pour que le visualiseur continue de fonctionner.
+    </p>
+  </div>
+
+  <script src="admin.js" defer></script>
+</body>
+</html>

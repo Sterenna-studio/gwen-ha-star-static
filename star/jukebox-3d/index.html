@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Star Jukebox 3D — Gwen Ha Star</title>
+  <link rel="icon" type="image/png" href="../../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="theme-cyber">
+  <div class="topbar">
+    <div class="brand">Sterenna • Jukebox 3D</div>
+    <div class="actions">
+      <a href="../index.html" class="btn ghost star-link" aria-label="Retour au cockpit Star">← Star</a>
+      <button id="btnThemeSteam" class="btn">☕ Steampunk</button>
+      <button id="btnThemeCyber" class="btn primary">⚡ Cyber BZH</button>
+      <span id="status" class="status">Chargement…</span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="stage">
+      <canvas id="scene"></canvas>
+
+      <div class="hotspots">
+        <div id="dropHint" class="drop-hint hidden">Dépose le vinyle ici</div>
+
+        <div class="screen">
+          <div class="crt">
+            <div class="crt-inner">
+              <div class="screen-title">PLAYER</div>
+              <div id="screenNow" class="screen-now">—</div>
+
+              <div class="screen-row">
+                <div class="time"><span id="tCur">0:00</span> / <span id="tDur">0:00</span></div>
+                <div class="meter">
+                  <div id="meterFill" class="meter-fill"></div>
+                </div>
+              </div>
+
+              <input id="seek" class="seek" type="range" min="0" max="100" value="0" />
+
+              <div class="screen-controls">
+                <button id="btnPrev" class="btn ghost">⏮</button>
+                <button id="btnPlay" class="btn primary">▶</button>
+                <button id="btnNext" class="btn ghost">⏭</button>
+                <button id="btnShuffle" class="btn ghost">🔀</button>
+                <label class="vol">VOL
+                  <input id="vol" type="range" min="0" max="1" step="0.01" value="0.9" />
+                </label>
+              </div>
+
+              <div class="crankbox">
+                <div class="cranklabel">Remonter le jukebox</div>
+                <div class="crankrow">
+                  <button id="btnCrank" class="btn">⟳ Manivelle</button>
+                  <div class="crankgauge"><div id="crankFill" class="crankfill"></div></div>
+                  <div id="crankTxt" class="cranktxt">0/5</div>
+                </div>
+              </div>
+
+              <div class="tiny">
+                Drag & drop : attrape le vinyle à droite et dépose-le sur la platine.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <aside class="library">
+      <div class="lib-head">
+        <div class="lib-title">Bibliothèque</div>
+        <input id="search" class="search" type="text" placeholder="Rechercher…" />
+      </div>
+
+      <div id="shelf" class="shelf" aria-label="Étagère de pochettes"></div>
+
+      <div id="selected" class="selected">
+        <div class="sel-cover" id="selCover"></div>
+        <div class="sel-diskwrap">
+          <div id="selDisk" class="sel-disk">
+            <div id="selArt" class="sel-art"></div>
+          </div>
+        </div>
+        <div class="sel-info">
+          <div id="selTitle" class="sel-title">Sélectionne une pochette</div>
+          <div id="selArtist" class="sel-artist">—</div>
+          <div class="sel-hint">Attrape le vinyle et glisse-le sur la platine</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div id="dragFollow" class="drag-follow hidden">
+    <div class="sel-art" id="dragArt"></div>
+  </div>
+
+  <audio id="player" preload="metadata" crossorigin="anonymous"></audio>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
