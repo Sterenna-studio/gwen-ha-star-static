@@ -1,9 +1,17 @@
-const STYLE_ID = 'korigan-chat-state-style-v1';
+const STYLE_ID = 'korigan-chat-state-style-v2';
 const CARD_ID = 'korigan-chat-state-card';
 const STORAGE_KEY = 'koriganChatStateEndpoint';
 const POLL_MS = 15000;
 
 const DEFAULT_ENDPOINTS = [
+  '/minitel/messages',
+  '/korigan/minitel/messages',
+  'https://nitro.sterenna.fr/minitel/messages',
+  'https://nitro.sterenna.fr/korigan/minitel/messages',
+  '/minitel/status',
+  '/korigan/minitel/status',
+  'https://nitro.sterenna.fr/minitel/status',
+  'https://nitro.sterenna.fr/korigan/minitel/status',
   '/api/korigan/chat/state',
   '/korigan/api/chat/state',
   'https://nitro.sterenna.fr/api/korigan/chat/state',
@@ -59,7 +67,8 @@ function mountCard() {
         <span class="korigan-client"><i></i>MINITEL · —</span>
       </div>
 
-      <pre class="korigan-log" id="korigan-log">Connexion au bus Korigan…\nRecherche d'un endpoint d'état…</pre>
+      <pre class="korigan-log" id="korigan-log">Connexion au bus Korigan…
+Recherche du runtime /minitel…</pre>
 
       <div class="korigan-actions">
         <button type="button" id="korigan-refresh">RESCAN</button>
@@ -81,7 +90,7 @@ function mountCard() {
 async function refreshState(force = false) {
   const endpoint = getEndpoint();
   setStatus('SCAN', 'scan');
-  setText('korigan-endpoint', `endpoint: ${endpoint || 'auto'}`);
+  setText('korigan-endpoint', `endpoint: ${endpoint || 'auto · /minitel'}`);
 
   try {
     const state = await fetchState(endpoint, force);
@@ -119,34 +128,124 @@ async function fetchState(endpoint, force = false) {
       const json = await res.json();
       return { ...json, endpoint: url };
     } catch (err) {
-      lastError = err;
+      lastError = new Error(`${url}: ${err?.message || err}`);
     }
   }
 
   throw lastError || new Error('Korigan endpoint unavailable');
 }
 
-function normalizeState(raw) {
+function normalizeState(raw = {}) {
+  if (isMinitelMessagesPayload(raw)) return normalizeMinitelMessagesState(raw);
+  if (isMinitelStatusPayload(raw)) return normalizeMinitelStatusState(raw);
+  return normalizeCompatChatState(raw);
+}
+
+function isMinitelMessagesPayload(raw) {
+  return Boolean(raw?.stats && (Array.isArray(raw.messages) || Array.isArray(raw.sessions)));
+}
+
+function isMinitelStatusPayload(raw) {
+  return Boolean('wsClients' in raw || 'telnetClients' in raw || raw?.websocket || raw?.transports?.includes?.('websocket'));
+}
+
+function normalizeMinitelMessagesState(raw) {
+  const stats = raw.stats || {};
+  const sessions = Array.isArray(raw.sessions) ? raw.sessions : [];
+  const pcCount = numberOr(stats.wsClients, countSessions(sessions, 'websocket'));
+  const minitelCount = numberOr(stats.telnetClients, countSessions(sessions, 'telnet'));
+  const messages = normalizeMinitelMessages(raw.messages || []);
+  const lastMessage = messages.at(-1) || null;
+  const updatedAt = newestTime([
+    raw.updatedAt,
+    raw.timestamp,
+    lastMessage?.createdAt,
+    ...sessions.map(session => session.lastSeenAt || session.connectedAt)
+  ]);
+
+  return {
+    ok: raw.ok !== false,
+    endpoint: raw.endpoint || getEndpoint() || 'auto · /minitel/messages',
+    status: raw.ok === false ? 'degraded' : 'online',
+    source: 'korigan-minitel-messages',
+    ws: { connected: pcCount > 0, count: pcCount },
+    clients: {
+      pc: { count: pcCount, items: sessions.filter(session => session.transport === 'websocket') },
+      phone: { count: 0, items: [] },
+      minitel: { count: minitelCount, items: sessions.filter(session => session.transport === 'telnet') },
+      count: pcCount + minitelCount
+    },
+    queue: Number(raw.queue?.pending ?? raw.pendingMessages ?? 0) || 0,
+    lastMessage,
+    messages: messages.slice(-6),
+    updatedAt,
+  };
+}
+
+function normalizeMinitelStatusState(raw) {
+  const pcCount = numberOr(raw.wsClients, 0);
+  const minitelCount = numberOr(raw.telnetClients, 0);
+
+  return {
+    ok: raw.ok !== false,
+    endpoint: raw.endpoint || getEndpoint() || 'auto · /minitel/status',
+    status: raw.ok === false ? 'degraded' : (raw.mode || 'online'),
+    source: 'korigan-minitel-status',
+    ws: { connected: pcCount > 0, count: pcCount },
+    clients: {
+      pc: { count: pcCount, items: [] },
+      phone: { count: 0, items: [] },
+      minitel: { count: minitelCount, items: [] },
+      count: pcCount + minitelCount
+    },
+    queue: 0,
+    lastMessage: null,
+    messages: [],
+    updatedAt: raw.updatedAt || raw.timestamp || new Date().toISOString(),
+  };
+}
+
+function normalizeCompatChatState(raw) {
   const clients = raw.clients || raw.connectedClients || {};
   const pc = normalizeClientGroup(clients.pc || clients.desktop || raw.pcClients);
   const phone = normalizeClientGroup(clients.phone || clients.mobile || clients.tel || raw.phoneClients);
   const minitel = normalizeClientGroup(clients.minitel || clients.vdt || raw.minitelClients);
-  const allCount = Number(raw.clientCount ?? raw.clientsCount ?? pc.count + phone.count + minitel.count) || 0;
+  const allCount = Number(raw.clientCount ?? raw.clientsCount ?? clients.count ?? pc.count + phone.count + minitel.count) || 0;
   const queue = raw.queue || raw.messagesQueue || raw.outbox || {};
-  const messages = raw.messages || raw.recentMessages || raw.log || [];
-  const last = raw.lastMessage || messages[0] || null;
+  const messages = Array.isArray(raw.messages || raw.recentMessages || raw.log) ? (raw.messages || raw.recentMessages || raw.log) : [];
+  const last = raw.lastMessage || messages.at(-1) || null;
 
   return {
     ok: raw.ok !== false,
-    endpoint: raw.endpoint || getEndpoint() || 'auto',
+    endpoint: raw.endpoint || getEndpoint() || 'auto · compat',
     status: raw.status || raw.state || 'online',
+    source: 'korigan-compat-chat-state',
     ws: raw.ws || raw.websocket || {},
     clients: { pc, phone, minitel, count: allCount },
     queue: Number(queue.pending ?? queue.length ?? raw.pendingMessages ?? 0) || 0,
     lastMessage: last,
-    messages: Array.isArray(messages) ? messages.slice(0, 6) : [],
+    messages: messages.slice(-6),
     updatedAt: raw.updatedAt || raw.timestamp || new Date().toISOString()
   };
+}
+
+function normalizeMinitelMessages(messages) {
+  return messages
+    .map(message => {
+      if (typeof message === 'string') return { from: 'korigan', text: message, createdAt: null };
+      const nick = message.nick || message.from || message.author || message.transport || 'agent';
+      const text = message.kind === 'action'
+        ? `* ${message.text || message.message || ''}`
+        : (message.text || message.message || message.content || message.body || '');
+      return {
+        from: nick,
+        transport: message.transport || '',
+        kind: message.kind || 'message',
+        text: String(text).replace(/\s+/g, ' ').trim().slice(0, 120),
+        createdAt: message.createdAt || message.timestamp || message.updatedAt || null,
+      };
+    })
+    .filter(message => message.text);
 }
 
 function normalizeClientGroup(value) {
@@ -156,11 +255,33 @@ function normalizeClientGroup(value) {
   return { count: 0, items: [] };
 }
 
+function countSessions(sessions, transport) {
+  return sessions.filter(session => String(session.transport || '').toLowerCase() === transport).length;
+}
+
+function numberOr(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function newestTime(values) {
+  const timestamps = values
+    .map(value => {
+      if (!value) return NaN;
+      if (typeof value === 'number') return value;
+      const date = new Date(value);
+      return date.getTime();
+    })
+    .filter(value => Number.isFinite(value));
+
+  return timestamps.length ? new Date(Math.max(...timestamps)).toISOString() : new Date().toISOString();
+}
+
 function renderState(state) {
   const status = state.ok ? 'ONLINE' : 'DEGRADED';
   setStatus(status, state.ok ? 'online' : 'warn');
   setText('korigan-endpoint', `endpoint: ${state.endpoint}`);
-  setText('korigan-ws', state.ws.connected === false ? 'OFF' : 'ON');
+  setText('korigan-ws', state.ws.connected === false ? 'OFF' : `${state.ws.count ?? state.clients.pc.count ? 'ON' : 'IDLE'}`);
   setText('korigan-clients', String(state.clients.count));
   setText('korigan-queue', String(state.queue));
   setText('korigan-last', formatTime(state.updatedAt));
@@ -180,7 +301,8 @@ function renderOffline(err) {
     log.textContent = [
       '[korigan] endpoint indisponible',
       `reason: ${String(err?.message ?? err ?? 'unknown')}`,
-      'hint: clique ENDPOINT pour renseigner /api/korigan/chat/state',
+      'hint: endpoint réel Korigan conseillé: /minitel/messages',
+      'fallback: /api/korigan/chat/state reste supporté',
       lastState ? `last-known: ${lastState.status} · ${formatTime(lastState.updatedAt)}` : 'last-known: none'
     ].join('\n');
   }
@@ -200,7 +322,8 @@ function renderClients(clients) {
 function renderLog(state) {
   const lines = [];
   lines.push(`[korigan] ${state.status} · ${formatTime(state.updatedAt)}`);
-  lines.push(`ws=${state.ws.connected === false ? 'off' : 'on'} clients=${state.clients.count} queue=${state.queue}`);
+  lines.push(`source=${state.source || 'unknown'}`);
+  lines.push(`ws=${state.ws.connected === false ? 'off' : (state.ws.count ?? state.clients.pc.count ? 'on' : 'idle')} clients=${state.clients.count} queue=${state.queue}`);
 
   if (state.lastMessage) {
     lines.push(`last=${formatMessage(state.lastMessage)}`);
@@ -214,7 +337,7 @@ function renderLog(state) {
 
 function formatMessage(msg) {
   if (typeof msg === 'string') return msg.slice(0, 120);
-  const from = msg.from || msg.author || msg.client || msg.role || 'agent';
+  const from = msg.from || msg.nick || msg.author || msg.client || msg.role || msg.transport || 'agent';
   const text = msg.text || msg.message || msg.content || msg.body || JSON.stringify(msg);
   return `${from}: ${String(text).replace(/\s+/g, ' ').slice(0, 100)}`;
 }
