@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nested Loops — Gwen Ha Star</title>
+  <meta name="description" content="Simulation cinétique Nested Loops inspirée des mécanismes de Chuck Hoberman, intégrée au cockpit Gwen Ha Star." />
+  <link rel="icon" type="image/png" href="../../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png" />
+  <link rel="stylesheet" href="../../css/base.css" />
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/components.css" />
+  <link rel="stylesheet" href="../../css/star-nested-loops.css?v=20260709" />
+</head>
+<body class="nested-loops-page">
+  <canvas id="stage" aria-label="Simulation cinétique Nested Loops"></canvas>
+
+  <a class="nl-back" href="../index.html" aria-label="Retour au cockpit Star">← Star</a>
+
+  <section id="ui" class="nl-panel" aria-label="Panneau de contrôle Nested Loops">
+    <div class="nl-topbar">
+      <div>
+        <p class="nl-badge">● simulation paramétrique · perspective zéro</p>
+        <h1>Nested Loops</h1>
+        <p class="nl-sub">Simulation web inspirée par Chuck Hoberman / MoMath, avec une lecture à plat par défaut et un mode axes de déploiement.</p>
+      </div>
+      <button id="collapseBtn" class="nl-pill-btn" type="button">⟵ panneau</button>
+    </div>
+
+    <div class="nl-section">
+      <p class="nl-section-title">Modes</p>
+      <div id="modeChips" class="nl-chips">
+        <button class="nl-chip active" type="button" data-mode="sculpture">1 Sculpture</button>
+        <button class="nl-chip" type="button" data-mode="courbes">2 Courbes</button>
+        <button class="nl-chip" type="button" data-mode="mirror">3 Miroir</button>
+        <button class="nl-chip" type="button" data-mode="multi">4 Multi</button>
+        <button class="nl-chip" type="button" data-mode="continu">5 Continu</button>
+        <button class="nl-chip" type="button" data-mode="paper">6 Axes papier</button>
+      </div>
+    </div>
+
+    <div id="paperSection" class="nl-section hidden">
+      <p class="nl-section-title">Famille d’axes</p>
+      <div id="paperChips" class="nl-chips">
+        <button class="nl-chip nl-chip-small active" type="button" data-paper="cube">X Cube / hexaèdre</button>
+        <button class="nl-chip nl-chip-small" type="button" data-paper="arith">A Arithmétique</button>
+        <button class="nl-chip nl-chip-small" type="button" data-paper="ortho">O Orthogonale</button>
+        <button class="nl-chip nl-chip-small" type="button" data-paper="spiral">P Spirale</button>
+      </div>
+
+      <div class="nl-subsection">
+        <p class="nl-section-title">Couches affichées</p>
+        <div id="layerChips" class="nl-chips">
+          <button class="nl-chip nl-chip-small active" type="button" data-layer="combined">Tout</button>
+          <button class="nl-chip nl-chip-small active" type="button" data-layer="axes">Axes</button>
+          <button class="nl-chip nl-chip-small active" type="button" data-layer="loops">Boucles</button>
+          <button class="nl-chip nl-chip-small active" type="button" data-layer="platforms">Plateformes</button>
+          <button class="nl-chip nl-chip-small active" type="button" data-layer="connectors">Connexions</button>
+        </div>
+      </div>
+
+      <div class="nl-subsection">
+        <p class="nl-section-title">Construction pas à pas</p>
+        <div class="nl-step-row">
+          <button id="stepModeBtn" class="active" type="button">Mode pas à pas</button>
+          <button id="stepPrevBtn" type="button">Étape -</button>
+          <button id="stepNextBtn" type="button">Étape +</button>
+        </div>
+        <p class="nl-status" id="stepLabel"></p>
+        <div class="nl-control-row">
+          <label for="buildStep">Étape de construction</label>
+          <input id="buildStep" type="range" min="0" max="4" value="0" step="1" />
+        </div>
+        <div class="nl-control-row">
+          <label for="phase">Phase d’ouverture</label>
+          <input id="phase" type="range" min="0" max="1" value="0.35" step="0.001" />
+        </div>
+        <p class="nl-status" id="phaseLabel"></p>
+      </div>
+
+      <p class="nl-note">Le mode axes papier est une interprétation pédagogique : il reprend des familles d’axes et une logique de boucles / plateformes sans résoudre toute la cinématique exacte.</p>
+    </div>
+
+    <div class="nl-section">
+      <p class="nl-section-title">Paramètres généraux</p>
+      <div class="nl-grid">
+        <div class="nl-control-row"><label for="speed">Vitesse</label><input id="speed" type="range" min="0" max="2.5" value="0.62" step="0.01" /></div><div class="nl-value" id="speedVal"></div>
+        <div class="nl-control-row"><label for="spread">Échelle / écart</label><input id="spread" type="range" min="0.45" max="1.55" value="1.00" step="0.01" /></div><div class="nl-value" id="spreadVal"></div>
+        <div class="nl-control-row"><label for="twist">Décalage / twist</label><input id="twist" type="range" min="-2" max="2" value="0.62" step="0.01" /></div><div class="nl-value" id="twistVal"></div>
+        <div class="nl-control-row"><label for="tilt">Inclinaison 3D</label><input id="tilt" type="range" min="0" max="1" value="0.56" step="0.01" /></div><div class="nl-value" id="tiltVal"></div>
+        <div class="nl-control-row"><label for="depth">Perspective</label><input id="depth" type="range" min="0" max="1" value="0" step="0.01" /></div><div class="nl-value" id="depthVal"></div>
+        <div class="nl-control-row"><label for="trail">Trace lumineuse</label><input id="trail" type="range" min="0" max="0.96" value="0.82" step="0.01" /></div><div class="nl-value" id="trailVal"></div>
+        <div class="nl-control-row"><label for="points">Points par cercle</label><input id="points" type="range" min="3" max="16" value="8" step="1" /></div><div class="nl-value" id="pointsVal"></div>
+        <div class="nl-control-row"><label for="rings">Nombre de cercles</label><input id="rings" type="range" min="2" max="7" value="4" step="1" /></div><div class="nl-value" id="ringsVal"></div>
+      </div>
+    </div>
+
+    <div class="nl-section">
+      <p class="nl-section-title">Outils</p>
+      <div class="nl-tools">
+        <button id="pauseBtn" type="button">Pause</button>
+        <button id="resetBtn" type="button">Reset vue</button>
+        <button id="flatBtn" type="button">Vue à plat</button>
+        <button id="guidesBtn" class="active" type="button">Guides</button>
+        <button id="nodesBtn" class="active" type="button">Nœuds</button>
+        <button id="ghostBtn" class="active" type="button">Fantômes</button>
+      </div>
+    </div>
+
+    <div class="nl-equation">
+      point(r,p) = projection3D(<br />
+      &nbsp;&nbsp;R<sub>r</sub>·cos(t + p·2π/N + r·twist),<br />
+      &nbsp;&nbsp;R<sub>r</sub>·sin(t + p·2π/N + r·twist),<br />
+      &nbsp;&nbsp;sin(t·0.8 + r + p·0.5)·depth
+      )
+    </div>
+  </section>
+
+  <button id="togglePanel" class="nl-toggle-panel" type="button">masquer panneau</button>
+
+  <div class="nl-hint">
+    Canvas : glisser pour orienter · molette : zoom.<br />
+    Sliders : molette = valeur ±1 pas.<br />
+    Raccourcis : <span>1</span>-<span>6</span> modes · <span>K</span> axes · <span>X</span>/<span>A</span>/<span>O</span>/<span>P</span> familles · <span>[</span>/<span>]</span> étape · <span>,</span>/<span>.</span> phase · <span>B</span> pas à pas · <span>H</span> panneau · <span>Espace</span> pause.
+  </div>
+
+  <script type="module" src="../../js/star/nested-loops.js?v=20260709"></script>
+</body>
+</html>
