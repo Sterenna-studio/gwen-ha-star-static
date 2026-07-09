@@ -69,6 +69,12 @@ Sterenna-studio/3615-gateways
   Prototype public autonome et documentation historique du projet 3615.
 ```
 
+Le contrat de supervision `KORIGAN · CHAT STATE` / `CHAT BUS` est documenté dans :
+
+```txt
+/docs/korigan-chat-bus.md
+```
+
 ---
 
 ## Architecture actuelle
@@ -92,6 +98,7 @@ gwen-ha-star-static/
 ├── jukebox/                      # Jukebox statique et Chronicles FM
 ├── docs/
 │   ├── home-v3.md                # Cadrage de la home publique v3.0
+│   ├── korigan-chat-bus.md       # Contrat Korigan Chat State / Chat Bus
 │   └── space-background-ships.md
 │
 ├── archive/
@@ -150,6 +157,7 @@ gwen-ha-star-static/
 | `/star/` | Connecté | Cockpit membre / crew / réseau statique historique |
 | `/star/admin/background.html` | Superuser | Gestion du background spatial public |
 | `/docs/home-v3.md` | Technique | Cadrage de la home publique v3.0 |
+| `/docs/korigan-chat-bus.md` | Technique | Contrat Korigan Chat State / Chat Bus |
 | `/docs/space-background-ships.md` | Technique | Guide vaisseaux, éléments, presets et agent IA |
 | `/TCG/` | Connecté | App TCG, selon déploiement actif |
 | `/jukebox/` | Public / intégré | Lecteur musical et Chronicles FM |
@@ -218,126 +226,3 @@ Le fond public est piloté par Supabase via :
 space_background_config
 id = 'home'
 ```
-
-La console admin permet de modifier rapidement :
-
-- activation globale du background ;
-- densité d'étoiles ;
-- nébuleuse ;
-- petites planètes ;
-- astéroïdes ;
-- satellites ;
-- crashs / incidents ;
-- trafic et vitesse ;
-- bibliothèque de vaisseaux avec preview ;
-- presets `CALME`, `VIVANT`, `TEMPÊTE`, `MINIMAL`.
-
-Les secousses écran sont désactivées côté home publique : `shake` est forcé à `0` et `body.shaking` est neutralisé.
-
-La console `HUB VERSION` est injectée par `space-background.js`, mais elle est réservée aux superusers Supabase. Les archives `/versions/...` restent statiques et accessibles par URL directe ; elles ne doivent donc pas contenir d'information sensible.
-
-Les 4 familles historiques de vaisseaux importées depuis l'ancien moteur `ship-canvas` sont :
-
-```txt
-scout
-freighter
-needle
-carrier
-```
-
-La documentation de création rapide et le prompt pour agent IA sont dans :
-
-```txt
-/docs/space-background-ships.md
-```
-
----
-
-## Shared Nitro Core
-
-Le dossier `/shared/` est la couche commune utilisée par les apps Nitro.
-
-### Modules principaux
-
-```txt
-/shared/supabase-config.js
-/shared/supabase-client.js
-/shared/auth.js
-/shared/guards.js
-/shared/profile.js
-/shared/session-ui.js
-/shared/nitro-apps.js
-```
-
-Exemple d'utilisation depuis une app servie sous `nitro.sterenna.fr` :
-
-```js
-import { supabase } from '/shared/supabase-client.js';
-import { requireAuth } from '/shared/guards.js';
-
-const auth = await requireAuth();
-if (!auth) throw new Error('Not authenticated');
-
-const { user, profile } = auth;
-```
-
-### Apps sous le même domaine Nitro
-
-Les apps servies sous le même origin partagent naturellement la session Supabase :
-
-```txt
-https://nitro.sterenna.fr/star/
-https://nitro.sterenna.fr/botanica/
-https://nitro.sterenna.fr/TCG/
-https://nitro.sterenna.fr/arena/
-```
-
-### Apps externes / sous-domaines séparés
-
-Les apps comme PokéGang restent sur :
-
-```txt
-https://pokegang.sterenna.fr
-```
-
-Elles peuvent importer les modules `/shared` grâce au CORS configuré dans `shared/.htaccess`, mais la session navigateur n'est pas automatiquement partagée entre sous-domaines.
-
-Pour PokéGang, l'intégration Nitro doit donc rester progressive : détection, liaison de compte, cloud sync, récompenses, etc.
-
----
-
-## Déploiement OVH
-
-Le workflow `.github/workflows/deploy-ovh.yml` :
-
-1. génère `shared/config.js` depuis les secrets GitHub ;
-2. synchronise le site statique vers `~/nitro/` en SSH/rsync ;
-3. lance un smoke test public sur les endpoints essentiels.
-
-Les dossiers exclus du rsync sont volontaires quand ils sont déployés par un autre repo ou une autre app. Toute nouvelle app Nitro doit documenter son modèle de déploiement avant d'être ajoutée à la navigation publique.
-
-Après un patch de home, vérifier au minimum :
-
-```txt
-/
-/css/home.css
-/js/home.js
-/js/space-background.js
-/js/chronicles-fm-widget.js
-/docs/home-v3.md
-```
-
----
-
-## Serveur et sécurité
-
-Le `.htaccess` gère :
-
-- MIME JS/CSS/audio ;
-- cache HTML/JSON/CSS/JS en revalidation ;
-- cache images/fonts 7 jours ;
-- gzip ;
-- headers de sécurité légers ;
-- CSP en `Report-Only` pour observer les violations sans casser les embeds Twitch/YouTube/Supabase.
-
-Les anciennes injections HTML serveur via `mod_substitute` sont supprimées.
