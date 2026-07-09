@@ -4,6 +4,10 @@ const STORAGE_KEY = 'koriganChatStateEndpoint';
 const POLL_MS = 15000;
 
 const DEFAULT_ENDPOINTS = [
+  '/api/korigan/chat/state',
+  '/korigan/api/korigan/chat/state',
+  'https://nitro.sterenna.fr/api/korigan/chat/state',
+  'https://nitro.sterenna.fr/korigan/api/korigan/chat/state',
   '/minitel/messages',
   '/korigan/minitel/messages',
   'https://nitro.sterenna.fr/minitel/messages',
@@ -12,9 +16,7 @@ const DEFAULT_ENDPOINTS = [
   '/korigan/minitel/status',
   'https://nitro.sterenna.fr/minitel/status',
   'https://nitro.sterenna.fr/korigan/minitel/status',
-  '/api/korigan/chat/state',
   '/korigan/api/chat/state',
-  'https://nitro.sterenna.fr/api/korigan/chat/state',
   'https://nitro.sterenna.fr/korigan/api/chat/state'
 ];
 
@@ -68,7 +70,7 @@ function mountCard() {
       </div>
 
       <pre class="korigan-log" id="korigan-log">Connexion au bus Korigan…
-Recherche du runtime /minitel…</pre>
+Recherche du contrat /api/korigan/chat/state…</pre>
 
       <div class="korigan-actions">
         <button type="button" id="korigan-refresh">RESCAN</button>
@@ -90,7 +92,7 @@ Recherche du runtime /minitel…</pre>
 async function refreshState(force = false) {
   const endpoint = getEndpoint();
   setStatus('SCAN', 'scan');
-  setText('korigan-endpoint', `endpoint: ${endpoint || 'auto · /minitel'}`);
+  setText('korigan-endpoint', `endpoint: ${endpoint || 'auto · /api/korigan/chat/state'}`);
 
   try {
     const state = await fetchState(endpoint, force);
@@ -301,8 +303,8 @@ function renderOffline(err) {
     log.textContent = [
       '[korigan] endpoint indisponible',
       `reason: ${String(err?.message ?? err ?? 'unknown')}`,
-      'hint: endpoint réel Korigan conseillé: /minitel/messages',
-      'fallback: /api/korigan/chat/state reste supporté',
+      'hint: endpoint officiel Korigan: /api/korigan/chat/state',
+      'fallback debug: /minitel/messages reste supporté',
       lastState ? `last-known: ${lastState.status} · ${formatTime(lastState.updatedAt)}` : 'last-known: none'
     ].join('\n');
   }
