@@ -1,41 +1,172 @@
 # Korigan · Chat State / Chat Bus
 
-Cette documentation décrit le fonctionnement actuel du widget **KORIGAN · CHAT STATE** dans le cockpit Star statique, ainsi que le contrat attendu côté Korigan pour exposer l’état du **Chat Bus**.
+Cette documentation décrit le raccord entre le cockpit Star statique (`gwen-ha-star-static`) et le runtime actif Korigan côté `services/3615-gateways`.
 
-Le dépôt `gwen-ha-star-static` ne contient pas le bus temps réel lui-même. Il contient uniquement la carte de supervision affichée dans `/star/`. Le runtime réel doit rester côté Korigan / Nitro.
+Point important : le dépôt `gwen-ha-star-static` ne contient pas le bus temps réel. Il contient uniquement une carte de supervision dans `/star/`. Le bus réel, les transports, les sessions, les messages et les providers live appartiennent à Korigan.
 
 ---
 
-## Résumé rapide
+## État vérifié côté Korigan
+
+La documentation Korigan place le runtime actif dans :
 
 ```txt
-/star/ cockpit
-  ↓ importe
-js/star/nitro-app-renderer.js
-  ↓ importe automatiquement
-js/star/korigan-chat-state.js
-  ↓ monte une carte dans la grille .bento
-KORIGAN · CHAT STATE
-  ↓ poll HTTP JSON toutes les 15s
+MutenRock/Korigan/services/3615-gateways
+```
+
+Le service est séparé de la Next app Korigan :
+
+```txt
+Korigan Next app
+  -> /star/3615 wrapper page
+
+services/3615-gateways
+  -> HTTP status API
+  -> WebSocket /minitel/ws
+  -> Telnet :3615
+  -> terminal-native Gwen Ha Star and Lemegeton screens
+```
+
+Le service expose actuellement :
+
+```txt
+GET /                         service status
+GET /minitel/status           runtime details
+GET /minitel/nitro-feed       terminal-safe Korigan/Nitro feed
+GET /minitel/avatar-state     Lemegeton/avatar state
+GET /minitel/messages         short PC/Minitel message history
+POST /minitel/messages        append an operator message
+GET /minitel/operator         lightweight operator panel
+GET /minitel/operator/events  live operator event stream
+GET /minitel/providers        redacted provider/tool status
+POST /minitel/providers/:provider/:action
+POST /minitel/sessions/:id/disconnect
+GET /minitel/vdt              VDT catalog/state metadata
+POST /minitel/vdt/send        broadcast allowlisted VDT to Telnet clients
+WS  /minitel/ws               WebSocket transport
+TCP :3615                     Telnet/Minitel entrypoint
+```
+
+Donc le nom **Chat Bus** dans Star correspond aujourd’hui surtout au couple :
+
+```txt
+GET /minitel/messages
+GET /minitel/status
+```
+
+et au flux live :
+
+```txt
+GET /minitel/operator/events
+WS /minitel/ws
+TCP :3615
+```
+
+---
+
+## Écart actuel avec le widget Star statique
+
+Le widget `KORIGAN · CHAT STATE` actuel dans `gwen-ha-star-static` teste encore ces endpoints de compatibilité :
+
+```txt
 /api/korigan/chat/state
 /korigan/api/chat/state
 https://nitro.sterenna.fr/api/korigan/chat/state
 https://nitro.sterenna.fr/korigan/api/chat/state
 ```
 
-Le widget affiche :
+Ces routes ne sont pas les routes principales documentées dans `services/3615-gateways`.
 
-- état WebSocket ;
-- nombre total de clients ;
-- clients par famille : `PC`, `TEL`, `MINITEL` ;
-- taille de queue/outbox ;
-- dernier message / derniers messages ;
-- endpoint utilisé ;
-- état `ONLINE`, `DEGRADED`, `OFFLINE` ou `SCAN`.
+Conclusion : la doc précédente décrivait un **contrat cible** utile, mais pas l’état réel strict de Korigan. Le contrat correct doit être formulé comme une couche d’adaptation entre :
+
+```txt
+Star widget attendu
+  GET /api/korigan/chat/state
+
+Korigan runtime existant
+  GET /minitel/status
+  GET /minitel/messages
+```
 
 ---
 
-## Fichiers concernés
+## Recommandation d’architecture
+
+Deux options propres existent.
+
+### Option A — ajouter un endpoint d’adaptation côté Korigan
+
+Ajouter dans Korigan :
+
+```txt
+GET /api/korigan/chat/state
+```
+
+ou :
+
+```txt
+GET /korigan/api/chat/state
+```
+
+Cette route agrège les données déjà présentes dans :
+
+```txt
+/minitel/status
+/minitel/messages
+```
+
+et renvoie le format attendu par la carte Star.
+
+Avantage : `gwen-ha-star-static` reste simple et lit un endpoint unique.
+
+### Option B — adapter le widget Star aux routes existantes
+
+Modifier `js/star/korigan-chat-state.js` pour interroger :
+
+```txt
+/minitel/messages
+```
+
+puis lire :
+
+```txt
+stats.wsClients
+stats.telnetClients
+messages
+sessions
+providers
+localConfig
+```
+
+Avantage : pas besoin d’ajouter une route côté Korigan.
+
+Inconvénient : le widget Star connaît davantage les détails internes du runtime 3615.
+
+### Choix conseillé
+
+Préférer **Option A** : Korigan expose un endpoint de synthèse safe, et Star reste un observateur.
+
+---
+
+## Flux recommandé
+
+```txt
+/star/ cockpit statique
+  ↓
+js/star/nitro-app-renderer.js
+  ↓ importe automatiquement
+js/star/korigan-chat-state.js
+  ↓ poll HTTP JSON toutes les 15s
+GET /api/korigan/chat/state
+  ↓ côté Korigan : adaptateur safe
+lit / agrège l’état interne 3615
+  ↓
+renvoie un JSON stable au cockpit
+```
+
+---
+
+## Fichiers côté Star statique
 
 ```txt
 js/star/nitro-app-renderer.js
@@ -43,54 +174,25 @@ js/star/korigan-chat-state.js
 js/star/korigan-bot-bridge.js
 ```
 
-### `nitro-app-renderer.js`
-
-Le renderer Star importe directement les modules Korigan :
+`nitro-app-renderer.js` importe automatiquement :
 
 ```js
 import './korigan-chat-state.js';
 import './korigan-bot-bridge.js';
 ```
 
-Conséquence : dès que le renderer Star est chargé, le widget Chat State tente de s’installer automatiquement. Il n’y a pas d’appel manuel à faire dans `star/index.html`.
-
-### `korigan-chat-state.js`
-
-Responsabilités :
-
-- injecter la carte `KORIGAN · CHAT STATE` dans la grille `.bento` ;
-- chercher un endpoint d’état ;
-- normaliser plusieurs formats de réponse JSON possibles ;
-- afficher l’état du bus ;
-- garder un dernier état connu en mémoire ;
-- permettre un endpoint personnalisé via `localStorage`.
-
-### `korigan-bot-bridge.js`
-
-Ce module est voisin mais séparé. Il documente la logique future **SOCIAL BUS** pour Discord / Twitch. Il ne remplace pas le Chat Bus : il prépare seulement un pont providers sociaux côté Korigan.
+Conséquence : dès que le renderer Star est chargé, le widget tente de monter sa carte dans `.bento`.
 
 ---
 
-## Cycle de vie du widget Chat State
+## Cycle de vie du widget `KORIGAN · CHAT STATE`
 
-### 1. Auto-installation
-
-Le module appelle directement :
-
-```js
-installKoriganChatState();
-```
-
-Puis :
-
-1. injecte son CSS runtime ;
-2. attend `DOMContentLoaded` si besoin ;
-3. cherche une grille `.bento` ;
-4. crée une carte `#korigan-chat-state-card` ;
-5. lance un premier `refreshState()` ;
-6. crée un polling toutes les `15000 ms`.
-
-### 2. Placement dans la page
+1. Injection CSS runtime.
+2. Attente de `DOMContentLoaded` si nécessaire.
+3. Recherche de la grille `.bento`.
+4. Création de la carte `#korigan-chat-state-card`.
+5. Premier `refreshState()`.
+6. Polling toutes les `15000 ms`.
 
 La carte est insérée en priorité :
 
@@ -98,56 +200,17 @@ La carte est insérée en priorité :
 2. avant `.bc.bc-pg` si PokéGang existe ;
 3. sinon à la fin de `.bento`.
 
-Le widget ne casse donc pas la page si une carte cible est absente.
+Le bouton `RESCAN` relance un scan forcé.
 
-### 3. Rafraîchissement
-
-Le bouton `RESCAN` relance `refreshState(true)`.
-
-Le bouton `ENDPOINT` ouvre un `prompt()` pour définir un endpoint personnalisé. La valeur est stockée dans :
+Le bouton `ENDPOINT` stocke un endpoint personnalisé dans :
 
 ```txt
 localStorage.koriganChatStateEndpoint
 ```
 
-Si la valeur est vide, le widget revient au mode `auto`.
-
 ---
 
-## Endpoints testés par défaut
-
-Ordre actuel :
-
-```txt
-/api/korigan/chat/state
-/korigan/api/chat/state
-https://nitro.sterenna.fr/api/korigan/chat/state
-https://nitro.sterenna.fr/korigan/api/chat/state
-```
-
-Le widget ajoute automatiquement un query param anti-cache :
-
-```txt
-?t=<timestamp>
-```
-
-ou :
-
-```txt
-&t=<timestamp>
-```
-
-si l’URL contient déjà `?`.
-
-Chaque requête utilise :
-
-```js
-fetch(target, { cache: force ? 'reload' : 'no-store' })
-```
-
----
-
-## Contrat JSON recommandé côté Korigan
+## Contrat JSON recommandé pour l’adaptateur Korigan
 
 Endpoint recommandé :
 
@@ -171,505 +234,338 @@ Réponse minimale :
       "items": []
     },
     "phone": {
-      "count": 1,
+      "count": 0,
       "items": []
     },
     "minitel": {
       "count": 1,
       "items": []
-    }
+    },
+    "count": 2
   },
   "queue": {
     "pending": 0
   },
   "lastMessage": {
-    "from": "minitel",
+    "from": "MINITEL",
     "text": "READY"
   },
   "messages": [
     {
-      "from": "pc",
-      "text": "ping"
-    },
-    {
-      "from": "minitel",
-      "text": "pong"
+      "from": "OPERATEUR",
+      "text": "HELLO"
     }
   ]
 }
 ```
 
-Réponse complète conseillée :
-
-```json
-{
-  "ok": true,
-  "status": "online",
-  "state": "online",
-  "updatedAt": "2026-07-09T12:34:56.000Z",
-  "timestamp": "2026-07-09T12:34:56.000Z",
-  "ws": {
-    "connected": true,
-    "url": "ws://127.0.0.1:30000",
-    "uptimeMs": 123456,
-    "lastEventAt": "2026-07-09T12:34:50.000Z"
-  },
-  "clients": {
-    "pc": {
-      "count": 1,
-      "items": [
-        {
-          "id": "pc-dashboard",
-          "label": "PC cockpit",
-          "connected": true,
-          "lastSeenAt": "2026-07-09T12:34:50.000Z"
-        }
-      ]
-    },
-    "phone": {
-      "count": 1,
-      "items": [
-        {
-          "id": "phone-android",
-          "label": "Android phone",
-          "connected": true,
-          "lastSeenAt": "2026-07-09T12:34:48.000Z"
-        }
-      ]
-    },
-    "minitel": {
-      "count": 1,
-      "items": [
-        {
-          "id": "minitel-vdt",
-          "label": "Minitel VDT",
-          "connected": true,
-          "lastSeenAt": "2026-07-09T12:34:42.000Z"
-        }
-      ]
-    },
-    "count": 3
-  },
-  "queue": {
-    "pending": 0,
-    "length": 0,
-    "failed": 0
-  },
-  "messages": [
-    {
-      "id": "msg_001",
-      "from": "pc",
-      "to": "minitel",
-      "text": "ping",
-      "createdAt": "2026-07-09T12:34:40.000Z"
-    }
-  ],
-  "lastMessage": {
-    "id": "msg_001",
-    "from": "pc",
-    "to": "minitel",
-    "text": "ping",
-    "createdAt": "2026-07-09T12:34:40.000Z"
-  }
-}
-```
-
 ---
 
-## Champs acceptés par le normalizer actuel
+## Mapping depuis le runtime Korigan actuel
 
-Le module accepte volontairement plusieurs alias pour rester compatible avec des prototypes.
+### Depuis `GET /minitel/status`
 
-### Clients
-
-Source principale :
-
-```txt
-raw.clients
-```
-
-Alias acceptés :
-
-```txt
-raw.connectedClients
-```
-
-Groupes acceptés :
-
-```txt
-clients.pc
-clients.desktop
-raw.pcClients
-
-clients.phone
-clients.mobile
-clients.tel
-raw.phoneClients
-
-clients.minitel
-clients.vdt
-raw.minitelClients
-```
-
-Chaque groupe peut être :
-
-```js
-3
-```
-
-ou :
-
-```json
-[
-  { "id": "client-a" },
-  { "id": "client-b" }
-]
-```
-
-ou :
-
-```json
-{
-  "count": 2,
-  "items": []
-}
-```
-
-Le total clients est lu via :
-
-```txt
-raw.clientCount
-raw.clientsCount
-```
-
-Sinon il est calculé par addition des groupes `pc + phone + minitel`.
-
-### Queue
-
-Source principale :
-
-```txt
-raw.queue
-```
-
-Alias acceptés :
-
-```txt
-raw.messagesQueue
-raw.outbox
-```
-
-Nombre pending lu via :
-
-```txt
-queue.pending
-queue.length
-raw.pendingMessages
-```
-
-### Messages
-
-Sources acceptées :
-
-```txt
-raw.messages
-raw.recentMessages
-raw.log
-```
-
-Le widget n’affiche que les 6 premiers messages.
-
-Dernier message :
-
-```txt
-raw.lastMessage
-```
-
-Sinon :
-
-```txt
-messages[0]
-```
-
-### WebSocket
-
-Sources acceptées :
-
-```txt
-raw.ws
-raw.websocket
-```
-
-Affichage :
-
-```txt
-ws.connected === false → OFF
-sinon → ON
-```
-
-Cela veut dire qu’une absence de `connected` est considérée comme `ON` côté affichage actuel. Pour éviter toute ambiguïté, Korigan devrait renvoyer explicitement :
-
-```json
-"ws": { "connected": true }
-```
-
-ou :
-
-```json
-"ws": { "connected": false }
-```
-
----
-
-## États affichés
-
-### Scan
-
-Avant chaque requête :
-
-```txt
-SCAN
-```
-
-### Online
-
-Si la réponse est récupérée et que :
-
-```txt
-raw.ok !== false
-```
-
-le badge devient :
-
-```txt
-ONLINE
-```
-
-### Degraded
-
-Si la réponse est récupérée mais que :
-
-```txt
-raw.ok === false
-```
-
-le badge devient :
-
-```txt
-DEGRADED
-```
-
-### Offline
-
-Si tous les endpoints échouent :
-
-```txt
-OFFLINE
-```
-
-Le log affiche :
-
-```txt
-[korigan] endpoint indisponible
-reason: <erreur>
-hint: clique ENDPOINT pour renseigner /api/korigan/chat/state
-last-known: <dernier état si disponible>
-```
-
----
-
-## Responsabilités frontend / backend
-
-### Côté `gwen-ha-star-static`
-
-Le widget doit seulement :
-
-- afficher un état synthétique ;
-- interroger un endpoint JSON safe ;
-- normaliser les réponses ;
-- ne jamais contenir de secrets ;
-- ne jamais piloter directement un bot, un token ou un service local sensible.
-
-### Côté Korigan
-
-Korigan doit :
-
-- agréger l’état réel du bus ;
-- exposer un endpoint HTTP JSON safe ;
-- gérer les WebSockets / clients / queue ;
-- masquer les secrets ;
-- éventuellement proxifier le runtime local vers Nitro ;
-- fournir des timestamps cohérents.
-
----
-
-## Sécurité
-
-À ne pas exposer côté endpoint public :
-
-- tokens Discord / Twitch / Supabase ;
-- clés API ;
-- IP locales privées détaillées si non nécessaires ;
-- contenu complet d’un chat privé ;
-- payloads bruts de clients non filtrés ;
-- erreurs serveur verbeuses avec chemins système.
-
-Champs sûrs à exposer :
+Korigan renvoie notamment :
 
 ```txt
 ok
-status
-updatedAt
-ws.connected
-clients.*.count
-queue.pending
-lastMessage.from
-lastMessage.text tronqué / filtré
-messages récents tronqués / filtrés
+gateway
+node
+mode
+transports
+modules
+providers
+localConfig
+nitroFeedVersion
+avatarStateVersion
+wsClients
+telnetClients
 ```
 
-Si le Chat Bus devient public ou semi-public, prévoir :
+Mapping conseillé :
 
-- authentification ;
-- CORS limité ;
-- rate limit ;
-- logs sans secrets ;
-- option pour masquer `messages` et garder uniquement les compteurs.
+```js
+const chatState = {
+  ok: status.ok,
+  status: status.ok ? 'online' : 'degraded',
+  updatedAt: new Date().toISOString(),
+  ws: {
+    connected: Number(status.wsClients || 0) > 0,
+  },
+  clients: {
+    pc: { count: 1 },
+    phone: { count: 0 },
+    minitel: { count: Number(status.telnetClients || 0) },
+    count: Number(status.wsClients || 0) + Number(status.telnetClients || 0),
+  },
+  queue: { pending: 0 },
+};
+```
 
----
+Note : `wsClients` désigne les clients WebSocket du runtime 3615, pas forcément uniquement un PC. Pour un affichage plus juste, l’adaptateur peut appeler ce groupe `pc` tant qu’il s’agit du cockpit opérateur / client web.
 
-## CORS / déploiement
+### Depuis `GET /minitel/messages`
 
-Si `/star/` et Korigan ne sont pas servis depuis le même origin, l’endpoint doit autoriser l’origine du cockpit.
-
-Exemple minimal côté réponse :
+Korigan renvoie notamment :
 
 ```txt
-Access-Control-Allow-Origin: https://nitro.sterenna.fr
-Content-Type: application/json
-Cache-Control: no-store
+ok
+stats
+messages
+sessions
+vdtAssets
+vdtState
+providers
+localConfig
 ```
 
-Ne pas utiliser `*` si l’endpoint finit par exposer des données agent ou des messages non publics.
+Les messages sont déjà formatés côté serveur avec :
+
+```txt
+nick
+transport
+kind
+text
+targetSessionId
+createdAt
+```
+
+Mapping conseillé :
+
+```js
+const messages = raw.messages || [];
+const normalizedMessages = messages.slice(-6).map((message) => ({
+  from: message.nick || message.transport || 'agent',
+  text: message.kind === 'action'
+    ? `* ${message.text}`
+    : message.text,
+  createdAt: message.createdAt,
+}));
+
+chatState.messages = normalizedMessages;
+chatState.lastMessage = normalizedMessages.at(-1) || null;
+```
 
 ---
 
-## Test rapide avec un mock local
-
-Créer un fichier temporaire ou une route locale qui renvoie :
-
-```json
-{
-  "ok": true,
-  "status": "online",
-  "updatedAt": "2026-07-09T12:34:56.000Z",
-  "ws": { "connected": true },
-  "clients": {
-    "pc": { "count": 1 },
-    "phone": { "count": 1 },
-    "minitel": { "count": 1 },
-    "count": 3
-  },
-  "queue": { "pending": 2 },
-  "lastMessage": { "from": "minitel", "text": "READY" },
-  "messages": [
-    { "from": "pc", "text": "HELLO" },
-    { "from": "minitel", "text": "READY" }
-  ]
-}
-```
-
-Puis dans le cockpit Star :
-
-1. ouvrir `/star/` ;
-2. trouver la carte `KORIGAN · CHAT STATE` ;
-3. cliquer `ENDPOINT` ;
-4. renseigner l’URL du mock ;
-5. cliquer `RESCAN`.
-
----
-
-## Exemple d’endpoint Express côté Korigan
+## Exemple d’adaptateur Express côté Korigan
 
 ```js
 app.get('/api/korigan/chat/state', (req, res) => {
+  const stats = getRuntimeStats();
+  const messages = getOperatorMessages(consoleState);
+  const sessions = getOperatorSessions(consoleState);
+
+  const normalizedMessages = messages.slice(-6).map((message) => ({
+    from: message.nick || message.transport || 'agent',
+    text: String(message.text || '').slice(0, 120),
+    createdAt: message.createdAt,
+  }));
+
   res.setHeader('Cache-Control', 'no-store');
   res.json({
     ok: true,
-    status: chatBus.ws.connected ? 'online' : 'degraded',
+    status: 'online',
     updatedAt: new Date().toISOString(),
     ws: {
-      connected: chatBus.ws.connected,
-      uptimeMs: chatBus.ws.uptimeMs,
-      lastEventAt: chatBus.ws.lastEventAt,
+      connected: Number(stats.wsClients || 0) > 0,
     },
     clients: {
-      pc: { count: chatBus.clients.pc.size },
-      phone: { count: chatBus.clients.phone.size },
-      minitel: { count: chatBus.clients.minitel.size },
-      count: chatBus.clientCount,
+      pc: { count: Number(stats.wsClients || 0) },
+      phone: { count: 0 },
+      minitel: { count: Number(stats.telnetClients || 0) },
+      count: Number(stats.wsClients || 0) + Number(stats.telnetClients || 0),
     },
     queue: {
-      pending: chatBus.queue.pending,
-      failed: chatBus.queue.failed,
+      pending: 0,
     },
-    lastMessage: chatBus.lastMessage
-      ? {
-          from: chatBus.lastMessage.from,
-          text: String(chatBus.lastMessage.text || '').slice(0, 120),
-        }
-      : null,
-    messages: chatBus.recentMessages.slice(0, 6).map(message => ({
-      from: message.from,
-      text: String(message.text || '').slice(0, 120),
-    })),
+    sessions,
+    lastMessage: normalizedMessages.at(-1) || null,
+    messages: normalizedMessages,
   });
 });
 ```
 
 ---
 
-## Points faibles actuels / TODO
+## Chat Bus fonctionnel côté 3615
 
-1. **CSS injecté par JS**  
-   `korigan-chat-state.js` injecte encore un `<style>` runtime. Pour une intégration plus propre, migrer ce CSS vers un fichier dédié, par exemple :
+Le runtime 3615 permet déjà :
 
-   ```txt
-   css/star-korigan-chat.css
-   ```
+- chat local PC ↔ Minitel ;
+- console opérateur web sur `/minitel/operator` ;
+- flux live SSE `/minitel/operator/events` ;
+- envoi opérateur via `POST /minitel/messages` ;
+- réception côté Minitel / WebSocket ;
+- commandes `pc`, `messages`, `who`, `nick`, `say`, `me`, `pc ping`, `pc status` ;
+- historique court en mémoire ;
+- sessions connectées ;
+- déconnexion contrôlée d’une session ;
+- diffusion VDT allowlistée vers Telnet.
 
-2. **Heuristique WebSocket trop optimiste**  
-   Actuellement, `ws.connected` absent est affiché comme `ON`. Il faudrait idéalement afficher `?` ou `UNKNOWN` si le champ est absent.
+Les messages sont :
 
-3. **Pas de schéma partagé**  
-   Ajouter un petit JSON Schema ou un TypeScript type côté Korigan permettrait d’éviter les dérives de payload.
-
-4. **Messages récents potentiellement sensibles**  
-   Garder par défaut des messages tronqués, ou exposer uniquement `lastMessage` en environnement public.
-
-5. **Endpoint manuel via prompt**  
-   Pour une UX plus propre, remplacer `prompt()` par un mini formulaire dans la carte.
+- sanitizés ;
+- limités à 120 caractères ;
+- gardés en mémoire seulement ;
+- jamais transformés en commande système.
 
 ---
 
-## Checklist d’implémentation côté Korigan
+## WebSocket et Telnet
 
-- [ ] Créer `GET /api/korigan/chat/state`.
+Le transport WebSocket réel est :
+
+```txt
+WS /minitel/ws
+```
+
+Le transport Telnet/Minitel réel est :
+
+```txt
+TCP :3615
+```
+
+À la connexion WebSocket, Korigan renvoie un message `welcome` avec :
+
+```txt
+type: welcome
+service
+node
+menu
+session
+nitroFeedVersion
+avatarStateVersion
+```
+
+Quand un message opérateur est diffusé vers WebSocket :
+
+```txt
+type: operator-message
+message: { nick, transport, kind, text, targetSessionId, createdAt }
+```
+
+Quand un utilisateur console envoie `say`, `me` ou du texte dans l’écran console, Korigan diffuse :
+
+```txt
+type: console-message
+message: { nick, transport, kind, text, createdAt }
+```
+
+---
+
+## Providers live
+
+Korigan documente des providers live opt-in :
+
+```txt
+Ollama
+Home Assistant
+Twitch
+Discord
+```
+
+Chaque provider exige :
+
+```txt
+*_PROVIDER_ENABLED=true
+```
+
+et les clés/config nécessaires.
+
+Les actions documentées :
+
+```txt
+POST /minitel/providers/ollama/ask
+POST /minitel/providers/ollama/models
+POST /minitel/providers/home-assistant/service
+POST /minitel/providers/twitch/send
+POST /minitel/providers/discord/send
+```
+
+Règle importante : les secrets ne doivent jamais être renvoyés au cockpit Star. Le statut provider doit être redacted.
+
+---
+
+## Sécurité et limites à respecter
+
+Côté Korigan, la documentation impose notamment :
+
+- pas de secrets, IP locales, device IDs ou tokens dans les docs, logs, écrans Minitel, réponses HTTP, payloads WebSocket ou commits ;
+- pas d’exécution de commande shell depuis une entrée Minitel ;
+- pas de dépendance hardware/serial dans le service principal ;
+- pas d’upload ni conversion arbitraire de fichiers VDT dans le MVP ;
+- providers live désactivés par défaut ;
+- actions live à durcir avant exposition hors LAN.
+
+Pour Star, cela veut dire :
+
+- lire uniquement un endpoint d’état safe ;
+- ne pas envoyer de secrets ;
+- ne pas piloter directement Discord, Twitch, Home Assistant ou Ollama ;
+- ne pas exposer de payload brut non filtré.
+
+---
+
+## CORS / déploiement
+
+Korigan possède déjà une politique CORS côté serveur via :
+
+```txt
+GATEWAY_CORS_ORIGINS
+PUBLIC_ORIGIN
+```
+
+Si le cockpit Star statique appelle Korigan depuis un origin différent, il faut autoriser explicitement l’origin Nitro.
+
+Exemple :
+
+```txt
+GATEWAY_CORS_ORIGINS=https://nitro.sterenna.fr
+```
+
+Réponses recommandées pour les endpoints d’état :
+
+```txt
+Content-Type: application/json
+Cache-Control: no-store
+Access-Control-Allow-Origin: https://nitro.sterenna.fr
+```
+
+---
+
+## Checklist de raccord réel
+
+- [ ] Décider : adaptateur côté Korigan ou widget Star qui lit `/minitel/messages`.
+- [ ] Si adaptateur : créer `GET /api/korigan/chat/state` dans Korigan.
+- [ ] Mapper `stats.wsClients` vers `clients.pc.count` ou `ws.connected`.
+- [ ] Mapper `stats.telnetClients` vers `clients.minitel.count`.
+- [ ] Mapper `messages` vers `lastMessage` + `messages` tronqués.
 - [ ] Renvoyer `Cache-Control: no-store`.
-- [ ] Renvoyer `Content-Type: application/json`.
-- [ ] Renvoyer explicitement `ws.connected`.
-- [ ] Renvoyer les compteurs `clients.pc`, `clients.phone`, `clients.minitel`.
-- [ ] Renvoyer `clients.count`.
-- [ ] Renvoyer `queue.pending`.
-- [ ] Tronquer / filtrer `lastMessage` et `messages`.
-- [ ] Ne jamais exposer de secrets.
+- [ ] Ne renvoyer aucun secret ni config complète sensible.
 - [ ] Tester depuis `/star/` avec `ENDPOINT` puis `RESCAN`.
-- [ ] Vérifier les CORS si origin différent.
+- [ ] Vérifier CORS si Star et Korigan ne partagent pas le même origin.
+- [ ] Garder Star comme observateur, pas comme runtime du bus.
 
 ---
 
-## Règle d’architecture
+## Prochaine amélioration côté Star
 
-Le **Chat Bus** appartient à Korigan.
+Le widget actuel devrait évoluer pour accepter aussi directement le format Korigan actuel :
 
-Le cockpit Star statique doit rester un **observateur** : il lit l’état, affiche les compteurs, aide au debug, mais ne devient pas le serveur de chat ni le détenteur des secrets.
+```txt
+/minitel/messages
+```
+
+En particulier :
+
+```txt
+raw.stats.wsClients
+raw.stats.telnetClients
+raw.messages
+raw.sessions
+```
+
+Cela permettrait de tester immédiatement le Chat Bus sans attendre l’adaptateur `/api/korigan/chat/state`.
+
+La meilleure version long terme reste néanmoins un endpoint d’adaptation unique côté Korigan.
