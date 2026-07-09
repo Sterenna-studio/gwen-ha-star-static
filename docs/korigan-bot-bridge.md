@@ -1,38 +1,34 @@
 # Korigan bot bridge
 
-Objectif futur : brancher un bot Discord et un bot Twitch sur le cockpit Star,
-en gardant Korigan comme frontière runtime.
+Cette documentation décrit la carte `KORIGAN · BOT BRIDGE` côté Star statique et son contrat avec Korigan.
 
-## État actuel
+Depuis les nouvelles docs Korigan `docs/3615/GWEN_HA_STAR_STATIC_INTEGRATION.md`, l’endpoint n’est plus seulement prévu : il est implémenté côté runtime 3615.
 
-- `js/star/korigan-bot-bridge.js` affiche une carte `KORIGAN · BOT BRIDGE`
-  dans `/star/`.
-- La carte tente de lire un endpoint de statut futur, puis retombe sur un état
-  `PLAN` si aucun endpoint Korigan n'est disponible.
-- Aucun token, secret, guild id, channel id ou valeur de configuration n'est lu
-  ni affiché par `gwen-ha-star-static`.
-- Le module ne connecte aucun provider réel : il prépare seulement la surface UI
-  et le contrat de statut.
+---
 
 ## Frontière de responsabilité
 
-Korigan doit posséder :
+Korigan possède :
 
-- le process du bot Discord ;
-- le process ou adapter du bot Twitch ;
-- la lecture des variables d'environnement ;
+- le process ou adapter Discord ;
+- le process ou adapter Twitch ;
+- la lecture des variables d’environnement ;
 - les clients réseau ;
-- le filtrage 40 colonnes / Telnet-safe ;
-- la file d'événements vers le chat bus.
+- la redaction des statuts ;
+- les providers live réels ;
+- le raccord éventuel vers le Chat Bus.
 
 Star doit seulement :
 
 - afficher un statut safe ;
-- afficher les commandes prévues ;
+- afficher les commandes disponibles ;
 - permettre de pointer vers un endpoint de statut ;
-- rester fonctionnel si Korigan est absent.
+- rester fonctionnel si Korigan est absent ;
+- ne jamais lire ou stocker de secret.
 
-## Endpoint safe prévu
+---
+
+## Endpoint officiel
 
 Endpoint par défaut côté Star :
 
@@ -40,13 +36,27 @@ Endpoint par défaut côté Star :
 GET /api/korigan/bots/status
 ```
 
-Forme attendue :
+En local côté runtime Korigan :
+
+```txt
+http://127.0.0.1:8085/api/korigan/bots/status
+```
+
+Sur Nitro, même chemin public via proxy Nginx :
+
+```txt
+https://nitro.sterenna.fr/api/korigan/bots/status
+```
+
+---
+
+## Forme attendue
 
 ```json
 {
   "ok": true,
   "mode": "mock",
-  "updatedAt": "2026-07-06T00:00:00.000Z",
+  "updatedAt": "2026-07-09T01:23:19.420Z",
   "providers": {
     "discord": {
       "configured": false,
@@ -70,18 +80,37 @@ Forme attendue :
 }
 ```
 
-Contraintes :
+`mode` devient `live` uniquement si au moins un provider est activé et complètement configuré côté Korigan.
 
-- ne jamais renvoyer de token ou secret ;
-- ne pas renvoyer de valeur brute de channel/guild si elle peut identifier un
-  secret opérationnel ;
-- préférer les booléens et compteurs : `configured`, `enabled`, `connected`,
-  `channels`;
-- garder `mode: "mock"` tant que les providers réels ne sont pas activés.
+---
 
-## Commandes futures côté Korigan
+## Contraintes de sécurité
 
-Commandes déjà prévues côté UI Star :
+L’endpoint ne doit jamais renvoyer :
+
+- token Discord ;
+- token Twitch ;
+- channel ID privé ;
+- guild ID privé ;
+- bot nick opérationnel sensible ;
+- payload brut provider ;
+- valeur brute d’environnement.
+
+Il peut renvoyer :
+
+```txt
+configured
+enabled
+connected
+mode
+channels
+lastEventAt
+commands
+```
+
+---
+
+## Commandes affichées côté Star
 
 ```txt
 discord status
@@ -90,14 +119,30 @@ twitch status
 twitch chat
 ```
 
-Ces commandes doivent rester côté Korigan. Star ne doit pas router directement
-vers Discord ou Twitch.
+Ces commandes restent côté Korigan. Star n’envoie rien directement vers Discord ou Twitch.
 
-## Phases d'activation
+---
 
-1. Garder le module Star en `PLAN`/`MOCK`.
-2. Implémenter l'endpoint safe côté Korigan sans connecter les providers.
-3. Ajouter les tests anti-fuite de secrets côté Korigan.
-4. Activer Discord en environnement contrôlé.
-5. Activer Twitch en environnement contrôlé.
-6. Brancher les événements utiles vers le chat bus Korigan.
+## Tests de fumée
+
+Runtime local :
+
+```bash
+curl --fail http://127.0.0.1:8085/api/korigan/bots/status
+```
+
+Public Nitro :
+
+```bash
+curl --fail https://nitro.sterenna.fr/api/korigan/bots/status
+```
+
+Cockpit :
+
+```txt
+https://nitro.sterenna.fr/star/
+→ KORIGAN · BOT BRIDGE
+→ RESCAN
+```
+
+La carte doit afficher `MOCK` tant que les providers réels ne sont pas activés.
