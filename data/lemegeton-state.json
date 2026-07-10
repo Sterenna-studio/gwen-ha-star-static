@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "updatedAt": "2026-07-10T16:42:21.781Z",
+  "source": "gwen-ha-star-static",
+  "avatar": {
+    "name": "LEMEGETON",
+    "status": "online",
+    "mode": "listening",
+    "mood": "nerveux · rave · basses lourdes · chaos contrôlé",
+    "eyes": "focused",
+    "mouth": "closed",
+    "intensity": 0.65,
+    "renderer": "nitro-radio-state"
+  },
+  "expressions": [
+    {
+      "id": "idle",
+      "label": "Repos",
+      "eyes": "open",
+      "mouth": "closed",
+      "note": "Radio en pause."
+    },
+    {
+      "id": "listening",
+      "label": "Ecoute",
+      "eyes": "focused",
+      "mouth": "closed",
+      "note": "Chronicles FM — Dr.Spig Mix"
+    }
+  ],
+  "pipeline": [
+    "Station: Gwen Ha Star Radio",
+    "Frequence: Chronicles FM — Dr.Spig Mix",
+    "Playlists: 13"
+  ]
+}

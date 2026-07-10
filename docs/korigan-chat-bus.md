@@ -39,6 +39,9 @@ GET /data/3615-feed.json
 Korigan peut le mettre en cache et conserver son feed local comme fallback.
 Le manifeste ne contient aucun profil privé, token Supabase ou secret runtime.
 
+Le même build publie l’état terminal-safe de Lemegeton, dérivé de l’état réel
+de la radio et de la fréquence vedette : `GET /data/lemegeton-state.json`.
+
 En local côté runtime :
 
 ```txt
