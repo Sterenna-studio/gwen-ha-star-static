@@ -1,0 +1,114 @@
+{
+  "version": 2,
+  "updatedAt": "2026-07-10T15:53:13.488Z",
+  "source": "gwen-ha-star-static",
+  "network": {
+    "name": "Gwen Ha Star",
+    "domain": "nitro.sterenna.fr",
+    "status": "online",
+    "summary": "12 modules Nitro publies pour le terminal."
+  },
+  "agent": {
+    "displayName": "MutenRock",
+    "rank": "Agent Nitro",
+    "crew": "BZH Chronicles",
+    "status": "online",
+    "visibility": "public"
+  },
+  "apps": [
+    {
+      "id": "star",
+      "name": "Star Cockpit",
+      "status": "active",
+      "terminalLabel": "Cockpit membre",
+      "url": "https://nitro.sterenna.fr/star/"
+    },
+    {
+      "id": "star-aero",
+      "name": "Star Aero Cockpit",
+      "status": "prototype",
+      "terminalLabel": "Cockpit Frutiger",
+      "url": "https://nitro.sterenna.fr/star/aero.html"
+    },
+    {
+      "id": "star-frutiger-globe",
+      "name": "Aqua Globe",
+      "status": "prototype",
+      "terminalLabel": "Frutiger Aqua",
+      "url": "https://nitro.sterenna.fr/star/frutiger-globe/"
+    },
+    {
+      "id": "star-frutiger-biome",
+      "name": "BioGlass Biome",
+      "status": "prototype",
+      "terminalLabel": "Frutiger végétal",
+      "url": "https://nitro.sterenna.fr/star/frutiger-biome/"
+    },
+    {
+      "id": "star-frutiger-dock",
+      "name": "Aero Dock",
+      "status": "prototype",
+      "terminalLabel": "Launcher Frutiger",
+      "url": "https://nitro.sterenna.fr/star/frutiger-dock/"
+    },
+    {
+      "id": "nested-loops",
+      "name": "Nested Loops",
+      "status": "prototype",
+      "terminalLabel": "Simulation Hoberman",
+      "url": "https://nitro.sterenna.fr/star/nested-loops/"
+    },
+    {
+      "id": "star-jukebox-3d",
+      "name": "Star Jukebox 3D",
+      "status": "prototype",
+      "terminalLabel": "Vinyles · WebGL",
+      "url": "https://nitro.sterenna.fr/star/jukebox-3d/"
+    },
+    {
+      "id": "sterenna-panel",
+      "name": "Sterenna QG Panel",
+      "status": "prototype",
+      "terminalLabel": "Dashboard · admin",
+      "url": "https://nitro.sterenna.fr/star/sterenna-panel/"
+    },
+    {
+      "id": "star-arcade",
+      "name": "Star Arcade",
+      "status": "active",
+      "terminalLabel": "Casino · mini-jeux",
+      "url": "https://nitro.sterenna.fr/arena/arcade-casino/"
+    },
+    {
+      "id": "botanica",
+      "name": "Botanica Obscura",
+      "status": "alpha",
+      "terminalLabel": "Jardin · gacha",
+      "url": "https://nitro.sterenna.fr/botanica/"
+    },
+    {
+      "id": "clicker",
+      "name": "Nitro Clicker",
+      "status": "alpha",
+      "terminalLabel": "Core · énergie",
+      "url": "https://nitro.sterenna.fr/clicker/"
+    },
+    {
+      "id": "arena",
+      "name": "Skill Arena",
+      "status": "active",
+      "terminalLabel": "Mini-jeux · duels",
+      "url": "https://nitro.sterenna.fr/arena/"
+    }
+  ],
+  "signals": [
+    "Chronicles FM: 13 frequences.",
+    "Gwen Ha Star Radio active.",
+    "Donnees synchronisees depuis Nitro."
+  ],
+  "links": {
+    "publicPage": "https://nitro.sterenna.fr/star/",
+    "websocket": "wss://nitro.sterenna.fr/minitel/ws",
+    "telnet": "nitro.sterenna.fr:3615"
+  }
+}

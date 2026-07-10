@@ -51,6 +51,9 @@ jobs:
           echo "Commit: $GITHUB_SHA" >> deploy-test.txt
           echo "Date: $(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> deploy-test.txt
 
+      - name: Generate terminal-safe 3615 feed
+        run: node scripts/build-3615-feed.mjs
+
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
@@ -110,6 +113,7 @@ jobs:
             "/js/chronicles-fm-widget.js"
             "/shared/supabase-client.js"
             "/jukebox/chronicles-fm.json"
+            "/data/3615-feed.json"
           )
 
           for path in "${paths[@]}"; do

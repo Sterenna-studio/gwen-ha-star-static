@@ -27,6 +27,18 @@ GET /api/korigan/chat/state
 GET /api/korigan/bots/status
 ```
 
+## Feed public Nitro pour le Minitel
+
+Le déploiement génère aussi un manifeste public terminal-safe depuis
+`shared/nitro-apps.js`, `radio/live.json` et `jukebox/chronicles-fm.json` :
+
+```txt
+GET /data/3615-feed.json
+```
+
+Korigan peut le mettre en cache et conserver son feed local comme fallback.
+Le manifeste ne contient aucun profil privé, token Supabase ou secret runtime.
+
 En local côté runtime :
 
 ```txt
