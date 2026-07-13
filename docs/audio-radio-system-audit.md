@@ -5,6 +5,8 @@ jukebox). Objectif : poser un état des lieux avant toute nouvelle fonctionnalit
 que le système actuel a grossi par empilement de patches successifs plutôt que par design.
 
 Voir l'issue de suivi : [#17](https://github.com/Sterenna-studio/gwen-ha-star-static/issues/17).
+Règles à suivre pour tout travail futur sur ce domaine :
+[docs/audio-system-guidelines.md](./audio-system-guidelines.md).
 
 ## 1. Cartographie — 4 systèmes indépendants qui ne se parlent pas
 
@@ -114,15 +116,17 @@ formats de données et zéro coordination entre eux.
 
 ### 🔴 Clé admin client-side en dur, partagée par les deux jukebox
 
-- `superKey: 'bzhAdmin2025'` codé en dur dans
+- Un `superKey` codé en dur dans
   [jukebox/js/embed.js:22](../jukebox/js/embed.js#L22) et repris comme valeur par défaut dans
   [jukebox/js/JukeboxPlayer.js:27](../jukebox/js/JukeboxPlayer.js#L27)
-  (`this.superKey = opts.superKey || 'bzhAdmin2025';`).
-- Même mot de passe en dur, indépendamment, dans
-  [jukebox/js/app.js:84](../jukebox/js/app.js#L84) (`const HASH = 'bzhAdmin2025';`).
+  (`this.superKey = opts.superKey || '<valeur en dur>';`).
+- Le même mot de passe en dur, indépendamment, dans
+  [jukebox/js/app.js:84](../jukebox/js/app.js#L84) (`const HASH = '<valeur en dur>';`).
 - Débloque le panneau admin (édition des morceaux/styles) via un hash d'URL
-  (`#bzhAdmin2025`) ou un flag `localStorage`. Le mot de passe est visible en clair dans le
-  JS servi au client — donc public de fait, à qui sait lire une source JS.
+  (`#<valeur en dur>`) ou un flag `localStorage`. Le mot de passe est visible en clair dans
+  le JS servi au client — donc public de fait, à qui sait lire une source JS (valeur exacte
+  volontairement omise ici ; voir les fichiers cités, et envisager sa rotation puisqu'elle
+  est déjà publique dans l'historique Git).
 - Le reste de l'écosystème a un pattern établi et correct pour ça (rôle superuser vérifié
   côté Supabase, voir la note interne `no-hardcoded-ids`) : c'est justement ce que fait déjà
   `admin-audio.html`. Le module jukebox est le seul endroit du système audio encore sur
@@ -161,7 +165,7 @@ formats de données et zéro coordination entre eux.
 1. `admin/index.php` — documenté dans [jukebox/README.md](../jukebox/README.md) §1 et §6,
    mais **n'existe plus dans le repo** (aucun fichier `.php` dans tout le projet). Doc
    obsolète qui décrit un système supprimé.
-2. Panneau admin intégré au jukebox, débloqué par le mot de passe en dur `bzhAdmin2025`
+2. Panneau admin intégré au jukebox, débloqué par un mot de passe en dur dans le JS client
    (voir plus haut) — actif, mais sur un schéma d'auth différent du reste du site.
 3. [admin-audio.html](../admin-audio.html) — protégé par Basic Auth serveur (voir la note
    interne `ovh-server-access`), branché sur Supabase pour la gestion des dédicaces/uploads.

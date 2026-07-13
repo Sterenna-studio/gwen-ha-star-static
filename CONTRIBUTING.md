@@ -81,6 +81,11 @@ Dans les deux cas, le sous-projet devient accessible sous
 - **Crédits d'assets** : conserve les mentions d'auteur existantes.
 - **Backend partagé** : tous les projets pointent sur le même Supabase
   (comptes & données communautaires partagés).
+- **Système audio/radio** (Star Radio, Chronicles FM, jukebox, voix Lemegeton) : lire
+  [docs/audio-system-guidelines.md](./docs/audio-system-guidelines.md) avant toute
+  modification. Contexte complet dans
+  [docs/audio-radio-system-audit.md](./docs/audio-radio-system-audit.md) (issue
+  [#17](https://github.com/Sterenna-studio/gwen-ha-star-static/issues/17)).
 
 ---
 
