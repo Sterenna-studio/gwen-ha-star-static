@@ -46,9 +46,17 @@ export async function publishActivityEvent(auth, type, message, detail = {}) {
     },
   });
 
-  if (!item) return false;
+  if (!item) {
+    return emitPublishResult({
+      remote: false,
+      local: false,
+      duplicate: false,
+      item: null,
+      error: 'invalid activity event',
+    });
+  }
 
-  saveLocalActivityEvent(item);
+  const local = saveLocalActivityEvent(item);
 
   try {
     const { error } = await supabase.from('activity_log').insert({
@@ -57,11 +65,16 @@ export async function publishActivityEvent(auth, type, message, detail = {}) {
       user_id: item.user_id,
     });
 
+    if (error?.code === '23505') {
+      return emitPublishResult({ remote: true, local, duplicate: true, item, error: null });
+    }
     if (error) throw error;
-    return true;
+
+    return emitPublishResult({ remote: true, local, duplicate: false, item, error: null });
   } catch (error) {
-    console.warn('[star-activity] remote publish skipped:', error?.message || error);
-    return false;
+    const message = error?.message || String(error);
+    console.warn('[star-activity] remote publish skipped:', message);
+    return emitPublishResult({ remote: false, local, duplicate: false, item, error: message });
   }
 }
 
@@ -75,8 +88,9 @@ export function publishTitleUnlocked(auth, titleLabel, detail = {}) {
 
 export function publishChroniclesGain(auth, amount, reason = 'gain cockpit', detail = {}) {
   const value = Number(amount) || 0;
-  const sign = value >= 0 ? '+' : '';
-  return publishActivityEvent(auth, 'chronicles_gain', `${sign}${value} Chronicles · ${reason}`, {
+  const type = value < 0 ? 'chronicles_spent' : 'chronicles_gain';
+  const sign = value > 0 ? '+' : '';
+  return publishActivityEvent(auth, type, `${sign}${value} Chronicles · ${reason}`, {
     ...detail,
     channel: detail.channel ?? 'personal',
     amount: value,
@@ -113,7 +127,15 @@ export function publishMiniEvent(auth, eventId = null, detail = {}) {
     ? eventId
     : getAmbientActivityEvent(eventId);
 
-  if (!preset) return Promise.resolve(false);
+  if (!preset) {
+    return Promise.resolve({
+      remote: false,
+      local: false,
+      duplicate: false,
+      item: null,
+      error: 'unknown ambient activity event',
+    });
+  }
 
   return publishActivityEvent(auth, preset.type, preset.message, {
     ...(preset.detail ?? {}),
@@ -124,7 +146,7 @@ export function publishMiniEvent(auth, eventId = null, detail = {}) {
 }
 
 function saveLocalActivityEvent(item, storage = getStorage()) {
-  if (!storage) return;
+  if (!storage) return false;
 
   try {
     const events = getLocalActivityEvents(storage);
@@ -136,7 +158,17 @@ function saveLocalActivityEvent(item, storage = getStorage()) {
       .slice(0, MAX_LOCAL_EVENTS);
 
     storage.setItem(LOCAL_ACTIVITY_KEY, JSON.stringify(next));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function emitPublishResult(result) {
+  try {
+    window.dispatchEvent(new CustomEvent('star:activity-publish-result', { detail: result }));
   } catch {}
+  return result;
 }
 
 function normalizeActivityEvent(item) {
