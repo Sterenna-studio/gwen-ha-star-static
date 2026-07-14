@@ -54,6 +54,11 @@ export const ACTIVITY_EVENT_TYPES = Object.freeze({
     icon: '◈',
     defaultChannel: 'crew',
   },
+  daily_content_published: {
+    label: 'DAILY',
+    icon: '▶',
+    defaultChannel: 'global',
+  },
   title_unlocked: {
     label: 'TITRE',
     icon: '★',
@@ -63,6 +68,16 @@ export const ACTIVITY_EVENT_TYPES = Object.freeze({
     label: 'CHRONICLES',
     icon: '¤',
     defaultChannel: 'personal',
+  },
+  chronicles_spent: {
+    label: 'DÉPENSE',
+    icon: '−',
+    defaultChannel: 'personal',
+  },
+  radio_dedication: {
+    label: 'DÉDICACE',
+    icon: '♫',
+    defaultChannel: 'global',
   },
   git_push: {
     label: 'GIT PUSH',
