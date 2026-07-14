@@ -135,18 +135,29 @@ jobs:
           import os
           import urllib.error
           import urllib.request
+          from pathlib import Path
 
           url = os.environ.get('GHSTAR_SUPABASE_URL', '').rstrip('/')
           key = os.environ.get('GHSTAR_SUPABASE_SERVICE_ROLE', '')
+          summary_path = os.environ.get('GITHUB_STEP_SUMMARY')
+
+          def append_summary(text):
+              if summary_path:
+                  with Path(summary_path).open('a', encoding='utf-8') as summary:
+                      summary.write(text.rstrip() + '\n')
 
           if not url or not key:
-              print('Star activity git_push skipped: missing GHSTAR_SUPABASE_URL or GHSTAR_SUPABASE_SERVICE_ROLE')
+              warning = '⚠️ Star activity non publiée : secret GHSTAR_SUPABASE_SERVICE_ROLE manquant.'
+              print(warning)
+              append_summary(f'### Activity log\n\n{warning}')
               raise SystemExit(0)
 
           repo = os.environ.get('GITHUB_REPOSITORY', 'Sterenna-studio/gwen-ha-star-static')
           branch = os.environ.get('GITHUB_REF_NAME', 'main')
           commit = os.environ.get('GITHUB_SHA', '')
           actor = os.environ.get('GITHUB_ACTOR', 'github-actions')
+          run_id = os.environ.get('GITHUB_RUN_ID', 'unknown')
+          run_attempt = os.environ.get('GITHUB_RUN_ATTEMPT', '1')
 
           payload = {
               'event_type': 'git_push',
@@ -159,8 +170,9 @@ jobs:
               'repo': repo,
               'branch': branch,
               'commit': commit,
-              'run_id': os.environ.get('GITHUB_RUN_ID'),
-              'run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
+              'run_id': run_id,
+              'run_attempt': run_attempt,
+              'client_event_id': f'github:{repo}:{run_id}:{run_attempt}',
           }
 
           body = json.dumps({
@@ -177,13 +189,22 @@ jobs:
                   'apikey': key,
                   'Authorization': f'Bearer {key}',
                   'Content-Type': 'application/json',
-                  'Prefer': 'return=minimal',
+                  'Prefer': 'resolution=ignore-duplicates,return=minimal',
               },
           )
 
           try:
               with urllib.request.urlopen(request, timeout=15) as response:
-                  print(f'Star activity git_push published: HTTP {response.status}')
-          except (urllib.error.URLError, urllib.error.HTTPError) as exc:
-              print(f'Star activity git_push warning: {exc}')
+                  message = f'Star activity git_push publiée : HTTP {response.status}'
+                  print(message)
+                  append_summary(f'### Activity log\n\n✅ {message}')
+          except urllib.error.HTTPError as exc:
+              body = exc.read().decode('utf-8', errors='replace')[:500]
+              warning = f'Star activity git_push refusée : HTTP {exc.code} · {body}'
+              print(warning)
+              append_summary(f'### Activity log\n\n⚠️ {warning}')
+          except urllib.error.URLError as exc:
+              warning = f'Star activity git_push indisponible : {exc.reason}'
+              print(warning)
+              append_summary(f'### Activity log\n\n⚠️ {warning}')
           PY
