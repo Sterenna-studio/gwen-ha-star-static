@@ -1,5 +1,6 @@
 import { requireAuth } from '../../shared/guards.js';
 import { supabase } from '../../shared/supabase-client.js';
+import { publishActivityEvent } from '../../js/star/activity-events.js';
 
 const app = document.getElementById('app');
 const DEFAULT_SHIPS = [
@@ -12,9 +13,11 @@ const DEFAULTS = { stars:1, ships:1, shipMax:6, speed:1, asteroids:.55, planets:
 const fields = [
   ['stars','Étoiles',0,2.5,.05], ['ships','Trafic vaisseaux',0,3,.05], ['shipMax','Vaisseaux max',0,14,1],
   ['speed','Vitesse générale',.2,3,.05], ['asteroids','Astéroïdes',0,2.5,.05], ['planets','Petites planètes',0,2,.05],
-  ['satellites','Satellites',0,2,.05], ['crashes','Crashs / incidents',0,1,.02], ['nebula','Nébuleuse',0,2,.05], ['shake','Tremblements',0,1,.05]
+  ['satellites','Satellites',0,2,.05], ['crashes','Crashs / incidents',0,1,.02], ['nebula','Nébuleuse',0,2,.05], ['shake','Tremblements',0,1,.05],
 ];
-let cfg = { ...DEFAULTS }, enabled = true;
+let cfg = { ...DEFAULTS };
+let enabled = true;
+let authContext = null;
 
 boot();
 
@@ -31,6 +34,7 @@ async function boot(){
     app.innerHTML = '<section class="bg-card bg-locked"><p class="bg-kicker">// SPACE BACKGROUND</p><h1 class="bg-title">ACCÈS <span>REFUSÉ</span></h1><p class="bg-sub">Console réservée aux profils superuser.</p><p><a class="bg-btn" href="/star/">← COCKPIT</a></p></section>';
     return;
   }
+  authContext = auth;
   renderShell();
   await loadConfig();
   renderFields();
@@ -123,9 +127,35 @@ async function saveConfig(){
   cfg = { ...DEFAULTS, ...(data.config || cfg) };
   cfg.shipLibrary = normalizeShips(cfg.shipLibrary);
   publishConfig();
-  toast('Configuration sauvegardée. Recharge l’accueil pour voir le résultat.');
   renderFields();
   renderShips();
+
+  const activity = await publishActivityEvent(
+    authContext,
+    'admin_space_background',
+    'Configuration du background spatial sauvegardée',
+    {
+      channel: 'crew',
+      source: 'star-admin.space-background',
+      action: 'save',
+      target: '/',
+      enabled,
+      config: {
+        stars: cfg.stars,
+        ships: cfg.ships,
+        shipMax: cfg.shipMax,
+        speed: cfg.speed,
+        asteroids: cfg.asteroids,
+        crashes: cfg.crashes,
+      },
+    },
+  );
+
+  if(activity.remote){
+    toast('Configuration sauvegardée et journalisée. Recharge l’accueil pour voir le résultat.');
+  } else {
+    toast('Configuration sauvegardée, mais le journal distant est indisponible.', true);
+  }
 }
 
 function toast(text, err=false){
