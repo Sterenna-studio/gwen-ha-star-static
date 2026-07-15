@@ -85,6 +85,7 @@ jobs:
             --exclude='/geotia/' \
             --exclude='/goetia/' \
             --exclude='/ARCHITECTURE.md' \
+            --exclude='/icons/' \
             -e "ssh -i ~/.ssh/ovh_key" \
             ./ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/"
 
@@ -147,7 +148,7 @@ jobs:
                       summary.write(text.rstrip() + '\n')
 
           if not url or not key:
-              warning = '⚠️ Star activity non publiée : secret GHSTAR_SUPABASE_SERVICE_ROLE manquant.'
+              warning = '\u26a0\ufe0f Star activity non publi\u00e9e : secret GHSTAR_SUPABASE_SERVICE_ROLE manquant.'
               print(warning)
               append_summary(f'### Activity log\n\n{warning}')
               raise SystemExit(0)
@@ -163,7 +164,7 @@ jobs:
               'event_type': 'git_push',
               'channel': 'crew',
               'audience': 'crew',
-              'message': f"Push git {repo}:{branch} · {commit[:7]} deploy OK",
+              'message': f"Push git {repo}:{branch} \u00b7 {commit[:7]} deploy OK",
               'actor': actor,
               'role': 'automation',
               'source': 'github-actions.deploy-ovh',
@@ -195,16 +196,16 @@ jobs:
 
           try:
               with urllib.request.urlopen(request, timeout=15) as response:
-                  message = f'Star activity git_push publiée : HTTP {response.status}'
+                  message = f'Star activity git_push publi\u00e9e : HTTP {response.status}'
                   print(message)
-                  append_summary(f'### Activity log\n\n✅ {message}')
+                  append_summary(f'### Activity log\n\n\u2705 {message}')
           except urllib.error.HTTPError as exc:
               body = exc.read().decode('utf-8', errors='replace')[:500]
-              warning = f'Star activity git_push refusée : HTTP {exc.code} · {body}'
+              warning = f'Star activity git_push refus\u00e9e : HTTP {exc.code} \u00b7 {body}'
               print(warning)
-              append_summary(f'### Activity log\n\n⚠️ {warning}')
+              append_summary(f'### Activity log\n\n\u26a0\ufe0f {warning}')
           except urllib.error.URLError as exc:
               warning = f'Star activity git_push indisponible : {exc.reason}'
               print(warning)
-              append_summary(f'### Activity log\n\n⚠️ {warning}')
+              append_summary(f'### Activity log\n\n\u26a0\ufe0f {warning}')
           PY
