@@ -33,6 +33,9 @@ formats de données et zéro coordination entre eux.
     patch stack silencieusement (aucune erreur, juste un comportement différent).
 - Backend : `radio/live.json` (config statique), table `public.radio_dedications` +
   3 RPC Supabase dans [scripts/sql/002_radio_dedications.sql](../scripts/sql/002_radio_dedications.sql).
+- `live.json` porte aussi `siteUrl` (site radio externe, ex. Korigan) : le lecteur affiche
+  un lien `KORIGAN`, cliquable seulement si le site répond (probe `fetch` no-cors,
+  `_mountSiteLink()` dans `widgets.js`), grisé sinon.
 
 ### 1.2 Chronicles FM (widget flottant `#cfm-bar`)
 

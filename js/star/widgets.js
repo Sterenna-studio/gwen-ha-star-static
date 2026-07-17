@@ -190,6 +190,32 @@ export class VideoDay {
 }
 
 // ── WEB RADIO ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Teste si le site radio externe répond (fetch no-cors : résout si le serveur
+ * est joignable, rejette si down/injoignable). Résultat mémorisé par URL pour
+ * éviter de re-pinger à chaque render.
+ */
+const _radioSiteProbeCache = new Map();
+export function probeRadioSite(url) {
+  if (!_radioSiteProbeCache.has(url)) {
+    _radioSiteProbeCache.set(url, (async () => {
+      try {
+        await fetch(url, {
+          method: 'HEAD',
+          mode: 'no-cors',
+          cache: 'no-store',
+          signal: AbortSignal.timeout(6000),
+        });
+        return true;
+      } catch {
+        return false;
+      }
+    })());
+  }
+  return _radioSiteProbeCache.get(url);
+}
+
 export class RadioPlayer {
   constructor(containerId, opts = {}) {
     this.el        = document.getElementById(containerId);
@@ -228,6 +254,10 @@ export class RadioPlayer {
             <span class="radio-led" id="radio-led"></span>
             <span class="radio-station" id="radio-station">CHARGEMENT...</span>
             <span class="radio-live-pill" id="radio-live-pill">SYNC</span>
+            <a class="radio-site-link" id="radio-site-link" data-state="checking" hidden
+               target="_blank" rel="noopener noreferrer">
+              <span class="radio-site-led" aria-hidden="true"></span>KORIGAN
+            </a>
           </div>
           <select class="radio-select" id="radio-playlist"></select>
         </div>
@@ -279,6 +309,33 @@ export class RadioPlayer {
     this._loadDefaultMode();
     this._restoreAutoJoin();
     this._vizLoop();
+    this._mountSiteLink();
+  }
+
+  /**
+   * Lien vers le site radio externe (live.json → siteUrl).
+   * Cliquable uniquement si le site répond ; sinon affiché éteint.
+   */
+  async _mountSiteLink() {
+    const link = this.el?.querySelector('#radio-site-link');
+    if (!link) return;
+    const url = this.live?.siteUrl ?? '';
+    if (!url) { link.hidden = true; return; }
+    link.hidden = false;
+    link.dataset.state = 'checking';
+    link.title = 'Vérification de la radio…';
+    const online = await probeRadioSite(url);
+    if (online) {
+      link.href = url;
+      link.dataset.state = 'online';
+      link.title = 'Ouvrir la radio Korigan ↗';
+      link.removeAttribute('aria-disabled');
+    } else {
+      link.removeAttribute('href');
+      link.dataset.state = 'offline';
+      link.title = 'Radio hors ligne';
+      link.setAttribute('aria-disabled', 'true');
+    }
   }
 
   _$(id) {
@@ -297,6 +354,7 @@ export class RadioPlayer {
     this.live = {
       enabled: true,
       stationName: 'Gwen Ha Star Radio',
+      siteUrl: '',
       streamUrl: '',
       metadataUrl: '',
       scheduleEpoch: '2026-01-01T00:00:00Z',
