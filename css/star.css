@@ -264,6 +264,54 @@
   background: var(--c-surface-2);
   white-space: nowrap;
 }
+/* ── Lien site radio externe (Korigan) — cliquable seulement si en ligne ── */
+.radio-site-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-border);
+  color: var(--c-text-faint);
+  background: var(--c-surface-2);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+.radio-site-led {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--c-text-faint);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.radio-site-link[data-state="online"] {
+  color: var(--c-primary);
+  border-color: color-mix(in oklch, var(--c-primary) 55%, var(--c-border));
+  cursor: pointer;
+}
+.radio-site-link[data-state="online"] .radio-site-led {
+  background: var(--c-primary);
+  box-shadow: var(--glow-green);
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+.radio-site-link[data-state="online"]:hover {
+  box-shadow: 0 0 14px color-mix(in oklch, var(--c-primary) 30%, transparent);
+}
+.radio-site-link[data-state="online"]::after { content: " ↗"; }
+.radio-site-link[data-state="offline"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.radio-site-link[data-state="checking"] {
+  opacity: 0.7;
+  pointer-events: none;
+}
+.radio-site-link[data-state="checking"] .radio-site-led {
+  animation: pulse-dot 0.8s ease-in-out infinite;
+}
+
 .radio-live-pill--active {
   color: var(--c-primary);
   border-color: color-mix(in oklch, var(--c-primary) 55%, var(--c-border));

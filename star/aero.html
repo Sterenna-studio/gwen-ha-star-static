@@ -11,7 +11,10 @@
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/theme.css" />
   <link rel="stylesheet" href="../css/components.css" />
-  <link rel="stylesheet" href="../css/star-aero.css?v=20260709-frutiger-aero" />
+  <!-- Styles des widgets réels du Star (radio, activité) — classes namespacées -->
+  <link rel="stylesheet" href="../css/star.css" />
+  <link rel="stylesheet" href="../css/star-dashboard.css" />
+  <link rel="stylesheet" href="../css/star-aero.css?v=20260717-real-dashboard" />
 </head>
 <body class="star-aero-page">
   <div class="aero-hyperflash" aria-hidden="true"></div>
@@ -34,12 +37,12 @@
           <span class="aero-pill-value" id="aero-mode-value">FRUTIGER AERO</span>
         </div>
         <div class="aero-pill">
-          <span class="aero-label">Orbital</span>
-          <span class="aero-pill-value" id="aero-orbital-value">ALT 384 KM</span>
+          <span class="aero-label">Pilote</span>
+          <span class="aero-pill-value" data-star-field="username">···</span>
         </div>
         <div class="aero-pill">
-          <span class="aero-label">Vector</span>
-          <span class="aero-pill-value" id="aero-vector-value">21.8° / BREIZH</span>
+          <span class="aero-label">Crew</span>
+          <span class="aero-pill-value"><span data-star-field="members">·</span> MEMBRES</span>
         </div>
         <div class="aero-pill">
           <span class="aero-label">Local</span>
@@ -54,6 +57,7 @@
         <a href="./frutiger-biome/">Biome</a>
         <a href="./frutiger-dock/">Dock</a>
         <a href="../cig.html">CIG</a>
+        <button type="button" class="aero-nav-signout" data-star-signout>✕ Déco</button>
       </nav>
     </header>
 
@@ -88,17 +92,17 @@
         <article class="aero-panel aero-panel-compact aero-gloss">
           <div class="aero-panel-head">
             <div>
-              <p class="aero-kicker">Mission</p>
-              <h2>Route Chronicles</h2>
+              <p class="aero-kicker">Pilote</p>
+              <h2>Carnet de bord</h2>
             </div>
             <span class="aero-chip">CREW</span>
           </div>
 
           <div class="aero-data-list">
-            <div><span>OBJECTIF</span><strong>PORTAIL MEMBRE</strong></div>
-            <div><span>RADIO</span><strong>CHRONICLES FM</strong></div>
-            <div><span>APPS</span><strong>TCG · BOTANICA · POKEGANG</strong></div>
-            <div><span>STYLE</span><strong>AERO GLASS / VISTA ORBIT</strong></div>
+            <div><span>PILOTE</span><strong data-star-field="username">···</strong></div>
+            <div><span>RÔLE</span><strong data-star-field="role">◆ AGENT</strong></div>
+            <div><span>CHRONICLES</span><strong data-star-field="chronicles">·</strong></div>
+            <div><span>CREW</span><strong><span data-star-field="members">·</span> MEMBRES</strong></div>
           </div>
         </article>
       </section>
@@ -132,23 +136,16 @@
           <div class="aero-scan-overlay" aria-hidden="true"></div>
         </article>
 
-        <div class="aero-console-strip" aria-label="Identité visuelle du concept">
-          <article class="aero-mini aero-gloss">
-            <span class="aero-label">Atmosphère</span>
-            <strong>Bleu humide</strong>
-            <p>Reflets, condensation, verre actif.</p>
-          </article>
-          <article class="aero-mini aero-gloss">
-            <span class="aero-label">Interface</span>
-            <strong>Glossy HUD</strong>
-            <p>Lisible, ronde, non cyberpunk.</p>
-          </article>
-          <article class="aero-mini aero-gloss">
-            <span class="aero-label">Intégration</span>
-            <strong>/star/aero</strong>
-            <p>Base pour cockpit connecté Nitro.</p>
-          </article>
-        </div>
+        <article class="aero-panel aero-gloss aero-widget aero-widget-radio" aria-label="Web radio live">
+          <div class="aero-panel-head">
+            <div>
+              <p class="aero-kicker">Fréquence</p>
+              <h2>Web Radio · Live</h2>
+            </div>
+            <span class="aero-chip">FM</span>
+          </div>
+          <div id="widget-radio"></div>
+        </article>
       </section>
 
       <section class="aero-stack" aria-label="Systèmes du vaisseau">
@@ -181,20 +178,21 @@
           </div>
         </article>
 
-        <article class="aero-panel aero-panel-compact aero-gloss">
+        <article class="aero-panel aero-panel-compact aero-gloss aero-widget aero-widget-activity">
           <div class="aero-panel-head">
             <div>
               <p class="aero-kicker">Console</p>
-              <h2>Journal de bord</h2>
+              <h2>Activité réseau</h2>
             </div>
             <span class="aero-chip">LIVE</span>
           </div>
 
-          <div class="aero-alerts" id="aero-alerts">
-            <div class="aero-alert"><span class="aero-led"></span><span>Aqua shield stabilisé</span><time>00:07</time></div>
-            <div class="aero-alert"><span class="aero-led aero-led-warning"></span><span>Trafic orbital proche</span><time>00:12</time></div>
-            <div class="aero-alert"><span class="aero-led"></span><span>Chronicles FM synchronisé</span><time>00:19</time></div>
-            <div class="aero-alert"><span class="aero-led aero-led-danger"></span><span>Hyperdrive en attente</span><time>STBY</time></div>
+          <div id="widget-activity" data-widget-state="loading">
+            <div class="widget-empty widget-empty--loading">
+              <span class="widget-empty-icon">◈</span>
+              <p>Connexion au flux réseau...</p>
+              <span class="widget-empty-sub">ACTIVITY_LOG · SYNC</span>
+            </div>
           </div>
         </article>
       </section>
@@ -221,6 +219,9 @@
     </footer>
   </div>
 
-  <script type="module" src="../js/star/aero.js?v=20260709-frutiger-aero"></script>
+  <!-- Stabilisation radio chargée explicitement (ordre du patch stack). -->
+  <script type="module" src="../js/star/radio-player-stabilizer.js"></script>
+  <script type="module" src="../js/star/alt-cockpit.js?v=20260717-real-dashboard"></script>
+  <script type="module" src="../js/star/aero.js?v=20260717-real-dashboard"></script>
 </body>
 </html>

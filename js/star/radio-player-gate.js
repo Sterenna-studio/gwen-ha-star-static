@@ -21,8 +21,14 @@ if (!RadioPlayer.prototype.__manualJoinGate) {
       this._play(true);
     };
 
-    this.el.innerHTML = `<div class="radio-player radio-player-gated"><div class="radio-gated-inner"><span class="radio-gated-kicker">CHRONICLES FM · EN VEILLE</span><button class="radio-gated-btn" id="radio-join-flux" title="Rejoindre le flux pirate"><span>♪</span><b>REJOINDRE LE FLUX PIRATE</b></button><span class="radio-gated-note">Connexion manuelle · volume initial 50%</span></div></div>`;
+    this.el.innerHTML = `<div class="radio-player radio-player-gated"><div class="radio-gated-inner"><span class="radio-gated-kicker">CHRONICLES FM · EN VEILLE</span><button class="radio-gated-btn" id="radio-join-flux" title="Rejoindre le flux pirate"><span>♪</span><b>REJOINDRE LE FLUX PIRATE</b></button><span class="radio-gated-note">Connexion manuelle · volume initial 50%</span><a class="radio-site-link" id="radio-site-link" data-state="checking" hidden target="_blank" rel="noopener noreferrer"><span class="radio-site-led" aria-hidden="true"></span>KORIGAN</a></div></div>`;
     this.el.querySelector('#radio-join-flux')?.addEventListener('click', connect);
+    // Lien site radio externe : la config live.json n'est pas encore chargée
+    // dans l'état gated, on la charge juste pour récupérer siteUrl.
+    (async () => {
+      if (!this.live) await this._loadLiveConfig();
+      this._mountSiteLink();
+    })();
     mountTopButton(connect);
   };
 }

@@ -432,3 +432,84 @@ body.frutiger-page::after {
     animation: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD RÉEL — intégration des vrais widgets Star
+   (activité, radio, vidéo, quick access) dans les pages Frutiger
+═══════════════════════════════════════════════════════════════ */
+
+.fg-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.35));
+  color: #075072;
+  padding: 4px 12px 4px 5px;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 20px rgba(21, 120, 164, 0.18);
+}
+
+.fg-user-avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #8be9ff, #2fb7e0);
+  color: #ffffff;
+  font-size: 13px;
+}
+.fg-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fg-signout {
+  border: 1px solid rgba(255, 148, 178, 0.85);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 214, 226, 0.5));
+  color: #a3255a;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 20px rgba(164, 21, 78, 0.14);
+}
+.fg-signout:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, #ffffff, rgba(255, 214, 226, 0.75));
+}
+
+/* Grille des widgets réels : deux colonnes larges */
+.fg-grid-widgets {
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  align-items: start;
+}
+
+/* Les widgets sombres du Star posés sur verre clair : léger fond
+   sombre translucide pour garder les textes mono lisibles. */
+.fg-widget #widget-activity,
+.fg-widget #widget-radio,
+.fg-widget #widget-video {
+  margin-top: 10px;
+  border-radius: 16px;
+  padding: 10px;
+  background: rgba(4, 22, 38, 0.82);
+  border: 1px solid rgba(114, 232, 255, 0.35);
+}
+
+.fg-widget #widget-activity {
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* Quick access : tuiles Nitro sur verre Frutiger */
+.fg-widget #quick-access-grid {
+  margin-top: 10px;
+}
