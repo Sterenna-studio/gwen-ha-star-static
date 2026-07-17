@@ -892,3 +892,211 @@
   background: rgba(2, 12, 26, 0.55);
   border: 1px solid rgba(114, 232, 255, 0.22);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AERO — RESKIN FRUTIGER CLAIR (vintage 2005-2009)
+   Le cockpit passe du bleu nuit au verre aqua brillant facon Vista / Aqua.
+   Le hublot central reste sombre : c'est une vraie fenetre sur l'espace.
+   Bloc de fin : surcharge volontairement les regles ci-dessus.
+═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --aero-font: "Titillium Web", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --aero-display: "Fredoka", "Titillium Web", ui-rounded, "Segoe UI", sans-serif;
+  --aero-ink: #08405f;
+  --aero-deep: #05426d;
+  --aero-muted-ink: rgba(9, 62, 92, 0.66);
+}
+
+/* Fond ciel humide clair + halo solaire */
+.star-aero-page {
+  color: var(--aero-ink);
+  font-family: var(--aero-font);
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 50% -8%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 26%),
+    radial-gradient(circle at 82% 8%, rgba(163, 255, 224, 0.72), transparent 30%),
+    radial-gradient(circle at 12% 84%, rgba(120, 236, 104, 0.6), transparent 40%),
+    radial-gradient(ellipse 120% 80% at 50% 122%, rgba(120, 236, 104, 0.5), transparent 60%),
+    linear-gradient(180deg, #35b6ff 0%, #7ee0ff 34%, #d6fbff 62%, #eaffc4 100%);
+}
+/* Etoiles sombres non pertinentes en clair : on adoucit */
+.star-aero-page::before { opacity: 0.28; }
+.star-aero-page::after { opacity: 0.22; }
+
+/* Coque : verre laiteux clair */
+.aero-shell {
+  height: auto;
+  min-height: min(980px, calc(100vh - 28px));
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.5), rgba(226, 250, 255, 0.28));
+  box-shadow: 0 40px 120px rgba(18, 110, 158, 0.34), inset 0 2px 0 rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px) saturate(160%);
+}
+
+/* Reflet gel normalise (plus de mix-blend screen qui lave le clair) */
+.aero-gloss::before {
+  mix-blend-mode: normal;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.12) 60%, transparent);
+}
+
+/* Topbar / dock / panneaux / minis : verre clair bombe */
+.aero-topbar,
+.aero-dock,
+.aero-panel,
+.aero-mini {
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.76), rgba(214, 244, 255, 0.4) 58%, rgba(196, 240, 255, 0.32));
+  box-shadow:
+    0 26px 54px rgba(18, 110, 158, 0.28),
+    inset 0 2px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -16px 30px rgba(120, 220, 255, 0.2);
+  backdrop-filter: blur(20px) saturate(165%);
+}
+
+/* Typo + couleurs de texte en encre aqua */
+.aero-kicker,
+.aero-label {
+  font-family: var(--aero-font);
+  color: var(--aero-muted-ink);
+}
+.aero-brand-title {
+  font-family: var(--aero-display);
+  font-weight: 700;
+  color: var(--aero-deep);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 10px rgba(120, 220, 255, 0.4);
+}
+.aero-pill-value {
+  color: #06405f;
+}
+.aero-pill {
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(214, 244, 255, 0.36));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.aero-panel h1,
+.aero-panel h2 {
+  font-family: var(--aero-display);
+  font-weight: 700;
+  color: var(--aero-deep);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+/* Navigation : liens gel brillants */
+.aero-nav a {
+  position: relative;
+  overflow: hidden;
+  color: #075f8c;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.68) 48%, rgba(214, 244, 255, 0.5) 50%, rgba(150, 224, 255, 0.55) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1), 0 6px 14px rgba(21, 120, 164, 0.24);
+}
+.aero-nav a:hover {
+  filter: brightness(1.06) saturate(1.1);
+  background: linear-gradient(180deg, #ffffff, rgba(150, 224, 255, 0.7));
+}
+.aero-nav-signout {
+  color: #b21f5a;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 214, 228, 0.6));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1), 0 6px 14px rgba(164, 21, 78, 0.18);
+}
+.aero-nav-signout:hover {
+  background: linear-gradient(180deg, #ffffff, rgba(255, 190, 210, 0.8));
+}
+
+/* Listes de donnees / jauges : lignes de verre clair */
+.aero-data-list div,
+.aero-alert,
+.aero-gauge {
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.62), rgba(214, 244, 255, 0.32));
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+.aero-data-list strong,
+.aero-gauge-value,
+.aero-status-card strong {
+  color: var(--aero-deep);
+}
+.aero-data-list span,
+.aero-gauge span,
+.aero-mini p,
+.aero-mini strong,
+.aero-status-card span,
+.aero-alert span {
+  color: var(--aero-muted-ink);
+}
+
+/* Barre de jauge : piste claire, remplissage aqua candy */
+.aero-bar {
+  background: rgba(18, 110, 158, 0.16);
+  box-shadow: inset 0 1px 3px rgba(12, 90, 130, 0.2);
+}
+.aero-bar-fill {
+  background: linear-gradient(90deg, #7be96b, #22c8d8 60%, #a9f6ff);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Carte de statut du dock */
+.aero-status-card {
+  border-radius: 18px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.62), rgba(214, 244, 255, 0.3));
+}
+.aero-throttle input {
+  accent-color: #17a8d8;
+}
+
+/* ═══ HUBLOT : reste une fenetre sombre sur l'espace (aucun override) ═══ */
+/* .aero-porthole, .aero-planet, .aero-hud-card gardent leur rendu nuit. */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WIDGETS AERO EN VERRE AQUA CLAIR (radio, activite)
+═══════════════════════════════════════════════════════════════════════════ */
+.star-aero-page .aero-widget {
+  --c-surface:   rgba(255, 255, 255, 0.62);
+  --c-surface-2: rgba(255, 255, 255, 0.58);
+  --c-surface-3: rgba(255, 255, 255, 0.78);
+  --c-border:    rgba(18, 130, 172, 0.28);
+  --c-divider:   rgba(18, 130, 172, 0.14);
+  --c-text:       #083650;
+  --c-text-muted: rgba(8, 54, 80, 0.62);
+  --c-text-faint: rgba(8, 54, 80, 0.42);
+  --c-text-inv:   #ffffff;
+  --c-primary:    #0a93c9;
+  --c-primary-h:  #0b7ba8;
+  --glow-primary: 0 0 12px rgba(34, 196, 238, 0.4);
+  --glow-green:   0 0 10px rgba(34, 196, 238, 0.45);
+  color: #083650;
+}
+.aero-widget #widget-radio,
+.aero-widget #widget-activity {
+  margin-top: 4px;
+  border-radius: 18px;
+  padding: 12px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.6), rgba(214, 244, 255, 0.3));
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.aero-widget .radio-btn {
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(150, 224, 255, 0.5));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 10px rgba(18, 110, 158, 0.24);
+}
+.aero-widget .radio-btn:hover {
+  background: linear-gradient(180deg, #ffffff, #56d9f4);
+  color: #06405f;
+}
+.aero-widget .radio-viz,
+.aero-widget .radio-select {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+/* Fix specificite : valeur de jauge lisible sur verre clair */
+.star-aero-page .aero-gauge strong,
+.star-aero-page .aero-gauge-value {
+  color: var(--aero-deep);
+}

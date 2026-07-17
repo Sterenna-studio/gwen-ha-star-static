@@ -513,3 +513,282 @@ body.frutiger-page::after {
 .fg-widget #quick-access-grid {
   margin-top: 10px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FRUTIGER AERO — VINTAGE 2005-2009 (gel glossy authentique)
+   Reflets aqua, boutons brillants, verre humide, ombres portees douces.
+   Bloc de fin : surcharge volontairement les regles ci-dessus.
+═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --fg-font-display: "Fredoka", "Titillium Web", ui-rounded, "Segoe UI", sans-serif;
+  --fg-font-body: "Titillium Web", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --fg-ink: #073c58;
+  --fg-deep: #05416f;
+  --fg-muted: rgba(9, 62, 92, 0.66);
+}
+
+/* Fond ciel humide plus sature + halo solaire */
+body.frutiger-page {
+  font-family: var(--fg-font-body);
+  background:
+    radial-gradient(circle at 50% -8%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 26%),
+    radial-gradient(circle at 82% 8%, rgba(163, 255, 224, 0.75), transparent 30%),
+    radial-gradient(circle at 12% 82%, rgba(120, 236, 104, 0.62), transparent 38%),
+    radial-gradient(ellipse 120% 80% at 50% 120%, rgba(120, 236, 104, 0.55), transparent 60%),
+    linear-gradient(180deg, #35b6ff 0%, #7ee0ff 34%, #d6fbff 62%, #eaffc4 100%);
+}
+
+/* Halo lumineux supplementaire (bulles Vista) */
+body.frutiger-page::after {
+  background:
+    radial-gradient(circle at 12% 80%, rgba(255, 255, 255, 0.55) 0 22px, transparent 24px),
+    radial-gradient(circle at 86% 72%, rgba(255, 255, 255, 0.45) 0 34px, transparent 36px),
+    radial-gradient(circle at 58% 20%, rgba(255, 255, 255, 0.42) 0 18px, transparent 20px),
+    radial-gradient(circle at 36% 52%, rgba(255, 255, 255, 0.34) 0 12px, transparent 14px),
+    radial-gradient(circle at 74% 40%, rgba(255, 255, 255, 0.30) 0 9px, transparent 11px);
+  animation: fg-bubbles 16s ease-in-out infinite alternate;
+}
+
+/* Verre plus laiteux + ombre portee aqua marquee */
+.fg-topbar,
+.fg-glass,
+.fg-dock {
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.78), rgba(226, 250, 255, 0.42) 55%, rgba(196, 240, 255, 0.34));
+  box-shadow:
+    0 30px 60px rgba(18, 110, 158, 0.32),
+    0 6px 16px rgba(18, 110, 158, 0.18),
+    inset 0 2px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -18px 32px rgba(120, 220, 255, 0.22);
+  backdrop-filter: blur(22px) saturate(165%);
+}
+
+/* Reflet gel : bandeau lumineux sur le haut de chaque surface vitree */
+.fg-topbar,
+.fg-glass,
+.fg-dock,
+.fg-metric,
+.fg-window,
+.fg-app-bubble {
+  position: relative;
+}
+.fg-topbar::after,
+.fg-glass::after,
+.fg-dock::after,
+.fg-metric::after,
+.fg-window::after,
+.fg-app-bubble::after {
+  content: "";
+  position: absolute;
+  inset: 2px 2px auto 2px;
+  height: 46%;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.12) 62%, transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+/* La copie et les widgets restent au-dessus du reflet */
+.fg-hero-copy > *,
+.fg-card > * {
+  position: relative;
+  z-index: 3;
+}
+
+/* Typo vintage */
+.fg-brand strong,
+.fg-hero h1,
+.fg-card h2,
+.fg-card h3 {
+  font-family: var(--fg-font-display);
+  font-weight: 700;
+  color: #05426d;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 10px rgba(120, 220, 255, 0.4);
+}
+.fg-hero h1 {
+  letter-spacing: -0.03em;
+  background: linear-gradient(180deg, #0a5f97 0%, #0aa6d6 55%, #0b7ba8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 1px rgba(255, 255, 255, 0.85)) drop-shadow(0 6px 14px rgba(16, 140, 190, 0.35));
+}
+.fg-kicker {
+  font-family: var(--fg-font-body);
+  color: var(--fg-muted);
+}
+
+/* Boutons / nav / pills : gel brillant bombe */
+.fg-nav a,
+.fg-pill,
+.fg-button,
+.fg-user-pill,
+.fg-signout {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.7) 48%, rgba(214, 244, 255, 0.5) 50%, rgba(150, 224, 255, 0.55) 100%);
+  color: #075f8c;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -6px 12px rgba(120, 210, 255, 0.35),
+    0 8px 18px rgba(21, 120, 164, 0.28);
+  transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
+}
+.fg-nav a::before,
+.fg-button::before,
+.fg-pill::before,
+.fg-signout::before {
+  content: "";
+  position: absolute;
+  inset: 1px 1px auto 1px;
+  height: 46%;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.1));
+  pointer-events: none;
+}
+.fg-nav a:hover,
+.fg-button:hover,
+.fg-signout:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06) saturate(1.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -6px 12px rgba(120, 210, 255, 0.45),
+    0 12px 26px rgba(21, 120, 164, 0.34);
+}
+.fg-nav a:active,
+.fg-button:active,
+.fg-signout:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 8px rgba(12, 90, 130, 0.35);
+}
+.fg-signout {
+  color: #b21f5a;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 235, 242, 0.7) 48%, rgba(255, 214, 228, 0.5) 50%, rgba(255, 170, 198, 0.6) 100%);
+  border-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Metriques / fenetres : mini-panneaux de verre bombe */
+.fg-metric,
+.fg-window,
+.fg-system-item {
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.7), rgba(214, 244, 255, 0.4));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 10px 24px rgba(18, 110, 158, 0.2);
+}
+.fg-metric span,
+.fg-label {
+  font-family: var(--fg-font-body);
+  color: var(--fg-muted);
+}
+.fg-metric strong {
+  font-family: var(--fg-font-display);
+  font-weight: 600;
+  color: #06537f;
+}
+
+/* Barres de progression : bonbon glossy */
+.fg-progress {
+  height: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 2px 5px rgba(12, 90, 130, 0.22);
+}
+.fg-progress span {
+  position: relative;
+  background: linear-gradient(180deg, #b6ffd0, #4be887 45%, #22c46a);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.fg-progress span::after {
+  content: "";
+  position: absolute;
+  inset: 1px 1px 50% 1px;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85), transparent);
+}
+
+/* App bubbles du dock : plus bombees, hover qui gonfle */
+.fg-app-bubble {
+  transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+}
+.fg-app-bubble:hover {
+  transform: translateY(-3px) scale(1.04);
+  filter: brightness(1.05) saturate(1.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 26px 50px rgba(13, 126, 172, 0.32);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WIDGETS REELS EN VERRE AQUA CLAIR
+   Remappe la palette --c-* du RadioPlayer / activite vers un theme aqua clair.
+═══════════════════════════════════════════════════════════════════════════ */
+.frutiger-page .fg-widget {
+  --c-surface:   rgba(255, 255, 255, 0.62);
+  --c-surface-2: rgba(255, 255, 255, 0.58);
+  --c-surface-3: rgba(255, 255, 255, 0.78);
+  --c-border:    rgba(18, 130, 172, 0.28);
+  --c-divider:   rgba(18, 130, 172, 0.14);
+  --c-text:       #083650;
+  --c-text-muted: rgba(8, 54, 80, 0.62);
+  --c-text-faint: rgba(8, 54, 80, 0.42);
+  --c-text-inv:   #ffffff;
+  --c-primary:    #0a93c9;
+  --c-primary-h:  #0b7ba8;
+  --c-cyan:       #0284c7;
+  --c-green:      #12a15e;
+  --glow-primary: 0 0 12px rgba(34, 196, 238, 0.4);
+  --glow-green:   0 0 10px rgba(34, 196, 238, 0.45);
+  color: #083650;
+}
+
+/* Conteneurs de widgets : verre laiteux clair (remplace le fond sombre) */
+.fg-widget #widget-activity,
+.fg-widget #widget-radio,
+.fg-widget #widget-video,
+.fg-widget #quick-access-grid {
+  margin-top: 12px;
+  border-radius: 20px;
+  padding: 12px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.66), rgba(214, 244, 255, 0.34));
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 10px 24px rgba(18, 110, 158, 0.16);
+}
+.fg-widget #widget-activity {
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* Boutons radio en gel aqua */
+.fg-widget .radio-btn {
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(150, 224, 255, 0.5));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 10px rgba(18, 110, 158, 0.24);
+}
+.fg-widget .radio-btn:hover {
+  background: linear-gradient(180deg, #ffffff, #56d9f4);
+  color: #06405f;
+}
+.fg-widget .radio-viz,
+.fg-widget .radio-select {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+/* Titres de widget (fg-label) */
+.fg-widget > .fg-label {
+  font-family: var(--fg-font-body);
+  font-size: 12px;
+  color: #06537f;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-app-bubble,
+  .fg-nav a,
+  .fg-button {
+    transition: none;
+  }
+}
