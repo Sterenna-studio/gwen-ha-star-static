@@ -843,3 +843,52 @@
     animation: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD RÉEL — intégration des vrais widgets Star
+   (radio, activité réseau) dans l'habillage Aero
+═══════════════════════════════════════════════════════════════ */
+
+/* La page devient scrollable : le contenu réel dépasse l'écran unique. */
+.star-aero-page {
+  overflow-y: auto;
+}
+.aero-shell {
+  height: auto;
+  min-height: min(980px, calc(100vh - 28px));
+}
+
+.aero-nav-signout {
+  padding: 10px 12px;
+  border-radius: 999px;
+  color: #ffd9e4;
+  border: 1px solid rgba(255, 154, 190, 0.45);
+  background: rgba(255, 122, 158, 0.12);
+  font: inherit;
+  cursor: pointer;
+}
+.aero-nav-signout:hover {
+  background: rgba(255, 122, 158, 0.24);
+}
+
+.aero-widget {
+  position: relative;
+  z-index: 2;
+}
+
+/* Flux d'activité : hauteur contenue, scroll interne */
+.aero-widget-activity #widget-activity {
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* Les widgets sombres du Star posés sur verre aqua : fond légèrement
+   assombri pour préserver la lisibilité des textes mono. */
+.aero-widget #widget-radio,
+.aero-widget #widget-activity {
+  border-radius: 18px;
+  padding: 10px;
+  background: rgba(2, 12, 26, 0.55);
+  border: 1px solid rgba(114, 232, 255, 0.22);
+}

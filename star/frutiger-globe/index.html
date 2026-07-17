@@ -9,8 +9,11 @@
   <link rel="stylesheet" href="../../css/base.css" />
   <link rel="stylesheet" href="../../css/theme.css" />
   <link rel="stylesheet" href="../../css/components.css" />
-  <link rel="stylesheet" href="../../css/star-frutiger-pages.css?v=20260709" />
-  <link rel="stylesheet" href="../../css/star-frutiger-utilities.css?v=20260709" />
+  <!-- Styles des widgets réels du Star (radio, activité) — classes namespacées -->
+  <link rel="stylesheet" href="../../css/star.css" />
+  <link rel="stylesheet" href="../../css/star-dashboard.css" />
+  <link rel="stylesheet" href="../../css/star-frutiger-pages.css?v=20260717-real-dashboard" />
+  <link rel="stylesheet" href="../../css/star-frutiger-utilities.css?v=20260717-real-dashboard" />
 </head>
 <body class="frutiger-page frutiger-globe-page">
   <div class="fg-shell">
@@ -27,23 +30,25 @@
         <a href="../aero.html">Aero Cockpit</a>
         <a href="../frutiger-biome/">Biome</a>
         <a href="../frutiger-dock/">Dock</a>
+        <span class="fg-user-pill"><span class="fg-user-avatar" data-star-avatar aria-hidden="true"></span><span data-star-field="username">···</span></span>
+        <button type="button" class="fg-signout" data-star-signout>✕ Déco</button>
       </nav>
     </header>
 
     <main class="fg-hero">
       <section class="fg-hero-copy fg-glass">
-        <p class="fg-kicker">Interface environnementale</p>
+        <p class="fg-kicker">Espace membre · variante Aqua</p>
         <h1>Aqua<br />Globe</h1>
-        <p>Une page plus claire, organique et météo-spatiale : globe liquide, panneaux transparents, état de l’orbite et lecture optimiste des flux Nitro.</p>
+        <p>Ton cockpit Star en version claire et organique : flux réseau en direct, web radio et état du crew, dans une orbite plus douce.</p>
         <div class="fg-actions">
           <a class="fg-button" href="../aero.html">Retour cockpit</a>
           <a class="fg-button" href="../frutiger-biome/">Voir Biome</a>
           <a class="fg-button" href="../nested-loops/">Nested Loops</a>
         </div>
         <div class="fg-metrics">
-          <div class="fg-metric"><span>Flux</span><strong>98%</strong></div>
-          <div class="fg-metric"><span>Brume</span><strong>12°C</strong></div>
-          <div class="fg-metric"><span>Orbite</span><strong>384km</strong></div>
+          <div class="fg-metric"><span>Pilote</span><strong data-star-field="username">···</strong></div>
+          <div class="fg-metric"><span>Crew</span><strong data-star-field="members">·</strong></div>
+          <div class="fg-metric"><span>Chronicles</span><strong data-star-field="chronicles">·</strong></div>
         </div>
       </section>
 
@@ -68,28 +73,31 @@
       </section>
     </main>
 
-    <section class="fg-grid">
-      <article class="fg-card fg-glass">
-        <span class="fg-label">Direction</span>
-        <h2>Frutiger plus solaire</h2>
-        <p>Palette ciel, aqua, menthe et blanc brillant pour sortir du cyberpunk sombre sans perdre le côté cockpit.</p>
+    <section class="fg-grid fg-grid-widgets">
+      <article class="fg-card fg-glass fg-widget" data-theme="dark">
+        <span class="fg-label">Activité réseau</span>
+        <div id="widget-activity" data-widget-state="loading">
+          <div class="widget-empty widget-empty--loading">
+            <span class="widget-empty-icon">◈</span>
+            <p>Connexion au flux réseau...</p>
+            <span class="widget-empty-sub">ACTIVITY_LOG · SYNC</span>
+          </div>
+        </div>
       </article>
-      <article class="fg-card fg-glass">
-        <span class="fg-label">Usage</span>
-        <h2>Accueil expérimental</h2>
-        <p>Peut servir de variante plus douce pour une zone membre, une météo réseau ou une carte d’activité.</p>
-      </article>
-      <article class="fg-card fg-glass">
-        <span class="fg-label">Texture</span>
-        <h2>Verre actif</h2>
-        <p>Surfaces liquides, bulles et gradients très Vista / Web 2.0, mais gardés lisibles.</p>
+      <article class="fg-card fg-glass fg-widget" data-theme="dark">
+        <span class="fg-label">Web radio · Live</span>
+        <div id="widget-radio"></div>
       </article>
     </section>
 
     <footer class="fg-dock">
       <span class="fg-pill">AQUA · GLOBE · ORBIT</span>
-      <span class="fg-pill">Prototype Star Frutiger Aero</span>
+      <span class="fg-pill">Star · version alternative</span>
     </footer>
   </div>
+
+  <!-- Stabilisation radio chargée explicitement (ordre du patch stack). -->
+  <script type="module" src="../../js/star/radio-player-stabilizer.js"></script>
+  <script type="module" src="../../js/star/alt-cockpit.js?v=20260717-real-dashboard"></script>
 </body>
 </html>
