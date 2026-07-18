@@ -1,0 +1,434 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   STAR PIP-BOY WIDGET
+   Namespace : .pipboy-*  /  .pb-*
+   Thème     : terminal phosphore vert (Fallout Pip-Boy 3000)
+   Scope     : widget bento autonome, n'affecte aucun autre composant
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Variables ─────────────────────────────────────────────────────────── */
+.pipboy-widget {
+  --pb-green:      #39ff6e;
+  --pb-green-dim:  #1dbb46;
+  --pb-green-glow: rgba(57, 255, 110, 0.55);
+  --pb-green-faint:rgba(57, 255, 110, 0.12);
+  --pb-amber:      #f5a623;
+  --pb-red:        #ff4444;
+  --pb-bg:         #060e06;
+  --pb-bg-2:       #0a160a;
+  --pb-border:     rgba(57, 255, 110, 0.28);
+  --pb-border-hi:  rgba(57, 255, 110, 0.60);
+  --pb-font-mono:  "Share Tech Mono", "VT323", "Courier New", monospace;
+  --pb-radius:     4px;
+  --pb-scan-speed: 6s;
+}
+
+/* ── Conteneur principal ────────────────────────────────────────────────── */
+.pipboy-widget {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--pb-bg);
+  border: 1px solid var(--pb-border-hi);
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: var(--pb-font-mono);
+  color: var(--pb-green);
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.85),
+    0 0 18px var(--pb-green-glow),
+    0 0 42px rgba(57, 255, 110, 0.18);
+}
+
+/* Scanlines overlay */
+.pipboy-widget::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 2px,
+    rgba(0, 0, 0, 0.18) 4px
+  );
+}
+
+/* Phosphore flicker */
+.pipboy-widget::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 21;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 40%,
+    rgba(57, 255, 110, 0.06),
+    transparent 70%
+  );
+  animation: pb-flicker 8s ease-in-out infinite alternate;
+}
+
+/* ── Header bande ───────────────────────────────────────────────────────── */
+.pb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 7px;
+  border-bottom: 1px solid var(--pb-border);
+  background: var(--pb-bg-2);
+  gap: 10px;
+}
+
+.pb-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pb-green);
+  text-shadow: 0 0 8px var(--pb-green-glow);
+}
+
+.pb-brand-logo {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--pb-border-hi);
+  border-radius: 3px;
+  padding: 2px;
+  filter: drop-shadow(0 0 6px var(--pb-green-glow)) sepia(1) hue-rotate(80deg) saturate(4);
+}
+
+.pb-version {
+  font-size: 10px;
+  color: var(--pb-green-dim);
+  letter-spacing: 0.10em;
+}
+
+/* ── Onglets STAT / INV / DATA ──────────────────────────────────────────── */
+.pb-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--pb-border);
+  background: var(--pb-bg);
+}
+
+.pb-tab {
+  flex: 1;
+  padding: 6px 0;
+  background: none;
+  border: none;
+  border-right: 1px solid var(--pb-border);
+  color: var(--pb-green-dim);
+  font-family: var(--pb-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, text-shadow 0.15s;
+}
+.pb-tab:last-child { border-right: none; }
+
+.pb-tab:hover {
+  color: var(--pb-green);
+  background: var(--pb-green-faint);
+}
+
+.pb-tab.active {
+  color: var(--pb-bg);
+  background: var(--pb-green-dim);
+  text-shadow: none;
+  font-weight: 700;
+}
+
+/* ── Corps des panneaux ─────────────────────────────────────────────────── */
+.pb-panels {
+  position: relative;
+  flex: 1;
+}
+
+.pb-panel {
+  display: none;
+  padding: 10px 12px;
+  animation: pb-panel-in 0.18s ease;
+}
+
+.pb-panel.active { display: block; }
+
+/* ── PANNEAU STAT ───────────────────────────────────────────────────────── */
+
+/* Horloge centrale */
+.pb-clock-block {
+  text-align: center;
+  padding: 8px 0 10px;
+  border-bottom: 1px solid var(--pb-border);
+  margin-bottom: 10px;
+}
+
+.pb-clock {
+  display: block;
+  font-size: 28px;
+  letter-spacing: 0.10em;
+  color: var(--pb-green);
+  text-shadow: 0 0 14px var(--pb-green-glow), 0 0 30px rgba(57,255,110,0.25);
+  line-height: 1;
+}
+
+.pb-date {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--pb-green-dim);
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+/* Rows SPECIAL */
+.pb-special-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.pb-special-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 8px;
+  border: 1px solid var(--pb-border);
+  border-radius: var(--pb-radius);
+  background: var(--pb-green-faint);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  gap: 8px;
+}
+
+.pb-special-row .pb-s-key {
+  color: var(--pb-green-dim);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.pb-special-row .pb-s-val {
+  color: var(--pb-green);
+  font-size: 14px;
+  text-shadow: 0 0 8px var(--pb-green-glow);
+}
+
+/* Barre HP / AP */
+.pb-bars {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pb-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.10em;
+}
+
+.pb-bar-lbl {
+  width: 28px;
+  flex-shrink: 0;
+  color: var(--pb-green-dim);
+  text-transform: uppercase;
+}
+
+.pb-bar-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(57, 255, 110, 0.10);
+  border: 1px solid var(--pb-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.pb-bar-fill {
+  height: 100%;
+  background: var(--pb-green-dim);
+  box-shadow: 0 0 8px var(--pb-green-glow);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+  position: relative;
+}
+
+.pb-bar-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 50% 0;
+  background: rgba(255,255,255,0.18);
+  border-radius: inherit;
+}
+
+.pb-bar-fill--ap {
+  background: var(--pb-amber);
+  box-shadow: 0 0 8px rgba(245, 166, 35, 0.55);
+}
+
+.pb-bar-fill--xp {
+  background: #4af;
+  box-shadow: 0 0 8px rgba(68, 170, 255, 0.55);
+}
+
+.pb-bar-val {
+  width: 36px;
+  text-align: right;
+  color: var(--pb-green);
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+/* ── PANNEAU DATA (activité réseau) ─────────────────────────────────────── */
+.pb-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pb-green-dim) transparent;
+}
+
+.pb-feed-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 5px 8px;
+  border: 1px solid var(--pb-border);
+  border-radius: var(--pb-radius);
+  background: var(--pb-green-faint);
+  font-size: 10px;
+  line-height: 1.4;
+  animation: pb-item-in 0.22s ease;
+}
+
+.pb-feed-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pb-green);
+  box-shadow: 0 0 6px var(--pb-green-glow);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.pb-feed-dot--amber { background: var(--pb-amber); box-shadow: 0 0 6px rgba(245,166,35,0.55); }
+.pb-feed-dot--red   { background: var(--pb-red);   box-shadow: 0 0 6px rgba(255,68,68,0.55); }
+
+.pb-feed-text { color: var(--pb-green); }
+.pb-feed-time { color: var(--pb-green-dim); font-size: 9px; margin-left: auto; flex-shrink: 0; }
+
+/* ── PANNEAU INV (quick access) ─────────────────────────────────────────── */
+.pb-inv-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.pb-inv-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border: 1px solid var(--pb-border);
+  border-radius: var(--pb-radius);
+  background: var(--pb-green-faint);
+  color: var(--pb-green);
+  text-decoration: none;
+  font-size: 9px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.14s, border-color 0.14s, box-shadow 0.14s;
+}
+
+.pb-inv-item:hover {
+  background: rgba(57, 255, 110, 0.22);
+  border-color: var(--pb-border-hi);
+  box-shadow: 0 0 12px var(--pb-green-glow);
+}
+
+.pb-inv-icon {
+  font-size: 20px;
+  filter: drop-shadow(0 0 6px var(--pb-green-glow)) sepia(1) hue-rotate(80deg) saturate(3);
+}
+
+.pb-inv-label { line-height: 1.2; }
+
+/* ── Footer status bar ──────────────────────────────────────────────────── */
+.pb-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 12px;
+  border-top: 1px solid var(--pb-border);
+  background: var(--pb-bg-2);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--pb-green-dim);
+  gap: 8px;
+}
+
+.pb-footer-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pb-footer-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--pb-green);
+  box-shadow: 0 0 6px var(--pb-green-glow);
+  animation: pb-dot-blink 2s step-end infinite;
+}
+
+.pb-footer-pilot {
+  color: var(--pb-green);
+  text-shadow: 0 0 6px var(--pb-green-glow);
+}
+
+/* ── Animations ─────────────────────────────────────────────────────────── */
+
+@keyframes pb-flicker {
+  0%   { opacity: 0.92; }
+  18%  { opacity: 1.00; }
+  36%  { opacity: 0.95; }
+  52%  { opacity: 1.00; }
+  74%  { opacity: 0.88; }
+  100% { opacity: 1.00; }
+}
+
+@keyframes pb-panel-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+@keyframes pb-item-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+
+@keyframes pb-dot-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pipboy-widget::after,
+  .pb-footer-dot { animation: none; }
+  .pb-bar-fill   { transition: none; }
+}
