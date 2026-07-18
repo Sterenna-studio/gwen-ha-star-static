@@ -14,7 +14,7 @@ Options -Indexes
   RewriteRule ^api/korigan/chat/state$ https://korigan.sterenna.fr/api/korigan/chat/state [R=302,L,NE]
   RewriteRule ^api/korigan/bots/status$ https://korigan.sterenna.fr/api/korigan/bots/status [R=302,L,NE]
   RewriteRule ^api/korigan/radio/state$ https://korigan.sterenna.fr/api/korigan/radio/state [R=302,L,NE]
-  RewriteRule ^minitel/(.*)$ https://korigan.sterenna.fr/minitel/$1 [R=302,L,NE]
+  RewriteRule ^minitel/status$ https://korigan.sterenna.fr/api/korigan/minitel/status [R=302,L,NE]
   RewriteRule ^radio/chronicles\.mp3$ https://korigan.sterenna.fr/radio/chronicles.mp3 [R=302,L,NE]
 </IfModule>
 
