@@ -2,42 +2,106 @@
    STAR PIP-BOY WIDGET
    Namespace : .pipboy-*  /  .pb-*
    Thème     : terminal phosphore vert (Fallout Pip-Boy 3000)
-   Scope     : widget bento autonome, n'affecte aucun autre composant
+   Scope     : drawer fixe gauche, hors bento, n'affecte aucun autre composant
 ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Variables ─────────────────────────────────────────────────────────── */
-.pipboy-widget {
-  --pb-green:      #39ff6e;
-  --pb-green-dim:  #1dbb46;
-  --pb-green-glow: rgba(57, 255, 110, 0.55);
-  --pb-green-faint:rgba(57, 255, 110, 0.12);
-  --pb-amber:      #f5a623;
-  --pb-red:        #ff4444;
-  --pb-bg:         #060e06;
-  --pb-bg-2:       #0a160a;
-  --pb-border:     rgba(57, 255, 110, 0.28);
-  --pb-border-hi:  rgba(57, 255, 110, 0.60);
-  --pb-font-mono:  "Share Tech Mono", "VT323", "Courier New", monospace;
-  --pb-radius:     4px;
-  --pb-scan-speed: 6s;
+:root {
+  --pb-green:       #39ff6e;
+  --pb-green-dim:   #1dbb46;
+  --pb-green-glow:  rgba(57, 255, 110, 0.55);
+  --pb-green-faint: rgba(57, 255, 110, 0.12);
+  --pb-amber:       #f5a623;
+  --pb-red:         #ff4444;
+  --pb-bg:          #060e06;
+  --pb-bg-2:        #0a160a;
+  --pb-border:      rgba(57, 255, 110, 0.28);
+  --pb-border-hi:   rgba(57, 255, 110, 0.60);
+  --pb-font-mono:   "Share Tech Mono", "VT323", "Courier New", monospace;
+  --pb-radius:      4px;
+  --pb-drawer-w:    300px;
 }
 
-/* ── Conteneur principal ────────────────────────────────────────────────── */
+/* ── TOGGLE BUTTON — languette visible en permanence ─────────────────── */
+.pb-toggle {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px 10px 6px;
+  background: var(--pb-bg-2);
+  border: 1px solid var(--pb-border-hi);
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  font-family: var(--pb-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--pb-green);
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  box-shadow: 4px 0 18px rgba(57, 255, 110, 0.22);
+  transition: background 0.18s, box-shadow 0.18s, left 0.36s cubic-bezier(.4,0,.2,1);
+  user-select: none;
+}
+
+.pb-toggle:hover {
+  background: var(--pb-green-faint);
+  box-shadow: 4px 0 28px var(--pb-green-glow);
+}
+
+/* Quand le drawer est ouvert, la languette se décale à droite du panel */
+.pb-drawer.open ~ .pb-toggle,
+.pb-toggle[aria-expanded="true"] {
+  left: var(--pb-drawer-w);
+}
+
+.pb-toggle-icon {
+  font-size: 14px;
+  line-height: 1;
+  writing-mode: horizontal-tb;
+}
+
+/* ── DRAWER — panneau fixe gauche ──────────────────────────────────── */
+.pb-drawer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--pb-drawer-w);
+  z-index: 1090;
+  transform: translateX(-100%);
+  transition: transform 0.36s cubic-bezier(.4,0,.2,1),
+              box-shadow 0.36s ease;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.pb-drawer.open {
+  transform: translateX(0);
+  box-shadow: 6px 0 40px rgba(57, 255, 110, 0.28),
+              2px 0 80px rgba(0, 0, 0, 0.70);
+}
+
+/* ── Widget intérieur ────────────────────────────────────────────────── */
 .pipboy-widget {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  flex: 1;
+  height: 100%;
   background: var(--pb-bg);
-  border: 1px solid var(--pb-border-hi);
-  border-radius: 8px;
+  border-right: 1px solid var(--pb-border-hi);
   overflow: hidden;
   font-family: var(--pb-font-mono);
   color: var(--pb-green);
-  box-shadow:
-    inset 0 0 40px rgba(0, 0, 0, 0.85),
-    0 0 18px var(--pb-green-glow),
-    0 0 42px rgba(57, 255, 110, 0.18);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.85);
 }
 
 /* Scanlines overlay */
@@ -51,8 +115,8 @@
     to bottom,
     transparent 0px,
     transparent 2px,
-    rgba(0, 0, 0, 0.18) 2px,
-    rgba(0, 0, 0, 0.18) 4px
+    rgba(0, 0, 0, 0.16) 2px,
+    rgba(0, 0, 0, 0.16) 4px
   );
 }
 
@@ -64,30 +128,30 @@
   pointer-events: none;
   z-index: 21;
   background: radial-gradient(
-    ellipse 80% 60% at 50% 40%,
+    ellipse 80% 50% at 50% 30%,
     rgba(57, 255, 110, 0.06),
     transparent 70%
   );
   animation: pb-flicker 8s ease-in-out infinite alternate;
 }
 
-/* ── Header bande ───────────────────────────────────────────────────────── */
+/* ── Header ────────────────────────────────────────────────────────── */
 .pb-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px 7px;
+  padding: 10px 12px 9px;
   border-bottom: 1px solid var(--pb-border);
   background: var(--pb-bg-2);
-  gap: 10px;
+  flex-shrink: 0;
+  gap: 8px;
 }
 
 .pb-brand {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
-  font-weight: 400;
+  font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--pb-green);
@@ -95,31 +159,33 @@
 }
 
 .pb-brand-logo {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border: 1px solid var(--pb-border-hi);
   border-radius: 3px;
   padding: 2px;
   filter: drop-shadow(0 0 6px var(--pb-green-glow)) sepia(1) hue-rotate(80deg) saturate(4);
+  flex-shrink: 0;
 }
 
 .pb-version {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--pb-green-dim);
   letter-spacing: 0.10em;
+  white-space: nowrap;
 }
 
-/* ── Onglets STAT / INV / DATA ──────────────────────────────────────────── */
+/* ── Onglets ─────────────────────────────────────────────────────────── */
 .pb-tabs {
   display: flex;
-  gap: 0;
   border-bottom: 1px solid var(--pb-border);
   background: var(--pb-bg);
+  flex-shrink: 0;
 }
 
 .pb-tab {
   flex: 1;
-  padding: 6px 0;
+  padding: 7px 0;
   background: none;
   border: none;
   border-right: 1px solid var(--pb-border);
@@ -129,106 +195,91 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: color 0.15s, background 0.15s, text-shadow 0.15s;
+  transition: color 0.15s, background 0.15s;
 }
 .pb-tab:last-child { border-right: none; }
+.pb-tab:hover { color: var(--pb-green); background: var(--pb-green-faint); }
+.pb-tab.active { color: var(--pb-bg); background: var(--pb-green-dim); font-weight: 700; }
 
-.pb-tab:hover {
-  color: var(--pb-green);
-  background: var(--pb-green-faint);
-}
-
-.pb-tab.active {
-  color: var(--pb-bg);
-  background: var(--pb-green-dim);
-  text-shadow: none;
-  font-weight: 700;
-}
-
-/* ── Corps des panneaux ─────────────────────────────────────────────────── */
+/* ── Panneaux (scrollables) ────────────────────────────────────────── */
 .pb-panels {
-  position: relative;
   flex: 1;
+  overflow: hidden;
+  position: relative;
 }
 
 .pb-panel {
   display: none;
-  padding: 10px 12px;
+  padding: 12px;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pb-green-dim) transparent;
   animation: pb-panel-in 0.18s ease;
+  box-sizing: border-box;
 }
-
 .pb-panel.active { display: block; }
 
-/* ── PANNEAU STAT ───────────────────────────────────────────────────────── */
-
-/* Horloge centrale */
+/* ── STAT : horloge ─────────────────────────────────────────────── */
 .pb-clock-block {
   text-align: center;
-  padding: 8px 0 10px;
+  padding: 10px 0 12px;
   border-bottom: 1px solid var(--pb-border);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
-
 .pb-clock {
   display: block;
-  font-size: 28px;
+  font-size: 30px;
   letter-spacing: 0.10em;
   color: var(--pb-green);
   text-shadow: 0 0 14px var(--pb-green-glow), 0 0 30px rgba(57,255,110,0.25);
   line-height: 1;
 }
-
 .pb-date {
   display: block;
   font-size: 10px;
   letter-spacing: 0.12em;
   color: var(--pb-green-dim);
-  margin-top: 3px;
+  margin-top: 4px;
   text-transform: uppercase;
 }
 
-/* Rows SPECIAL */
+/* SPECIAL grid */
 .pb-special-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 6px;
+  margin-bottom: 12px;
 }
-
 .pb-special-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 8px;
+  padding: 6px 8px;
   border: 1px solid var(--pb-border);
   border-radius: var(--pb-radius);
   background: var(--pb-green-faint);
   font-size: 11px;
   letter-spacing: 0.08em;
-  gap: 8px;
 }
-
-.pb-special-row .pb-s-key {
+.pb-s-key {
   color: var(--pb-green-dim);
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  flex-shrink: 0;
 }
-
-.pb-special-row .pb-s-val {
+.pb-s-val {
   color: var(--pb-green);
-  font-size: 14px;
+  font-size: 13px;
   text-shadow: 0 0 8px var(--pb-green-glow);
 }
 
-/* Barre HP / AP */
+/* Barres HP / AP / XP */
 .pb-bars {
-  margin-top: 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
-
 .pb-bar-row {
   display: flex;
   align-items: center;
@@ -236,23 +287,15 @@
   font-size: 10px;
   letter-spacing: 0.10em;
 }
-
-.pb-bar-lbl {
-  width: 28px;
-  flex-shrink: 0;
-  color: var(--pb-green-dim);
-  text-transform: uppercase;
-}
-
+.pb-bar-lbl { width: 28px; flex-shrink: 0; color: var(--pb-green-dim); text-transform: uppercase; }
 .pb-bar-track {
   flex: 1;
   height: 8px;
-  background: rgba(57, 255, 110, 0.10);
+  background: rgba(57,255,110,0.10);
   border: 1px solid var(--pb-border);
   border-radius: 2px;
   overflow: hidden;
 }
-
 .pb-bar-fill {
   height: 100%;
   background: var(--pb-green-dim);
@@ -261,7 +304,6 @@
   transition: width 0.6s ease;
   position: relative;
 }
-
 .pb-bar-fill::after {
   content: "";
   position: absolute;
@@ -269,78 +311,22 @@
   background: rgba(255,255,255,0.18);
   border-radius: inherit;
 }
+.pb-bar-fill--ap { background: var(--pb-amber); box-shadow: 0 0 8px rgba(245,166,35,0.55); }
+.pb-bar-fill--xp { background: #4af;            box-shadow: 0 0 8px rgba(68,170,255,0.55); }
+.pb-bar-val { width: 36px; text-align: right; color: var(--pb-green); font-size: 10px; flex-shrink: 0; }
 
-.pb-bar-fill--ap {
-  background: var(--pb-amber);
-  box-shadow: 0 0 8px rgba(245, 166, 35, 0.55);
-}
-
-.pb-bar-fill--xp {
-  background: #4af;
-  box-shadow: 0 0 8px rgba(68, 170, 255, 0.55);
-}
-
-.pb-bar-val {
-  width: 36px;
-  text-align: right;
-  color: var(--pb-green);
-  font-size: 10px;
-  flex-shrink: 0;
-}
-
-/* ── PANNEAU DATA (activité réseau) ─────────────────────────────────────── */
-.pb-feed {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  max-height: 200px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--pb-green-dim) transparent;
-}
-
-.pb-feed-item {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  padding: 5px 8px;
-  border: 1px solid var(--pb-border);
-  border-radius: var(--pb-radius);
-  background: var(--pb-green-faint);
-  font-size: 10px;
-  line-height: 1.4;
-  animation: pb-item-in 0.22s ease;
-}
-
-.pb-feed-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--pb-green);
-  box-shadow: 0 0 6px var(--pb-green-glow);
-  flex-shrink: 0;
-  margin-top: 3px;
-}
-
-.pb-feed-dot--amber { background: var(--pb-amber); box-shadow: 0 0 6px rgba(245,166,35,0.55); }
-.pb-feed-dot--red   { background: var(--pb-red);   box-shadow: 0 0 6px rgba(255,68,68,0.55); }
-
-.pb-feed-text { color: var(--pb-green); }
-.pb-feed-time { color: var(--pb-green-dim); font-size: 9px; margin-left: auto; flex-shrink: 0; }
-
-/* ── PANNEAU INV (quick access) ─────────────────────────────────────────── */
+/* ── INV : grille apps ─────────────────────────────────────────────── */
 .pb-inv-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: 8px;
 }
-
 .pb-inv-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 8px 4px;
+  gap: 5px;
+  padding: 10px 4px;
   border: 1px solid var(--pb-border);
   border-radius: var(--pb-radius);
   background: var(--pb-green-faint);
@@ -350,85 +336,94 @@
   letter-spacing: 0.10em;
   text-transform: uppercase;
   text-align: center;
-  cursor: pointer;
   transition: background 0.14s, border-color 0.14s, box-shadow 0.14s;
 }
-
 .pb-inv-item:hover {
-  background: rgba(57, 255, 110, 0.22);
+  background: rgba(57,255,110,0.22);
   border-color: var(--pb-border-hi);
   box-shadow: 0 0 12px var(--pb-green-glow);
 }
-
 .pb-inv-icon {
-  font-size: 20px;
+  font-size: 22px;
   filter: drop-shadow(0 0 6px var(--pb-green-glow)) sepia(1) hue-rotate(80deg) saturate(3);
 }
-
 .pb-inv-label { line-height: 1.2; }
 
-/* ── Footer status bar ──────────────────────────────────────────────────── */
+/* ── DATA : feed activité ───────────────────────────────────────────── */
+.pb-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pb-feed-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 6px 8px;
+  border: 1px solid var(--pb-border);
+  border-radius: var(--pb-radius);
+  background: var(--pb-green-faint);
+  font-size: 10px;
+  line-height: 1.4;
+  animation: pb-item-in 0.22s ease;
+}
+.pb-feed-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--pb-green);
+  box-shadow: 0 0 6px var(--pb-green-glow);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.pb-feed-dot--amber { background: var(--pb-amber); box-shadow: 0 0 6px rgba(245,166,35,0.55); }
+.pb-feed-dot--red   { background: var(--pb-red);   box-shadow: 0 0 6px rgba(255,68,68,0.55); }
+.pb-feed-text { color: var(--pb-green); flex: 1; }
+.pb-feed-time { color: var(--pb-green-dim); font-size: 9px; flex-shrink: 0; }
+
+/* ── Footer ──────────────────────────────────────────────────────────── */
 .pb-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 12px;
+  padding: 6px 12px;
   border-top: 1px solid var(--pb-border);
   background: var(--pb-bg-2);
   font-size: 9px;
   letter-spacing: 0.12em;
   color: var(--pb-green-dim);
+  flex-shrink: 0;
   gap: 8px;
 }
-
-.pb-footer-status {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
+.pb-footer-status { display: flex; align-items: center; gap: 5px; }
 .pb-footer-dot {
-  width: 5px;
-  height: 5px;
+  width: 5px; height: 5px;
   border-radius: 50%;
   background: var(--pb-green);
   box-shadow: 0 0 6px var(--pb-green-glow);
   animation: pb-dot-blink 2s step-end infinite;
 }
+.pb-footer-pilot { color: var(--pb-green); text-shadow: 0 0 6px var(--pb-green-glow); }
 
-.pb-footer-pilot {
-  color: var(--pb-green);
-  text-shadow: 0 0 6px var(--pb-green-glow);
-}
-
-/* ── Animations ─────────────────────────────────────────────────────────── */
-
+/* ── Animations ────────────────────────────────────────────────────────── */
 @keyframes pb-flicker {
-  0%   { opacity: 0.92; }
-  18%  { opacity: 1.00; }
-  36%  { opacity: 0.95; }
-  52%  { opacity: 1.00; }
-  74%  { opacity: 0.88; }
-  100% { opacity: 1.00; }
+  0%   { opacity: 0.92; } 18% { opacity: 1.00; }
+  36%  { opacity: 0.95; } 52% { opacity: 1.00; }
+  74%  { opacity: 0.88; } 100%{ opacity: 1.00; }
 }
-
 @keyframes pb-panel-in {
   from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0);   }
 }
-
 @keyframes pb-item-in {
   from { opacity: 0; transform: translateX(-6px); }
   to   { opacity: 1; transform: translateX(0);    }
 }
-
 @keyframes pb-dot-blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
+  0%, 100% { opacity: 1; } 50% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pipboy-widget::after,
-  .pb-footer-dot { animation: none; }
-  .pb-bar-fill   { transition: none; }
+  .pipboy-widget::after, .pb-footer-dot { animation: none; }
+  .pb-drawer { transition: none; }
+  .pb-bar-fill { transition: none; }
 }

@@ -13,8 +13,8 @@
   <link rel="stylesheet" href="../css/components.css"/>
   <link rel="stylesheet" href="../css/star.css"/>
   <link rel="stylesheet" href="../css/star-dashboard.css"/>
-  <!-- Pip-Boy widget (namespacé .pipboy-* / .pb-*) -->
-  <link rel="stylesheet" href="../css/star-pipboy.css?v=20260718"/>
+  <!-- Pip-Boy drawer (namespacé .pb-*) -->
+  <link rel="stylesheet" href="../css/star-pipboy.css?v=20260718b"/>
 </head>
 <body class="star-page">
   <div class="scanlines" aria-hidden="true"></div>
@@ -26,9 +26,7 @@
     <div class="star-airlock-view">
       <div class="star-airlock-logo"></div>
       <div class="star-airlock-console">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </div>
     </div>
     <div class="star-airlock-door star-airlock-door--left"></div>
@@ -52,6 +50,111 @@
       <span class="sb-clock" id="sb-clock">--:--:--</span>
     </div>
   </div>
+
+  <!-- ═══ PIP-BOY DRAWER ═══════════════════════════════════════════
+       Widget libre — position: fixed à gauche, hors flux bento
+  ═══════════════════════════════════════════════════════ -->
+  <div class="pb-drawer" id="pb-drawer" role="complementary" aria-label="Pip-Boy terminal" aria-hidden="true">
+    <div class="pipboy-widget" id="pipboy-widget">
+
+      <!-- Header -->
+      <div class="pb-header">
+        <div class="pb-brand">
+          <img class="pb-brand-logo"
+               src="../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png"
+               alt="Star"
+               onerror="this.style.display='none'"/>
+          PIP·BOY 3000
+        </div>
+        <span class="pb-version">MK IV · GHS OS</span>
+      </div>
+
+      <!-- Onglets -->
+      <div class="pb-tabs" role="tablist" aria-label="Pip-Boy panels">
+        <button class="pb-tab active" role="tab" aria-selected="true"  aria-controls="pb-panel-stat" data-pb-tab="stat">STAT</button>
+        <button class="pb-tab"        role="tab" aria-selected="false" aria-controls="pb-panel-inv"  data-pb-tab="inv">INV</button>
+        <button class="pb-tab"        role="tab" aria-selected="false" aria-controls="pb-panel-data" data-pb-tab="data">DATA</button>
+      </div>
+
+      <!-- PANNEAUX -->
+      <div class="pb-panels">
+
+        <!-- STAT -->
+        <div class="pb-panel active" id="pb-panel-stat" role="tabpanel">
+          <div class="pb-clock-block">
+            <time class="pb-clock" id="pb-clock">--:--:--</time>
+            <span class="pb-date"  id="pb-date">--- · --- · ----</span>
+          </div>
+          <div class="pb-special-grid">
+            <div class="pb-special-row"><span class="pb-s-key">PILOTE</span>  <span class="pb-s-val" id="pb-pilot">···</span></div>
+            <div class="pb-special-row"><span class="pb-s-key">RÔLE</span>    <span class="pb-s-val" id="pb-role">···</span></div>
+            <div class="pb-special-row"><span class="pb-s-key">CREW</span>    <span class="pb-s-val" id="pb-crew">·</span></div>
+            <div class="pb-special-row"><span class="pb-s-key">CRÉDITS</span> <span class="pb-s-val" id="pb-credits">·</span></div>
+          </div>
+          <div class="pb-bars">
+            <div class="pb-bar-row">
+              <span class="pb-bar-lbl">HP</span>
+              <span class="pb-bar-track"><span class="pb-bar-fill" id="pb-bar-hp" style="width:100%"></span></span>
+              <span class="pb-bar-val">100</span>
+            </div>
+            <div class="pb-bar-row">
+              <span class="pb-bar-lbl">AP</span>
+              <span class="pb-bar-track"><span class="pb-bar-fill pb-bar-fill--ap" id="pb-bar-ap" style="width:78%"></span></span>
+              <span class="pb-bar-val">78</span>
+            </div>
+            <div class="pb-bar-row">
+              <span class="pb-bar-lbl">XP</span>
+              <span class="pb-bar-track"><span class="pb-bar-fill pb-bar-fill--xp" id="pb-bar-xp" style="width:42%"></span></span>
+              <span class="pb-bar-val" id="pb-xp-val">·</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- INV -->
+        <div class="pb-panel" id="pb-panel-inv" role="tabpanel">
+          <div class="pb-inv-grid">
+            <a class="pb-inv-item" href="./aero.html"><span class="pb-inv-icon">✦</span><span class="pb-inv-label">AERO</span></a>
+            <a class="pb-inv-item" href="./frutiger-dock/"><span class="pb-inv-icon">⬡</span><span class="pb-inv-label">DOCK</span></a>
+            <a class="pb-inv-item" href="./nested-loops/"><span class="pb-inv-icon">◎</span><span class="pb-inv-label">LOOPS</span></a>
+            <a class="pb-inv-item" href="../jukebox/"><span class="pb-inv-icon">♫</span><span class="pb-inv-label">JUKEBOX</span></a>
+            <a class="pb-inv-item" href="./crew.html"><span class="pb-inv-icon">👥</span><span class="pb-inv-label">CREW</span></a>
+            <a class="pb-inv-item" href="../cig.html"><span class="pb-inv-icon">⬡</span><span class="pb-inv-label">MA CIG</span></a>
+          </div>
+        </div>
+
+        <!-- DATA -->
+        <div class="pb-panel" id="pb-panel-data" role="tabpanel">
+          <div class="pb-feed" id="pb-feed" aria-live="polite" aria-label="Flux activité réseau">
+            <div class="pb-feed-item">
+              <span class="pb-feed-dot"></span>
+              <span class="pb-feed-text">CONNEXION AU RÉSEAU...</span>
+              <span class="pb-feed-time">--:--</span>
+            </div>
+          </div>
+        </div>
+      </div><!-- /.pb-panels -->
+
+      <!-- Footer -->
+      <div class="pb-footer">
+        <div class="pb-footer-status">
+          <span class="pb-footer-dot"></span>
+          <span>NOMINAL · GHS OS 2.4</span>
+        </div>
+        <span class="pb-footer-pilot" id="pb-footer-pilot">PILOTE : ···</span>
+      </div>
+
+    </div><!-- /.pipboy-widget -->
+  </div><!-- /.pb-drawer -->
+
+  <!-- Languette toggle — toujours visible à gauche -->
+  <button class="pb-toggle" id="pb-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="pb-drawer"
+          aria-label="Ouvrir le Pip-Boy">
+    <span class="pb-toggle-icon">📶</span>
+    PIP·BOY
+  </button>
 
   <main class="star-main" id="main-content">
 
@@ -98,153 +201,16 @@
       </div>
     </div>
 
-    <!-- BENTO GRID -->
+    <!-- BENTO GRID (inchangé, Pip-Boy n'est plus dedans) -->
     <div class="bento">
 
-      <!-- Quick access -->
       <div class="bc bc-qa">
         <div class="bc-label bc-label--primary"><span class="bc-dot"></span>ACCÈS RAPIDE</div>
         <div id="quick-access-grid"></div>
       </div>
 
-      <!-- Hero cards -->
       <div id="nitro-hero-cards" class="bento-hero-row"></div>
 
-      <!-- ═══════════════════════════════════════════════════════
-           PIP-BOY WIDGET
-           Namespace : .pipboy-widget  /  .pb-*
-           Data Star synced via #pb-* ids dans cockpit.js
-      ═══════════════════════════════════════════════════════ -->
-      <div class="bc bc-pipboy" style="grid-column: span 1;">
-        <div class="bc-label bc-label--cyan"><span class="bc-dot"></span>PIP·BOY · 3000 MK IV</div>
-
-        <div class="pipboy-widget" id="pipboy-widget" role="region" aria-label="Pip-Boy terminal">
-
-          <!-- Header -->
-          <div class="pb-header">
-            <div class="pb-brand">
-              <img class="pb-brand-logo"
-                   src="../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png"
-                   alt="Star"
-                   onerror="this.style.display='none'"
-              />
-              PIP·BOY 3000
-            </div>
-            <span class="pb-version">MK IV · GHS OS</span>
-          </div>
-
-          <!-- Onglets -->
-          <div class="pb-tabs" role="tablist" aria-label="Pip-Boy panels">
-            <button class="pb-tab active" role="tab" aria-selected="true"  aria-controls="pb-panel-stat" data-pb-tab="stat">STAT</button>
-            <button class="pb-tab"        role="tab" aria-selected="false" aria-controls="pb-panel-inv"  data-pb-tab="inv" >INV</button>
-            <button class="pb-tab"        role="tab" aria-selected="false" aria-controls="pb-panel-data" data-pb-tab="data">DATA</button>
-          </div>
-
-          <!-- ── PANNEAU STAT ─────────────────────────────────── -->
-          <div class="pb-panel active" id="pb-panel-stat" role="tabpanel">
-
-            <!-- Horloge live -->
-            <div class="pb-clock-block">
-              <time class="pb-clock" id="pb-clock">--:--:--</time>
-              <span class="pb-date"  id="pb-date">--- · --- · ----</span>
-            </div>
-
-            <!-- SPECIAL (mapped depuis Star data) -->
-            <div class="pb-special-grid">
-              <div class="pb-special-row">
-                <span class="pb-s-key">PILOTE</span>
-                <span class="pb-s-val" id="pb-pilot">···</span>
-              </div>
-              <div class="pb-special-row">
-                <span class="pb-s-key">RÔLE</span>
-                <span class="pb-s-val" id="pb-role">···</span>
-              </div>
-              <div class="pb-special-row">
-                <span class="pb-s-key">CREW</span>
-                <span class="pb-s-val" id="pb-crew">·</span>
-              </div>
-              <div class="pb-special-row">
-                <span class="pb-s-key">CREDITS</span>
-                <span class="pb-s-val" id="pb-credits">·</span>
-              </div>
-            </div>
-
-            <!-- Barres HP / AP / XP -->
-            <div class="pb-bars">
-              <div class="pb-bar-row">
-                <span class="pb-bar-lbl">HP</span>
-                <span class="pb-bar-track"><span class="pb-bar-fill" id="pb-bar-hp" style="width:100%"></span></span>
-                <span class="pb-bar-val">100</span>
-              </div>
-              <div class="pb-bar-row">
-                <span class="pb-bar-lbl">AP</span>
-                <span class="pb-bar-track"><span class="pb-bar-fill pb-bar-fill--ap" id="pb-bar-ap" style="width:78%"></span></span>
-                <span class="pb-bar-val">78</span>
-              </div>
-              <div class="pb-bar-row">
-                <span class="pb-bar-lbl">XP</span>
-                <span class="pb-bar-track"><span class="pb-bar-fill pb-bar-fill--xp" id="pb-bar-xp" style="width:42%"></span></span>
-                <span class="pb-bar-val" id="pb-xp-val">·</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- ── PANNEAU INV ──────────────────────────────────── -->
-          <div class="pb-panel" id="pb-panel-inv" role="tabpanel">
-            <div class="pb-inv-grid" id="pb-inv-grid">
-              <!-- Rempli par pipboy-sync.js (même apps que quick-access) -->
-              <a class="pb-inv-item" href="./aero.html">
-                <span class="pb-inv-icon">✦</span>
-                <span class="pb-inv-label">AERO</span>
-              </a>
-              <a class="pb-inv-item" href="./frutiger-dock/">
-                <span class="pb-inv-icon">⬡</span>
-                <span class="pb-inv-label">DOCK</span>
-              </a>
-              <a class="pb-inv-item" href="./nested-loops/">
-                <span class="pb-inv-icon">◎</span>
-                <span class="pb-inv-label">LOOPS</span>
-              </a>
-              <a class="pb-inv-item" href="../jukebox/">
-                <span class="pb-inv-icon">♫</span>
-                <span class="pb-inv-label">JUKEBOX</span>
-              </a>
-              <a class="pb-inv-item" href="./crew.html">
-                <span class="pb-inv-icon">👥</span>
-                <span class="pb-inv-label">CREW</span>
-              </a>
-              <a class="pb-inv-item" href="../cig.html">
-                <span class="pb-inv-icon">⬡</span>
-                <span class="pb-inv-label">MA CIG</span>
-              </a>
-            </div>
-          </div>
-
-          <!-- ── PANNEAU DATA ─────────────────────────────────── -->
-          <div class="pb-panel" id="pb-panel-data" role="tabpanel">
-            <div class="pb-feed" id="pb-feed" aria-live="polite" aria-label="Flux activité réseau">
-              <!-- Injecté dynamiquement par pipboy-sync.js -->
-              <div class="pb-feed-item">
-                <span class="pb-feed-dot"></span>
-                <span class="pb-feed-text">CONNEXION AU RÉSEAU...</span>
-                <span class="pb-feed-time">--:--</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Footer status -->
-          <div class="pb-footer">
-            <div class="pb-footer-status">
-              <span class="pb-footer-dot"></span>
-              <span>NOMINAL · GHS OS 2.4.1</span>
-            </div>
-            <span class="pb-footer-pilot" id="pb-footer-pilot">PILOTE : ···</span>
-          </div>
-
-        </div><!-- /.pipboy-widget -->
-      </div><!-- /.bc-pipboy -->
-
-      <!-- IDENTITÉ / LOGO -->
       <div class="bc bc-brand">
         <div class="bc-label bc-label--cyan"><span class="bc-dot"></span>IDENTITÉ · RÉSEAU</div>
         <div class="brand-panel">
@@ -272,7 +238,6 @@
         </div>
       </div>
 
-      <!-- POKEGANG -->
       <div class="bc bc-pg">
         <div class="bc-label bc-label--amber"><span class="bc-dot"></span>POKEGANG · RÉSEAU</div>
         <div class="pg-widget">
@@ -299,19 +264,16 @@
         </div>
       </div>
 
-      <!-- POKEGANG · CLASSEMENT -->
       <div class="bc bc-pgboard">
         <div class="bc-label bc-label--amber"><span class="bc-dot"></span>CLASSEMENT POKEGANG · TOP GANGS</div>
         <div id="pg-leaderboard"></div>
       </div>
 
-      <!-- VIDÉO -->
       <div class="bc bc-video">
         <div class="bc-label bc-label--red"><span class="bc-dot"></span>VIDEO DU JOUR</div>
         <div id="widget-video"></div>
       </div>
 
-      <!-- ACTIVITÉ -->
       <div class="bc bc-activity" data-dashboard-widget="activity">
         <div class="bc-label bc-label--cyan"><span class="bc-dot"></span>ACTIVITÉ RÉSEAU</div>
         <div id="widget-activity" data-widget-state="loading">
@@ -323,7 +285,6 @@
         </div>
       </div>
 
-      <!-- JUKEBOX -->
       <div class="bc bc-radio">
         <div class="bc-label bc-label--purple"><span class="bc-dot"></span>WEB RADIO · LIVE</div>
         <div id="widget-radio"></div>
@@ -332,40 +293,66 @@
     </div><!-- /.bento -->
   </main>
 
-  <!-- BOTTOM NAV BAR -->
   <header id="star-header-user" role="banner"></header>
 
-  <!-- Stabilisation radio -->
   <script type="module" src="../js/star/radio-player-stabilizer.js"></script>
   <script type="module" src="../js/star/cockpit.js?v=202607-star-activity-feed"></script>
-  <!-- Chronicles FM -->
   <script type="module" src="../js/chronicles-fm-widget.js"></script>
 
-  <!-- ═══════════════════════════════════════════════════════
-       PIP-BOY SYNC — live clock + Star data binding
-       Pas de dépendance externe, vanilla JS module
-  ═══════════════════════════════════════════════════════ -->
+  <!-- ═══ PIP-BOY — toggle + horloge + Star sync ════════════════════════ -->
   <script type="module">
-    /* ── Horloge live ───────────────────────────────────────── */
+    const drawer  = document.getElementById('pb-drawer');
+    const toggle  = document.getElementById('pb-toggle');
+
+    /* ── Toggle drawer ─────────────────────────────────── */
+    function pbOpen () {
+      drawer.classList.add('open');
+      drawer.setAttribute('aria-hidden', 'false');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Fermer le Pip-Boy');
+      // Persist
+      try { localStorage.setItem('pb-open', '1'); } catch {}
+    }
+    function pbClose () {
+      drawer.classList.remove('open');
+      drawer.setAttribute('aria-hidden', 'true');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Ouvrir le Pip-Boy');
+      try { localStorage.setItem('pb-open', '0'); } catch {}
+    }
+
+    toggle.addEventListener('click', () =>
+      drawer.classList.contains('open') ? pbClose() : pbOpen()
+    );
+
+    // Escape ferme le drawer
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && drawer.classList.contains('open')) pbClose();
+    });
+
+    // Restaure état précédent
+    try { if (localStorage.getItem('pb-open') === '1') pbOpen(); } catch {}
+
+    /* ── Horloge live ─────────────────────────────────── */
     function pbTick () {
       const now  = new Date();
-      const hms  = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      const date = now.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
-      const clk  = document.getElementById('pb-clock');
-      const dt   = document.getElementById('pb-date');
+      const hms  = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+      const date = now.toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
+      const clk = document.getElementById('pb-clock');
+      const dt  = document.getElementById('pb-date');
       if (clk) clk.textContent = hms;
       if (dt)  dt.textContent  = date;
     }
     pbTick();
     setInterval(pbTick, 1000);
 
-    /* ── Onglets ────────────────────────────────────────────── */
+    /* ── Onglets ───────────────────────────────────────── */
     document.querySelectorAll('[data-pb-tab]').forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.dataset.pbTab;
         document.querySelectorAll('.pb-tab').forEach(t => {
           t.classList.toggle('active', t.dataset.pbTab === tab);
-          t.setAttribute('aria-selected', t.dataset.pbTab === tab);
+          t.setAttribute('aria-selected', String(t.dataset.pbTab === tab));
         });
         document.querySelectorAll('.pb-panel').forEach(p => {
           p.classList.toggle('active', p.id === `pb-panel-${tab}`);
@@ -373,78 +360,57 @@
       });
     });
 
-    /* ── Star data sync ─────────────────────────────────────── */
-    // Surveille les champs Star déjà injectés par cockpit.js
-    // et les recopie dans le Pip-Boy.
+    /* ── Star data sync (toutes les 3s) ────────────────────── */
     function pbSyncStar () {
-      const map = {
-        'pb-pilot'        : () => document.getElementById('w-name')?.textContent?.trim()  || document.querySelector('[data-star-field="username"]')?.textContent?.trim() || '···',
-        'pb-role'         : () => document.getElementById('w-role')?.textContent?.trim()   || '···',
+      const fields = {
+        'pb-pilot'        : () => document.getElementById('w-name')?.textContent?.trim() || '···',
+        'pb-role'         : () => document.getElementById('w-role')?.textContent?.trim() || '···',
         'pb-crew'         : () => document.getElementById('kpi-members')?.textContent?.trim() || '·',
         'pb-credits'      : () => document.getElementById('kpi-chronicles')?.textContent?.trim() || '·',
         'pb-xp-val'       : () => document.getElementById('kpi-chronicles')?.textContent?.trim() || '·',
         'pb-footer-pilot' : () => {
           const n = document.getElementById('w-name')?.textContent?.trim();
-          return n && n !== '···' ? `PILOTE : ${n}` : 'PILOTE : ···';
+          return (n && n !== '···') ? `PILOTE : ${n}` : 'PILOTE : ···';
         },
-        'sb-username'     : null,  // déjà géré par cockpit.js, pas besoin de toucher
       };
-
-      Object.entries(map).forEach(([id, getter]) => {
-        if (!getter) return;
+      Object.entries(fields).forEach(([id, get]) => {
         const el = document.getElementById(id);
         if (!el) return;
-        const val = getter();
+        const val = get();
         if (val && val !== el.textContent) el.textContent = val;
       });
-
-      // XP bar : mapping sur chronicles (valeur relative fictive)
+      // XP bar
       const xpRaw = parseInt(document.getElementById('kpi-chronicles')?.textContent) || 0;
-      const xpPct = Math.min(100, Math.round((xpRaw % 500) / 5));  // 0-100 sur tranche de 500
+      const xpPct = Math.min(100, Math.round((xpRaw % 500) / 5));
       const xpBar = document.getElementById('pb-bar-xp');
       if (xpBar) xpBar.style.width = xpPct + '%';
     }
-
-    // Sync initiale + toutes les 3 s pour attraper les injections async
     pbSyncStar();
     setInterval(pbSyncStar, 3000);
 
-    /* ── Feed DATA — miroir de widget-activity ───────────────── */
+    /* ── Feed DATA — miroir widget-activity ─────────────────── */
     function pbMirrorFeed () {
       const source = document.getElementById('widget-activity');
       const feed   = document.getElementById('pb-feed');
       if (!source || !feed) return;
-
-      // Collecte les items textuels déjà rendus dans widget-activity
       const items = source.querySelectorAll('[class*="activity-item"], [class*="feed-item"], li, .widget-row');
       if (!items.length) return;
-
-      // On ne recrée que si le feed est encore au placeholder
-      if (feed.querySelector('.pb-feed-item')?.textContent?.includes('CONNEXION')) {
-        feed.innerHTML = '';
-      }
-
-      // Limite à 8 entrées récentes
+      if (feed.querySelector('.pb-feed-text')?.textContent?.includes('CONNEXION')) feed.innerHTML = '';
       [...items].slice(0, 8).forEach(src => {
         const text = src.textContent?.trim()?.slice(0, 60);
         if (!text) return;
-        const now  = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        const now  = new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+        if ([...feed.children].some(c => c.querySelector('.pb-feed-text')?.textContent === text)) return;
         const item = document.createElement('div');
         item.className = 'pb-feed-item';
         item.innerHTML =
           `<span class="pb-feed-dot"></span>` +
           `<span class="pb-feed-text">${text}</span>` +
           `<span class="pb-feed-time">${now}</span>`;
-        // Évite les doublons
-        if (![...feed.children].some(c => c.querySelector('.pb-feed-text')?.textContent === text)) {
-          feed.prepend(item);
-          // max 8 items
-          while (feed.children.length > 8) feed.lastChild.remove();
-        }
+        feed.prepend(item);
+        while (feed.children.length > 8) feed.lastChild.remove();
       });
     }
-
-    // Mirror après délai (laisse le temps à widget-activity de charger)
     setTimeout(pbMirrorFeed, 3500);
     setInterval(pbMirrorFeed, 15000);
   </script>
