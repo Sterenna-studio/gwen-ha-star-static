@@ -7,6 +7,7 @@ const DEFAULT_ENDPOINTS = [
   '/api/korigan/bots/status',
   '/korigan/api/bots/status',
   'https://nitro.sterenna.fr/api/korigan/bots/status',
+  'https://korigan.sterenna.fr/api/korigan/bots/status',
   'https://nitro.sterenna.fr/korigan/api/bots/status',
 ];
 
