@@ -1,0 +1,945 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   FRUTIGER DOCK — Port Spatial
+   Ambiance : station orbitale, nuit stellaire, néon aqua/violet doux
+   Palette  : indigo profond, cyan électrique, violet nebuleux, blanc perle
+   Flow     : glassmorphisme humide, animations orbitales, bulles vivantes
+═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Couleurs principales */
+  --dk-ink:        #e8f4ff;
+  --dk-ink-muted:  rgba(200, 228, 255, 0.70);
+  --dk-deep:       #0b0f2e;
+  --dk-navy:       #0d1640;
+  --dk-indigo:     #1a2064;
+
+  /* Accents néon */
+  --dk-cyan:       #2ee8ff;
+  --dk-cyan-soft:  rgba(46, 232, 255, 0.55);
+  --dk-violet:     #a78bfa;
+  --dk-violet-soft:rgba(167, 139, 250, 0.45);
+  --dk-mint:       #6dffd1;
+  --dk-mint-soft:  rgba(109, 255, 209, 0.40);
+  --dk-star:       #fff9c0;
+
+  /* Verre */
+  --dk-glass:      rgba(255, 255, 255, 0.07);
+  --dk-glass-mid:  rgba(255, 255, 255, 0.12);
+  --dk-glass-top:  rgba(255, 255, 255, 0.22);
+  --dk-border:     rgba(255, 255, 255, 0.14);
+  --dk-border-neon:rgba(46, 232, 255, 0.38);
+
+  /* Ombres */
+  --dk-shadow-deep: rgba(4, 8, 36, 0.72);
+  --dk-glow-cyan:  0 0 18px rgba(46, 232, 255, 0.55), 0 0 40px rgba(46, 232, 255, 0.22);
+  --dk-glow-violet:0 0 18px rgba(167, 139, 250, 0.50), 0 0 38px rgba(167, 139, 250, 0.20);
+
+  /* Typo */
+  --dk-font-display: "Fredoka", "Orbitron", ui-rounded, sans-serif;
+  --dk-font-body:    "Titillium Web", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ─── RESET & BODY ─────────────────────────────────────────── */
+
+body.dock-page {
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  color: var(--dk-ink);
+  font-family: var(--dk-font-body);
+
+  /* Fond : ciel nocturne orbital + nébuleuse douce */
+  background:
+    radial-gradient(ellipse 110% 60% at 50% -10%, rgba(46, 232, 255, 0.18), transparent 55%),
+    radial-gradient(ellipse  80% 50% at 88% 20%,  rgba(167, 139, 250, 0.20), transparent 52%),
+    radial-gradient(ellipse  70% 60% at  8% 80%,  rgba(109, 255, 209, 0.14), transparent 50%),
+    radial-gradient(ellipse 100% 80% at 50% 105%,  rgba(26, 32, 100, 0.95), transparent 65%),
+    linear-gradient(180deg, #060b28 0%, #0d1640 45%, #141b55 75%, #0f1c3e 100%);
+}
+
+/* Champ d'étoiles statique via box-shadow */
+body.dock-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.82) 1px, transparent 1px),
+    radial-gradient(circle, rgba(200,230,255,0.55) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,249,192,0.65) 1px, transparent 1px);
+  background-size: 220px 220px, 140px 140px, 90px 90px;
+  background-position: 12px 18px, 66px 44px, 33px 77px;
+  animation: dk-stars-drift 90s linear infinite;
+}
+
+/* Lueur dynamique en fond (nébuleuse animée) */
+body.dock-page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 22% 30%, rgba(167, 139, 250, 0.13) 0 120px, transparent 260px),
+    radial-gradient(circle at 78% 65%, rgba(46, 232, 255, 0.11) 0 100px, transparent 220px),
+    radial-gradient(circle at 50% 90%, rgba(109, 255, 209, 0.10) 0 90px, transparent 200px);
+  animation: dk-nebula-pulse 14s ease-in-out infinite alternate;
+}
+
+/* ─── SHELL ─────────────────────────────────────────────────── */
+
+.dk-shell {
+  position: relative;
+  z-index: 1;
+  width: min(1300px, calc(100vw - 32px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 20px 0 32px;
+}
+
+/* ─── TOPBAR ────────────────────────────────────────────────── */
+
+.dk-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 20px;
+  border-radius: 32px;
+  border: 1px solid var(--dk-border);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.10),
+    rgba(46, 232, 255, 0.06) 55%,
+    rgba(167, 139, 250, 0.08)
+  );
+  box-shadow:
+    0 24px 52px var(--dk-shadow-deep),
+    inset 0 1px 0 var(--dk-glass-top),
+    inset 0 -1px 0 rgba(46, 232, 255, 0.12);
+  backdrop-filter: blur(24px) saturate(140%);
+}
+
+/* Reflet gel topbar */
+.dk-topbar::before {
+  content: "";
+  position: absolute;
+  inset: 1px 1px auto 1px;
+  height: 44%;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.14), transparent);
+  pointer-events: none;
+}
+
+/* ─── BRAND ─────────────────────────────────────────────────── */
+
+.dk-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--dk-ink);
+}
+
+.dk-orb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  /* Globe aqua avec reflet */
+  background:
+    radial-gradient(circle at 30% 22%, rgba(255,255,255,0.92) 0 9%, transparent 11%),
+    radial-gradient(circle at 64% 66%, var(--dk-mint-soft), transparent 30%),
+    conic-gradient(from 20deg, #2ee8ff, #6dffd1, #a78bfa, #2bd2ff, #2ee8ff);
+  box-shadow:
+    inset 0 2px 10px rgba(255,255,255,0.55),
+    0 0 22px rgba(46, 232, 255, 0.60),
+    0 0 50px rgba(46, 232, 255, 0.25);
+  font-size: 22px;
+  animation: dk-orb-pulse 4s ease-in-out infinite;
+}
+
+.dk-orb::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(46, 232, 255, 0.30);
+  animation: dk-ring-spin 8s linear infinite;
+}
+
+.dk-kicker {
+  margin: 0 0 2px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dk-cyan);
+  text-shadow: var(--dk-glow-cyan);
+}
+
+.dk-brand strong {
+  display: block;
+  margin: 0;
+  font-family: var(--dk-font-display);
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--dk-ink);
+  text-shadow: 0 0 12px rgba(46, 232, 255, 0.40);
+}
+
+/* ─── NAVIGATION ────────────────────────────────────────────── */
+
+.dk-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.dk-nav a,
+.dk-pill,
+.dk-button {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--dk-border);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.12) 0%,
+    rgba(46, 232, 255, 0.08) 50%,
+    rgba(46, 232, 255, 0.04) 100%
+  );
+  color: var(--dk-ink);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--dk-font-body);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 4px 14px rgba(4, 8, 36, 0.45);
+  transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+  backdrop-filter: blur(8px);
+}
+
+/* Reflet gel bouton */
+.dk-nav a::before,
+.dk-button::before {
+  content: "";
+  position: absolute;
+  inset: 1px 1px auto 1px;
+  height: 46%;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.18), transparent);
+  pointer-events: none;
+}
+
+.dk-nav a:hover,
+.dk-button:hover {
+  transform: translateY(-2px);
+  border-color: var(--dk-border-neon);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    var(--dk-glow-cyan),
+    0 8px 22px rgba(4, 8, 36, 0.55);
+}
+
+.dk-nav a:active,
+.dk-button:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* Variante accent cyan */
+.dk-button--cyan {
+  border-color: var(--dk-border-neon);
+  background: linear-gradient(180deg, rgba(46,232,255,0.22), rgba(46,232,255,0.08));
+  color: var(--dk-cyan);
+  box-shadow: var(--dk-glow-cyan), 0 4px 14px rgba(4, 8, 36, 0.45);
+}
+
+/* Variante accent violet */
+.dk-button--violet {
+  border-color: rgba(167,139,250,0.45);
+  background: linear-gradient(180deg, rgba(167,139,250,0.22), rgba(167,139,250,0.08));
+  color: var(--dk-violet);
+  box-shadow: var(--dk-glow-violet), 0 4px 14px rgba(4, 8, 36, 0.45);
+}
+
+/* ─── HERO ──────────────────────────────────────────────────── */
+
+.dk-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+  gap: 20px;
+  align-items: stretch;
+  margin-top: 20px;
+}
+
+.dk-hero-copy {
+  padding: clamp(22px, 4vw, 48px);
+  border-radius: 36px;
+  border: 1px solid var(--dk-border);
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.08),
+    rgba(46, 232, 255, 0.05) 55%,
+    rgba(167, 139, 250, 0.06)
+  );
+  box-shadow:
+    0 30px 60px var(--dk-shadow-deep),
+    inset 0 1px 0 var(--dk-glass-top);
+  backdrop-filter: blur(20px) saturate(130%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Liseré néon en haut du hero */
+.dk-hero-copy::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--dk-cyan), var(--dk-violet), transparent);
+  opacity: 0.7;
+}
+
+.dk-hero-copy > * { position: relative; z-index: 1; }
+
+.dk-hero h1 {
+  margin: 0;
+  font-family: var(--dk-font-display);
+  font-size: clamp(38px, 7vw, 80px);
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+  background: linear-gradient(160deg, #ffffff 0%, var(--dk-cyan) 42%, var(--dk-violet) 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 18px rgba(46, 232, 255, 0.35));
+}
+
+.dk-hero p {
+  max-width: 560px;
+  margin: 18px 0 0;
+  color: var(--dk-ink-muted);
+  font-size: clamp(14px, 1.8vw, 17px);
+  line-height: 1.65;
+}
+
+/* ─── ACTIONS ───────────────────────────────────────────────── */
+
+.dk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+/* ─── MÉTRIQUES / STATUT ────────────────────────────────────── */
+
+.dk-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.dk-metric {
+  padding: 14px 16px;
+  border-radius: 22px;
+  border: 1px solid var(--dk-border);
+  background: var(--dk-glass);
+  backdrop-filter: blur(12px);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.dk-metric:hover {
+  border-color: var(--dk-border-neon);
+  box-shadow: var(--dk-glow-cyan);
+}
+
+.dk-metric span {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dk-cyan);
+}
+
+.dk-metric strong {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--dk-font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--dk-ink);
+  text-shadow: 0 0 12px rgba(46, 232, 255, 0.30);
+}
+
+/* ─── VISUAL (scène centrale) ───────────────────────────────── */
+
+.dk-visual {
+  position: relative;
+  min-height: 500px;
+  border-radius: 36px;
+  border: 1px solid var(--dk-border);
+  background: linear-gradient(
+    160deg,
+    rgba(255,255,255,0.06),
+    rgba(46, 232, 255, 0.04)
+  );
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+/* ─── SCÈNE PORT SPATIAL ────────────────────────────────────── */
+
+.dk-dock-scene {
+  position: absolute;
+  inset: 0;
+}
+
+/* Anneau orbital central */
+.dk-station-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(320px, 70%);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 3px solid rgba(46, 232, 255, 0.35);
+  box-shadow:
+    0 0 24px rgba(46, 232, 255, 0.45),
+    inset 0 0 24px rgba(46, 232, 255, 0.12);
+  animation: dk-ring-spin 20s linear infinite;
+}
+
+.dk-station-ring::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(167, 139, 250, 0.28);
+}
+
+.dk-station-ring::after {
+  content: "";
+  position: absolute;
+  inset: -28px;
+  border-radius: 50%;
+  border: 1px solid rgba(46, 232, 255, 0.14);
+  animation: dk-ring-spin 30s linear infinite reverse;
+}
+
+/* Noyau de la station */
+.dk-station-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(120px, 28%);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255,255,255,0.9) 0 8%, transparent 10%),
+    radial-gradient(circle at 62% 68%, var(--dk-mint-soft), transparent 28%),
+    conic-gradient(from 30deg, #2ee8ff, #6dffd1, #a78bfa, #2ee8ff);
+  box-shadow:
+    inset 0 3px 14px rgba(255,255,255,0.5),
+    0 0 32px rgba(46, 232, 255, 0.75),
+    0 0 70px rgba(46, 232, 255, 0.30);
+  animation: dk-core-breathe 5s ease-in-out infinite;
+}
+
+/* Vaisseaux ancrés — pods flottants autour de la station */
+.dk-pod {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  border: 1px solid var(--dk-border);
+  background: linear-gradient(145deg, rgba(255,255,255,0.14), rgba(46,232,255,0.07));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    0 0 14px rgba(46, 232, 255, 0.25),
+    0 10px 28px rgba(4, 8, 36, 0.55);
+  font-size: 26px;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  animation: dk-pod-float var(--dk-pod-delay, 6s) ease-in-out infinite;
+}
+
+.dk-pod:hover {
+  transform: scale(1.14) translateY(-4px);
+  border-color: var(--dk-border-neon);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.28),
+    var(--dk-glow-cyan),
+    0 18px 40px rgba(4, 8, 36, 0.65);
+}
+
+/* Ligne d'ancrage : trait néon entre pod et station */
+.dk-pod-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 1px;
+  transform-origin: left center;
+  background: linear-gradient(90deg, rgba(46,232,255,0.55), transparent);
+  pointer-events: none;
+}
+
+/* Positions des 6 pods autour du noyau */
+.dk-pod--n  { top: 8%;  left: 50%; transform: translateX(-50%); --dk-pod-delay: 6.0s; }
+.dk-pod--ne { top: 18%; right: 10%; --dk-pod-delay: 6.8s; }
+.dk-pod--se { bottom: 18%; right: 10%; --dk-pod-delay: 5.4s; }
+.dk-pod--s  { bottom: 8%; left: 50%; transform: translateX(-50%); --dk-pod-delay: 7.2s; }
+.dk-pod--sw { bottom: 18%; left: 10%; --dk-pod-delay: 6.2s; }
+.dk-pod--nw { top: 18%; left: 10%; --dk-pod-delay: 5.8s; }
+
+/* Particule de départ (trait de boost néon) */
+.dk-thruster {
+  position: absolute;
+  width: 4px;
+  height: 22px;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, var(--dk-cyan), transparent);
+  filter: blur(2px);
+  opacity: 0;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: dk-thruster-fire 2.5s ease-in-out infinite;
+}
+
+/* ─── GRILLE DE CARTES ──────────────────────────────────────── */
+
+.dk-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.dk-card {
+  position: relative;
+  padding: 22px;
+  border-radius: 28px;
+  border: 1px solid var(--dk-border);
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.08),
+    rgba(46, 232, 255, 0.04) 55%,
+    rgba(167, 139, 250, 0.05)
+  );
+  box-shadow: 0 18px 42px var(--dk-shadow-deep), inset 0 1px 0 var(--dk-glass-top);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.dk-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--dk-cyan), transparent);
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+
+.dk-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--dk-border-neon);
+  box-shadow:
+    var(--dk-glow-cyan),
+    0 28px 56px var(--dk-shadow-deep);
+}
+
+.dk-card:hover::before { opacity: 0.75; }
+
+.dk-card-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 10px rgba(46,232,255,0.50));
+}
+
+.dk-card h2,
+.dk-card h3 {
+  margin: 0 0 8px;
+  font-family: var(--dk-font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--dk-ink);
+}
+
+.dk-card p {
+  margin: 0;
+  color: var(--dk-ink-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ─── DOCK BAS DE PAGE ──────────────────────────────────────── */
+/* (le vrai dock d'icônes façon macOS / port spatial) */
+
+.dk-dock {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+  padding: 14px 20px;
+  border-radius: 32px;
+  border: 1px solid var(--dk-border);
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.09),
+    rgba(46, 232, 255, 0.05)
+  );
+  box-shadow:
+    0 26px 56px var(--dk-shadow-deep),
+    inset 0 1px 0 var(--dk-glass-top),
+    0 0 0 1px rgba(46, 232, 255, 0.08);
+  backdrop-filter: blur(26px) saturate(140%);
+}
+
+.dk-dock-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  position: relative;
+}
+
+.dk-dock-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.16),
+    rgba(46, 232, 255, 0.08)
+  );
+  font-size: 26px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.26),
+    0 6px 18px rgba(4, 8, 36, 0.50);
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+  position: relative;
+}
+
+/* Reflet gel sur l'icône dock */
+.dk-dock-icon::before {
+  content: "";
+  position: absolute;
+  inset: 1px 1px auto 1px;
+  height: 44%;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.26), transparent);
+  pointer-events: none;
+}
+
+/* Dot indicateur (appli ouverte) */
+.dk-dock-icon::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--dk-cyan);
+  box-shadow: 0 0 8px var(--dk-cyan);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.dk-dock-item:hover .dk-dock-icon {
+  transform: translateY(-12px) scale(1.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.30),
+    var(--dk-glow-cyan),
+    0 16px 36px rgba(4, 8, 36, 0.65);
+  border-color: var(--dk-border-neon);
+}
+
+.dk-dock-item.active .dk-dock-icon::after { opacity: 1; }
+
+/* Voisins qui grossissent légèrement (effet magnétique) */
+.dk-dock:has(.dk-dock-item:hover) .dk-dock-item:not(:hover) .dk-dock-icon {
+  transform: translateY(-5px) scale(1.06);
+}
+
+.dk-dock-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--dk-ink-muted);
+  letter-spacing: 0.08em;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.15s, transform 0.15s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.dk-dock-item:hover .dk-dock-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── BARRE DE PROGRESSION NÉON ─────────────────────────────── */
+
+.dk-progress {
+  display: block;
+  height: 6px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  overflow: hidden;
+}
+
+.dk-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--dk-cyan), var(--dk-mint), var(--dk-violet));
+  box-shadow: 0 0 10px rgba(46, 232, 255, 0.65);
+  position: relative;
+}
+
+.dk-progress span::after {
+  content: "";
+  position: absolute;
+  inset: 1px 1px 50%;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.45);
+}
+
+/* ─── USER PILL & SIGNOUT ───────────────────────────────────── */
+
+.dk-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 5px;
+  border-radius: 999px;
+  border: 1px solid var(--dk-border);
+  background: var(--dk-glass);
+  color: var(--dk-ink);
+  font-size: 12px;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+
+.dk-user-avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--dk-cyan), var(--dk-violet));
+  color: #fff;
+  font-size: 13px;
+  box-shadow: 0 0 12px rgba(46, 232, 255, 0.45);
+}
+.dk-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.dk-signout {
+  border: 1px solid rgba(255, 100, 140, 0.45);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,100,140,0.14), rgba(255,100,140,0.06));
+  color: #ff6494;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.dk-signout:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 14px rgba(255, 100, 140, 0.45);
+}
+
+/* ─── STACK / SYSTEM ────────────────────────────────────────── */
+
+.dk-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.dk-system-item {
+  padding: 14px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--dk-border);
+  background: var(--dk-glass);
+  backdrop-filter: blur(10px);
+  transition: border-color 0.18s;
+}
+.dk-system-item:hover { border-color: var(--dk-border-neon); }
+
+.dk-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dk-cyan);
+  margin-bottom: 6px;
+}
+
+/* ─── TOOLTIP INFORMATIF ────────────────────────────────────── */
+
+[data-dk-tip] {
+  position: relative;
+}
+[data-dk-tip]::after {
+  content: attr(data-dk-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.88);
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--dk-border);
+  background: rgba(13, 22, 64, 0.92);
+  color: var(--dk-ink);
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  backdrop-filter: blur(8px);
+  z-index: 99;
+}
+[data-dk-tip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+/* ─── ANIMATIONS ────────────────────────────────────────────── */
+
+@keyframes dk-stars-drift {
+  from { background-position: 12px 18px, 66px 44px, 33px 77px; }
+  to   { background-position: 232px 238px, 206px 184px, 123px 167px; }
+}
+
+@keyframes dk-nebula-pulse {
+  from { opacity: 0.7; transform: scale(1); }
+  to   { opacity: 1;   transform: scale(1.04); }
+}
+
+@keyframes dk-ring-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes dk-core-breathe {
+  0%, 100% { box-shadow: inset 0 3px 14px rgba(255,255,255,0.5), 0 0 32px rgba(46,232,255,0.75), 0 0 70px rgba(46,232,255,0.30); }
+  50%       { box-shadow: inset 0 3px 14px rgba(255,255,255,0.5), 0 0 50px rgba(46,232,255,0.95), 0 0 100px rgba(46,232,255,0.45); }
+}
+
+@keyframes dk-pod-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+/* Surcharge positionnement pods N/S (translateX ne doit pas être écrasé) */
+.dk-pod--n:not(:hover),
+.dk-pod--s:not(:hover) {
+  animation-name: dk-pod-float-centered;
+}
+@keyframes dk-pod-float-centered {
+  0%, 100% { transform: translateX(-50%) translateY(0px); }
+  50%       { transform: translateX(-50%) translateY(-8px); }
+}
+
+@keyframes dk-thruster-fire {
+  0%        { opacity: 0;    height: 0px;  }
+  30%       { opacity: 0.85; height: 22px; }
+  70%       { opacity: 0.65; height: 18px; }
+  100%      { opacity: 0;    height: 0px;  }
+}
+
+@keyframes dk-orb-pulse {
+  0%, 100% { box-shadow: inset 0 2px 10px rgba(255,255,255,0.55), 0 0 22px rgba(46,232,255,0.60), 0 0 50px rgba(46,232,255,0.25); }
+  50%       { box-shadow: inset 0 2px 10px rgba(255,255,255,0.55), 0 0 34px rgba(46,232,255,0.85), 0 0 70px rgba(46,232,255,0.40); }
+}
+
+/* ─── RESPONSIVE ────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .dk-hero,
+  .dk-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dk-visual {
+    min-height: 380px;
+  }
+
+  .dk-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dk-dock {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .dk-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .dk-metrics { grid-template-columns: 1fr; }
+  .dk-grid    { grid-template-columns: 1fr; }
+
+  .dk-dock-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+    border-radius: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.dock-page::before,
+  body.dock-page::after,
+  .dk-station-ring,
+  .dk-station-core,
+  .dk-orb,
+  .dk-pod {
+    animation: none;
+  }
+
+  .dk-dock-item:hover .dk-dock-icon,
+  .dk-card:hover,
+  .dk-nav a:hover,
+  .dk-button:hover {
+    transform: none;
+  }
+}
