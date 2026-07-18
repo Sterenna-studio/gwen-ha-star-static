@@ -1,102 +1,258 @@
 <!doctype html>
-<html lang="fr" data-theme="light">
+<html lang="fr" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aero Dock — Frutiger Aero Star</title>
-  <meta name="description" content="Page Frutiger Aero Aero Dock pour Gwen Ha Star." />
+  <title>PORT SPATIAL — Gwen Ha Star</title>
+  <meta name="description" content="Frutiger Dock · Port spatial du réseau Gwen Ha Star." />
   <link rel="icon" type="image/png" href="../../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <!-- Stack CSS Star de base -->
   <link rel="stylesheet" href="../../css/base.css" />
   <link rel="stylesheet" href="../../css/theme.css" />
   <link rel="stylesheet" href="../../css/components.css" />
-  <!-- Styles des widgets réels du Star (quick access, radio) — classes namespacées -->
+  <!-- Widgets Star namespácés -->
   <link rel="stylesheet" href="../../css/star.css" />
   <link rel="stylesheet" href="../../css/star-dashboard.css" />
-  <link rel="stylesheet" href="../../css/star-frutiger-pages.css?v=20260718-vintage" />
+  <!-- Style Dock port spatial -->
+  <link rel="stylesheet" href="../../css/star-dock.css?v=20260718" />
 </head>
-<body class="frutiger-page frutiger-dock-page">
-  <div class="fg-shell">
-    <header class="fg-topbar">
-      <a class="fg-brand" href="../aero.html">
-        <span class="fg-orb">◎</span>
+<body class="dock-page">
+  <div class="dk-shell">
+
+    <!-- ═══ TOPBAR ═══════════════════════════════════════════════════════ -->
+    <header class="dk-topbar" role="banner">
+      <a class="dk-brand" href="../index.html" aria-label="Retour au Star cockpit">
+        <span class="dk-orb" aria-hidden="true">
+          <img src="../../shared/logos/star_logo/star_logo_color_set/star_logo_cyan_blue.png"
+               alt="" width="28" height="28"
+               onerror="this.replaceWith(document.createTextNode('⬡'))" />
+        </span>
         <span>
-          <span class="fg-kicker">Gwen Ha Star · Aero suite</span>
-          <strong>Aero Dock</strong>
+          <span class="dk-kicker">// Gwen Ha Star · Frutiger Dock</span>
+          <strong>PORT SPATIAL</strong>
         </span>
       </a>
-      <nav class="fg-nav" aria-label="Navigation Frutiger Aero">
+
+      <!-- Statuts en direct -->
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="dk-metric" style="padding:8px 14px;border-radius:999px">
+          <span>Pilote</span>
+          <strong data-star-field="username" style="font-size:14px">···</strong>
+        </span>
+        <span class="dk-metric" style="padding:8px 14px;border-radius:999px">
+          <span>Crew</span>
+          <strong data-star-field="members" style="font-size:14px">·</strong>
+        </span>
+        <span id="dk-clock" class="dk-metric" style="padding:8px 14px;border-radius:999px;font-family:var(--dk-font-display);font-size:13px">--:--:--</span>
+      </div>
+
+      <nav class="dk-nav" aria-label="Navigation port spatial">
+        <a href="../../index.html">Hub</a>
         <a href="../index.html">Star</a>
-        <a href="../aero.html">Aero Cockpit</a>
+        <a href="../aero.html">Aero</a>
         <a href="../frutiger-globe/">Globe</a>
         <a href="../frutiger-biome/">Biome</a>
-        <span class="fg-user-pill"><span class="fg-user-avatar" data-star-avatar aria-hidden="true"></span><span data-star-field="username">···</span></span>
-        <button type="button" class="fg-signout" data-star-signout>✕ Déco</button>
+        <a href="../../cig.html">CIG</a>
+        <span class="dk-user-pill">
+          <span class="dk-user-avatar" data-star-avatar aria-hidden="true"></span>
+          <span data-star-field="username">···</span>
+        </span>
+        <button type="button" class="dk-signout" data-star-signout>✕ Déco</button>
       </nav>
     </header>
 
-    <main class="fg-hero">
-      <section class="fg-hero-copy fg-glass">
-        <p class="fg-kicker">Espace membre · launcher glossy</p>
-        <h1>Aero<br />Dock</h1>
-        <p>Ton cockpit Star façon launcher : les vraies apps du réseau Nitro en tuiles translucides, la web radio en direct et ton crew à portée de bulle.</p>
-        <div class="fg-actions">
-          <a class="fg-button" href="../aero.html">Cockpit Aero</a>
-          <a class="fg-button" href="../frutiger-globe/">Aqua Globe</a>
-          <a class="fg-button" href="../frutiger-biome/">BioGlass</a>
+    <!-- ═══ HERO ══════════════════════════════════════════════════════════ -->
+    <main class="dk-hero" id="main-content">
+
+      <!-- Copie gauche -->
+      <section class="dk-hero-copy" aria-label="Port spatial — présentation">
+        <p class="dk-kicker">// Station orbitale · réseau Nitro</p>
+        <h1>Port<br />Spatial</h1>
+        <p>Le dock du réseau Gwen Ha Star : accès rapide aux apps, radio en vol, crew en temps réel. Interface station — vivante, flottante, toujours animée.</p>
+
+        <div class="dk-actions">
+          <a class="dk-button dk-button--cyan" href="../aero.html">⬡ Cockpit Aero</a>
+          <a class="dk-button" href="../frutiger-globe/">◎ Aqua Globe</a>
+          <a class="dk-button dk-button--violet" href="../frutiger-biome/">❋ Biome</a>
         </div>
-        <div class="fg-metrics">
-          <div class="fg-metric"><span>Pilote</span><strong data-star-field="username">···</strong></div>
-          <div class="fg-metric"><span>Crew</span><strong data-star-field="members">·</strong></div>
-          <div class="fg-metric"><span>Chronicles</span><strong data-star-field="chronicles">·</strong></div>
+
+        <div class="dk-metrics">
+          <div class="dk-metric">
+            <span>Pilote</span>
+            <strong data-star-field="username">···</strong>
+          </div>
+          <div class="dk-metric">
+            <span>Crew</span>
+            <strong data-star-field="members">·</strong>
+          </div>
+          <div class="dk-metric">
+            <span>Chronicles</span>
+            <strong data-star-field="chronicles">·</strong>
+          </div>
         </div>
       </section>
 
-      <section class="fg-visual fg-glass" aria-label="Dock d’applications Frutiger Aero">
-        <div class="fg-dock-scene">
-          <div class="fg-dock-icons">
-            <a class="fg-app-bubble" href="../aero.html" aria-label="Aero Cockpit">✦</a>
-            <a class="fg-app-bubble" href="../nested-loops/" aria-label="Nested Loops">◎</a>
-            <a class="fg-app-bubble" href="../../jukebox/" aria-label="Jukebox">♫</a>
-            <a class="fg-app-bubble" href="../../TCG/" aria-label="Nitro TCG">♢</a>
-            <a class="fg-app-bubble" href="../../arena/" aria-label="Skill Arena">⚔</a>
-            <a class="fg-app-bubble" href="../index.html" aria-label="Star Cockpit">⬡</a>
-          </div>
-          <div class="fg-window fg-window-1">
-            <span class="fg-label">Dock</span>
-            <strong>Quick launch</strong>
-            <p>Une base pour un menu Star plus visuel et moins dashboard classique.</p>
-          </div>
-          <div class="fg-window fg-window-2">
-            <span class="fg-label">Interface</span>
-            <strong>Glass OS</strong>
-            <p>Grosses icônes, profondeur douce, contraste confortable.</p>
-          </div>
+      <!-- Scène port spatial -->
+      <section class="dk-visual" aria-label="Scène du port spatial">
+        <div class="dk-dock-scene" aria-hidden="true">
+
+          <!-- Anneau orbital + noyau -->
+          <div class="dk-station-ring"></div>
+          <div class="dk-station-core"></div>
+
+          <!-- Pods ancrés — 6 apps du réseau -->
+          <a class="dk-pod dk-pod--n" href="../aero.html"
+             data-dk-tip="Aero Cockpit">✦
+            <span class="dk-thruster"></span>
+          </a>
+          <a class="dk-pod dk-pod--ne" href="../nested-loops/"
+             data-dk-tip="Nested Loops">◎
+            <span class="dk-thruster"></span>
+          </a>
+          <a class="dk-pod dk-pod--se" href="../../jukebox/"
+             data-dk-tip="Jukebox">♫
+            <span class="dk-thruster"></span>
+          </a>
+          <a class="dk-pod dk-pod--s" href="../../cig.html"
+             data-dk-tip="CIG">♢
+            <span class="dk-thruster"></span>
+          </a>
+          <a class="dk-pod dk-pod--sw" href="../crew.html"
+             data-dk-tip="Crew">👥
+            <span class="dk-thruster"></span>
+          </a>
+          <a class="dk-pod dk-pod--nw" href="../index.html"
+             data-dk-tip="Star Hub">⬡
+            <span class="dk-thruster"></span>
+          </a>
         </div>
       </section>
     </main>
 
-    <section class="fg-grid fg-grid-widgets">
-      <article class="fg-card fg-glass fg-widget">
-        <span class="fg-label">Accès rapide · registre Nitro</span>
+    <!-- ═══ WIDGETS PROD ══════════════════════════════════════════════════ -->
+    <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-top:20px;"
+             aria-label="Widgets du réseau">
+
+      <!-- Quick access Nitro -->
+      <article class="dk-card">
+        <span class="dk-label">Accès rapide · Nitro</span>
         <div id="quick-access-grid"></div>
       </article>
-      <article class="fg-card fg-glass fg-widget">
-        <span class="fg-label">Web radio · Live</span>
+
+      <!-- Radio live -->
+      <article class="dk-card">
+        <span class="dk-label">Web radio · Live</span>
         <div id="widget-radio"></div>
+      </article>
+
+      <!-- Activité réseau -->
+      <article class="dk-card">
+        <span class="dk-label">Activité réseau · Console</span>
+        <div id="widget-activity" data-widget-state="loading">
+          <div class="widget-empty widget-empty--loading">
+            <span class="widget-empty-icon">◈</span>
+            <p>Connexion au flux réseau...</p>
+            <span class="widget-empty-sub">ACTIVITY_LOG · SYNC</span>
+          </div>
+        </div>
       </article>
     </section>
 
-    <footer class="fg-dock">
-      <span class="fg-pill">AERO DOCK · GLASS OS</span>
-      <span class="fg-pill">Star · version alternative</span>
-    </footer>
-  </div>
+    <!-- ═══ SYSTÈMES ═══════════════════════════════════════════════════════ -->
+    <section style="margin-top:20px;" aria-label="Systèmes de la station">
+      <div class="dk-stack">
+        <div class="dk-system-item">
+          <span class="dk-label">Propulsion</span>
+          <div style="display:flex;align-items:center;gap:12px">
+            <strong style="color:var(--dk-ink);font-family:var(--dk-font-display)">Hyperflux Ion · 84%</strong>
+            <div class="dk-progress" style="flex:1"><span style="width:84%"></span></div>
+          </div>
+        </div>
+        <div class="dk-system-item">
+          <span class="dk-label">Énergie</span>
+          <div style="display:flex;align-items:center;gap:12px">
+            <strong style="color:var(--dk-ink);font-family:var(--dk-font-display)">Réacteur Nitro · 91%</strong>
+            <div class="dk-progress" style="flex:1"><span style="width:91%"></span></div>
+          </div>
+        </div>
+        <div class="dk-system-item">
+          <span class="dk-label">Bouclier orbital</span>
+          <div style="display:flex;align-items:center;gap:12px">
+            <strong style="color:var(--dk-ink);font-family:var(--dk-font-display)">Grille aqua · 98%</strong>
+            <div class="dk-progress" style="flex:1"><span style="width:98%"></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <!-- Stabilisation radio chargée explicitement (ordre du patch stack). -->
+    <!-- ═══ DOCK BAS (macOS-style) ═══════════════════════════════════════ -->
+    <footer class="dk-dock" role="contentinfo" aria-label="Dock de navigation">
+
+      <div class="dk-dock-item active" data-dk-tip="Star Hub">
+        <a class="dk-dock-icon" href="../index.html" aria-label="Star Hub">⬡</a>
+        <span class="dk-dock-label">Hub</span>
+      </div>
+
+      <div class="dk-dock-item" data-dk-tip="Aero Cockpit">
+        <a class="dk-dock-icon" href="../aero.html" aria-label="Aero Cockpit">✦</a>
+        <span class="dk-dock-label">Aero</span>
+      </div>
+
+      <div class="dk-dock-item" data-dk-tip="Aqua Globe">
+        <a class="dk-dock-icon" href="../frutiger-globe/" aria-label="Aqua Globe">◎</a>
+        <span class="dk-dock-label">Globe</span>
+      </div>
+
+      <div class="dk-dock-item" data-dk-tip="BioGlass Biome">
+        <a class="dk-dock-icon" href="../frutiger-biome/" aria-label="Biome">❋</a>
+        <span class="dk-dock-label">Biome</span>
+      </div>
+
+      <div class="dk-dock-item" data-dk-tip="Nested Loops">
+        <a class="dk-dock-icon" href="../nested-loops/" aria-label="Nested Loops">⟳</a>
+        <span class="dk-dock-label">Loops</span>
+      </div>
+
+      <div class="dk-dock-item" data-dk-tip="Jukebox">
+        <a class="dk-dock-icon" href="../../jukebox/" aria-label="Jukebox">♫</a>
+        <span class="dk-dock-label">Jukebox</span>
+      </div>
+
+      <div class="dk-dock-item" data-dk-tip="Crew">
+        <a class="dk-dock-icon" href="../crew.html" aria-label="Crew">👥</a>
+        <span class="dk-dock-label">Crew</span>
+      </div>
+
+      <div class="dk-dock-item" data-dk-tip="CIG">
+        <a class="dk-dock-icon" href="../../cig.html" aria-label="CIG">♢</a>
+        <span class="dk-dock-label">CIG</span>
+      </div>
+
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+        <span class="dk-pill">PORT SPATIAL · v1</span>
+        <span class="dk-pill" id="dk-footer-status">NOMINAL</span>
+      </div>
+    </footer>
+  </div><!-- /.dk-shell -->
+
+  <!-- Horloge locale -->
+  <script>
+    (function () {
+      const el = document.getElementById('dk-clock');
+      if (!el) return;
+      function tick() {
+        el.textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+
+  <!-- Stack JS Star (identique à aero.html) -->
   <script type="module" src="../../js/star/radio-player-stabilizer.js"></script>
-  <script type="module" src="../../js/star/alt-cockpit.js?v=20260717-real-dashboard"></script>
+  <script type="module" src="../../js/star/alt-cockpit.js?v=20260718-dock"></script>
 </body>
 </html>
