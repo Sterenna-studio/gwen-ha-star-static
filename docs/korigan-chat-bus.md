@@ -39,6 +39,57 @@ GET /data/3615-feed.json
 Korigan peut le mettre en cache et conserver son feed local comme fallback.
 Le manifeste ne contient aucun profil privé, token Supabase ou secret runtime.
 
+### v3 — lien Chronicles FM live + dédicaces (2026-07-20)
+
+Le feed `version: 3` ajoute deux clés terminal-safe, toujours générées par
+`scripts/build-3615-feed.mjs` à chaque déploiement :
+
+```json
+{
+  "chroniclesFm": {
+    "frequencyCount": 13,
+    "nowPlaying": { "title": "Chronicles FM — Dr.Spig Mix", "style": "...", "mood": "..." }
+  },
+  "dedications": [
+    { "id": "uuid", "message": "texte de la dédicace (≤160 car.)", "username": "pseudo", "playedAt": "2026-07-20T21:16:00Z" }
+  ]
+}
+```
+
+- `chroniclesFm.nowPlaying` reflète la fréquence marquée `featured` dans
+  `jukebox/chronicles-fm.json` (pas un vrai "now playing" horodaté : Chronicles FM
+  est une playlist YouTube embarquée côté client, pas un flux tracké serveur).
+- `dedications` vient de la nouvelle RPC Supabase **anon-safe**
+  `public.get_recent_played_dedications(p_limit)`
+  ([scripts/sql/007_radio_dedications_public_feed.sql](../scripts/sql/007_radio_dedications_public_feed.sql)) :
+  les 5 dernières dédicaces Star Radio au statut `played`, uniquement
+  `message` + `username_snapshot` + `played_at`. Jamais `user_id`, jamais le coût,
+  jamais d'accès direct à la table (RPC `security definer`, table toujours
+  verrouillée à `authenticated` sinon — voir `scripts/sql/002_radio_dedications.sql`).
+- Si Supabase est injoignable ou la RPC absente, le build continue et publie
+  `"dedications": []` (dégradation silencieuse, jamais un échec de déploiement).
+- `apps` garantit désormais la présence de l'entrée `id: "jukebox"` même si elle
+  n'est pas dans les 12 premières de `NITRO_APPS` (bug corrigé : elle était
+  auparavant coupée par la troncature `.slice(0, 12)`).
+
+**Ce qui reste à faire côté Korigan (hors périmètre de ce repo) :**
+
+1. `server/lib/nitro-feed.js` lit aujourd'hui un fichier **local statique**
+   `data/nitro-feed.json`, jamais synchronisé avec le vrai
+   `https://nitro.sterenna.fr/data/3615-feed.json`. Il n'y a **aucun fetch live**
+   actuellement : ce paragraphe de doc était jusqu'ici aspirationnel. Implémenter
+   un polling périodique (quelques minutes) qui écrit/committe ce cache local.
+2. `server/lib/modules.js: renderBzhChroniclesRadio` (écran `[22] CHRONICLES FM`)
+   affiche une liste de stations codée en dur. Une fois le fetch live en place,
+   la faire lire `feed.chroniclesFm.nowPlaying` et lister `feed.dedications`
+   à la place.
+3. Pour pousser une dédicace vers Discord/Twitch (`server/lib/live-providers.js`,
+   `executeProviderAction('discord'|'twitch', 'send', ...)`), dédupliquer sur
+   `dedications[].id` (déjà stable, opaque, sans PII) pour ne jamais repartager
+   deux fois la même entrée. Les providers sont en `mode: mock` tant qu'aucun
+   n'est activé/configuré côté Korigan (voir `docs/korigan-bot-bridge.md`) : ce
+   forwarding restera inerte jusque-là.
+
 Le même build publie l’état terminal-safe de Lemegeton, dérivé de l’état réel
 de la radio et de la fréquence vedette : `GET /data/lemegeton-state.json`.
 

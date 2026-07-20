@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "updatedAt": "2026-07-10T16:42:21.781Z",
+  "version": 3,
+  "updatedAt": "2026-07-20T21:16:56.443Z",
   "source": "gwen-ha-star-static",
   "network": {
     "name": "Gwen Ha Star",
@@ -16,6 +16,13 @@
     "visibility": "public"
   },
   "apps": [
+    {
+      "id": "jukebox",
+      "name": "Jukebox",
+      "status": "active",
+      "terminalLabel": "Musique · archives",
+      "url": "https://nitro.sterenna.fr/jukebox/"
+    },
     {
       "id": "star",
       "name": "Star Cockpit",
@@ -92,18 +99,21 @@
       "status": "alpha",
       "terminalLabel": "Core · énergie",
       "url": "https://nitro.sterenna.fr/clicker/"
-    },
-    {
-      "id": "arena",
-      "name": "Skill Arena",
-      "status": "active",
-      "terminalLabel": "Mini-jeux · duels",
-      "url": "https://nitro.sterenna.fr/arena/"
     }
   ],
+  "chroniclesFm": {
+    "frequencyCount": 13,
+    "nowPlaying": {
+      "title": "Chronicles FM — Dr.Spig Mix",
+      "style": "Techno / Electro / Riddim / DnB / Hardtek",
+      "mood": "nerveux · rave · basses lourdes · chaos contrôlé"
+    }
+  },
+  "dedications": [],
   "signals": [
     "Chronicles FM: 13 frequences.",
     "Gwen Ha Star Radio active.",
+    "Aucune dedicace recente.",
     "Donnees synchronisees depuis Nitro."
   ],
   "links": {
