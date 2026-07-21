@@ -82,9 +82,13 @@ jobs:
             --exclude='/bzh-universe/' \
             --exclude='/titan-rocket-run/' \
             --exclude='/botanica/' \
+            --exclude='/botanica-obscura/' \
             --exclude='/geotia/' \
             --exclude='/goetia/' \
+            --exclude='/mockups/' \
             --exclude='/ARCHITECTURE.md' \
+            --exclude='/CONTRIBUTING.md' \
+            --exclude='/contexte-gwen-ha-star.md' \
             --exclude='/icons/' \
             -e "ssh -i ~/.ssh/ovh_key" \
             ./ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/"

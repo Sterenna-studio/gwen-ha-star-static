@@ -133,14 +133,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:.8
 </head>
 <body>
 
-<!-- Config Supabase injectée côté serveur ou depuis shared/config.js -->
+<!-- Config Supabase — projet Nitro partagé (nmdjrcswlnydglrxaivx) -->
 <script>
-  // Priorité : variable globale définie par shared/config.js si elle existe
-  // Sinon fallback sur les valeurs de production connues
+  // Ce script classique s'exécute au parsing, avant init(), pour exposer les
+  // globales lues par checkConfig()/uploadFile()/getToken().
+  // La clé publishable est publique par design (la sécurité repose sur la RLS
+  // + le token de session superuser récupéré par getToken).
+  // Un shared/config.js définissant window.SUPABASE_URL en amont a priorité.
   if (typeof window.SUPABASE_URL === 'undefined') {
-    window.SUPABASE_URL         = 'https://ctwzasnxkfflsmzqwtmf.supabase.co';
-    window.SUPABASE_ANON        = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0d3phc254a2ZmbHNtenF3dG1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTM1MTUsImV4cCI6MjA2MzY2OTUxNX0.2cjgsg9GVzRpMoZnpWJumBIvEpTiJ2oPM4BtJ-MkqRw';
-    window.SUPABASE_PROJECT_REF = 'ctwzasnxkfflsmzqwtmf';
+    window.SUPABASE_URL         = 'https://nmdjrcswlnydglrxaivx.supabase.co';
+    window.SUPABASE_ANON        = 'sb_publishable_dE0SfyUd-Xw4JhuAVy4x1A_NZfB7lcH';
+    window.SUPABASE_PROJECT_REF = 'nmdjrcswlnydglrxaivx';
   }
 </script>
 

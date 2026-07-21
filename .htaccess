@@ -19,6 +19,9 @@ Options -Indexes
 </IfModule>
 
 # ── ZONE ADMIN : Basic Auth (défense en profondeur, en + du rôle superuser Supabase) ──
+# Couvre les consoles admin de la racine. Les consoles /star/admin/ ont leur
+# propre .htaccess (star/admin/.htaccess). Reste sur le seul guard client + RLS :
+# star/sterenna-panel/admin.html (dossier mixte, non couvert ici volontairement).
 <FilesMatch "^admin-(dashboard|audio)\.(html|js)$">
   AuthType Basic
   AuthName "Gwen Ha Star — Zone admin"
