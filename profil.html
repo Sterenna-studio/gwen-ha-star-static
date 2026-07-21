@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profil Agent — Gwen Ha Star</title>
   <link rel="stylesheet" href="/css/fx.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --bg: #0d0d14;
@@ -193,11 +192,8 @@
 
 <script type="module">
   import { initCursorGlow, initFlickers } from '/js/fx.js'
+  import { supabase } from '/shared/supabase-client.js'
   initCursorGlow()
-
-  // ── Config ────────────────────────────────────────────────────────────────
-  const SUPABASE_URL  = 'https://nmdjrcswlnydglrxaivx.supabase.co'
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tZGpyY3N3bG55ZGdscnhhaXZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM4MDM0MDIsImV4cCI6MjAyOTM3OTQwMn0.Qb6Z5lkNqovpFQ4K6P8A_GZq2JHxCH4B0RHb5HMjpqc'
 
   const RARITY_COLORS = {
     legendary: 'var(--rarity-legendary)',
@@ -208,8 +204,7 @@
   const RARITY_ORDER  = ['legendary','epic','rare','common']
   const RARITY_LABELS = { legendary: '✦ Légendaire', epic: '◆ Épique', rare: '◈ Rare', common: '○ Commun' }
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
-  const main     = document.getElementById('main')
+  const main = document.getElementById('main')
 
   // ── Resolve identity ──────────────────────────────────────────────────────
   const params    = new URLSearchParams(location.search)
