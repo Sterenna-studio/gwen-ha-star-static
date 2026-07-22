@@ -52,8 +52,8 @@ function initTwitchPlayer() {
 function initJukebox() {
   const BASE = 'https://nitro.sterenna.fr/jukebox/';
   const TRACKS = [
-    { title: 'BZH SUMMER - BIG BANGER', artist: 'Dr.Spig', src: 'audio/bzh-summer-big-banger-vers-501a.wav', cover: 'img/bzh_summer-df65d.png' },
-    { title: 'Credits Song To BZH Empire Rising', artist: 'Dr.Spig', src: 'audio/Credits Song To BZH Empire Rising.mp3', cover: 'img/credits-song-to-bzh-empire-rising-0b953.png' },
+    { title: 'BZH SUMMER - BIG BANGER', artist: 'Dr.Spig', src: 'audio/bzh-summer-big-banger-vers-501a.wav', cover: 'img/bzh_summer-df65d.webp' },
+    { title: 'Credits Song To BZH Empire Rising', artist: 'Dr.Spig', src: 'audio/Credits Song To BZH Empire Rising.mp3', cover: 'img/credits-song-to-bzh-empire-rising-0b953.webp' },
     { title: "Jacques_L'Agent Explorateur", artist: 'Dr.Spig', src: "audio/Jacques_L'Agent Explorateur.mp3", cover: 'img/jacques-l-agent-explorateur-6f0d9.webp' },
     { title: 'Rising GODs - BZH CHRONICLES', artist: 'Dr.Spig', src: 'audio/Rising GODs - BZH CHRONICLES.mp3', cover: 'img/rising-gods-bzh-chronicles-8f982.webp' },
   ];
