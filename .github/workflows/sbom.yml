@@ -1,0 +1,40 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#  SBOM — Software Bill of Materials (SPDX JSON)
+#  Généré sur push main/master, tags v*.*.* et à la demande.
+#  TODO durcissement : épingler les actions par SHA (voir security.yml).
+# ═══════════════════════════════════════════════════════════════════════════
+name: SBOM
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+
+permissions: read-all
+
+concurrency:
+  group: sbom-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sbom:
+    name: Generate SPDX SBOM
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate SBOM (SPDX JSON)
+        uses: anchore/sbom-action@v0.24.0
+        with:
+          path: "."
+          format: spdx-json
+          output-file: sbom.spdx.json
+          artifact-name: sbom.spdx.json
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-spdx-json
+          path: sbom.spdx.json
+          if-no-files-found: error
