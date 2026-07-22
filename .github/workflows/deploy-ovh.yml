@@ -90,6 +90,9 @@ jobs:
             --exclude='/CONTRIBUTING.md' \
             --exclude='/contexte-gwen-ha-star.md' \
             --exclude='/icons/' \
+            --exclude='/test/' \
+            --exclude='/package.json' \
+            --exclude='/package-lock.json' \
             -e "ssh -i ~/.ssh/ovh_key" \
             ./ "${{ secrets.OVH_USER }}@${{ secrets.OVH_HOST }}:~/nitro/"
 
