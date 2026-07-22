@@ -1,0 +1,10 @@
+{
+  "name": "gwen-ha-star-static",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Hub statique Gwen Ha Star / Nitro — pas de build, JS/CSS/HTML servis tels quels.",
+  "scripts": {
+    "test": "node --experimental-test-module-mocks --test"
+  }
+}

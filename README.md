@@ -234,6 +234,24 @@ id = 'home'
 
 ---
 
+## Tests
+
+Le repo n'a pas de build, mais a des specs sur la logique pure (sans DOM) via
+le runner intégré de Node — zéro dépendance (`package.json` n'a aucun
+`devDependency`) :
+
+```bash
+npm test
+```
+
+Couvre par exemple le cache de `probeRadioSite` et le calcul des gains
+`SlotMachine._evaluateLines` (`js/star/widget-*.js`), en instanciant les
+classes via `Object.create(...)` pour éviter le DOM tout en testant le vrai
+code de prod. Voir `test/`. Tourne en CI sur chaque push/PR
+(`.github/workflows/test.yml`).
+
+---
+
 ## Sécurité / Supply-chain
 
 La politique complète est dans [`SECURITY.md`](SECURITY.md). En résumé, la CI
