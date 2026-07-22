@@ -51,6 +51,23 @@ Le repo exécute automatiquement (voir `.github/workflows/`) :
 - **SBOM** — génération d'un SBOM SPDX JSON à chaque push/tag.
 - **Dependabot** — mises à jour hebdomadaires des GitHub Actions.
 
+## Fuites historiques connues (à faire tourner)
+
+Le scan gitleaks initial a détecté des clés dans **d'anciens commits** (déjà
+retirées de l'arbre courant, mais l'historique public reste lisible). Elles sont
+baseline-ées dans [`.gitleaksignore`](.gitleaksignore) et **doivent être
+considérées comme compromises** :
+
+| Clé | Emplacement historique | Action |
+|---|---|---|
+| YouTube Data API | `js/chronicles-fm-widget.js` | Régénérer + restreindre (Google Cloud Console) |
+| Riot Games API | `star/index.html` | Régénérer (Riot Developer Portal) |
+| Supabase JWT `anon` (`imryukpbtkngsihxfxox`) | `TCG/shared/supabaseClient.js` | Publique par design — rotation optionnelle |
+
+> Baseliner (`.gitleaksignore`) ≠ corriger : la vraie remédiation est la
+> **rotation** côté fournisseur. Le baseline sert uniquement à garder le CI
+> vert tout en continuant de détecter les **nouvelles** fuites.
+
 ## Politique de tags / releases (SemVer)
 
 - `v0.1.0` — première version propre.

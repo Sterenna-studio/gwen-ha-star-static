@@ -1,0 +1,34 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# .gitleaksignore — baseline des fuites HISTORIQUES déjà acceptées.
+#
+# Chaque empreinte ci-dessous correspond à un secret présent dans d'anciens
+# commits (historique public) MAIS déjà retiré de l'arbre courant. gitleaks les
+# ignore pour garder le CI vert, tout en continuant à détecter toute NOUVELLE
+# fuite (empreinte = commit:fichier:règle:ligne, donc une réintroduction dans un
+# nouveau commit sera bien signalée).
+#
+# ⚠️ IGNORER ≠ CORRIGER. L'historique d'un repo public reste lisible par tous.
+# Ces clés doivent être considérées comme COMPROMISES et FAIRE L'OBJET D'UNE
+# ROTATION côté fournisseur :
+#   • YouTube Data API key (YT_API_KEY, js/chronicles-fm-widget.js)
+#       → régénérer + restreindre dans Google Cloud Console.
+#   • Riot Games API key (RIOT_KEY, star/index.html)
+#       → régénérer dans le Riot Developer Portal.
+#   • Supabase JWT anon (TCG/shared/supabaseClient.js, projet imryukpbtkngsihxfxox)
+#       → clé anon PUBLIQUE par design : rotation optionnelle (faible sévérité).
+# Voir SECURITY.md.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# YouTube Data API key — js/chronicles-fm-widget.js (6 commits successifs)
+df5a1cf53adfc32db2e3bbe307032a87b8fc9aa5:js/chronicles-fm-widget.js:generic-api-key:11
+71647038b4a8e6baabbd789cecdae260f05e30f3:js/chronicles-fm-widget.js:generic-api-key:12
+4b8b838d3ed161d255b3bf763e6d1663a2bf1c93:js/chronicles-fm-widget.js:generic-api-key:12
+2aee5210a0c48980cce21ea03dca5eca540b601e:js/chronicles-fm-widget.js:generic-api-key:13
+88dcc0323d33ae83fea8d54bf6c689e874b2c130:js/chronicles-fm-widget.js:generic-api-key:13
+b80795fb7250e249d05207dd50ff08421ede6d20:js/chronicles-fm-widget.js:generic-api-key:15
+
+# Riot Games API key — star/index.html
+ddc7c75b42128b504f64f18d83e9f6e1aa7e3463:star/index.html:generic-api-key:492
+
+# Supabase JWT anon (public par design) — TCG/shared/supabaseClient.js
+89b44f6a1db86c48fca6c0f96f8e23c44c631711:TCG/shared/supabaseClient.js:jwt:5
