@@ -1,9 +1,14 @@
 #!/bin/bash
 # ════════════════════════════════════════════════════
 #  generate-config.sh
-#  Génère config.js (racine) et TCG/config.js depuis .env
+#  Génère shared/config.js pour le DÉVELOPPEMENT LOCAL depuis .env.
+#  En production, ce fichier est généré par GitHub Actions
+#  (.github/workflows/deploy-ovh.yml) à partir des secrets du repo —
+#  ce script ne sert qu'à reproduire la même config en local.
 #  Usage : bash generate-config.sh
 # ════════════════════════════════════════════════════
+
+set -euo pipefail
 
 if [ ! -f .env ]; then
   echo "❌ Fichier .env introuvable."
@@ -17,38 +22,24 @@ set -a
 source <(grep -v '^#' .env | grep -v '^[[:space:]]*$')
 set +a
 
-if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_ANON_KEY:-}" ]; then
   echo "❌ SUPABASE_URL ou SUPABASE_ANON_KEY manquant dans .env"
+  echo "   (SUPABASE_ANON_KEY = clé publishable sb_publishable_… — voir .env.example)"
   exit 1
 fi
 
-# ── 1. config.js (racine) — utilisé par js/supabase.js ──────────────────────
-cat > config.js << EOF
-// ════════════════════════════════════════════════════════════════
-//  Gwen Ha Star — Configuration Supabase
-//  ⚠️  Fichier généré automatiquement par generate-config.sh
-//  ⚠️  NE PAS COMMITER si ce fichier contient de vraies clés !
-// ════════════════════════════════════════════════════════════════
+# ── shared/config.js — consommé par shared/supabase-config.js ───────────────
+# Même format que celui produit au déploiement. Fichier gitignoré.
+mkdir -p shared
+cat > shared/config.js << EOF
+// Runtime config generated locally by generate-config.sh (dev only).
+// Do not commit this file.
 
-export const SUPABASE_URL  = '${SUPABASE_URL}';
+export const SUPABASE_URL = '${SUPABASE_URL}';
 export const SUPABASE_ANON = '${SUPABASE_ANON_KEY}';
 EOF
 
-echo "✅ config.js (racine) généré"
-
-# ── 2. TCG/config.js — utilisé par le TCG ───────────────────────────────────
-cat > TCG/config.js << EOF
-// ════════════════════════════════════════════════════════════════
-//  PokéForge — Configuration Supabase
-//  ⚠️  Fichier généré automatiquement par generate-config.sh
-//  ⚠️  NE PAS COMMITER si ce fichier contient de vraies clés !
-// ════════════════════════════════════════════════════════════════
-
-const SUPABASE_URL      = '${SUPABASE_URL}';
-const SUPABASE_ANON_KEY = '${SUPABASE_ANON_KEY}';
-EOF
-
-echo "✅ TCG/config.js généré"
+echo "✅ shared/config.js généré"
 echo ""
 echo "   URL : ${SUPABASE_URL}"
 echo "   KEY : ${SUPABASE_ANON_KEY:0:20}..."

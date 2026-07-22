@@ -1,0 +1,9 @@
+# ── ZONE ADMIN STAR : Basic Auth (défense en profondeur) ──
+# Tout ce dossier est de l'outillage superuser (chaque page passe déjà par
+# requireStarSuperuser côté client + RLS Supabase). Basic Auth ajoute une
+# couche serveur, comme pour admin-dashboard/admin-audio à la racine.
+# Même realm + même fichier htpasswd → identifiants uniques, un seul prompt.
+AuthType Basic
+AuthName "Gwen Ha Star — Zone admin"
+AuthUserFile /homez.956/sterenn/.htpasswd-admin
+Require valid-user

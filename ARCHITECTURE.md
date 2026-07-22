@@ -146,68 +146,62 @@ home.js (orchestrateur)
 
 ---
 
-## Deux modèles de synchronisation
+## Déploiement — un seul workflow
 
-Selon la nature du sous-projet, l'un des deux modèles est utilisé.
+> **État actuel** : le repo ne contient plus qu'un workflow,
+> [`.github/workflows/deploy-ovh.yml`](.github/workflows/deploy-ovh.yml).
+> Les anciens workflows de sync (`receive-*.yml`, `sync-submodule.yml`,
+> `deploy-<projet>.yml`) ont été retirés — cette section décrit ce qui tourne
+> réellement.
 
-### 🟢 Modèle A — Copie de fichiers (sites statiques)
+À chaque `push` sur `main` (ou `workflow_dispatch`), `deploy-ovh.yml` :
 
-Pour les projets **déjà statiques** (HTML/CSS/JS sans build).
-
-```
-push sur le repo enfant
-  → repository_dispatch [sync-<projet>]
-    → workflow "receive-<projet>.yml" dans ce repo
-      → checkout du repo enfant
-      → cp -r dans le sous-dossier <projet>/
-      → commit des fichiers DANS gwen-ha-star-static
-        → deploy-ovh.yml déploie tout vers ~/nitro/
-```
-
-- **Secret utilisé** : `SYNC_TOKEN`
-- **Les fichiers sont committés** physiquement dans ce repo.
-- **URL finale** : `nitro.sterenna.fr/<projet>/`
-
-| Projet | Repo | Sous-dossier | Workflow |
-|---|---|---|---|
-| Botanica Obscura | `sterenna-studio/botanica-obscura` | `botanica-obscura/` | `receive-botanica-obscura.yml` |
-| Nitro Clicker | `sterenna-studio/nitro-clicker` | `clicker/` | `receive-nitro-clicker.yml` |
-
-### 🔵 Modèle B — Submodule + build (apps Next.js)
-
-Pour les projets nécessitant une **étape de build** (Next.js, etc.).
+1. **génère `shared/config.js`** depuis les secrets Supabase (config runtime) ;
+2. **construit le feed 3615** (`node scripts/build-3615-feed.mjs`) ;
+3. **déploie par `rsync -avz --delete`** vers `~/nitro/` sur OVH ;
+4. **smoke-teste** une liste d'URLs publiques (`curl --fail`) ;
+5. **publie une entrée `activity_log`** (`git_push`) via la clé service-role.
 
 ```
-push sur le repo enfant
-  → repository_dispatch [<projet>-updated]
-    → deux workflows dans ce repo :
-       1. sync-submodule.yml  → met à jour la référence submodule (versioning)
-       2. deploy-<projet>.yml → npm ci + npm run build → rsync out/ vers OVH
+push sur main
+  → deploy-ovh.yml
+    → génère shared/config.js (secrets)
+    → build 3615-feed.json
+    → rsync --delete  ./  →  sterenn@OVH:~/nitro/
+    → smoke tests + activity_log
 ```
 
-- **Secret utilisé** : `GH_PAT`
-- **Seule une référence de commit** est stockée (submodule, pas les fichiers).
-- **URL finale** : `nitro.sterenna.fr/<projet>/` (via `basePath` Next.js)
+### ⚠️ `rsync --delete` : le garde-fou des excludes
 
-| Projet | Repo | Submodule | basePath | Déploie vers |
-|---|---|---|---|---|
-| Skill Arena | `sterenna-studio/skill-arena` | `skill-arena/` | `/arena` | `~/nitro/arena/` |
+Le web root `~/nitro/` est **partagé** : d'autres apps (Skill Arena, TCG,
+Botanica, Clicker, etc.) y sont déployées **séparément**, par leurs propres
+pipelines, et ne vivent **pas** dans ce repo. Comme le déploiement utilise
+`--delete`, **tout dossier présent sur le serveur mais absent de ce repo serait
+effacé** s'il n'est pas explicitement exclu.
+
+➡️ **Règle** : toute app déployée séparément vers `~/nitro/<x>/` doit figurer
+dans la liste `--exclude='/<x>/'` de `deploy-ovh.yml`. En cas de doute, on
+**ajoute** un exclude (opération sûre) — on n'en retire jamais un sans vérifier
+le contenu réel du serveur.
+
+Excludes actuels : `.git`, `.github`, `docs/`, `icons/`, les docs racine
+(`README.md`, `LICENSE`, `ARCHITECTURE.md`, `CONTRIBUTING.md`,
+`contexte-gwen-ha-star.md`), `mockups/`, et les apps externes
+(`arena`, `skill-arena`, `dedale`, `clicker`, `corebots`, `TCG`,
+`bzh-universe`, `titan-rocket-run`, `botanica`, `botanica-obscura`,
+`geotia`, `goetia`).
 
 ---
 
 ## Secrets requis (Settings → Secrets → Actions)
 
-Dans **ce repo** (`gwen-ha-star-static`) :
+Utilisés par `deploy-ovh.yml` :
 
 | Secret | Usage |
 |---|---|
-| `SYNC_TOKEN` | Checkout des repos enfants (modèle A) |
-| `GH_PAT` | Submodules + déclenchement croisé (modèle B) |
 | `OVH_HOST` / `OVH_USER` / `OVH_SSH_KEY` | Déploiement SSH/rsync vers OVH |
-| `GHSTAR_SUPABASE_URL` / `GHSTAR_SUPABASE_ANON` | Config Supabase injectée au build |
-
-Dans **chaque repo enfant** : le token (`SYNC_TOKEN` ou `GH_PAT`) pour pouvoir
-déclencher le `repository_dispatch` vers ce repo.
+| `GHSTAR_SUPABASE_URL` / `GHSTAR_SUPABASE_ANON` | Génération de `shared/config.js` |
+| `GHSTAR_SUPABASE_SERVICE_ROLE` | Publication de l'`activity_log` (git_push) |
 
 ---
 
@@ -217,16 +211,16 @@ Tous les projets pointent sur **le même projet Supabase**
 (`nmdjrcswlnydglrxaivx.supabase.co`) — comptes, scores et données communautaires
 sont donc partagés à travers l'écosystème.
 
-- Sites statiques : `shared/config.js` généré au déploiement.
+- Sites statiques : `shared/config.js` généré au déploiement (clé `sb_publishable_…`).
+  En local, `bash generate-config.sh` reproduit ce fichier depuis `.env`.
 - Next.js : `.env.local` injecté au build (`NEXT_PUBLIC_SUPABASE_*`).
 
 ---
 
 ## Ajouter un nouveau sous-projet
 
-**Site statique** → copier `receive-nitro-clicker.yml`, adapter le nom du repo,
-le sous-dossier et l'event type. Ajouter le dispatch dans le repo enfant.
-
-**App Next.js** → copier `deploy-skill-arena.yml` + `sync-submodule.yml`, adapter,
-ajouter le submodule (`git submodule add`), configurer `basePath` dans le projet
-enfant et ajouter le workflow `notify-parent.yml` côté enfant.
+Les sous-projets ne sont plus synchronisés dans ce repo. Un nouveau projet
+déployé sous `nitro.sterenna.fr/<x>/` est géré par **son propre pipeline** vers
+`~/nitro/<x>/`. Côté ce repo, la seule action requise est d'**ajouter
+`--exclude='/<x>/'`** dans `deploy-ovh.yml` pour que le `rsync --delete` ne
+l'efface pas.
