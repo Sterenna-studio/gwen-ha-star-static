@@ -36,27 +36,37 @@ jobs:
       node_lock: ${{ steps.d.outputs.node_lock }}
       pkg_manager: ${{ steps.d.outputs.pkg_manager }}
       python: ${{ steps.d.outputs.python }}
+      has_manifest: ${{ steps.d.outputs.has_manifest }}
     steps:
       - uses: actions/checkout@v4
       - id: d
         shell: bash
         run: |
-          node_lock=false; pkg=none; python=false
+          node_lock=false; pkg=none; python=false; has_manifest=false
           if [ -f package-lock.json ]; then node_lock=true; pkg=npm; fi
           if [ -f pnpm-lock.yaml ];  then node_lock=true; pkg=pnpm; fi
           if [ -f yarn.lock ];       then node_lock=true; pkg=yarn; fi
           if [ -f requirements.txt ] || [ -f pyproject.toml ]; then python=true; fi
+          # Manifeste = ce qui alimente le dependency graph GitHub
+          if [ -f package.json ] || [ -f requirements.txt ] || [ -f pyproject.toml ] || [ -f go.mod ]; then
+            has_manifest=true
+          fi
           {
             echo "node_lock=$node_lock"
             echo "pkg_manager=$pkg"
             echo "python=$python"
+            echo "has_manifest=$has_manifest"
           } >> "$GITHUB_OUTPUT"
-          echo "Detected → node_lock=$node_lock pkg=$pkg python=$python"
+          echo "Detected → node_lock=$node_lock pkg=$pkg python=$python manifest=$has_manifest"
 
   # ── Revue des dépendances ajoutées dans une PR ───────────────────────────
+  # Conditionnée à la présence d'un manifeste : sans dependency graph il n'y a
+  # rien à réviser (skip propre sur un repo statique). Nécessite aussi que le
+  # "Dependency graph" soit activé côté repo (Settings → Code security).
   dependency-review:
     name: Dependency review
-    if: github.event_name == 'pull_request'
+    needs: detect
+    if: github.event_name == 'pull_request' && needs.detect.outputs.has_manifest == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -67,21 +77,34 @@ jobs:
           fail-on-severity: moderate
 
   # ── Scan de secrets (historique complet) ─────────────────────────────────
+  # On utilise le BINAIRE gitleaks directement (et non gitleaks/gitleaks-action)
+  # car cette action exige une licence pour les repos d'organisation. Le binaire
+  # n'a pas cette contrainte : self-contained, version épinglée, sans secret.
   gitleaks:
     name: Gitleaks secret scan
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      GITLEAKS_VERSION: "8.18.4"
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          # Config repo (.gitleaks.toml) : allowlist des clés publiques Supabase.
-          GITLEAKS_CONFIG: .gitleaks.toml
-          # GITLEAKS_LICENSE requis uniquement pour les organisations, pas pour
-          # les comptes individuels / repos publics.
+      - name: Install gitleaks
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz gitleaks
+          sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+      - name: Scan git history
+        run: |
+          gitleaks detect \
+            --source . \
+            --config .gitleaks.toml \
+            --redact \
+            --exit-code 1 \
+            --verbose
 
   # ── Scan filesystem : vulnérabilités + secrets + misconfig → SARIF ───────
   trivy:
