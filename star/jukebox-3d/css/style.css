@@ -81,4 +81,4 @@ body.theme-steam .cover.active{border-color:rgba(182,124,61,.65)}
 .effect-water{background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.10), rgba(0,0,0,0) 55%),radial-gradient(circle, var(--disc1) 0 36%, var(--disc2) 70% 100%);animation:water 5.8s linear infinite}
 @keyframes water{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(25deg)}}
 .effect-logo{background:radial-gradient(circle, var(--disc1) 0 36%, var(--disc2) 70% 100%);position:relative}
-.effect-logo::after{content:"";position:absolute;inset:18%;border-radius:50%;background:url('../../../shared/logos/bzh_power.png') center/contain no-repeat;opacity:.9}
+.effect-logo::after{content:"";position:absolute;inset:18%;border-radius:50%;background:url('../../../shared/logos/bzh_power.webp') center/contain no-repeat;opacity:.9}

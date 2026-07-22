@@ -12,7 +12,7 @@
         "bpm": 0,
         "duration": "2:34",
         "durationSeconds": 154.813708,
-        "coverImage": "img\/bzh_summer-df65d.png",
+        "coverImage": "img\/bzh_summer-df65d.webp",
         "effect": "effect-calc",
         "patternVariant": "pv-holo",
         "vinylStyle": "effect-calc"
@@ -32,7 +32,7 @@
         "duration": "2:22",
         "durationSeconds": 142.039979,
         "effect": "effect-grid",
-        "coverImage": "img\/credits-song-to-bzh-empire-rising-0b953.png",
+        "coverImage": "img\/credits-song-to-bzh-empire-rising-0b953.webp",
         "vinylStyle": "effect-calc"
     },
     {
