@@ -1,0 +1,25 @@
+# Gitleaks — configuration repo Gwen Ha Star
+# Étend les règles par défaut et allowliste UNIQUEMENT les clés publiques
+# Supabase (anon / publishable). Ces clés sont publiques par design : la
+# sécurité repose sur les Row Level Security policies côté Supabase.
+#
+# ⚠️ On n'allowliste JAMAIS de motif générique de JWT Supabase : une clé
+# service_role (secrète) fuitée doit continuer à être détectée. Seules les
+# signatures exactes des anciennes clés anon (publiques, déjà tournées) et le
+# préfixe publishable sont exclus.
+
+title = "Gwen Ha Star gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Clés publiques Supabase (anon/publishable) — non secrètes, RLS assure la sécurité"
+regexes = [
+  # Clés publishable : publiques par design (sb_publishable_…)
+  '''sb_publishable_[A-Za-z0-9_-]{16,}''',
+  # Anciennes clés anon JWT (rôle anon, publiques) — signatures exactes,
+  # présentes dans l'historique git, déjà remplacées par les clés publishable.
+  '''Qb6Z5lkNqovpFQ4K6P8A_GZq2JHxCH4B0RHb5HMjpqc''',
+  '''2cjgsg9GVzRpMoZnpWJumBIvEpTiJ2oPM4BtJ-MkqRw''',
+]

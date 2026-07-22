@@ -141,8 +141,13 @@ gwen-ha-star-static/
 │   ├── themes/                   # Archive ancienne version thème UI
 │   └── background-presets/       # Archive ancienne version presets publics du fond
 │
-└── .github/workflows/
-    └── deploy-ovh.yml            # Déploiement SSH/rsync vers OVH ~/nitro/
+└── .github/
+    ├── dependabot.yml           # Bumps hebdo des GitHub Actions
+    └── workflows/
+        ├── deploy-ovh.yml       # Déploiement SSH/rsync vers OVH ~/nitro/
+        ├── security.yml         # Dependency review, gitleaks, trivy, audits
+        ├── codeql.yml           # Analyse statique JS/TS
+        └── sbom.yml             # SBOM SPDX
 ```
 
 ---
@@ -226,3 +231,47 @@ Le fond public est piloté par Supabase via :
 space_background_config
 id = 'home'
 ```
+
+---
+
+## Sécurité / Supply-chain
+
+La politique complète est dans [`SECURITY.md`](SECURITY.md). En résumé, la CI
+applique en continu (voir `.github/workflows/`) :
+
+| Check | Déclencheur | Rôle |
+|---|---|---|
+| **Dependency Review** | pull request | Bloque les dépendances vulnérables ajoutées (seuil : moderate) |
+| **Gitleaks** | push / PR / hebdo | Scan de secrets sur tout l'historique |
+| **Trivy** | push / PR / hebdo | Vulnérabilités + secrets + misconfig → onglet *Security* (SARIF) |
+| **CodeQL** | push / PR / hebdo | Analyse statique JavaScript / TypeScript |
+| **SBOM** | push / tag `v*` | Génère un SBOM SPDX JSON |
+| **Dependabot** | hebdo | Met à jour les GitHub Actions |
+
+> Rappel : la clé Supabase `anon` / `sb_publishable_…` est **publique par
+> design** (RLS côté serveur). Seule la clé `service_role` est secrète et ne
+> doit jamais être committée.
+
+### Versioning (SemVer)
+
+Aucun tag n'est créé automatiquement. Convention :
+
+- `v0.1.0` — première version propre ;
+- **PATCH** — fix / vuln / bump de dépendance ;
+- **MINOR** — feature rétrocompatible ;
+- **MAJOR** — breaking change.
+
+```bash
+git tag -a v0.1.0 -m "v0.1.0" && git push origin v0.1.0
+```
+
+### À activer manuellement dans GitHub (une fois)
+
+- **Settings → Code security** : Dependabot **alerts** + **security updates**.
+- **Secret scanning** + **push protection**.
+- **Private vulnerability reporting**.
+- **CodeQL** : ce repo fournit `codeql.yml` (advanced). Ne pas activer aussi le
+  *default setup* (mutuellement exclusifs).
+- **Branch protection sur `main`** : PR obligatoire, status checks requis
+  (Security / CodeQL), pas de force-push, workflow permissions en *read-only*
+  par défaut.

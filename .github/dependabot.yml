@@ -1,0 +1,42 @@
+# Dependabot — mises à jour de dépendances automatisées.
+# Stack détecté : site statique (HTML/CSS/JS/TS) sans package manager.
+# → Seul l'écosystème "github-actions" est activé.
+#
+# ➕ Quand un manifeste sera ajouté, décommenter/ajouter l'entrée correspondante :
+#   - package.json / lockfile Node  → package-ecosystem: "npm"
+#   - requirements.txt / pyproject  → package-ecosystem: "pip"
+#   - Dockerfile / compose          → package-ecosystem: "docker"
+# En monorepo, dupliquer l'entrée avec le bon "directory" par sous-projet.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "security"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
+  # --- Exemples prêts à activer si le stack évolue --------------------------
+  # - package-ecosystem: "npm"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #   labels: ["dependencies", "security", "javascript"]
+  #
+  # - package-ecosystem: "pip"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #   labels: ["dependencies", "security", "python"]
+  #
+  # - package-ecosystem: "docker"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #   labels: ["dependencies", "security", "docker"]
