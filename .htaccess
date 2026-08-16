@@ -8,6 +8,11 @@ Options -Indexes
 # ── CHRONICLES FM : source playlist canonique WEB RADIO · YOUTUBE ──
 <IfModule mod_rewrite.c>
   RewriteEngine On
+
+  # Quiz Sterenna : /quiz/ est l'unique chemin canonique sur Nitro.
+  # Conserve les anciens liens /quizz/... en les redirigeant vers /quiz/...
+  RewriteRule ^quizz(?:/(.*))?$ /quiz/$1 [R=301,L,NE]
+
   RewriteRule ^chronicles-fm/data\.json$ /jukebox/chronicles-fm.json [R=302,L]
 
   # Runtime Korigan: keep stable same-origin Nitro URLs for static widgets.

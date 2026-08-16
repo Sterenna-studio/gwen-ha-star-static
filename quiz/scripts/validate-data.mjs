@@ -46,12 +46,34 @@ for (const [index, question] of lolQuestions.entries()) {
   }
 }
 
-const gamer = readJson('quizzes/gamer-profile-test/questions.json');
-if (gamer.questions.length !== 30) throw new Error('Gamer Profile doit contenir 30 questions');
-for (const axis of gamer.axes) {
-  if (gamer.questions.filter((question) => question.axis === axis.id).length !== 6) {
-    throw new Error(`Répartition invalide pour l'axe ${axis.id}`);
-  }
+const gamerBase = readJson('quizzes/gamer-profile-test/questions.json');
+const gamerAdditions = readJson('quizzes/gamer-profile-test/v0.2/questions-additions.json');
+const gamerPatches = readJson('quizzes/gamer-profile-test/v0.2/question-patches.json');
+const gamerScoring = readJson('quizzes/gamer-profile-test/v0.2/scoring.json');
+const gamerResults = readJson('quizzes/gamer-profile-test/v0.2/results.json');
+const gamerMetadata = manifest.find((quiz) => quiz.id === 'gamer-profile-test');
+const gamerQuestions = [...gamerBase.questions, ...gamerAdditions.questions];
+
+if (gamerBase.questions.length !== 30) throw new Error('La base V0.1 Gamer Profile doit rester à 30 questions');
+if (gamerAdditions.questions.length !== 5) throw new Error('La V0.2 doit ajouter exactement 5 questions');
+if (gamerQuestions.length !== 35) throw new Error('Gamer Profile V0.2 doit contenir 35 questions jouables');
+if (gamerMetadata.question_count !== 35 || gamerMetadata.version !== '0.2') {
+  throw new Error('Métadonnées Gamer Profile V0.2 incohérentes');
+}
+if (gamerScoring.base_question_count !== 35 || gamerScoring.base_max_points !== 70 || gamerScoring.effective_max_points !== 72) {
+  throw new Error('Barème Gamer Profile V0.2 incohérent');
+}
+if (gamerResults.profiles.length !== 5 || gamerResults.profiles.at(-1).max !== 72) {
+  throw new Error('Intervalles de résultats Gamer Profile V0.2 incohérents');
+}
+if (gamerPatches.patches.length !== 2) throw new Error('Deux patches contextuels Gamer Profile sont attendus');
+
+const ids = new Set();
+for (const question of gamerQuestions) {
+  if (ids.has(question.id)) throw new Error(`Question Gamer Profile dupliquée : ${question.id}`);
+  ids.add(question.id);
+  if (!gamerBase.axes.some((axis) => axis.id === question.axis)) throw new Error(`Axe Gamer Profile inconnu : ${question.axis}`);
+  if (question.answers.length !== 3) throw new Error(`Question Gamer Profile ${question.id} : 3 réponses attendues`);
 }
 
 const players = readJson('data/players.json');
@@ -59,4 +81,4 @@ const lore = readJson('data/questions-static.json');
 if (!players.last_sync || players.players.length < 2) throw new Error('Données joueurs invalides');
 if (lore.length < 10) throw new Error('Pool de lore insuffisant');
 
-console.log(`Validated ${manifest.length} modules, ${lolQuestions.length} LoL questions and ${gamer.questions.length} profile questions`);
+console.log(`Validated ${manifest.length} modules, ${lolQuestions.length} LoL questions and ${gamerQuestions.length} Gamer Profile V0.2 questions`);

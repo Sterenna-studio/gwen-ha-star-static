@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "patches": [
+    {
+      "question_id": 3,
+      "reason": "Transformer le bonus animal existant en facteur automatique lorsque le profil indique un animal de compagnie.",
+      "context_bonuses": [
+        {
+          "id": "pet_hair_dust_bonus",
+          "label": "+1 point Rond : un compagnon à poils/plumes ajoute naturellement un peu de difficulté au combat contre la poussière.",
+          "round_points": 1,
+          "when": { "profile_field": "has_pets", "equals": true },
+          "automatic": true
+        }
+      ]
+    },
+    {
+      "question_id": 18,
+      "reason": "Ajouter un petit facteur animal lorsque le bureau est déjà vécu ou chaotique.",
+      "context_bonuses": [
+        {
+          "id": "pet_setup_bonus",
+          "label": "+1 point Rond : votre compagnon participe lui aussi à la vie du setup.",
+          "round_points": 1,
+          "when": {
+            "all": [
+              { "profile_field": "has_pets", "equals": true },
+              { "answer_in": ["b", "c"] }
+            ]
+          },
+          "automatic": true
+        }
+      ]
+    }
+  ]
+}
