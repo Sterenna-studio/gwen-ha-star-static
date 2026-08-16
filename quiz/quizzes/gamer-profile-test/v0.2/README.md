@@ -1,21 +1,19 @@
-# Migration V0.2 — Gamer Profile Test
+# Gamer Profile Test — V0.2 active
 
-Cette V0.2 est volontairement déposée **à côté** de la version jouable actuelle afin de ne pas casser l’UI en production.
+La V0.2 est désormais la version jouable de **Carré ou Rond ?** servie par `quiz/quizzes/gamer-profile-test/index.html` et publiée sous `https://nitro.sterenna.fr/quiz/`.
 
-## Version d’origine
+La V0.1 reste figée dans la branche Git `archive/gamer-profile-test-v0.1`. Les 30 questions de base restent générées depuis les sources historiques ; l'UI active leur ajoute les données de ce dossier V0.2 afin d'éviter de dupliquer le contenu.
 
-L’état actuel est figé dans la branche Git `archive/gamer-profile-test-v0.1`.
+## Flux V0.2
 
-## Flux V0.2 souhaité
-
-1. Avant le questionnaire, afficher : nom/pseudo, âge, sexe/genre inclusif, animal de compagnie oui/non (+ type facultatif).
-2. Les champs nom, âge et sexe/genre sont purement descriptifs.
-3. `has_pets` peut activer automatiquement les `context_bonuses` des questions concernées.
-4. Chaque réponse garde impérativement **behavior + quote**.
+1. Avant le questionnaire : nom/pseudo, âge, sexe/genre inclusif et animaux de compagnie.
+2. Nom, âge et sexe/genre sont descriptifs et ne modifient jamais le score.
+3. `has_pets` peut activer automatiquement les `context_bonuses` déclarés dans `question-patches.json`.
+4. Chaque réponse conserve **behavior + quote**.
 5. Scoring principal : A = 0 point Rond, B = 1, C = 2.
-6. Score de base maximal : 70 ; avec bonus contextuels actuels : 72.
-7. Afficher le résultat principal sous la forme : `Pierre, vous avez 47 points : vous êtes Rond.`
-8. Afficher ensuite score de base + bonus appliqués + détail des axes.
+6. 35 questions : score de base maximal 70 ; maximum effectif 72 avec les deux bonus contextuels.
+7. Résultat principal : `{nom}, vous avez {points} points : vous êtes {niveau}.`
+8. Le résultat détaille score de base, bonus appliqués et tendances par axe.
 
 ## Intervalles
 
@@ -31,8 +29,12 @@ L’état actuel est figé dans la branche Git `archive/gamer-profile-test-v0.1`
 - Batterie du téléphone.
 - Photos et état du Drive/cloud.
 - Nombre/gestion des adresses mail.
-- Construction d’un village/base dans les jeux : planification propre ↔ extension organique ↔ carottes placées au hasard.
+- Construction d’un village/base dans les jeux : planification propre ↔ extension organique ↔ chaos assumé.
 
-## Compatibilité
+## Fichiers V0.2
 
-La version active actuelle calcule encore un pourcentage Carré. Ne remplacer `questions.json`, `results.json` et `scoring.js` qu’au moment où l’UI V0.2 sait gérer les champs de profil et les points bruts.
+- `profile.json` : schéma du profil d'entrée.
+- `questions-additions.json` : questions 31 à 35.
+- `question-patches.json` : bonus contextuels automatiques sur les questions 3 et 18.
+- `scoring.json` : barème et intervalles.
+- `results.json` : profils de résultat V0.2.
