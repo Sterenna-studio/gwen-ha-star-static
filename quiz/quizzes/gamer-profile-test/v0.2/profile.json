@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "fields": [
+    {
+      "id": "name",
+      "label": "Nom ou pseudo",
+      "type": "text",
+      "required": true,
+      "placeholder": "Votre nom ou votre pseudo",
+      "scored": false,
+      "help": "Utilisé uniquement pour personnaliser le résultat."
+    },
+    {
+      "id": "age",
+      "label": "Âge",
+      "type": "number",
+      "required": true,
+      "min": 10,
+      "max": 120,
+      "scored": false,
+      "help": "N’influence pas le score dans cette version."
+    },
+    {
+      "id": "sex_or_gender",
+      "label": "Sexe / genre",
+      "type": "select_or_custom",
+      "required": false,
+      "scored": false,
+      "options": [
+        { "value": "woman", "label": "Femme" },
+        { "value": "man", "label": "Homme" },
+        { "value": "non_binary", "label": "Non-binaire" },
+        { "value": "intersex", "label": "Intersexe" },
+        { "value": "genderfluid", "label": "Genre fluide" },
+        { "value": "other", "label": "Autre / je préfère me définir" },
+        { "value": "prefer_not", "label": "Je préfère ne pas répondre" }
+      ],
+      "allow_custom": true,
+      "help": "Champ inclusif et optionnel ; aucune réponse n’influence le score."
+    },
+    {
+      "id": "has_pets",
+      "label": "Avez-vous un ou plusieurs animaux de compagnie ?",
+      "type": "boolean",
+      "required": true,
+      "scored": false,
+      "help": "Peut activer quelques bonus humoristiques sur les questions liées aux poils, à la poussière ou au setup."
+    },
+    {
+      "id": "pet_types",
+      "label": "Quels compagnons ?",
+      "type": "multi_select_or_custom",
+      "required": false,
+      "show_if": { "field": "has_pets", "equals": true },
+      "scored": false,
+      "options": ["Chat", "Chien", "Lapin / rongeur", "Oiseau", "Reptile", "Autre"],
+      "allow_custom": true
+    }
+  ],
+  "privacy": {
+    "store_server_side_by_default": false,
+    "scored_fields": ["has_pets"],
+    "note": "Nom, âge et sexe/genre ne modifient jamais le score. has_pets ne sert qu’aux petits bonus contextuels déclarés dans les questions."
+  }
+}

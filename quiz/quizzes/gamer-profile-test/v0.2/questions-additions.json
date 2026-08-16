@@ -1,0 +1,165 @@
+{
+  "schema_version": 2,
+  "questions": [
+    {
+      "id": 31,
+      "title": "⭐ Tes favoris / marque-pages sur ton PC ou ton navigateur",
+      "axis": "organisation",
+      "answers": [
+        {
+          "id": "a",
+          "behavior": "Ils sont rangés par dossiers ou catégories, et je supprime ce qui ne sert plus.",
+          "quote": "« Attends, je l’ai dans Favoris > Outils > PC. »",
+          "carre_points": 2,
+          "round_points": 0,
+          "image": { "asset": null, "prompt_hint": "Favoris navigateur organisés dans quelques dossiers nommés." }
+        },
+        {
+          "id": "b",
+          "behavior": "J’en garde pas mal, mais je retrouve généralement ce que je cherche.",
+          "quote": "« Je suis sûr que je l’avais mis en favori… quelque part. »",
+          "carre_points": 1,
+          "round_points": 1,
+          "image": { "asset": null, "prompt_hint": "Barre de favoris assez remplie mais encore utilisable." }
+        },
+        {
+          "id": "c",
+          "behavior": "J’ai tellement de favoris que la recherche Google est souvent plus rapide.",
+          "quote": "« Pourquoi j’ai trois fois le même lien avec trois noms différents ? »",
+          "carre_points": 0,
+          "round_points": 2,
+          "image": { "asset": null, "prompt_hint": "Barre de favoris saturée, dossiers imbriqués et liens dupliqués." }
+        }
+      ],
+      "image": { "asset": null, "prompt_hint": "Navigateur avec barre de favoris allant de dossiers très propres à une longue collection désordonnée." }
+    },
+    {
+      "id": 32,
+      "title": "🔋 La batterie de ton téléphone, en fin de journée",
+      "axis": "anticipation",
+      "answers": [
+        {
+          "id": "a",
+          "behavior": "Je sais à peu près combien il me reste et je recharge avant d’être réellement en difficulté.",
+          "quote": "« 38 %, ça tiendra, mais je le branche pendant qu’on mange. »",
+          "carre_points": 2,
+          "round_points": 0,
+          "image": { "asset": null, "prompt_hint": "Téléphone à batterie confortable avec chargeur prêt." }
+        },
+        {
+          "id": "b",
+          "behavior": "Je recharge quand la notification de batterie faible commence à devenir insistante.",
+          "quote": "« 12 % ? Ça va, j’ai encore le temps. »",
+          "carre_points": 1,
+          "round_points": 1,
+          "image": { "asset": null, "prompt_hint": "Téléphone à 12 pour cent avec chargeur pas loin." }
+        },
+        {
+          "id": "c",
+          "behavior": "Mon téléphone et moi découvrons régulièrement ensemble combien de temps dure 1 %.",
+          "quote": "« Si je coupe le Wi-Fi, le Bluetooth et la luminosité… ça tient jusqu’à chez moi. »",
+          "carre_points": 0,
+          "round_points": 2,
+          "image": { "asset": null, "prompt_hint": "Téléphone à 1 pour cent, utilisateur en mode économie extrême." }
+        }
+      ],
+      "image": { "asset": null, "prompt_hint": "Téléphone affichant différents niveaux de batterie, chargeur et powerbank." }
+    },
+    {
+      "id": 33,
+      "title": "☁️ Tes photos et fichiers importants dans le cloud / Drive",
+      "axis": "hygiene_numerique",
+      "answers": [
+        {
+          "id": "a",
+          "behavior": "Ils sont synchronisés, rangés et je sais ce qui est sauvegardé où.",
+          "quote": "« Les photos sont dans 2026 > Été, et les originaux importants ont une deuxième copie. »",
+          "carre_points": 2,
+          "round_points": 0,
+          "image": { "asset": null, "prompt_hint": "Drive cloud organisé par années et dossiers, état de synchronisation vert." }
+        },
+        {
+          "id": "b",
+          "behavior": "La synchronisation fait globalement son travail ; je range surtout quand j’en ai besoin.",
+          "quote": "« Google Photos doit l’avoir… attends, quelle année déjà ? »",
+          "carre_points": 1,
+          "round_points": 1,
+          "image": { "asset": null, "prompt_hint": "Cloud rempli mais recherche encore fonctionnelle." }
+        },
+        {
+          "id": "c",
+          "behavior": "Entre le téléphone, le PC, deux Drives et un vieux disque, mes photos ont choisi leur propre aventure.",
+          "quote": "« Cette photo existe forcément quelque part. »",
+          "carre_points": 0,
+          "round_points": 2,
+          "image": { "asset": null, "prompt_hint": "Photos dispersées entre plusieurs clouds, téléphone, disque USB et PC." }
+        }
+      ],
+      "image": { "asset": null, "prompt_hint": "Cloud de fichiers et photos, du classement propre au stockage saturé." }
+    },
+    {
+      "id": 34,
+      "title": "📧 Les adresses mail dans ta vie, c’est plutôt…",
+      "axis": "hygiene_numerique",
+      "answers": [
+        {
+          "id": "a",
+          "behavior": "Une ou deux adresses principales avec un rôle clair, éventuellement une adresse dédiée aux inscriptions.",
+          "quote": "« Celle-ci est perso, celle-là pour les comptes. Simple. »",
+          "carre_points": 2,
+          "round_points": 0,
+          "image": { "asset": null, "prompt_hint": "Deux boîtes mail clairement étiquetées personnel et comptes." }
+        },
+        {
+          "id": "b",
+          "behavior": "J’en ai quelques-unes : perso, boulot, vieux comptes… je m’y retrouve encore.",
+          "quote": "« Ça doit être sur mon ancienne Gmail… ou celle d’après. »",
+          "carre_points": 1,
+          "round_points": 1,
+          "image": { "asset": null, "prompt_hint": "Quatre ou cinq boîtes mail avec usages variés." }
+        },
+        {
+          "id": "c",
+          "behavior": "J’ai créé tellement d’adresses au fil des années que certaines sont devenues des personnages secondaires.",
+          "quote": "« Attends… ce compte est lié à quelle adresse parmi les 25 ? »",
+          "carre_points": 0,
+          "round_points": 2,
+          "image": { "asset": null, "prompt_hint": "Grande collection humoristique de boîtes mail et identifiants oubliés." }
+        }
+      ],
+      "image": { "asset": null, "prompt_hint": "Plusieurs enveloppes et comptes mail, de un ou deux comptes bien identifiés à une foule de comptes oubliés." }
+    },
+    {
+      "id": 35,
+      "title": "🏘️ Quand tu construis une ville ou une base dans un jeu",
+      "axis": "organisation",
+      "answers": [
+        {
+          "id": "a",
+          "behavior": "Routes propres, quartiers cohérents, bâtiments pensés ensemble : chaque zone a une logique.",
+          "quote": "« Voici le maire de la ville, sa maison, son jardin… et le marché est juste derrière. »",
+          "carre_points": 2,
+          "round_points": 0,
+          "image": { "asset": null, "prompt_hint": "Village très bien planifié, rues alignées, maison du maire avec jardin, zones cohérentes." }
+        },
+        {
+          "id": "b",
+          "behavior": "Je pars d’une idée générale puis le village grandit naturellement autour de ce dont j’ai besoin.",
+          "quote": "« À la base c’était le centre-ville… puis j’ai agrandi par là. »",
+          "carre_points": 1,
+          "round_points": 1,
+          "image": { "asset": null, "prompt_hint": "Village organique, un peu irrégulier mais lisible et charmant." }
+        },
+        {
+          "id": "c",
+          "behavior": "Je construis là où il reste de la place. La cohérence viendra peut-être dans une prochaine sauvegarde.",
+          "quote": "« Alors par là j’ai mis à pousser des carottes… et un peu de tout. »",
+          "carre_points": 0,
+          "round_points": 2,
+          "image": { "asset": null, "prompt_hint": "Village sandbox chaotique, champs de carottes coincés entre bâtiments sans logique apparente." }
+        }
+      ],
+      "image": { "asset": null, "prompt_hint": "Village de jeu vidéo séparé entre plan urbain propre, village organique et chaos complet." }
+    }
+  ]
+}
