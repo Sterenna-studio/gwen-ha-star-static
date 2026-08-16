@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Carré ou Rond ? Un test humoristique sur tes habitudes de gamer et ton chaos numérique.">
+  <title>Carré ou Rond ? — Profil Gamer</title>
+  <link rel="stylesheet" href="styles.css?v=20260816-v1">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="back-link" href="../../index.html" aria-label="Retour à la liste des quizz">← Tous les quizz</a>
+      <span class="brand">STERENNA · PLAYER LAB</span>
+    </header>
+
+    <main class="test-card">
+      <section class="screen intro-screen" id="intro-screen" aria-labelledby="intro-title">
+        <p class="eyebrow">// TEST DE PROFIL GAMER</p>
+        <h1 id="intro-title">Carré <span>ou</span> Rond&nbsp;?</h1>
+        <p class="lead">Trente situations pour mesurer ton organisation, ton sens de l’anticipation et ton talent pour survivre dans un chaos parfaitement fonctionnel.</p>
+        <div class="intro-facts" aria-label="Informations sur le test">
+          <span>30 questions</span>
+          <span>5 axes</span>
+          <span>≈ 5 minutes</span>
+        </div>
+        <p class="tone-note">Ici, aucun mauvais profil : Carré prépare le câble, Rond trouve quelqu’un qui en a un.</p>
+        <button class="primary-button" id="start-button" type="button" disabled>Chargement…</button>
+        <p class="load-error" id="load-error" role="alert" hidden></p>
+      </section>
+
+      <section class="screen quiz-screen" id="quiz-screen" aria-labelledby="question-title" hidden>
+        <div class="progress-meta">
+          <span id="progress-label">Question 1 / 30</span>
+          <span id="progress-percent">0 %</span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-labelledby="progress-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <article class="question-panel">
+          <p class="question-number" id="question-number"></p>
+          <h2 id="question-title" tabindex="-1"></h2>
+          <div class="answers" id="answers" aria-label="Réponses possibles"></div>
+          <div class="bonus-option" id="bonus-option" hidden></div>
+        </article>
+
+        <p class="keyboard-hint">Clavier : touches 1, 2 ou 3 pour choisir · ← pour revenir</p>
+        <div class="question-actions">
+          <button class="secondary-button" id="previous-button" type="button">← Précédente</button>
+          <button class="primary-button" id="next-button" type="button" disabled>Suivante →</button>
+        </div>
+      </section>
+
+      <section class="screen result-screen" id="result-screen" aria-labelledby="result-name" hidden>
+        <p class="eyebrow">// ANALYSE TERMINÉE</p>
+        <div class="score-ring" id="score-ring" aria-label="Score Carré">
+          <strong id="carre-score">0</strong>
+          <span>% CARRÉ</span>
+        </div>
+        <p class="result-level" id="result-level"></p>
+        <h2 id="result-name" tabindex="-1"></h2>
+        <p class="result-tagline" id="result-tagline"></p>
+        <p class="result-description" id="result-description"></p>
+        <blockquote id="result-quote"></blockquote>
+        <div class="score-balance" aria-label="Répartition Carré et Rond">
+          <span><strong id="balance-carre">0 %</strong> Carré</span>
+          <span><strong id="balance-rond">0 %</strong> Rond</span>
+        </div>
+        <p class="bonus-result" id="bonus-result" hidden></p>
+
+        <section class="axis-section" aria-labelledby="axis-title">
+          <h3 id="axis-title">Ton tableau de bord</h3>
+          <div class="axis-grid" id="axis-grid"></div>
+        </section>
+
+        <div class="result-actions">
+          <button class="primary-button" id="share-button" type="button">Partager mon profil</button>
+          <button class="secondary-button" id="restart-button" type="button">Recommencer</button>
+        </div>
+        <p class="share-status" id="share-status" role="status"></p>
+        <input class="share-link" id="share-link" aria-label="Lien de partage" readonly hidden>
+      </section>
+    </main>
+
+    <footer>Test humoristique — aucune prétention psychométrique, promis.</footer>
+  </div>
+
+  <noscript>Ce quizz nécessite JavaScript pour calculer ton profil.</noscript>
+  <script type="module" src="app.js?v=20260816-v1"></script>
+</body>
+</html>

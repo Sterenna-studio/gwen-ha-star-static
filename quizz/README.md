@@ -7,6 +7,8 @@ Bienvenue sur le Hub de quiz de Sterenna, publié dans Gwen Ha Star sous `/quizz
 - `data/quizzes.json` : Le fichier de configuration central. Ajoutez une entrée ici pour faire apparaître un nouveau quiz sur le Hub.
 - `quizzes/` : Dossier contenant les quiz individuels.
   - `bzh-pw-lol/` : Le "Mega Quiz" BZH PW League of Legends, avec son propre design (HUD LoL) et son fichier `questions.json` contenant plus de 200 questions générées.
+  - `bzh-pw-table/` : Le jeu Datadock de correspondance entre joueurs et statistiques LoL.
+  - `gamer-profile-test/` : Le test humoristique « Carré ou Rond ? » et ses 30 questions data-first.
 
 ## Comment ajouter un quiz
 1. Créez un dossier dans `quizzes/mon-nouveau-quiz/`

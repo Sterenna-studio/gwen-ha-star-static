@@ -41,4 +41,10 @@ Le contenu ne doit jamais dépendre d'une image pour être compris. Les futurs a
 
 ## État
 
-Cette V0.1 sert d'abord de base éditoriale. La structure HTML/CSS/JS du questionnaire sera produite ensuite à partir des données, sans hardcoder le contenu dans l'interface.
+La V0.1 est jouable dans `index.html`. L'interface charge `questions.json` et `results.json` sans hardcoder le contenu éditorial.
+
+Pour régénérer les fichiers structurés après une modification des sources Markdown :
+
+```powershell
+node build-data.mjs
+```
