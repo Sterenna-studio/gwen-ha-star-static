@@ -47,11 +47,15 @@ for (const [index, question] of lolQuestions.entries()) {
 }
 
 const gamerBase = readJson('quizzes/gamer-profile-test/questions.json');
+const gamerContextBonuses = readJson('quizzes/gamer-profile-test/context-bonuses.json');
 const gamerMetadata = manifest.find((quiz) => quiz.id === 'gamer-profile-test');
 
 if (gamerBase.questions.length !== 30) throw new Error('Gamer Profile V0.1 doit contenir exactement 30 questions jouables');
 if (gamerMetadata.question_count !== 30 || gamerMetadata.version !== '0.1') {
   throw new Error('Métadonnées Gamer Profile V0.1 incohérentes');
+}
+if (gamerContextBonuses.maximum_points !== 2 || gamerContextBonuses.patches.length !== 2) {
+  throw new Error('Bonus contextuels Gamer Profile incohérents');
 }
 
 const ids = new Set();
@@ -60,6 +64,10 @@ for (const question of gamerBase.questions) {
   ids.add(question.id);
   if (!gamerBase.axes.some((axis) => axis.id === question.axis)) throw new Error(`Axe Gamer Profile inconnu : ${question.axis}`);
   if (question.answers.length !== 3) throw new Error(`Question Gamer Profile ${question.id} : 3 réponses attendues`);
+}
+for (const patch of gamerContextBonuses.patches) {
+  if (!ids.has(patch.question_id)) throw new Error(`Bonus associé à une question inconnue : ${patch.question_id}`);
+  if (!patch.context_bonuses?.length) throw new Error(`Bonus vide pour la question ${patch.question_id}`);
 }
 
 const players = readJson('data/players.json');

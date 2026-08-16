@@ -1,6 +1,32 @@
-export function calculateScores(quizData, answers, axisOrder) {
+function conditionMatches(condition, profile, answerId) {
+  if (!condition) return false;
+  if (condition.all) return condition.all.every((item) => conditionMatches(item, profile, answerId));
+  if (condition.profile_field) return profile[condition.profile_field] === condition.equals;
+  if (condition.answer_in) return condition.answer_in.includes(answerId);
+  return false;
+}
+
+function conditionCanMatch(condition, profile) {
+  if (!condition) return false;
+  if (condition.all) return condition.all.every((item) => conditionCanMatch(item, profile));
+  if (condition.profile_field) return profile[condition.profile_field] === condition.equals;
+  if (condition.answer_in) return condition.answer_in.length > 0;
+  return false;
+}
+
+export function randomizeAnswers(answers, random = Math.random) {
+  const shuffled = [...answers];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const target = Math.floor(random() * (index + 1));
+    [shuffled[index], shuffled[target]] = [shuffled[target], shuffled[index]];
+  }
+  return shuffled;
+}
+
+export function calculateScores(quizData, answers, axisOrder, profile = {}) {
   const totals = Object.fromEntries(axisOrder.map((axis) => [axis, { earned: 0, maximum: 0 }]));
   let basePoints = 0;
+  const appliedBonuses = [];
 
   quizData.questions.forEach((question) => {
     const answerId = answers.get(question.id);
@@ -12,21 +38,34 @@ export function calculateScores(quizData, answers, axisOrder) {
     basePoints += roundPoints;
     totals[question.axis].earned += roundPoints;
     totals[question.axis].maximum += 2;
+
+    (question.context_bonuses || []).forEach((bonus) => {
+      if (conditionMatches(bonus.when, profile, answerId)) {
+        appliedBonuses.push({ id: bonus.id, label: bonus.label, points: bonus.round_points || 0 });
+      }
+    });
   });
 
   const axes = Object.fromEntries(axisOrder.map((axis) => [
     axis,
     Math.round((totals[axis].earned / totals[axis].maximum) * 100),
   ]));
-  const maxPoints = quizData.questions.length * 2;
-  const rond = Math.round((basePoints / maxPoints) * 100);
+  const baseMaxPoints = quizData.questions.length * 2;
+  const contextMaxPoints = quizData.questions.reduce((maximum, question) => maximum
+    + (question.context_bonuses || [])
+      .filter((bonus) => conditionCanMatch(bonus.when, profile))
+      .reduce((sum, bonus) => sum + (bonus.round_points || 0), 0), 0);
+  const maxPoints = baseMaxPoints + contextMaxPoints;
+  const bonusPoints = appliedBonuses.reduce((sum, bonus) => sum + bonus.points, 0);
+  const totalPoints = basePoints + bonusPoints;
+  const rond = Math.round((totalPoints / maxPoints) * 100);
 
   return {
     basePoints,
-    bonusPoints: 0,
-    totalPoints: basePoints,
+    bonusPoints,
+    totalPoints,
     maxPoints,
-    appliedBonuses: [],
+    appliedBonuses,
     rond,
     carre: 100 - rond,
     axes,

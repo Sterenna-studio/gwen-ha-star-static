@@ -12,7 +12,7 @@ Tous les nouveaux quizz, leurs données, assets, scripts et documentations doive
 
 ## Modules
 
-- **Carré ou Rond ? V0.1** : les 30 questions originales, avec le score final moderne en points Rond sur 60, les pourcentages Carré/Rond et le détail des cinq axes.
+- **Carré ou Rond ? V0.1** : les 30 questions originales, un formulaire personnalisé, des réponses mélangées et un gradient de points Rond sur 62 incluant deux bonus animaux contextuels.
 - **Live Data Quizz** : partie LoL générée depuis `data/players.json` et `data/questions-static.json`.
 - **Mega Quizz LoL** : 10 questions tirées d'un pool consolidé de 216 entrées.
 - **Datadock Stats** : association des joueurs à leurs statistiques, alimentée par la même base joueurs.

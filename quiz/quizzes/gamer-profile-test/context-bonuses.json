@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "maximum_points": 2,
+  "patches": [
+    {
+      "question_id": 3,
+      "context_bonuses": [
+        {
+          "id": "pet_hair_dust_bonus",
+          "label": "+1 point Rond : un compagnon à poils ou à plumes complique naturellement le combat contre la poussière.",
+          "round_points": 1,
+          "when": { "profile_field": "has_pets", "equals": true }
+        }
+      ]
+    },
+    {
+      "question_id": 18,
+      "context_bonuses": [
+        {
+          "id": "pet_setup_bonus",
+          "label": "+1 point Rond : ton compagnon participe lui aussi à la vie du setup.",
+          "round_points": 1,
+          "when": {
+            "all": [
+              { "profile_field": "has_pets", "equals": true },
+              { "answer_in": ["b", "c"] }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

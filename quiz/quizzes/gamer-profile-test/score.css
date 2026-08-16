@@ -1,7 +1,32 @@
 .result-summary { max-width: 650px; margin: 0 auto 12px; color: var(--text); font-size: 1.08rem; font-weight: 800; line-height: 1.5; }
+.profile-screen h2 { margin-bottom: 10px; font-size: clamp(2rem, 6vw, 3.6rem); }
+.profile-intro { max-width: 680px; margin-bottom: 28px; color: var(--muted); line-height: 1.6; }
+.profile-form { display: grid; gap: 18px; }
+.profile-field { display: grid; gap: 8px; }
+.profile-field > span, .pet-fieldset legend { font-weight: 800; }
+.profile-field small { color: var(--muted); font-weight: 500; }
+.profile-field strong, .pet-fieldset strong { color: var(--square); }
+.profile-field input, .profile-field select { width: 100%; min-height: 48px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 10px; color: var(--text); background: #0c0f18; }
+.pet-fieldset { margin: 0; padding: 16px; border: 1px solid var(--line); border-radius: 12px; }
+.choice-row { display: flex; gap: 18px; margin-top: 10px; }
+.choice-row label { display: flex; align-items: center; gap: 8px; }
+.pet-fieldset p { margin: 12px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.45; }
+.profile-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 6px; }
 .result-screen h2 { max-width: 100%; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.08; overflow-wrap: anywhere; }
 .score-ring--round { background: radial-gradient(circle, var(--panel) 58%, transparent 60%), conic-gradient(var(--round) var(--score), #151a29 0); }
-.score-breakdown { display: flex; justify-content: center; margin: 0 auto 18px; }
+.score-breakdown { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 auto 18px; }
 .score-breakdown span { padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--panel-soft); font-size: .86rem; }
 .score-breakdown strong { color: var(--text); }
+.bonus-result { display: grid; gap: 8px; max-width: 680px; margin: 0 auto 20px; color: var(--round); font-size: .86rem; }
+.bonus-pill { padding: 10px 12px; border: 1px dashed rgba(var(--round-rgb), .45); border-radius: 10px; }
 .axis-note { margin: -4px 0 14px; color: var(--muted); font-size: .85rem; line-height: 1.5; }
+
+@media (min-width: 700px) {
+  .profile-form { grid-template-columns: repeat(2, 1fr); }
+  .profile-field--wide { grid-column: 1 / -1; }
+}
+
+@media (max-width: 520px) {
+  .profile-actions { flex-direction: column-reverse; }
+  .profile-actions button { width: 100%; }
+}
