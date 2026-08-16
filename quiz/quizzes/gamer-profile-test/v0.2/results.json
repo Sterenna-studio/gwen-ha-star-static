@@ -1,0 +1,68 @@
+{
+  "schema_version": 2,
+  "score_unit": "round_points",
+  "display_template": "{name}, vous avez {points} points : vous êtes {level}.",
+  "base_max_points": 70,
+  "context_bonus_max_points": 2,
+  "profiles": [
+    {
+      "min": 0,
+      "max": 14,
+      "level": "très Carré",
+      "name": "Le Sysadmin de la Guilde",
+      "tagline": "Tout est prêt avant même que les autres aient trouvé le lobby.",
+      "description": "Votre setup, vos comptes et vos habitudes suivent une logique claire. Vous anticipez les problèmes et savez généralement où sont les choses — y compris celles des autres.",
+      "quote": "« Ne vendez rien, je vais faire l’inventaire. »",
+      "image": { "asset": null, "prompt_hint": "Gamer méthodique dans un setup impeccable, câbles identifiés, périphériques chargés et dossiers propres." }
+    },
+    {
+      "min": 15,
+      "max": 28,
+      "level": "Carré",
+      "name": "Le Quartier-Maître",
+      "tagline": "Quand le groupe a besoin de quelque chose, on vous regarde.",
+      "description": "Vous êtes plutôt organisé et prévoyant sans transformer chaque session en procédure. Il reste quelques zones de chaos, mais elles sont sous contrôle.",
+      "quote": "« Donnez-moi les ressources rares, je m’en occupe. »",
+      "image": { "asset": null, "prompt_hint": "Gamer fiable avec boîte de câbles, inventaire propre et setup utilisé mais bien tenu." }
+    },
+    {
+      "min": 29,
+      "max": 42,
+      "level": "Rond-Carré",
+      "name": "L’Équilibriste Numérique",
+      "tagline": "Assez rangé pour fonctionner, assez chaotique pour rester vivant.",
+      "description": "Vous organisez ce qui compte vraiment et laissez le reste suivre son cours. Certains dossiers sont impeccables ; d’autres sont devenus des zones archéologiques.",
+      "quote": "« Je sais où c’est. Enfin… à peu près. »",
+      "image": { "asset": null, "prompt_hint": "Setup moitié organisé moitié chaotique, gamer détendu au centre." }
+    },
+    {
+      "min": 43,
+      "max": 56,
+      "level": "Rond",
+      "name": "L’Improvisateur de LAN",
+      "tagline": "Vous n’avez peut-être pas le câble, mais vous trouverez une solution.",
+      "description": "Vous préparez peu, improvisez beaucoup et comptez volontiers sur votre mémoire, votre instinct ou l’écosystème du groupe. Cela crée parfois du retard, mais aussi de très bonnes anecdotes.",
+      "quote": "« Quelqu’un a un USB-C ? »",
+      "image": { "asset": null, "prompt_hint": "Gamer arrivant à une LAN avec une manette, amis autour et petit chaos chaleureux." }
+    },
+    {
+      "min": 57,
+      "max": 72,
+      "level": "très Rond",
+      "name": "Le Gobelin du Setup",
+      "tagline": "Le chaos n’est pas un problème si vous savez vivre dedans.",
+      "description": "Votre environnement numérique ressemble parfois à une quête secondaire. Vous avancez à l’instinct et retrouvez souvent l’objet ou le compte recherché exactement au moment où tout le monde avait cessé d’y croire.",
+      "quote": "« Ne rangez rien, sinon je ne retrouverai plus rien. »",
+      "image": { "asset": null, "prompt_hint": "Gamer gobelin sympathique dans un setup chaotique, câbles, manettes, favoris et icônes partout." }
+    }
+  ],
+  "result_breakdown": {
+    "show_total_points": true,
+    "show_interval": true,
+    "show_base_points": true,
+    "show_context_bonus_points": true,
+    "show_applied_bonus_labels": true,
+    "show_axis_percentages": true,
+    "example": "Pierre, vous avez 47 points : vous êtes Rond. Score de base : 46 + bonus compagnon : 1."
+  }
+}
