@@ -5,6 +5,7 @@
 
 .tool-card--pokegang { --card-accent: var(--c-amber); }
 .tool-card--tcg { --card-accent: #a78bfa; }
+.tool-card--quizz { --card-accent: #f59e0b; }
 .tool-card--twitch { --card-accent: #9146ff; }
 .tool-card--youtube { --card-accent: #ff0000; }
 .tool-card--jukebox { --card-accent: var(--c-green); }

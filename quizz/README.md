@@ -1,6 +1,6 @@
-# Sterenna Quiz Hub
+# Quizz
 
-Bienvenue sur le dépôt du Hub de Quiz de Sterenna. Ce projet est conçu pour être hébergé sur `lab.sterenna.fr/quiz`.
+Bienvenue sur le Hub de quiz de Sterenna, publié dans Gwen Ha Star sous `/quizz/`.
 
 ## Architecture
 - `index.html` : La page d'accueil du Hub (Design System Sterenna). Elle liste dynamiquement tous les quiz disponibles.
