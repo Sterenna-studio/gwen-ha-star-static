@@ -9,7 +9,7 @@ Sous-projet autonome regroupé dans `gwen-ha-star-static/quiz`. Il réunit le hu
 - **Mega Quizz LoL** : 10 questions tirées d'un pool consolidé de 216 entrées.
 - **Datadock Stats** : association des joueurs à leurs statistiques, alimentée par la même base joueurs.
 
-Le dossier vide historique `bzh-pw-lol-2` a été retiré. Chaque module publiable possède désormais un fichier `quiz.json`; `data/quizzes.json` est généré automatiquement à partir de ces métadonnées.
+Le dossier vide historique `bzh-pw-lol-2` a été retiré. Chaque module publiable possède désormais un fichier `quiz.json`; `data/quizzes.json` est généré automatiquement à partir de ces métadonnées. Les modules qui utilisent une donnée partagée la déclarent dans `data_sources` : le hub peut ainsi regrouper automatiquement les quiz liés à `data/players.json`.
 
 ## Développement
 
@@ -36,7 +36,7 @@ python -m http.server 8080
 ## Ajouter un quizz
 
 1. Créer `quizzes/mon-quizz/index.html`.
-2. Ajouter `quizzes/mon-quizz/quiz.json` avec les champs `id`, `title`, `description`, `theme`, `date`, `order` et `status`.
+2. Ajouter `quizzes/mon-quizz/quiz.json` avec les champs `id`, `title`, `description`, `theme`, `date`, `order` et `status`. Ajouter `data_sources` si le module consomme un fichier partagé tel que `data/players.json`.
 3. Lancer `npm --prefix quiz run build:manifest` depuis la racine du dépôt.
 4. Lancer `npm --prefix quiz run check` avant le commit.
 

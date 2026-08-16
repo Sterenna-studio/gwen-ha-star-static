@@ -25,6 +25,13 @@ test('chaque module du catalogue possède une page et des métadonnées', async 
   }
 });
 
+test('les quiz dépendant de players.json sont identifiés dans le catalogue', () => {
+  const playerDataQuizIds = manifest
+    .filter((quiz) => quiz.data_sources?.includes('data/players.json'))
+    .map((quiz) => quiz.id);
+  assert.deepEqual(playerDataQuizIds, ['bzh-pw-live', 'bzh-pw-table']);
+});
+
 test('le pool LoL consolidé contient 216 entrées uniques et traçables', () => {
   assert.equal(lolQuestions.length, 216);
   assert.equal(new Set(lolQuestions.map((question) => question.id)).size, 216);

@@ -1,4 +1,4 @@
-const grid = document.getElementById('quiz-grid');
+const sectionsContainer = document.getElementById('quiz-sections');
 const search = document.getElementById('quiz-search');
 const themeFilter = document.getElementById('theme-filter');
 const moduleCount = document.getElementById('module-count');
@@ -7,6 +7,22 @@ const emptyState = document.getElementById('empty-state');
 const errorState = document.getElementById('error-state');
 
 let quizzes = [];
+
+const PLAYER_DATA_SOURCE = 'data/players.json';
+const collections = [
+  {
+    id: 'player-data',
+    title: 'Quiz liés aux joueurs',
+    description: 'Expériences alimentées par la base joueurs partagée : statistiques, champions et profils de la team.',
+    matches: (quiz) => quiz.data_sources?.includes(PLAYER_DATA_SOURCE),
+  },
+  {
+    id: 'other',
+    title: 'Tous les autres quiz',
+    description: 'Tests de profil, connaissances League of Legends et autres formats indépendants de la base joueurs.',
+    matches: (quiz) => !quiz.data_sources?.includes(PLAYER_DATA_SOURCE),
+  },
+];
 
 function createMeta(text, className = '') {
   const item = document.createElement('span');
@@ -26,6 +42,7 @@ function createCard(quiz) {
   if (quiz.duration) meta.append(createMeta(quiz.duration));
   if (quiz.question_count) meta.append(createMeta(`${quiz.question_count} questions`));
   if (quiz.pool_size) meta.append(createMeta(`pool de ${quiz.pool_size}`));
+  if (quiz.data_sources?.includes(PLAYER_DATA_SOURCE)) meta.append(createMeta('Données joueurs', 'data-source'));
 
   const title = document.createElement('h3');
   title.textContent = quiz.title;
@@ -40,6 +57,30 @@ function createCard(quiz) {
   return card;
 }
 
+function createCollection(collection, items) {
+  const section = document.createElement('section');
+  section.className = 'catalog-group';
+  section.setAttribute('aria-labelledby', `${collection.id}-title`);
+
+  const heading = document.createElement('div');
+  heading.className = 'catalog-group-heading';
+  const copy = document.createElement('div');
+  const title = document.createElement('h3');
+  title.id = `${collection.id}-title`;
+  title.textContent = collection.title;
+  const description = document.createElement('p');
+  description.textContent = collection.description;
+  const count = createMeta(`${items.length} quiz${items.length > 1 ? 'z' : ''}`, 'catalog-group-count');
+  copy.append(title, description);
+  heading.append(copy, count);
+
+  const grid = document.createElement('div');
+  grid.className = 'quiz-grid';
+  grid.replaceChildren(...items.map(createCard));
+  section.append(heading, grid);
+  return section;
+}
+
 function render() {
   const query = search.value.trim().toLocaleLowerCase('fr');
   const theme = themeFilter.value;
@@ -48,8 +89,13 @@ function render() {
     return (!query || haystack.includes(query)) && (!theme || quiz.theme === theme);
   });
 
-  grid.replaceChildren(...filtered.map(createCard));
-  grid.setAttribute('aria-busy', 'false');
+  const renderedCollections = collections
+    .map((collection) => ({ collection, items: filtered.filter(collection.matches) }))
+    .filter(({ items }) => items.length > 0)
+    .map(({ collection, items }) => createCollection(collection, items));
+
+  sectionsContainer.replaceChildren(...renderedCollections);
+  sectionsContainer.setAttribute('aria-busy', 'false');
   emptyState.hidden = filtered.length !== 0;
   resultCount.textContent = `${filtered.length} résultat${filtered.length > 1 ? 's' : ''}`;
 }
@@ -69,8 +115,8 @@ async function init() {
     moduleCount.textContent = `${quizzes.length} modules jouables`;
     render();
   } catch (error) {
-    grid.replaceChildren();
-    grid.setAttribute('aria-busy', 'false');
+    sectionsContainer.replaceChildren();
+    sectionsContainer.setAttribute('aria-busy', 'false');
     moduleCount.textContent = 'Catalogue indisponible';
     errorState.hidden = false;
     console.error(error);

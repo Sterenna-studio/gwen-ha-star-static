@@ -13,6 +13,9 @@ for (const quiz of manifest) {
   const directory = quiz.path.split('/')[1];
   if (!existsSync(join(root, quiz.path))) throw new Error(`Page manquante : ${quiz.path}`);
   if (!existsSync(join(root, 'quizzes', directory, 'quiz.json'))) throw new Error(`Métadonnées manquantes : ${directory}`);
+  for (const dataSource of quiz.data_sources ?? []) {
+    if (!existsSync(join(root, dataSource))) throw new Error(`Source de données manquante pour ${quiz.id} : ${dataSource}`);
+  }
 }
 
 for (const directory of directories) {

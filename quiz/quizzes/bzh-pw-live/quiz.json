@@ -6,6 +6,10 @@
   "date": "2026-08-16",
   "duration": "4 min",
   "question_count": 10,
+  "data_sources": [
+    "data/players.json",
+    "data/questions-static.json"
+  ],
   "accent": "#0ac8b9",
   "status": "playable",
   "order": 20
