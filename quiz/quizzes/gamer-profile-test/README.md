@@ -41,7 +41,7 @@ Le contenu ne doit jamais dépendre d'une image pour être compris. Les futurs a
 
 ## État
 
-La V0.1 est jouable dans `index.html`. L'interface charge `questions.json` et `results.json` sans hardcoder le contenu éditorial.
+La V0.1 est la version jouable dans `index.html`. L'interface charge uniquement les 30 questions originales depuis `questions.json`, puis affiche un score Rond sur 60, la balance Carré/Rond et le détail par axe. Les ajouts éditoriaux V0.2 sont conservés comme archive non chargée dans `v0.2/`.
 
 Pour régénérer les fichiers structurés après une modification des sources Markdown :
 

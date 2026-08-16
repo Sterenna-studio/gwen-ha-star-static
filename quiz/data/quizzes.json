@@ -2,14 +2,14 @@
   {
     "id": "gamer-profile-test",
     "title": "Carré ou Rond ? Le test du profil gamer",
-    "description": "35 situations pour découvrir ton rapport à l'organisation, au setup et au chaos numérique, avec profil personnalisé et bonus contextuels.",
+    "description": "30 situations originales pour découvrir ton rapport à l'organisation, au setup et au chaos numérique, avec un score final sur 60.",
     "theme": "Profil gamer",
     "date": "2026-08-16",
-    "duration": "6 min",
-    "question_count": 35,
+    "duration": "5 min",
+    "question_count": 30,
     "accent": "#ffc85a",
     "status": "playable",
-    "version": "0.2",
+    "version": "0.1",
     "order": 10,
     "path": "quizzes/gamer-profile-test/index.html"
   },

@@ -1,0 +1,7 @@
+.result-summary { max-width: 650px; margin: 0 auto 12px; color: var(--text); font-size: 1.08rem; font-weight: 800; line-height: 1.5; }
+.result-screen h2 { max-width: 100%; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.08; overflow-wrap: anywhere; }
+.score-ring--round { background: radial-gradient(circle, var(--panel) 58%, transparent 60%), conic-gradient(var(--round) var(--score), #151a29 0); }
+.score-breakdown { display: flex; justify-content: center; margin: 0 auto 18px; }
+.score-breakdown span { padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--panel-soft); font-size: .86rem; }
+.score-breakdown strong { color: var(--text); }
+.axis-note { margin: -4px 0 14px; color: var(--muted); font-size: .85rem; line-height: 1.5; }

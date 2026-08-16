@@ -1,15 +1,6 @@
-function conditionMatches(condition, profile, answerId) {
-  if (!condition) return false;
-  if (condition.all) return condition.all.every((item) => conditionMatches(item, profile, answerId));
-  if (condition.profile_field) return profile[condition.profile_field] === condition.equals;
-  if (condition.answer_in) return condition.answer_in.includes(answerId);
-  return false;
-}
-
-export function calculateScores(quizData, answers, axisOrder, profile = {}) {
+export function calculateScores(quizData, answers, axisOrder) {
   const totals = Object.fromEntries(axisOrder.map((axis) => [axis, { earned: 0, maximum: 0 }]));
   let basePoints = 0;
-  const appliedBonuses = [];
 
   quizData.questions.forEach((question) => {
     const answerId = answers.get(question.id);
@@ -21,29 +12,21 @@ export function calculateScores(quizData, answers, axisOrder, profile = {}) {
     basePoints += roundPoints;
     totals[question.axis].earned += roundPoints;
     totals[question.axis].maximum += 2;
-
-    (question.context_bonuses || []).forEach((bonus) => {
-      if (conditionMatches(bonus.when, profile, answerId)) {
-        appliedBonuses.push({ id: bonus.id, label: bonus.label, points: bonus.round_points || 0 });
-      }
-    });
   });
 
   const axes = Object.fromEntries(axisOrder.map((axis) => [
     axis,
     Math.round((totals[axis].earned / totals[axis].maximum) * 100),
   ]));
-  const bonusPoints = appliedBonuses.reduce((sum, bonus) => sum + bonus.points, 0);
-  const totalPoints = basePoints + bonusPoints;
-  const maxPoints = 72;
-  const rond = Math.round((totalPoints / maxPoints) * 100);
+  const maxPoints = quizData.questions.length * 2;
+  const rond = Math.round((basePoints / maxPoints) * 100);
 
   return {
     basePoints,
-    bonusPoints,
-    totalPoints,
+    bonusPoints: 0,
+    totalPoints: basePoints,
     maxPoints,
-    appliedBonuses,
+    appliedBonuses: [],
     rond,
     carre: 100 - rond,
     axes,
