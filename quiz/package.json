@@ -1,0 +1,16 @@
+{
+  "name": "sterenna-quizz",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Hub statique unifié des quizz Sterenna.",
+  "scripts": {
+    "build:gamer": "node quizzes/gamer-profile-test/build-data.mjs",
+    "build:lol": "node scripts/build-lol-pool.mjs",
+    "build:manifest": "node scripts/generate-manifest.mjs",
+    "build:data": "npm run build:gamer && npm run build:lol && npm run build:manifest",
+    "validate": "node scripts/validate-data.mjs",
+    "test": "node --test",
+    "check": "npm run build:data && npm run validate && npm test"
+  }
+}

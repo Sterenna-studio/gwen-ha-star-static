@@ -1,0 +1,11 @@
+{
+  "id": "bzh-pw-table",
+  "title": "Datadock Stats — Rétablissement des archives",
+  "description": "Réassocie chaque membre de la team à ses statistiques League of Legends dans un tableau de données corrompu.",
+  "theme": "Data Recovery",
+  "date": "2026-03-12",
+  "duration": "3 min",
+  "accent": "#00ff66",
+  "status": "playable",
+  "order": 40
+}

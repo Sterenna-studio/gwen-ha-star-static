@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 01 : Datadock Stats</title>
+    <link rel="stylesheet" href="../../css/accessibility.css?v=20260816-v1">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #00ff66;
+            --bg-panel: rgba(10, 15, 10, 0.9);
+            --border-col: #00ff66;
+            --text-main: #e0e0e0;
+        }
+
+        body {
+            margin: 0; font-family: 'Rajdhani', sans-serif;
+            background: #020502 url('https://www.transparenttextures.com/patterns/black-scales.png');
+            color: var(--text-main);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+
+        .terminal {
+            background: var(--bg-panel);
+            width: 90%; max-width: 900px;
+            border: 1px solid var(--border-col);
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.2);
+            padding: 2px;
+            position: relative;
+        }
+
+        .term-header {
+            background: var(--border-col); color: #000;
+            padding: 5px 15px; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: bold;
+            display: flex; justify-content: space-between;
+        }
+
+        .term-body { padding: 30px; position: relative; overflow-x: auto; }
+
+        .back-btn { color: var(--neon-green); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; margin-bottom: 20px; display: inline-block; border-bottom: 1px solid transparent; }
+        .back-btn:hover { border-bottom-color: var(--neon-green); }
+
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--neon-green); text-align: center; margin-top: 0; letter-spacing: 2px; text-shadow: 0 0 5px rgba(0,255,102,0.5); }
+
+        .instructions { text-align: center; font-size: 1.1rem; margin-bottom: 30px; color: #aaa; }
+
+        /* The Data Table */
+        .data-table {
+            width: 100%;
+            min-width: 760px;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .data-table th {
+            background: rgba(0, 255, 102, 0.1);
+            color: var(--neon-green);
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid var(--border-col);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #1a2a1a;
+        }
+
+        .data-table tr:hover { background: rgba(0, 255, 102, 0.05); }
+
+        /* Dropdowns for table */
+        .cyber-select {
+            background: #000;
+            color: var(--neon-green);
+            border: 1px dashed var(--border-col);
+            padding: 8px 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            width: 100%;
+            cursor: pointer;
+            outline: none;
+        }
+        .cyber-select:focus { border: 1px solid #fff; box-shadow: 0 0 10px rgba(0,255,102,0.5); }
+
+        .validation-area { text-align: center; }
+
+        .btn-exe {
+            background: transparent;
+            color: var(--neon-green);
+            border: 2px solid var(--neon-green);
+            padding: 12px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem; font-weight: bold;
+            cursor: pointer; transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        .btn-exe:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 15px rgba(0,255,102,0.6); }
+
+        .result-msg {
+            margin-top: 20px; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; display: none; text-align: center;
+        }
+        .success { color: var(--neon-green); text-shadow: 0 0 10px rgba(0,255,102,0.8); }
+        .error { color: #ff3333; text-shadow: 0 0 10px rgba(255,51,51,0.8); }
+
+        /* Status indicators on rows */
+        .status-cell { width: 40px; text-align: center; font-size: 1.2rem; }
+
+        @media (max-width: 640px) {
+            body { align-items: flex-start; padding: 12px 0; }
+            .terminal { width: calc(100% - 20px); }
+            .term-body { padding: 22px 16px; }
+            h1 { font-size: 1.35rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="terminal">
+        <div class="term-header">
+            <span>SYS.DATADOCK.EXE</span>
+            <span>SEC_LEVEL: ALPHA</span>
+        </div>
+        <div class="term-body">
+            <a href="../../index.html" class="back-btn">&lt; ABORT & RETURN TO HUB</a>
+
+            <h1>[ RÉTABLISSEMENT DES ARCHIVES ]</h1>
+            <div class="instructions">
+                Une corruption locale a effacé les identifiants (Pseudos) de la base de données.<br>
+                Re-assignez chaque joueur à sa ligne de statistiques correcte.
+            </div>
+
+            <table class="data-table" id="stats-table">
+                <thead>
+                    <tr>
+                        <th class="status-cell">ST</th>
+                        <th>PSEUDO CIBLE</th>
+                        <th>PARTIES TOTALES</th>
+                        <th>WINRATE</th>
+                        <th>GAMES (SR)</th>
+                        <th>GAMES (ARAM)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Injected by JS -->
+                </tbody>
+            </table>
+
+            <div class="validation-area">
+                <button class="btn-exe" id="validate-button" type="button" disabled>CHARGEMENT DES DONNÉES…</button>
+                <div id="result-text" class="result-msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js?v=20260816-v1"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Quizz League of Legends généré depuis les données de la team BZH PW.">
+  <title>BZH PW — Live Data Quizz</title>
+  <link rel="stylesheet" href="../../css/accessibility.css?v=20260816-v1">
+  <link rel="stylesheet" href="styles.css?v=20260816-v1">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a href="../../index.html">← Tous les quizz</a>
+      <span id="sync-label">Synchronisation…</span>
+    </header>
+
+    <section class="panel" id="start-screen">
+      <p class="eyebrow">// BZH PW · LIVE DATA</p>
+      <h1>Une nouvelle partie<br>à chaque lancement.</h1>
+      <p class="lead">Les questions sont générées depuis une base joueurs unique, complétée par un pool de lore League of Legends.</p>
+      <ul class="formats" aria-label="Composition d'une partie">
+        <li>3 Vrai / Faux</li>
+        <li>3 Statistiques</li>
+        <li>2 Champions</li>
+        <li>2 Lore</li>
+      </ul>
+      <button class="primary" id="start-button" type="button" disabled>Chargement des données…</button>
+      <p class="error" id="load-error" role="alert" hidden></p>
+    </section>
+
+    <section class="panel" id="quiz-screen" aria-labelledby="question-title" hidden>
+      <div class="progress-meta">
+        <span id="question-counter">Question 1 / 10</span>
+        <span id="category-label"></span>
+      </div>
+      <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10">
+        <span id="progress-fill"></span>
+      </div>
+      <h2 id="question-title" tabindex="-1"></h2>
+      <div class="answers" id="answers"></div>
+      <p class="feedback" id="feedback" role="status" hidden></p>
+      <button class="primary action" id="action-button" type="button" disabled>Valider la réponse</button>
+    </section>
+
+    <section class="panel result" id="result-screen" aria-labelledby="result-title" hidden>
+      <p class="eyebrow">// SESSION TERMINÉE</p>
+      <h2 id="result-title">Résultat final</h2>
+      <strong class="score" id="final-score">0 / 10</strong>
+      <p id="result-message"></p>
+      <button class="primary" id="restart-button" type="button">Générer une nouvelle partie</button>
+    </section>
+  </main>
+  <script type="module" src="app.js?v=20260816-v1"></script>
+</body>
+</html>

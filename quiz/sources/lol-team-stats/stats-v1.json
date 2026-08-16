@@ -1,0 +1,72 @@
+[
+    {
+        "question": "Qui a le meilleur winrate global de l'équipe avec 51.8% ?",
+        "options": [
+            "Blindess56",
+            "SoRn",
+            "MutenRock",
+            "Aligax"
+        ],
+        "answer": "Blindess56"
+    },
+    {
+        "question": "Qui a joué le plus grand nombre de parties en ARAM (655 parties) ?",
+        "options": [
+            "Aligax",
+            "gabilone",
+            "MutenRock",
+            "Blindess56"
+        ],
+        "answer": "Aligax"
+    },
+    {
+        "question": "Qui est le joueur le plus actif avec 1012 parties au total ?",
+        "options": [
+            "MutenRock",
+            "Aligax",
+            "Blindess56",
+            "SoRn"
+        ],
+        "answer": "MutenRock"
+    },
+    {
+        "question": "Qui n'a joué absolument aucune partie en ARAM (0) ?",
+        "options": [
+            "MutenRonce",
+            "DrSpig",
+            "gabilone",
+            "SoRn"
+        ],
+        "answer": "MutenRonce"
+    },
+    {
+        "question": "Qui a joué 376 parties sur la Faille de l'invocateur (SR) avec un solide winrate de 51.2% ?",
+        "options": [
+            "SoRn",
+            "Blindess56",
+            "MutenRock",
+            "DrSpig"
+        ],
+        "answer": "SoRn"
+    },
+    {
+        "question": "Qui a joué 58 parties au total dont seulement 5 en ARAM ?",
+        "options": [
+            "DrSpig",
+            "gabilone",
+            "MutenRonce",
+            "SoRn"
+        ],
+        "answer": "DrSpig"
+    },
+    {
+        "question": "Qui a presque autant de parties en SR (24) qu'en ARAM (28) avec 42.3% de winrate ?",
+        "options": [
+            "gabilone",
+            "MutenRonce",
+            "DrSpig",
+            "Aligax"
+        ],
+        "answer": "gabilone"
+    }
+]

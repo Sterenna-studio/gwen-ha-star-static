@@ -1,0 +1,3341 @@
+[
+  {
+    "id": "lol-91f15ebe27",
+    "type": "radio",
+    "question": "Sur quel champion Aligax a-t-il le meilleur winrate (min 5 games) avec 85.7% ?",
+    "options": [
+      "Janna",
+      "Annie",
+      "Brand",
+      "Ashe"
+    ],
+    "answer": "Janna",
+    "explanation": "Incroyable mais vrai, c'est bien Janna avec 85.7% de victoires !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-e771ad3cb5",
+    "type": "radio",
+    "question": "Vrai ou Faux : Blindess56 a joué exactement 785 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 712 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-c388987c3d",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de assists au total entre Blindess56 et SoRn ?",
+    "options": [
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 3939 contre 3062 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-eb0e767701",
+    "type": "radio",
+    "question": "Vrai ou Faux : MutenRock a joué exactement 393 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 337 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-d0f791b93c",
+    "type": "radio",
+    "question": "Qui a le plus spam Vayne avec 28 parties ?",
+    "options": [
+      "Blindess56",
+      "SoRn",
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 a spam Vayne avec 57.1% de winrate.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-ec538a3aee",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de morts au total entre Aligax et SoRn ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 2058 contre 1884 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-7dbc775fd0",
+    "type": "radio",
+    "question": "Entre MutenRock et Aligax, qui a le plus de parties en ARAM ?",
+    "options": [
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax mène avec 655 contre 337.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-9638862e89",
+    "type": "radio",
+    "question": "Vrai ou Faux : SoRn a joué exactement 278 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 478 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-cc1c24e074",
+    "type": "radio",
+    "question": "Qui a joué le plus grand nombre de parties en ARAM ?",
+    "options": [
+      "SoRn",
+      "Aligax",
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax a joué 655 parties en ARAM contre seulement 193 sur la Faille !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-f798ef15e9",
+    "type": "radio",
+    "question": "Entre Blindess56 et SoRn, qui a le plus de taux de victoire global ?",
+    "options": [
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 mène avec 51.8 contre 51.2.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-daf01498a9",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de kills au total entre MutenRock et gabilone ?",
+    "options": [
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 2665 contre 1050 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-50d3fc07e9",
+    "type": "radio",
+    "question": "Sur quel champion gabilone a-t-il le meilleur winrate (min 5 games) avec 100.0% ?",
+    "options": [
+      "Darius",
+      "Renekton",
+      "Cassiopeia",
+      "Caitlyn"
+    ],
+    "answer": "Renekton",
+    "explanation": "Incroyable mais vrai, c'est bien Renekton avec 100.0% de victoires !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-097aa87ffc",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de assists au total entre Aligax et SoRn ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 4656 contre 3062 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-ed58a1d41c",
+    "type": "radio",
+    "question": "Entre MutenRock et SoRn, qui a le plus de taux de victoire global ?",
+    "options": [
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn mène avec 51.2 contre 48.6.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-6f45122af9",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de morts au total entre MutenRock et Aligax ?",
+    "options": [
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 4883 contre 2058 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-5b0c700e7d",
+    "type": "radio",
+    "question": "Vrai ou Faux : MutenRock a joué exactement 1033 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 1093 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-1dd8fe3f35",
+    "type": "radio",
+    "question": "Vrai ou Faux : Aligax a joué exactement 795 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 655 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-b7df354337",
+    "type": "radio",
+    "question": "Entre Blindess56 et gabilone, qui a le plus de taux de victoire global ?",
+    "options": [
+      "Blindess56",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 mène avec 51.8 contre 42.3.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-785476fca8",
+    "type": "radio",
+    "question": "Qui a le plus spam Zyra avec 407 parties ?",
+    "options": [
+      "MutenRock",
+      "Aligax",
+      "SoRn",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock a spam Zyra avec 44.0% de winrate.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-b074a45de4",
+    "type": "radio",
+    "question": "Entre Blindess56 et gabilone, qui a le plus de parties sur la Faille de l'invocateur ?",
+    "options": [
+      "Blindess56",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 mène avec 120 contre 24.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-9fa07639b2",
+    "type": "radio",
+    "question": "Entre MutenRock et SoRn, qui a le plus de parties totales jouées ?",
+    "options": [
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock mène avec 1093 contre 478.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-05c6e18366",
+    "type": "radio",
+    "question": "Entre Blindess56 et gabilone, qui a le plus de parties totales jouées ?",
+    "options": [
+      "Blindess56",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 mène avec 712 contre 56.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-6bac0954c0",
+    "type": "radio",
+    "question": "Entre Aligax et Blindess56, qui a le plus de parties en ARAM ?",
+    "options": [
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax mène avec 655 contre 448.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-6ff5b05a3a",
+    "type": "radio",
+    "question": "Entre MutenRock et Aligax, qui a le plus de taux de victoire global ?",
+    "options": [
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax mène avec 48.7 contre 48.6.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-522dc459dc",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué exactement 114 parties sur la faille.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 24 parties sur la faille.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-dd285b7eac",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de morts au total entre MutenRock et Blindess56 ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 4883 contre 2198 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-b084083534",
+    "type": "radio",
+    "question": "Entre Aligax et gabilone, qui a le plus de parties sur la Faille de l'invocateur ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax mène avec 193 contre 24.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-60b7dffd90",
+    "type": "radio",
+    "question": "Entre MutenRock et Aligax, qui a le plus de parties sur la Faille de l'invocateur ?",
+    "options": [
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock mène avec 634 contre 193.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-2d2b314b56",
+    "type": "radio",
+    "question": "Entre Blindess56 et SoRn, qui a le plus de parties en ARAM ?",
+    "options": [
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 mène avec 448 contre 79.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-30d075f03e",
+    "type": "radio",
+    "question": "Entre Aligax et gabilone, qui a le plus de taux de victoire global ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax mène avec 48.7 contre 42.3.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-45b758f4a3",
+    "type": "radio",
+    "question": "Vrai ou Faux : Aligax a joué exactement 906 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 906 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-3f46b459f3",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de assists au total entre Aligax et Blindess56 ?",
+    "options": [
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 4656 contre 3939 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-8ac62fc255",
+    "type": "radio",
+    "question": "Entre MutenRock et SoRn, qui a le plus de parties en ARAM ?",
+    "options": [
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock mène avec 337 contre 79.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-20a9f57a17",
+    "type": "radio",
+    "question": "Vrai ou Faux : MutenRock a joué exactement 999 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 1093 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-da608702eb",
+    "type": "radio",
+    "question": "Entre MutenRock et gabilone, qui a le plus de taux de victoire global ?",
+    "options": [
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock mène avec 48.6 contre 42.3.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-fb01dbf014",
+    "type": "radio",
+    "question": "Vrai ou Faux : MutenRock a joué exactement 1093 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 1093 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-ddaa3b7d77",
+    "type": "radio",
+    "question": "Qui a le plus spam Swain avec 118 parties ?",
+    "options": [
+      "SoRn",
+      "gabilone",
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn a spam Swain avec 51.7% de winrate.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-9fe330461b",
+    "type": "radio",
+    "question": "Entre SoRn et gabilone, qui a le plus de parties sur la Faille de l'invocateur ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn mène avec 376 contre 24.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-61e9c98aa1",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué exactement 24 parties sur la faille.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 24 parties sur la faille.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-ae6b0bcaa0",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de assists au total entre MutenRock et gabilone ?",
+    "options": [
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 6490 contre 2483 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-0901138906",
+    "type": "radio",
+    "question": "Vrai ou Faux : Aligax a joué exactement 57 parties sur la faille.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 193 parties sur la faille.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-5c4fe6fc6f",
+    "type": "radio",
+    "question": "Vrai ou Faux : Blindess56 a joué exactement 712 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 712 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-41f4080a8c",
+    "type": "radio",
+    "question": "Sur quel champion SoRn a-t-il le meilleur winrate (min 5 games) avec 66.7% ?",
+    "options": [
+      "Pantheon",
+      "Aatrox",
+      "Briar",
+      "Caitlyn"
+    ],
+    "answer": "Pantheon",
+    "explanation": "Incroyable mais vrai, c'est bien Pantheon avec 66.7% de victoires !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-d028f67c2a",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué exactement 168 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 28 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-65dbcc7cba",
+    "type": "match",
+    "question": "Associez chaque joueur à ses winrates",
+    "pairs": [
+      {
+        "left": "MutenRock",
+        "right": "48.6%"
+      },
+      {
+        "left": "SoRn",
+        "right": "51.2%"
+      },
+      {
+        "left": "Aligax",
+        "right": "48.7%"
+      },
+      {
+        "left": "Blindess56",
+        "right": "51.8%"
+      }
+    ],
+    "explanation": "Voici les stats exactes : MutenRock (48.6%), SoRn (51.2%), Aligax (48.7%), Blindess56 (51.8%)",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-46ffff734f",
+    "type": "radio",
+    "question": "Vrai ou Faux : SoRn a joué exactement 376 parties sur la faille.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 376 parties sur la faille.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-3f5adc5bef",
+    "type": "radio",
+    "question": "Entre MutenRock et Aligax, qui a le plus de parties totales jouées ?",
+    "options": [
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock mène avec 1093 contre 906.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-6410ccd8b3",
+    "type": "radio",
+    "question": "Sur quel champion Blindess56 a-t-il le meilleur winrate (min 5 games) avec 100.0% ?",
+    "options": [
+      "Wukong",
+      "Briar",
+      "Darius",
+      "Caitlyn"
+    ],
+    "answer": "Wukong",
+    "explanation": "Incroyable mais vrai, c'est bien Wukong avec 100.0% de victoires !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-144ac898b3",
+    "type": "radio",
+    "question": "Entre MutenRock et SoRn, qui a le plus de parties sur la Faille de l'invocateur ?",
+    "options": [
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock mène avec 634 contre 376.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-6315b3e31a",
+    "type": "radio",
+    "question": "Entre MutenRock et gabilone, qui a le plus de parties sur la Faille de l'invocateur ?",
+    "options": [
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock mène avec 634 contre 24.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-6403c7aae8",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de morts au total entre Aligax et gabilone ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "gabilone",
+    "explanation": "gabilone en a 2142 contre 2058 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-a4d9c71de0",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de kills au total entre Blindess56 et gabilone ?",
+    "options": [
+      "Blindess56",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 2415 contre 1050 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-bbc46e5c2e",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de kills au total entre Aligax et SoRn ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 1878 contre 1562 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-3fe28db28f",
+    "type": "radio",
+    "question": "Vrai ou Faux : Blindess56 a joué exactement 318 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 448 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-f8f9e33e52",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de morts au total entre Blindess56 et SoRn ?",
+    "options": [
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 2198 contre 1884 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-2c3aef3bf7",
+    "type": "radio",
+    "question": "Vrai ou Faux : MutenRock a joué exactement 254 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 337 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-87a68931b7",
+    "type": "radio",
+    "question": "Vrai ou Faux : SoRn a joué exactement 478 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 478 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-1a3b8be96e",
+    "type": "radio",
+    "question": "Entre MutenRock et Blindess56, qui a le plus de parties sur la Faille de l'invocateur ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock mène avec 634 contre 120.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-3f3b04276a",
+    "type": "radio",
+    "question": "Entre Aligax et SoRn, qui a le plus de taux de victoire global ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn mène avec 51.2 contre 48.7.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-b7c5cfd838",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué exactement 198 parties sur la faille.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 24 parties sur la faille.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-1ea00e27df",
+    "type": "radio",
+    "question": "Entre MutenRock et Blindess56, qui a le plus de taux de victoire global ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 mène avec 51.8 contre 48.6.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-a370103fed",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de kills au total entre MutenRock et Blindess56 ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 2665 contre 2415 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-4538dbed45",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de morts au total entre Aligax et Blindess56 ?",
+    "options": [
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 2198 contre 2058 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-9b0ae4b758",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de assists au total entre MutenRock et Aligax ?",
+    "options": [
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 6490 contre 4656 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-b16c5aa165",
+    "type": "radio",
+    "question": "Entre Aligax et Blindess56, qui a le plus de taux de victoire global ?",
+    "options": [
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 mène avec 51.8 contre 48.7.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-3d25354108",
+    "type": "radio",
+    "question": "Entre Aligax et gabilone, qui a le plus de parties totales jouées ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax mène avec 906 contre 56.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-821c6cc169",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué exactement 28 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 28 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-66be71e19a",
+    "type": "radio",
+    "question": "Sur quel champion MutenRock a-t-il le meilleur winrate (min 5 games) avec 100.0% ?",
+    "options": [
+      "Veigar",
+      "Aatrox",
+      "Annie",
+      "Darius"
+    ],
+    "answer": "Veigar",
+    "explanation": "Incroyable mais vrai, c'est bien Veigar avec 100.0% de victoires !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-7af8f08172",
+    "type": "radio",
+    "question": "Vrai ou Faux : MutenRock a joué exactement 191 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 337 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-a1aca87c70",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de assists au total entre SoRn et gabilone ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 3062 contre 2483 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-23580c5662",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de assists au total entre MutenRock et SoRn ?",
+    "options": [
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 6490 contre 3062 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-2f159a40da",
+    "type": "radio",
+    "question": "Entre Blindess56 et SoRn, qui a le plus de parties totales jouées ?",
+    "options": [
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 mène avec 712 contre 478.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-753e4d11cd",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de kills au total entre MutenRock et Aligax ?",
+    "options": [
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 2665 contre 1878 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-cc543622b3",
+    "type": "radio",
+    "question": "Qui est le joueur le plus actif au total (smurfs inclus) ?",
+    "options": [
+      "Aligax",
+      "gabilone",
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock cumule 1093 parties en comptant MutenRonce et DrSpig.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-b9381cd89f",
+    "type": "radio",
+    "question": "Entre Aligax et Blindess56, qui a le plus de parties totales jouées ?",
+    "options": [
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax mène avec 906 contre 712.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-3e943c9466",
+    "type": "radio",
+    "question": "Entre MutenRock et Blindess56, qui a le plus de parties totales jouées ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock mène avec 1093 contre 712.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-f17eaf4797",
+    "type": "radio",
+    "question": "Vrai ou Faux : SoRn a joué exactement 318 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 478 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-0726d870dc",
+    "type": "radio",
+    "question": "Entre Blindess56 et SoRn, qui a le plus de parties sur la Faille de l'invocateur ?",
+    "options": [
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn mène avec 376 contre 120.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-90dac5f977",
+    "type": "radio",
+    "question": "Vrai ou Faux : Blindess56 a joué exactement 262 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 448 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-74681cfff1",
+    "type": "radio",
+    "question": "Entre MutenRock et gabilone, qui a le plus de parties totales jouées ?",
+    "options": [
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock mène avec 1093 contre 56.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-08ae2e2526",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué exactement 176 parties sur la faille.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 24 parties sur la faille.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-3f404a1120",
+    "type": "radio",
+    "question": "Entre MutenRock et gabilone, qui a le plus de parties en ARAM ?",
+    "options": [
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock mène avec 337 contre 28.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-7a5fc5043a",
+    "type": "radio",
+    "question": "Entre Aligax et SoRn, qui a le plus de parties en ARAM ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax mène avec 655 contre 79.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-8569d7321b",
+    "type": "radio",
+    "question": "Entre SoRn et gabilone, qui a le plus de taux de victoire global ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn mène avec 51.2 contre 42.3.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-eba2601fa3",
+    "type": "radio",
+    "question": "Entre Aligax et SoRn, qui a le plus de parties totales jouées ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax mène avec 906 contre 478.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-394263dae0",
+    "type": "radio",
+    "question": "Entre Aligax et SoRn, qui a le plus de parties sur la Faille de l'invocateur ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn mène avec 376 contre 193.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-fbe062cb66",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de kills au total entre MutenRock et SoRn ?",
+    "options": [
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 2665 contre 1562 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-93a027dabb",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de kills au total entre Blindess56 et SoRn ?",
+    "options": [
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 2415 contre 1562 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-5397fa6842",
+    "type": "radio",
+    "question": "Vrai ou Faux : Blindess56 a joué exactement 535 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 448 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-93511cbc18",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué exactement 92 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 28 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-b1557268e1",
+    "type": "radio",
+    "question": "Vrai ou Faux : MutenRock a joué exactement 705 parties sur la faille.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 634 parties sur la faille.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-362122d3df",
+    "type": "radio",
+    "question": "Entre Blindess56 et gabilone, qui a le plus de parties en ARAM ?",
+    "options": [
+      "Blindess56",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 mène avec 448 contre 28.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-9731f5cfde",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de assists au total entre Aligax et gabilone ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 4656 contre 2483 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-6709a32f90",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de morts au total entre MutenRock et SoRn ?",
+    "options": [
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 4883 contre 1884 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-0e66c7deca",
+    "type": "radio",
+    "question": "Vrai ou Faux : Aligax a joué exactement 134 parties sur la faille.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 193 parties sur la faille.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-02fe18634f",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué exactement 2 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 56 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-7ada0b52b5",
+    "type": "radio",
+    "question": "Qui a le plus spam Jax avec 82 parties ?",
+    "options": [
+      "SoRn",
+      "gabilone",
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "gabilone",
+    "explanation": "gabilone a spam Jax avec 48.8% de winrate.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-d8a5a3de57",
+    "type": "radio",
+    "question": "Vrai ou Faux : SoRn a joué exactement 79 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 79 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-c86c91a354",
+    "type": "radio",
+    "question": "Qui a le plus spam Morgana avec 38 parties ?",
+    "options": [
+      "Aligax",
+      "SoRn",
+      "gabilone",
+      "Blindess56"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax a spam Morgana avec 57.9% de winrate.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-7f9993ab09",
+    "type": "radio",
+    "question": "Vrai ou Faux : Aligax a joué exactement 786 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 906 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-9cc901d68f",
+    "type": "radio",
+    "question": "Entre SoRn et gabilone, qui a le plus de parties totales jouées ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn mène avec 478 contre 56.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-3511868e81",
+    "type": "match",
+    "question": "Associez chaque joueur à ses parties totales",
+    "pairs": [
+      {
+        "left": "gabilone",
+        "right": "56"
+      },
+      {
+        "left": "Blindess56",
+        "right": "712"
+      },
+      {
+        "left": "Aligax",
+        "right": "906"
+      },
+      {
+        "left": "SoRn",
+        "right": "478"
+      }
+    ],
+    "explanation": "Voici les stats exactes : gabilone (56), Blindess56 (712), Aligax (906), SoRn (478)",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-bb0484cb5c",
+    "type": "radio",
+    "question": "Entre MutenRock et Blindess56, qui a le plus de parties en ARAM ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 mène avec 448 contre 337.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-7c13e1871f",
+    "type": "radio",
+    "question": "Vrai ou Faux : MutenRock a joué exactement 634 parties sur la faille.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 634 parties sur la faille.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-737241422a",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de morts au total entre SoRn et gabilone ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "gabilone",
+    "explanation": "gabilone en a 2142 contre 1884 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-014e70aef9",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de kills au total entre SoRn et gabilone ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 1562 contre 1050 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-3231cafdc4",
+    "type": "radio",
+    "question": "Vrai ou Faux : SoRn a joué exactement 280 parties sur la faille.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 376 parties sur la faille.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-54a4723b4d",
+    "type": "radio",
+    "question": "Entre Aligax et gabilone, qui a le plus de parties en ARAM ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax mène avec 655 contre 28.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-2b907d07a7",
+    "type": "radio",
+    "question": "Entre SoRn et gabilone, qui a le plus de parties en ARAM ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn mène avec 79 contre 28.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-a0fcccb0e3",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué exactement 93 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 28 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-d2c8debd8b",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de kills au total entre Aligax et Blindess56 ?",
+    "options": [
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 2415 contre 1878 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-65ab00eb9a",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué exactement 56 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 56 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-52e4b62703",
+    "type": "radio",
+    "question": "Vrai ou Faux : MutenRock a joué exactement 1233 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 1093 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-195113ccf1",
+    "type": "radio",
+    "question": "Entre Aligax et Blindess56, qui a le plus de parties sur la Faille de l'invocateur ?",
+    "options": [
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax mène avec 193 contre 120.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-6b9ba4e890",
+    "type": "match",
+    "question": "Associez chaque joueur à son winrate global",
+    "pairs": [
+      {
+        "left": "Blindess56",
+        "right": "51.8%"
+      },
+      {
+        "left": "SoRn",
+        "right": "51.2%"
+      },
+      {
+        "left": "Aligax",
+        "right": "48.7%"
+      },
+      {
+        "left": "gabilone",
+        "right": "42.3%"
+      }
+    ],
+    "explanation": "Blindess domine de peu SoRn, tandis que gabilone ferme la marche.",
+    "sources": [
+      "gwen-pool.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-8310fcca10",
+    "type": "match",
+    "question": "Associez chaque joueur à ses parties SR",
+    "pairs": [
+      {
+        "left": "gabilone",
+        "right": "24"
+      },
+      {
+        "left": "Aligax",
+        "right": "193"
+      },
+      {
+        "left": "Blindess56",
+        "right": "120"
+      },
+      {
+        "left": "MutenRock",
+        "right": "634"
+      }
+    ],
+    "explanation": "Voici les stats exactes : gabilone (24), Aligax (193), Blindess56 (120), MutenRock (634)",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-79586c9254",
+    "type": "match",
+    "question": "Associez chaque joueur à ses parties ARAM",
+    "pairs": [
+      {
+        "left": "MutenRock",
+        "right": "337"
+      },
+      {
+        "left": "Blindess56",
+        "right": "448"
+      },
+      {
+        "left": "gabilone",
+        "right": "28"
+      },
+      {
+        "left": "Aligax",
+        "right": "655"
+      }
+    ],
+    "explanation": "Voici les stats exactes : MutenRock (337), Blindess56 (448), gabilone (28), Aligax (655)",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-7a8996b5a6",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de assists au total entre Blindess56 et gabilone ?",
+    "options": [
+      "Blindess56",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 3939 contre 2483 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-b64dbde889",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué exactement 138 parties sur la faille.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 24 parties sur la faille.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-64fb0fd61e",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de morts au total entre Blindess56 et gabilone ?",
+    "options": [
+      "Blindess56",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 2198 contre 2142 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-40c524aa4e",
+    "type": "radio",
+    "question": "Vrai ou Faux : Blindess56 a joué exactement 895 parties au total.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 712 parties au total.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-bcea0e749e",
+    "type": "radio",
+    "question": "Vrai ou Faux : Blindess56 a joué exactement 448 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 448 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-a8fa9ca7d7",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de kills au total entre Aligax et gabilone ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 1878 contre 1050 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-74432b01c0",
+    "type": "radio",
+    "question": "Vrai ou Faux : Aligax a joué exactement 655 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "La vraie valeur est de 655 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-47e99d8862",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de assists au total entre MutenRock et Blindess56 ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 6490 contre 3939 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-2b3d2537f5",
+    "type": "radio",
+    "question": "Qui a le meilleur winrate global de l'équipe ?",
+    "options": [
+      "SoRn",
+      "Blindess56",
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Avec 51.8% de winrate sur plus de 700 parties, Blindess56 est le plus régulier.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-bf114c5e6a",
+    "type": "radio",
+    "question": "Vrai ou Faux : SoRn a joué exactement 0 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "La vraie valeur est de 79 parties en ARAM.",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-da64aa0d84",
+    "type": "radio",
+    "question": "Qui a cumulé le plus de morts au total entre MutenRock et gabilone ?",
+    "options": [
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 4883 contre 2142 !",
+    "sources": [
+      "gwen-pool.json"
+    ]
+  },
+  {
+    "id": "lol-45ec94dd11",
+    "type": "radio",
+    "question": "Qui a le meilleur winrate global de l'équipe ?",
+    "options": [
+      "Blindess56",
+      "MutenRock",
+      "gabilone",
+      "Aligax"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Avec 51.8% de winrate sur plus de 700 parties, Blindess56 est le plus régulier.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-c757dc0b8c",
+    "type": "radio",
+    "question": "Qui a joué le plus grand nombre de parties en ARAM ?",
+    "options": [
+      "Blindess56",
+      "MutenRock",
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax a joué 655 parties en ARAM contre seulement 193 sur la Faille !",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-cfdf01bc16",
+    "type": "radio",
+    "question": "Qui est le joueur le plus actif au total (smurfs inclus) ?",
+    "options": [
+      "MutenRock",
+      "Aligax",
+      "gabilone",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock cumule 1093 parties en comptant MutenRonce et DrSpig.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-ccdade10f4",
+    "type": "radio",
+    "question": "Qui est le OTP Zyra de l'équipe avec 407 parties ?",
+    "options": [
+      "gabilone",
+      "MutenRock",
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock a spammé Zyra et a 44.0% de winrate avec.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-b7cebde0ca",
+    "type": "radio",
+    "question": "Quel est le champion le plus joué par MutenRock ?",
+    "options": [
+      "Ashe",
+      "Brand",
+      "Briar",
+      "Zyra"
+    ],
+    "answer": "Zyra",
+    "explanation": "Et oui, c'est Zyra avec 407 parties jouées !",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-98f88e4d3a",
+    "type": "radio",
+    "question": "Qui est le OTP Morgana de l'équipe avec 38 parties ?",
+    "options": [
+      "Aligax",
+      "MutenRock",
+      "gabilone",
+      "SoRn"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax a spammé Morgana et a 57.9% de winrate avec.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-4bc020e1f6",
+    "type": "radio",
+    "question": "Quel est le champion le plus joué par Aligax ?",
+    "options": [
+      "Cho'Gath",
+      "Aurora",
+      "Morgana",
+      "Briar"
+    ],
+    "answer": "Morgana",
+    "explanation": "Et oui, c'est Morgana avec 38 parties jouées !",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-26fd945914",
+    "type": "radio",
+    "question": "Qui est le OTP Vayne de l'équipe avec 28 parties ?",
+    "options": [
+      "Blindess56",
+      "SoRn",
+      "Aligax",
+      "MutenRock"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 a spammé Vayne et a 57.1% de winrate avec.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-1e4c2ebbe7",
+    "type": "radio",
+    "question": "Quel est le champion le plus joué par Blindess56 ?",
+    "options": [
+      "Annie",
+      "Ashe",
+      "Vayne",
+      "Cho'Gath"
+    ],
+    "answer": "Vayne",
+    "explanation": "Et oui, c'est Vayne avec 28 parties jouées !",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-25934a41fc",
+    "type": "radio",
+    "question": "Qui est le OTP Swain de l'équipe avec 118 parties ?",
+    "options": [
+      "Aligax",
+      "gabilone",
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn a spammé Swain et a 51.7% de winrate avec.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-5fffcaad12",
+    "type": "radio",
+    "question": "Quel est le champion le plus joué par SoRn ?",
+    "options": [
+      "Aatrox",
+      "Ashe",
+      "Swain",
+      "Annie"
+    ],
+    "answer": "Swain",
+    "explanation": "Et oui, c'est Swain avec 118 parties jouées !",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-9b3304ab2a",
+    "type": "radio",
+    "question": "Qui est le OTP Jax de l'équipe avec 82 parties ?",
+    "options": [
+      "SoRn",
+      "gabilone",
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "gabilone",
+    "explanation": "gabilone a spammé Jax et a 48.8% de winrate avec.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-917d6bc80f",
+    "type": "radio",
+    "question": "Quel est le champion le plus joué par gabilone ?",
+    "options": [
+      "Brand",
+      "Jax",
+      "Cho'Gath",
+      "Aatrox"
+    ],
+    "answer": "Jax",
+    "explanation": "Et oui, c'est Jax avec 82 parties jouées !",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-ceb72fa55d",
+    "type": "radio",
+    "question": "Avec quel champion MutenRock a-t-il le meilleur KDA (min 5 games) ?",
+    "options": [
+      "Jhin",
+      "Cassiopeia",
+      "Aatrox",
+      "Annie"
+    ],
+    "answer": "Jhin",
+    "explanation": "Son KDA moyen avec Jhin est de 4.36 !",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-aa4b546fb8",
+    "type": "radio",
+    "question": "Avec quel champion Aligax a-t-il le meilleur KDA (min 5 games) ?",
+    "options": [
+      "Janna",
+      "Aatrox",
+      "Cho'Gath",
+      "Ashe"
+    ],
+    "answer": "Janna",
+    "explanation": "Son KDA moyen avec Janna est de 7.35 !",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-aab1d2cd69",
+    "type": "radio",
+    "question": "Avec quel champion Blindess56 a-t-il le meilleur KDA (min 5 games) ?",
+    "options": [
+      "Caitlyn",
+      "Cho'Gath",
+      "Lux",
+      "Briar"
+    ],
+    "answer": "Lux",
+    "explanation": "Son KDA moyen avec Lux est de 5.05 !",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-a32f137aa1",
+    "type": "radio",
+    "question": "Avec quel champion SoRn a-t-il le meilleur KDA (min 5 games) ?",
+    "options": [
+      "Cho'Gath",
+      "Darius",
+      "Varus",
+      "Aurora"
+    ],
+    "answer": "Varus",
+    "explanation": "Son KDA moyen avec Varus est de 2.95 !",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-1c5ae0a6d7",
+    "type": "radio",
+    "question": "Avec quel champion gabilone a-t-il le meilleur KDA (min 5 games) ?",
+    "options": [
+      "Cho'Gath",
+      "Annie",
+      "Thresh",
+      "Aatrox"
+    ],
+    "answer": "Thresh",
+    "explanation": "Son KDA moyen avec Thresh est de 4.44 !",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-0f327ccafb",
+    "type": "match",
+    "question": "Associez chaque joueur à son nombre de parties sur la Faille de l'invocateur",
+    "pairs": [
+      {
+        "left": "MutenRock",
+        "right": "634 parties"
+      },
+      {
+        "left": "SoRn",
+        "right": "376 parties"
+      },
+      {
+        "left": "Aligax",
+        "right": "193 parties"
+      },
+      {
+        "left": "gabilone",
+        "right": "24 parties"
+      }
+    ],
+    "explanation": "MutenRock (tous comptes confondus) et SoRn poncent la faille, gabilone y va rarement.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-79a6d475f1",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "gabilone",
+      "MutenRock"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 634 contre 24 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-3881d4da44",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "gabilone",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 120 contre 24 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-1c4d8c8c2b",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "SoRn",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 655 contre 79 pour SoRn.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-961e4d87d7",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "gabilone",
+      "MutenRock"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 1093 contre 56 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-31cf626aa8",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "Blindess56",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 193 contre 120 pour Blindess56.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-7f9f6b17c0",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "SoRn",
+      "Aligax"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 51.2 contre 48.7 pour Aligax.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-6830baa9e2",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 51.2 contre 48.6 pour MutenRock.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-32b87cbb15",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 634 contre 24 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-97f751a430",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 906 contre 56 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-4b4bc254e9",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 193 contre 24 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-0d7df837a8",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "gabilone",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 478 contre 56 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-17ee02b4cf",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 51.8 contre 48.6 pour MutenRock.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-1f41f53b45",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "Blindess56",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 906 contre 712 pour Blindess56.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-76a9708f69",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "gabilone",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 376 contre 24 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-2c2140a8dc",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 376 contre 24 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-f77bbad869",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 376 contre 120 pour Blindess56.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-5fe4e9bafd",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "gabilone",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 79 contre 28 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-8c75d83b29",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 51.8 contre 48.7 pour Aligax.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-7133b23b25",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 655 contre 28 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-6423bd6666",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 376 contre 193 pour Aligax.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-7edf7667f7",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 337 contre 79 pour SoRn.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-3bcac41f80",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 634 contre 120 pour Blindess56.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-d0094479a9",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "SoRn",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 712 contre 478 pour SoRn.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-029cf31697",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 1093 contre 712 pour Blindess56.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-b08f16ef2f",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "SoRn",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 906 contre 478 pour SoRn.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-07ff6b5ec2",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "Blindess56",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 448 contre 28 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-70e7517cdb",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "SoRn",
+      "MutenRock"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 634 contre 376 pour SoRn.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-6c2eda50d2",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 478 contre 56 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-79f5ceea13",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 51.2 contre 48.7 pour Aligax.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-d5baa6b84a",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 655 contre 79 pour SoRn.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-115d7e8f23",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "gabilone",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 655 contre 28 pour gabilone.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-092551ae33",
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 655 contre 337 pour MutenRock.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-40855f9907",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Ashe (10 games) ?",
+    "options": [
+      "41.0%",
+      "30.0%",
+      "40.0%",
+      "42.0%"
+    ],
+    "answer": "40.0%",
+    "explanation": "Il a gagné 4 parties sur 10 avec Ashe.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-cd18ab1fdf",
+    "type": "radio",
+    "question": "Quel est le winrate de MutenRock sur Lux (19 games) ?",
+    "options": [
+      "68.4%",
+      "66.4%",
+      "66.4%",
+      "67.4%"
+    ],
+    "answer": "68.4%",
+    "explanation": "Il a gagné 13 parties sur 19 avec Lux.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-dde5ae08d1",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Miss Fortune (16 games) ?",
+    "options": [
+      "66.2%",
+      "48.2%",
+      "56.2%",
+      "53.2%"
+    ],
+    "answer": "56.2%",
+    "explanation": "Il a gagné 9 parties sur 16 avec Miss Fortune.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-8905190c6f",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Ashe (10 games) ?",
+    "options": [
+      "48.0%",
+      "50.0%",
+      "38.0%",
+      "40.0%"
+    ],
+    "answer": "40.0%",
+    "explanation": "Il a gagné 4 parties sur 10 avec Ashe.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-a4fc64667b",
+    "type": "radio",
+    "question": "Quel est le winrate de SoRn sur Azir (42 games) ?",
+    "options": [
+      "55.3%",
+      "64.3%",
+      "56.3%",
+      "68.3%"
+    ],
+    "answer": "64.3%",
+    "explanation": "Il a gagné 27 parties sur 42 avec Azir.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-64ceb19f36",
+    "type": "radio",
+    "question": "Quel est le winrate de SoRn sur Varus (24 games) ?",
+    "options": [
+      "37.5%",
+      "45.5%",
+      "35.5%",
+      "39.5%"
+    ],
+    "answer": "37.5%",
+    "explanation": "Il a gagné 9 parties sur 24 avec Varus.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-589f9a5b68",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Garen (11 games) ?",
+    "options": [
+      "36.4%",
+      "42.4%",
+      "43.4%",
+      "42.4%"
+    ],
+    "answer": "36.4%",
+    "explanation": "Il a gagné 4 parties sur 11 avec Garen.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-de66fccf70",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Garen (11 games) ?",
+    "options": [
+      "38.4%",
+      "44.4%",
+      "36.4%",
+      "26.4%"
+    ],
+    "answer": "36.4%",
+    "explanation": "Il a gagné 4 parties sur 11 avec Garen.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-87315ae818",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Mel (13 games) ?",
+    "options": [
+      "41.2%",
+      "46.2%",
+      "54.2%",
+      "44.2%"
+    ],
+    "answer": "46.2%",
+    "explanation": "Il a gagné 6 parties sur 13 avec Mel.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-967d04e4ca",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Lux (18 games) ?",
+    "options": [
+      "63.2%",
+      "68.2%",
+      "78.2%",
+      "72.2%"
+    ],
+    "answer": "72.2%",
+    "explanation": "Il a gagné 13 parties sur 18 avec Lux.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-bd87a65679",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Garen (11 games) ?",
+    "options": [
+      "26.4%",
+      "36.4%",
+      "34.4%",
+      "43.4%"
+    ],
+    "answer": "36.4%",
+    "explanation": "Il a gagné 4 parties sur 11 avec Garen.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-6315133849",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Garen (11 games) ?",
+    "options": [
+      "43.4%",
+      "34.4%",
+      "36.4%",
+      "28.4%"
+    ],
+    "answer": "36.4%",
+    "explanation": "Il a gagné 4 parties sur 11 avec Garen.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-7623fc5685",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Seraphine (14 games) ?",
+    "options": [
+      "43.9%",
+      "42.9%",
+      "37.9%",
+      "34.9%"
+    ],
+    "answer": "42.9%",
+    "explanation": "Il a gagné 6 parties sur 14 avec Seraphine.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-2c54ca8162",
+    "type": "radio",
+    "question": "Quel est le winrate de MutenRock sur Lux (19 games) ?",
+    "options": [
+      "68.4%",
+      "63.4%",
+      "66.4%",
+      "60.4%"
+    ],
+    "answer": "68.4%",
+    "explanation": "Il a gagné 13 parties sur 19 avec Lux.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-5dadcb06e4",
+    "type": "radio",
+    "question": "Quel est le winrate de Blindess56 sur Renekton (11 games) ?",
+    "options": [
+      "61.6%",
+      "56.6%",
+      "63.6%",
+      "73.6%"
+    ],
+    "answer": "63.6%",
+    "explanation": "Il a gagné 7 parties sur 11 avec Renekton.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-79e5396ff5",
+    "type": "radio",
+    "question": "Quel est le winrate de SoRn sur Azir (42 games) ?",
+    "options": [
+      "60.3%",
+      "66.3%",
+      "71.3%",
+      "64.3%"
+    ],
+    "answer": "64.3%",
+    "explanation": "Il a gagné 27 parties sur 42 avec Azir.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-54d6b99ce4",
+    "type": "radio",
+    "question": "Quel est le winrate de MutenRock sur Annie (22 games) ?",
+    "options": [
+      "48.5%",
+      "55.5%",
+      "45.5%",
+      "40.5%"
+    ],
+    "answer": "45.5%",
+    "explanation": "Il a gagné 10 parties sur 22 avec Annie.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-6c1c59ff8e",
+    "type": "radio",
+    "question": "Quel est le winrate de Blindess56 sur Aphelios (13 games) ?",
+    "options": [
+      "62.8%",
+      "57.8%",
+      "49.8%",
+      "53.8%"
+    ],
+    "answer": "53.8%",
+    "explanation": "Il a gagné 7 parties sur 13 avec Aphelios.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-746ab2dd59",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Morgana (38 games) ?",
+    "options": [
+      "57.9%",
+      "49.9%",
+      "61.9%",
+      "66.9%"
+    ],
+    "answer": "57.9%",
+    "explanation": "Il a gagné 22 parties sur 38 avec Morgana.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-68f48b305c",
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Seraphine (14 games) ?",
+    "options": [
+      "36.9%",
+      "48.9%",
+      "42.9%",
+      "44.9%"
+    ],
+    "answer": "42.9%",
+    "explanation": "Il a gagné 6 parties sur 14 avec Seraphine.",
+    "sources": [
+      "advanced-pool-v1.json",
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-6543f030e4",
+    "type": "radio",
+    "question": "Vrai ou Faux : Blindess56 a joué plus de 400 parties en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "Il en a joué 448 exactement.",
+    "sources": [
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-73c6142322",
+    "type": "radio",
+    "question": "Vrai ou Faux : SoRn a un winrate négatif (moins de 50%).",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "Faux ! Son winrate est très positif : 51.2%.",
+    "sources": [
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-95537357e3",
+    "type": "radio",
+    "question": "Vrai ou Faux : gabilone a joué plus de parties sur la Faille qu'en ARAM.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Faux",
+    "explanation": "Faux, il a 28 parties en ARAM et 24 sur la Faille.",
+    "sources": [
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-863d8179f7",
+    "type": "radio",
+    "question": "Vrai ou Faux : MutenRock cumule plus de 1000 parties.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "Vrai, il en a 1093 au total.",
+    "sources": [
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-a2e859194d",
+    "type": "radio",
+    "question": "Vrai ou Faux : Aligax a un meilleur KDA avec Lux qu'avec Morgana.",
+    "options": [
+      "Vrai",
+      "Faux"
+    ],
+    "answer": "Vrai",
+    "explanation": "Vrai ! 5.01 de KDA moyen sur Lux contre 3.50 sur Morgana.",
+    "sources": [
+      "advanced-pool-v2.json"
+    ]
+  },
+  {
+    "id": "lol-1f4da00bfc",
+    "type": "radio",
+    "question": "Qui a le meilleur winrate global de l'équipe avec 51.8% ?",
+    "options": [
+      "Blindess56",
+      "SoRn",
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Bonne réponse : Blindess56.",
+    "sources": [
+      "stats-v1.json",
+      "stats-v2.json"
+    ]
+  },
+  {
+    "id": "lol-af582bb441",
+    "type": "radio",
+    "question": "Qui a joué le plus grand nombre de parties en ARAM (655 parties) ?",
+    "options": [
+      "Aligax",
+      "gabilone",
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "Aligax",
+    "explanation": "Bonne réponse : Aligax.",
+    "sources": [
+      "stats-v1.json",
+      "stats-v2.json"
+    ]
+  },
+  {
+    "id": "lol-db4c504f1c",
+    "type": "radio",
+    "question": "Qui est le joueur le plus actif avec 1012 parties au total ?",
+    "options": [
+      "MutenRock",
+      "Aligax",
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "Bonne réponse : MutenRock.",
+    "sources": [
+      "stats-v1.json"
+    ]
+  },
+  {
+    "id": "lol-7bb7edf38d",
+    "type": "radio",
+    "question": "Qui n'a joué absolument aucune partie en ARAM (0) ?",
+    "options": [
+      "MutenRonce",
+      "DrSpig",
+      "gabilone",
+      "SoRn"
+    ],
+    "answer": "MutenRonce",
+    "explanation": "Bonne réponse : MutenRonce.",
+    "sources": [
+      "stats-v1.json"
+    ]
+  },
+  {
+    "id": "lol-32c7cde069",
+    "type": "radio",
+    "question": "Qui a joué 376 parties sur la Faille de l'invocateur (SR) avec un solide winrate de 51.2% ?",
+    "options": [
+      "SoRn",
+      "Blindess56",
+      "MutenRock",
+      "DrSpig"
+    ],
+    "answer": "SoRn",
+    "explanation": "Bonne réponse : SoRn.",
+    "sources": [
+      "stats-v1.json"
+    ]
+  },
+  {
+    "id": "lol-488b154478",
+    "type": "radio",
+    "question": "Qui a joué 58 parties au total dont seulement 5 en ARAM ?",
+    "options": [
+      "DrSpig",
+      "gabilone",
+      "MutenRonce",
+      "SoRn"
+    ],
+    "answer": "DrSpig",
+    "explanation": "Bonne réponse : DrSpig.",
+    "sources": [
+      "stats-v1.json"
+    ]
+  },
+  {
+    "id": "lol-0f9a51fb3a",
+    "type": "radio",
+    "question": "Qui a presque autant de parties en SR (24) qu'en ARAM (28) avec 42.3% de winrate ?",
+    "options": [
+      "gabilone",
+      "MutenRonce",
+      "DrSpig",
+      "Aligax"
+    ],
+    "answer": "gabilone",
+    "explanation": "Bonne réponse : gabilone.",
+    "sources": [
+      "stats-v1.json"
+    ]
+  },
+  {
+    "id": "lol-dbeae85c47",
+    "type": "radio",
+    "question": "En combinant tous ses comptes (smurfs inclus), qui est le joueur le plus actif avec 1093 parties au total ?",
+    "options": [
+      "MutenRock",
+      "Aligax",
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "Bonne réponse : MutenRock.",
+    "sources": [
+      "stats-v2.json"
+    ]
+  },
+  {
+    "id": "lol-0053e16a06",
+    "type": "radio",
+    "question": "Qui a le winrate le plus bas de l'équipe (42.3%) sur ses 56 parties jouées ?",
+    "options": [
+      "gabilone",
+      "SoRn",
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "gabilone",
+    "explanation": "Bonne réponse : gabilone.",
+    "sources": [
+      "stats-v2.json"
+    ]
+  },
+  {
+    "id": "lol-71973874e1",
+    "type": "radio",
+    "question": "Qui a joué 376 parties sur la Faille de l'invocateur (SR) et maintient un solide winrate de 51.2% ?",
+    "options": [
+      "SoRn",
+      "Blindess56",
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "SoRn",
+    "explanation": "Bonne réponse : SoRn.",
+    "sources": [
+      "stats-v2.json"
+    ]
+  },
+  {
+    "id": "lol-4f73b60050",
+    "type": "radio",
+    "question": "Si l'on cumule ses différents comptes, qui totalise le record de 634 parties sur la Faille de l'invocateur ?",
+    "options": [
+      "MutenRock",
+      "SoRn",
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "MutenRock",
+    "explanation": "Bonne réponse : MutenRock.",
+    "sources": [
+      "stats-v2.json"
+    ]
+  },
+  {
+    "id": "lol-eef7bf23bd",
+    "type": "radio",
+    "question": "Qui a un profil très équilibré avec presque autant de parties en Faille de l'invocateur (24) qu'en ARAM (28) ?",
+    "options": [
+      "gabilone",
+      "SoRn",
+      "Blindess56",
+      "MutenRock"
+    ],
+    "answer": "gabilone",
+    "explanation": "Bonne réponse : gabilone.",
+    "sources": [
+      "stats-v2.json"
+    ]
+  }
+]

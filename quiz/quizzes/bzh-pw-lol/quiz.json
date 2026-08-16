@@ -1,0 +1,13 @@
+{
+  "id": "bzh-pw-lol",
+  "title": "BZH PW — Mega Quizz LoL",
+  "description": "Une session de 10 questions tirées d'un pool consolidé sur les joueurs, champions, winrates et KDA de la team.",
+  "theme": "League of Legends",
+  "date": "2026-08-16",
+  "duration": "4 min",
+  "question_count": 10,
+  "pool_size": 216,
+  "accent": "#c8aa6e",
+  "status": "playable",
+  "order": 30
+}

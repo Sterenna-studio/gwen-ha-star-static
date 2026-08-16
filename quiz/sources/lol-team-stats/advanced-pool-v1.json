@@ -1,0 +1,1004 @@
+[
+  {
+    "type": "radio",
+    "question": "Qui a le meilleur winrate global de l'équipe ?",
+    "options": [
+      "Blindess56",
+      "MutenRock",
+      "gabilone",
+      "Aligax"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Avec 51.8% de winrate sur plus de 700 parties, Blindess56 est le plus régulier."
+  },
+  {
+    "type": "radio",
+    "question": "Qui a joué le plus grand nombre de parties en ARAM ?",
+    "options": [
+      "Blindess56",
+      "MutenRock",
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax a joué 655 parties en ARAM contre seulement 193 sur la Faille !"
+  },
+  {
+    "type": "radio",
+    "question": "Qui est le joueur le plus actif au total (smurfs inclus) ?",
+    "options": [
+      "MutenRock",
+      "Aligax",
+      "gabilone",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock cumule 1093 parties en comptant MutenRonce et DrSpig."
+  },
+  {
+    "type": "radio",
+    "question": "Qui est le OTP Zyra de l'équipe avec 407 parties ?",
+    "options": [
+      "gabilone",
+      "MutenRock",
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock a spammé Zyra et a 44.0% de winrate avec."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le champion le plus joué par MutenRock ?",
+    "options": [
+      "Ashe",
+      "Brand",
+      "Briar",
+      "Zyra"
+    ],
+    "answer": "Zyra",
+    "explanation": "Et oui, c'est Zyra avec 407 parties jouées !"
+  },
+  {
+    "type": "radio",
+    "question": "Qui est le OTP Morgana de l'équipe avec 38 parties ?",
+    "options": [
+      "Aligax",
+      "MutenRock",
+      "gabilone",
+      "SoRn"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax a spammé Morgana et a 57.9% de winrate avec."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le champion le plus joué par Aligax ?",
+    "options": [
+      "Cho'Gath",
+      "Aurora",
+      "Morgana",
+      "Briar"
+    ],
+    "answer": "Morgana",
+    "explanation": "Et oui, c'est Morgana avec 38 parties jouées !"
+  },
+  {
+    "type": "radio",
+    "question": "Qui est le OTP Vayne de l'équipe avec 28 parties ?",
+    "options": [
+      "Blindess56",
+      "SoRn",
+      "Aligax",
+      "MutenRock"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 a spammé Vayne et a 57.1% de winrate avec."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le champion le plus joué par Blindess56 ?",
+    "options": [
+      "Annie",
+      "Ashe",
+      "Vayne",
+      "Cho'Gath"
+    ],
+    "answer": "Vayne",
+    "explanation": "Et oui, c'est Vayne avec 28 parties jouées !"
+  },
+  {
+    "type": "radio",
+    "question": "Qui est le OTP Swain de l'équipe avec 118 parties ?",
+    "options": [
+      "Aligax",
+      "gabilone",
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn a spammé Swain et a 51.7% de winrate avec."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le champion le plus joué par SoRn ?",
+    "options": [
+      "Aatrox",
+      "Ashe",
+      "Swain",
+      "Annie"
+    ],
+    "answer": "Swain",
+    "explanation": "Et oui, c'est Swain avec 118 parties jouées !"
+  },
+  {
+    "type": "radio",
+    "question": "Qui est le OTP Jax de l'équipe avec 82 parties ?",
+    "options": [
+      "SoRn",
+      "gabilone",
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "gabilone",
+    "explanation": "gabilone a spammé Jax et a 48.8% de winrate avec."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le champion le plus joué par gabilone ?",
+    "options": [
+      "Brand",
+      "Jax",
+      "Cho'Gath",
+      "Aatrox"
+    ],
+    "answer": "Jax",
+    "explanation": "Et oui, c'est Jax avec 82 parties jouées !"
+  },
+  {
+    "type": "radio",
+    "question": "Avec quel champion MutenRock a-t-il le meilleur KDA (min 5 games) ?",
+    "options": [
+      "Jhin",
+      "Cassiopeia",
+      "Aatrox",
+      "Annie"
+    ],
+    "answer": "Jhin",
+    "explanation": "Son KDA moyen avec Jhin est de 4.36 !"
+  },
+  {
+    "type": "radio",
+    "question": "Avec quel champion Aligax a-t-il le meilleur KDA (min 5 games) ?",
+    "options": [
+      "Janna",
+      "Aatrox",
+      "Cho'Gath",
+      "Ashe"
+    ],
+    "answer": "Janna",
+    "explanation": "Son KDA moyen avec Janna est de 7.35 !"
+  },
+  {
+    "type": "radio",
+    "question": "Avec quel champion Blindess56 a-t-il le meilleur KDA (min 5 games) ?",
+    "options": [
+      "Caitlyn",
+      "Cho'Gath",
+      "Lux",
+      "Briar"
+    ],
+    "answer": "Lux",
+    "explanation": "Son KDA moyen avec Lux est de 5.05 !"
+  },
+  {
+    "type": "radio",
+    "question": "Avec quel champion SoRn a-t-il le meilleur KDA (min 5 games) ?",
+    "options": [
+      "Cho'Gath",
+      "Darius",
+      "Varus",
+      "Aurora"
+    ],
+    "answer": "Varus",
+    "explanation": "Son KDA moyen avec Varus est de 2.95 !"
+  },
+  {
+    "type": "radio",
+    "question": "Avec quel champion gabilone a-t-il le meilleur KDA (min 5 games) ?",
+    "options": [
+      "Cho'Gath",
+      "Annie",
+      "Thresh",
+      "Aatrox"
+    ],
+    "answer": "Thresh",
+    "explanation": "Son KDA moyen avec Thresh est de 4.44 !"
+  },
+  {
+    "type": "match",
+    "question": "Associez chaque joueur à son winrate global",
+    "pairs": [
+      {
+        "left": "Blindess56",
+        "right": "51.8%"
+      },
+      {
+        "left": "SoRn",
+        "right": "51.2%"
+      },
+      {
+        "left": "Aligax",
+        "right": "48.7%"
+      },
+      {
+        "left": "gabilone",
+        "right": "42.3%"
+      }
+    ],
+    "explanation": "Blindess domine de peu SoRn, tandis que gabilone ferme la marche."
+  },
+  {
+    "type": "match",
+    "question": "Associez chaque joueur à son nombre de parties sur la Faille de l'invocateur",
+    "pairs": [
+      {
+        "left": "MutenRock",
+        "right": "634 parties"
+      },
+      {
+        "left": "SoRn",
+        "right": "376 parties"
+      },
+      {
+        "left": "Aligax",
+        "right": "193 parties"
+      },
+      {
+        "left": "gabilone",
+        "right": "24 parties"
+      }
+    ],
+    "explanation": "MutenRock (tous comptes confondus) et SoRn poncent la faille, gabilone y va rarement."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "gabilone",
+      "MutenRock"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 634 contre 24 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "gabilone",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 120 contre 24 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "SoRn",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 655 contre 79 pour SoRn."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "gabilone",
+      "MutenRock"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 1093 contre 56 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "Blindess56",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 193 contre 120 pour Blindess56."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "SoRn",
+      "Aligax"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 51.2 contre 48.7 pour Aligax."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 51.2 contre 48.6 pour MutenRock."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 634 contre 24 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 906 contre 56 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 906 contre 56 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 193 contre 24 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "gabilone",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 478 contre 56 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 51.8 contre 48.6 pour MutenRock."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "Blindess56",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 906 contre 712 pour Blindess56."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "gabilone",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 376 contre 24 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "MutenRock",
+      "gabilone"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 634 contre 24 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 376 contre 24 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "Blindess56",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 193 contre 120 pour Blindess56."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 51.8 contre 48.6 pour MutenRock."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 376 contre 120 pour Blindess56."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "gabilone",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 79 contre 28 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 51.8 contre 48.6 pour MutenRock."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "Aligax",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 51.8 contre 48.7 pour Aligax."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 655 contre 28 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "gabilone",
+      "MutenRock"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 1093 contre 56 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 376 contre 193 pour Aligax."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "MutenRock",
+      "SoRn"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 337 contre 79 pour SoRn."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "gabilone",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 120 contre 24 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 634 contre 120 pour Blindess56."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 655 contre 28 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "SoRn",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 712 contre 478 pour SoRn."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 1093 contre 712 pour Blindess56."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "gabilone",
+      "MutenRock"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 1093 contre 56 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "SoRn",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 906 contre 478 pour SoRn."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "Blindess56",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 448 contre 28 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "SoRn",
+      "MutenRock"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 634 contre 376 pour SoRn."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "Blindess56",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 448 contre 28 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 478 contre 56 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 634 contre 120 pour Blindess56."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "SoRn",
+      "gabilone"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 376 contre 24 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "Blindess56",
+      "gabilone"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 448 contre 28 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "MutenRock",
+      "Blindess56"
+    ],
+    "answer": "Blindess56",
+    "explanation": "Blindess56 en a 51.8 contre 48.6 pour MutenRock."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de taux de victoire ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 51.2 contre 48.7 pour Aligax."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "Blindess56",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 376 contre 120 pour Blindess56."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "Aligax",
+      "SoRn"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 655 contre 79 pour SoRn."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "gabilone",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 655 contre 28 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "SoRn",
+      "MutenRock"
+    ],
+    "answer": "MutenRock",
+    "explanation": "MutenRock en a 634 contre 376 pour SoRn."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties totales ?",
+    "options": [
+      "gabilone",
+      "SoRn"
+    ],
+    "answer": "SoRn",
+    "explanation": "SoRn en a 478 contre 56 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties sur la faille ?",
+    "options": [
+      "Aligax",
+      "gabilone"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 193 contre 24 pour gabilone."
+  },
+  {
+    "type": "radio",
+    "question": "Lequel de ces deux joueurs a le plus de parties en ARAM ?",
+    "options": [
+      "MutenRock",
+      "Aligax"
+    ],
+    "answer": "Aligax",
+    "explanation": "Aligax en a 655 contre 337 pour MutenRock."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Ashe (10 games) ?",
+    "options": [
+      "41.0%",
+      "30.0%",
+      "40.0%",
+      "42.0%"
+    ],
+    "answer": "40.0%",
+    "explanation": "Il a gagné 4 parties sur 10 avec Ashe."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de MutenRock sur Lux (19 games) ?",
+    "options": [
+      "68.4%",
+      "66.4%",
+      "66.4%",
+      "67.4%"
+    ],
+    "answer": "68.4%",
+    "explanation": "Il a gagné 13 parties sur 19 avec Lux."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Miss Fortune (16 games) ?",
+    "options": [
+      "66.2%",
+      "48.2%",
+      "56.2%",
+      "53.2%"
+    ],
+    "answer": "56.2%",
+    "explanation": "Il a gagné 9 parties sur 16 avec Miss Fortune."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Ashe (10 games) ?",
+    "options": [
+      "48.0%",
+      "50.0%",
+      "38.0%",
+      "40.0%"
+    ],
+    "answer": "40.0%",
+    "explanation": "Il a gagné 4 parties sur 10 avec Ashe."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de SoRn sur Azir (42 games) ?",
+    "options": [
+      "55.3%",
+      "64.3%",
+      "56.3%",
+      "68.3%"
+    ],
+    "answer": "64.3%",
+    "explanation": "Il a gagné 27 parties sur 42 avec Azir."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de SoRn sur Varus (24 games) ?",
+    "options": [
+      "37.5%",
+      "45.5%",
+      "35.5%",
+      "39.5%"
+    ],
+    "answer": "37.5%",
+    "explanation": "Il a gagné 9 parties sur 24 avec Varus."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Garen (11 games) ?",
+    "options": [
+      "36.4%",
+      "42.4%",
+      "43.4%",
+      "42.4%"
+    ],
+    "answer": "36.4%",
+    "explanation": "Il a gagné 4 parties sur 11 avec Garen."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Garen (11 games) ?",
+    "options": [
+      "38.4%",
+      "44.4%",
+      "36.4%",
+      "26.4%"
+    ],
+    "answer": "36.4%",
+    "explanation": "Il a gagné 4 parties sur 11 avec Garen."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Mel (13 games) ?",
+    "options": [
+      "41.2%",
+      "46.2%",
+      "54.2%",
+      "44.2%"
+    ],
+    "answer": "46.2%",
+    "explanation": "Il a gagné 6 parties sur 13 avec Mel."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Lux (18 games) ?",
+    "options": [
+      "63.2%",
+      "68.2%",
+      "78.2%",
+      "72.2%"
+    ],
+    "answer": "72.2%",
+    "explanation": "Il a gagné 13 parties sur 18 avec Lux."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Garen (11 games) ?",
+    "options": [
+      "26.4%",
+      "36.4%",
+      "34.4%",
+      "43.4%"
+    ],
+    "answer": "36.4%",
+    "explanation": "Il a gagné 4 parties sur 11 avec Garen."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Garen (11 games) ?",
+    "options": [
+      "43.4%",
+      "34.4%",
+      "36.4%",
+      "28.4%"
+    ],
+    "answer": "36.4%",
+    "explanation": "Il a gagné 4 parties sur 11 avec Garen."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Seraphine (14 games) ?",
+    "options": [
+      "43.9%",
+      "42.9%",
+      "37.9%",
+      "34.9%"
+    ],
+    "answer": "42.9%",
+    "explanation": "Il a gagné 6 parties sur 14 avec Seraphine."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de MutenRock sur Lux (19 games) ?",
+    "options": [
+      "68.4%",
+      "63.4%",
+      "66.4%",
+      "60.4%"
+    ],
+    "answer": "68.4%",
+    "explanation": "Il a gagné 13 parties sur 19 avec Lux."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Blindess56 sur Renekton (11 games) ?",
+    "options": [
+      "61.6%",
+      "56.6%",
+      "63.6%",
+      "73.6%"
+    ],
+    "answer": "63.6%",
+    "explanation": "Il a gagné 7 parties sur 11 avec Renekton."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de SoRn sur Azir (42 games) ?",
+    "options": [
+      "60.3%",
+      "66.3%",
+      "71.3%",
+      "64.3%"
+    ],
+    "answer": "64.3%",
+    "explanation": "Il a gagné 27 parties sur 42 avec Azir."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de MutenRock sur Annie (22 games) ?",
+    "options": [
+      "48.5%",
+      "55.5%",
+      "45.5%",
+      "40.5%"
+    ],
+    "answer": "45.5%",
+    "explanation": "Il a gagné 10 parties sur 22 avec Annie."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Blindess56 sur Aphelios (13 games) ?",
+    "options": [
+      "62.8%",
+      "57.8%",
+      "49.8%",
+      "53.8%"
+    ],
+    "answer": "53.8%",
+    "explanation": "Il a gagné 7 parties sur 13 avec Aphelios."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Morgana (38 games) ?",
+    "options": [
+      "57.9%",
+      "49.9%",
+      "61.9%",
+      "66.9%"
+    ],
+    "answer": "57.9%",
+    "explanation": "Il a gagné 22 parties sur 38 avec Morgana."
+  },
+  {
+    "type": "radio",
+    "question": "Quel est le winrate de Aligax sur Seraphine (14 games) ?",
+    "options": [
+      "36.9%",
+      "48.9%",
+      "42.9%",
+      "44.9%"
+    ],
+    "answer": "42.9%",
+    "explanation": "Il a gagné 6 parties sur 14 avec Seraphine."
+  }
+]

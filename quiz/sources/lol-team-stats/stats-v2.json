@@ -1,0 +1,72 @@
+[
+    {
+        "question": "Qui a le meilleur winrate global de l'équipe avec 51.8% ?",
+        "options": [
+            "Blindess56",
+            "SoRn",
+            "MutenRock",
+            "Aligax"
+        ],
+        "answer": "Blindess56"
+    },
+    {
+        "question": "Qui a joué le plus grand nombre de parties en ARAM (655 parties) ?",
+        "options": [
+            "Aligax",
+            "gabilone",
+            "MutenRock",
+            "Blindess56"
+        ],
+        "answer": "Aligax"
+    },
+    {
+        "question": "En combinant tous ses comptes (smurfs inclus), qui est le joueur le plus actif avec 1093 parties au total ?",
+        "options": [
+            "MutenRock",
+            "Aligax",
+            "Blindess56",
+            "SoRn"
+        ],
+        "answer": "MutenRock"
+    },
+    {
+        "question": "Qui a le winrate le plus bas de l'équipe (42.3%) sur ses 56 parties jouées ?",
+        "options": [
+            "gabilone",
+            "SoRn",
+            "Aligax",
+            "Blindess56"
+        ],
+        "answer": "gabilone"
+    },
+    {
+        "question": "Qui a joué 376 parties sur la Faille de l'invocateur (SR) et maintient un solide winrate de 51.2% ?",
+        "options": [
+            "SoRn",
+            "Blindess56",
+            "MutenRock",
+            "Aligax"
+        ],
+        "answer": "SoRn"
+    },
+    {
+        "question": "Si l'on cumule ses différents comptes, qui totalise le record de 634 parties sur la Faille de l'invocateur ?",
+        "options": [
+            "MutenRock",
+            "SoRn",
+            "Aligax",
+            "gabilone"
+        ],
+        "answer": "MutenRock"
+    },
+    {
+        "question": "Qui a un profil très équilibré avec presque autant de parties en Faille de l'invocateur (24) qu'en ARAM (28) ?",
+        "options": [
+            "gabilone",
+            "SoRn",
+            "Blindess56",
+            "MutenRock"
+        ],
+        "answer": "gabilone"
+    }
+]

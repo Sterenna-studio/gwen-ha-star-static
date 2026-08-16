@@ -1,0 +1,11 @@
+* text=auto
+*.css text eol=lf
+*.html text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.mjs text eol=lf
+
+# Ces deux sources éditoriales utilisent les doubles espaces Markdown comme sauts de ligne.
+quizzes/gamer-profile-test/CONTENT_V0.md whitespace=-trailing-space
+quizzes/gamer-profile-test/README.md whitespace=-trailing-space

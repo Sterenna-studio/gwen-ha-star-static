@@ -1,0 +1,80 @@
+[
+  {
+    "q": "De quelle faction Lux est-elle issue ?",
+    "options": ["Demacia", "Noxus", "Piltover", "Freljord"],
+    "a": "Demacia",
+    "exp": "Lux est une mage de Demacia, issue d'une famille noble — une position dangereuse dans un royaume anti-magie."
+  },
+  {
+    "q": "Quel est le vrai nom de Twisted Fate ?",
+    "options": ["Tobias Felix", "Malcolm Graves", "Ezreal Bronzebeard", "Gangplank"],
+    "a": "Tobias Felix",
+    "exp": "TF se nomme Tobias Felix, un escroc de Bilgewater."
+  },
+  {
+    "q": "Qui a créé Blitzcrank ?",
+    "options": ["Viktor", "Jayce", "Heimerdinger", "Ekko"],
+    "a": "Viktor",
+    "exp": "Viktor a construit Blitzcrank pour aider les habitants des bas-fonds de Zaun."
+  },
+  {
+    "q": "Quel champion est la sœur de Garen ?",
+    "options": ["Lux", "Vayne", "Fiora", "Leona"],
+    "a": "Lux",
+    "exp": "Lux (Luxanna Crownguard) est bien la petite sœur de Garen !"
+  },
+  {
+    "q": "À quel champion appartient la réplique : 'Dying is overrated.' ?",
+    "options": ["Karthus", "Braum", "Zilean", "Kindred"],
+    "a": "Karthus",
+    "exp": "Cette phrase iconique est celle de Karthus, le mage liche."
+  },
+  {
+    "q": "Quelle ville est déchirée entre les élites de Piltover et les pauvres de Zaun ?",
+    "options": ["Piltover & Zaun", "Noxus", "Bilgewater", "Demacia"],
+    "a": "Piltover & Zaun",
+    "exp": "Piltover et Zaun sont les deux faces d'une même cité."
+  },
+  {
+    "q": "Jinx et Vi sont-elles des sœurs ?",
+    "options": ["Vrai", "Faux"],
+    "a": "Vrai",
+    "exp": "Oui, Jinx (Powder) et Vi sont sœurs."
+  },
+  {
+    "q": "Qui incarne la mort dans la mythologie de Runeterra ?",
+    "options": ["Kindred", "Karthus", "Mordekaiser", "Thresh"],
+    "a": "Kindred",
+    "exp": "Kindred incarne la mort : Agneau guide les âmes et Loup les chasse."
+  },
+  {
+    "q": "Dans quelle région vit Nasus ?",
+    "options": ["Shurima", "Demacia", "Noxus", "Ixtal"],
+    "a": "Shurima",
+    "exp": "Nasus est un gardien transcendé du désert de Shurima."
+  },
+  {
+    "q": "Quel est l'ennemi juré de Nasus ?",
+    "options": ["Renekton", "Azir", "Xerath", "Sivir"],
+    "a": "Renekton",
+    "exp": "Renekton, frère de Nasus, est devenu son ennemi."
+  },
+  {
+    "q": "Que signifie 'Runeterra' ?",
+    "options": ["Terre des runes", "Terre de magie", "Monde des champions", "Faille des anciens"],
+    "a": "Terre des runes",
+    "exp": "Runeterra signifie littéralement « Terre des runes »."
+  },
+  {
+    "q": "Aphelios se bat avec combien d'armes ?",
+    "options": ["5", "3", "2", "7"],
+    "a": "5",
+    "exp": "Aphelios utilise cinq armes lunaires."
+  },
+  {
+    "q": "Quel événement catastrophique Viego a-t-il déclenché ?",
+    "options": ["La Ruination", "La Shattering", "L'Ascension", "L'Épuration"],
+    "a": "La Ruination",
+    "exp": "Viego a déclenché la Ruination en cherchant à ressusciter Isolde."
+  }
+]

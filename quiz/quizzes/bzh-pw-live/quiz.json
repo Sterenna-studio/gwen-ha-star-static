@@ -1,0 +1,12 @@
+{
+  "id": "bzh-pw-live",
+  "title": "BZH PW — Live Data Quizz",
+  "description": "10 questions générées à chaque partie depuis la base joueurs unifiée : vrai/faux, statistiques, champions et lore LoL.",
+  "theme": "Live Data",
+  "date": "2026-08-16",
+  "duration": "4 min",
+  "question_count": 10,
+  "accent": "#0ac8b9",
+  "status": "playable",
+  "order": 20
+}

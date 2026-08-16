@@ -1,0 +1,66 @@
+{
+  "last_sync": "2026-03-12",
+  "source": "https://lab.sterenna.fr/quiz/data/players.json",
+  "players": [
+    {
+      "id": "MutenRock",
+      "accounts": ["MutenRock#BZH", "DrSpig#666", "MutenRonce#BZH"],
+      "total": 1093,
+      "wr": 48.6,
+      "sr": 634,
+      "aram": 337,
+      "top_champs": [
+        { "name": "Zyra", "games": 407, "wr": 44.0, "kda": 1.67 },
+        { "name": "Annie", "games": 22, "wr": 45.5, "kda": 2.53 }
+      ]
+    },
+    {
+      "id": "Aligax",
+      "accounts": ["Aligax#BZH"],
+      "total": 906,
+      "wr": 48.7,
+      "sr": 193,
+      "aram": 655,
+      "top_champs": [
+        { "name": "Morgana", "games": 38, "wr": 57.9, "kda": 3.5 },
+        { "name": "Lux", "games": 18, "wr": 72.2, "kda": 5.01 }
+      ]
+    },
+    {
+      "id": "Blindess56",
+      "accounts": ["Blindess56#2610"],
+      "total": 712,
+      "wr": 51.8,
+      "sr": 120,
+      "aram": 448,
+      "top_champs": [
+        { "name": "Vayne", "games": 28, "wr": 57.1, "kda": 2.18 },
+        { "name": "Renekton", "games": 11, "wr": 63.6, "kda": 3.71 }
+      ]
+    },
+    {
+      "id": "SoRn",
+      "accounts": ["SoRn#1024"],
+      "total": 478,
+      "wr": 51.2,
+      "sr": 376,
+      "aram": 79,
+      "top_champs": [
+        { "name": "Swain", "games": 118, "wr": 51.7, "kda": 2.84 },
+        { "name": "Azir", "games": 42, "wr": 64.3, "kda": 1.82 }
+      ]
+    },
+    {
+      "id": "gabilone",
+      "accounts": ["gabilone#5156"],
+      "total": 56,
+      "wr": 42.3,
+      "sr": 24,
+      "aram": 28,
+      "top_champs": [
+        { "name": "Jax", "games": 82, "wr": 48.8, "kda": 1.35 },
+        { "name": "Anivia", "games": 11, "wr": 54.5, "kda": 2.9 }
+      ]
+    }
+  ]
+}
