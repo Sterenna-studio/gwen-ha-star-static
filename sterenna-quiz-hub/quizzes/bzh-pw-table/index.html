@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 01 : Datadock Stats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #00ff66;
+            --bg-panel: rgba(10, 15, 10, 0.9);
+            --border-col: #00ff66;
+            --text-main: #e0e0e0;
+        }
+
+        body {
+            margin: 0; font-family: 'Rajdhani', sans-serif;
+            background: #020502 url('https://www.transparenttextures.com/patterns/black-scales.png');
+            color: var(--text-main);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+
+        .terminal {
+            background: var(--bg-panel);
+            width: 90%; max-width: 900px;
+            border: 1px solid var(--border-col);
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.2);
+            padding: 2px;
+            position: relative;
+        }
+
+        .term-header {
+            background: var(--border-col); color: #000;
+            padding: 5px 15px; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: bold;
+            display: flex; justify-content: space-between;
+        }
+
+        .term-body { padding: 30px; position: relative; }
+
+        .back-btn { color: var(--neon-green); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; margin-bottom: 20px; display: inline-block; border-bottom: 1px solid transparent; }
+        .back-btn:hover { border-bottom-color: var(--neon-green); }
+
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--neon-green); text-align: center; margin-top: 0; letter-spacing: 2px; text-shadow: 0 0 5px rgba(0,255,102,0.5); }
+
+        .instructions { text-align: center; font-size: 1.1rem; margin-bottom: 30px; color: #aaa; }
+
+        /* The Data Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .data-table th {
+            background: rgba(0, 255, 102, 0.1);
+            color: var(--neon-green);
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid var(--border-col);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #1a2a1a;
+        }
+
+        .data-table tr:hover { background: rgba(0, 255, 102, 0.05); }
+
+        /* Dropdowns for table */
+        .cyber-select {
+            background: #000;
+            color: var(--neon-green);
+            border: 1px dashed var(--border-col);
+            padding: 8px 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            width: 100%;
+            cursor: pointer;
+            outline: none;
+        }
+        .cyber-select:focus { border: 1px solid #fff; box-shadow: 0 0 10px rgba(0,255,102,0.5); }
+
+        .validation-area { text-align: center; }
+
+        .btn-exe {
+            background: transparent;
+            color: var(--neon-green);
+            border: 2px solid var(--neon-green);
+            padding: 12px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem; font-weight: bold;
+            cursor: pointer; transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        .btn-exe:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 15px rgba(0,255,102,0.6); }
+
+        .result-msg {
+            margin-top: 20px; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; display: none; text-align: center;
+        }
+        .success { color: var(--neon-green); text-shadow: 0 0 10px rgba(0,255,102,0.8); }
+        .error { color: #ff3333; text-shadow: 0 0 10px rgba(255,51,51,0.8); }
+
+        /* Status indicators on rows */
+        .status-cell { width: 40px; text-align: center; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <div class="terminal">
+        <div class="term-header">
+            <span>SYS.DATADOCK.EXE</span>
+            <span>SEC_LEVEL: ALPHA</span>
+        </div>
+        <div class="term-body">
+            <a href="../../index.html" class="back-btn">&lt; ABORT & RETURN TO HUB</a>
+
+            <h1>[ RÉTABLISSEMENT DES ARCHIVES ]</h1>
+            <div class="instructions">
+                Une corruption locale a effacé les identifiants (Pseudos) de la base de données.<br>
+                Re-assignez chaque joueur à sa ligne de statistiques correcte.
+            </div>
+
+            <table class="data-table" id="stats-table">
+                <thead>
+                    <tr>
+                        <th class="status-cell">ST</th>
+                        <th>PSEUDO CIBLE</th>
+                        <th>PARTIES TOTALES</th>
+                        <th>WINRATE</th>
+                        <th>GAMES (SR)</th>
+                        <th>GAMES (ARAM)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Injected by JS -->
+                </tbody>
+            </table>
+
+            <div class="validation-area">
+                <button class="btn-exe" onclick="validateTable()">EXECUTER LA COMPARAISON HASH</button>
+                <div id="result-text" class="result-msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Real data
+        const statsData = [
+            { id: 0, player: "MutenRock", total: 1093, wr: "48.6%", sr: 634, aram: 337 },
+            { id: 1, player: "Aligax", total: 906, wr: "48.7%", sr: 193, aram: 655 },
+            { id: 2, player: "Blindess56", total: 712, wr: "51.8%", sr: 120, aram: 448 },
+            { id: 3, player: "SoRn", total: 478, wr: "51.2%", sr: 376, aram: 79 },
+            { id: 4, player: "gabilone", total: 56, wr: "42.3%", sr: 24, aram: 28 }
+        ];
+
+        // Shuffle rows for display
+        function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+        let displayData = shuffle([...statsData]);
+
+        // Get list of players for dropdown
+        const playersList = statsData.map(s => s.player).sort();
+
+        const tbody = document.getElementById('table-body');
+
+        displayData.forEach((row, index) => {
+            let tr = document.createElement('tr');
+
+            let optionsHTML = `<option value="">-- UNDEFINED --</option>`;
+            playersList.forEach(p => {
+                optionsHTML += `<option value="${p}">${p}</option>`;
+            });
+
+            tr.innerHTML = `
+                <td class="status-cell" id="status-${index}">[ ]</td>
+                <td>
+                    <select class="cyber-select" id="select-${index}" data-correct="${row.player}">
+                        ${optionsHTML}
+                    </select>
+                </td>
+                <td style="color: #ccc;">${row.total}</td>
+                <td style="color: var(--neon-green); font-weight: bold;">${row.wr}</td>
+                <td>${row.sr}</td>
+                <td>${row.aram}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        function validateTable() {
+            let correctCount = 0;
+
+            displayData.forEach((row, index) => {
+                const select = document.getElementById(`select-${index}`);
+                const status = document.getElementById(`status-${index}`);
+
+                if(select.value === select.getAttribute('data-correct')) {
+                    status.innerHTML = `<span style="color: #00ff66;">[OK]</span>`;
+                    correctCount++;
+                } else {
+                    status.innerHTML = `<span style="color: #ff3333;">[ERR]</span>`;
+                }
+            });
+
+            const resDiv = document.getElementById('result-text');
+            resDiv.style.display = 'block';
+
+            if(correctCount === displayData.length) {
+                resDiv.className = "result-msg success";
+                resDiv.innerHTML = "SYSTÈME RESTAURÉ À 100%. INTÉGRITÉ VÉRIFIÉE.";
+
+                // Lock inputs
+                document.querySelectorAll('.cyber-select').forEach(s => {
+                    s.disabled = true;
+                    s.style.borderColor = '#00ff66';
+                });
+            } else {
+                resDiv.className = "result-msg error";
+                resDiv.innerHTML = `ANOMALIE DÉTECTÉE. MATCHING RÉUSSI : ${correctCount} / ${displayData.length}`;
+            }
+        }
+    </script>
+</body>
+</html>

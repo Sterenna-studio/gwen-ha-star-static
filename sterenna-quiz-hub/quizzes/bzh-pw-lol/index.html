@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BZH PW - Mega QUIZ - Connais tu la team ?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* LoL Hextech Theme */
+        :root {
+            --hex-bg: #091428;
+            --hex-panel: #0a1428;
+            --hex-gold: #c8aa6e;
+            --hex-gold-hover: #f0e6d2;
+            --hex-blue: #0ac8b9;
+            --hex-dark-gold: #785a28;
+            --text-main: #cdbe91;
+            --text-light: #f0e6d2;
+            --border: #463714;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: radial-gradient(circle at center, #0e1e38 0%, var(--hex-bg) 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image:
+                linear-gradient(rgba(10, 20, 40, 0.9), rgba(10, 20, 40, 0.9)),
+                url('https://images.contentstack.io/v3/assets/blt731acb42bb3d1659/bltcfa4652c8d383f56/5e6b76fb08b1f868019e9179/Summoners_Rift_1.jpg'); /* Ambient BG */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .hud-container {
+            background: var(--hex-panel);
+            width: 100%;
+            max-width: 800px;
+            border: 2px solid var(--hex-dark-gold);
+            box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.8);
+            position: relative;
+            padding: 40px;
+        }
+
+        /* Decorative Corners */
+        .hud-container::before, .hud-container::after { content: ''; position: absolute; width: 30px; height: 30px; border: 2px solid var(--hex-gold); }
+        .hud-container::before { top: -5px; left: -5px; border-right: none; border-bottom: none; }
+        .hud-container::after { bottom: -5px; right: -5px; border-left: none; border-top: none; }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            text-align: center;
+            color: var(--hex-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0;
+            text-shadow: 0 0 10px rgba(200, 170, 110, 0.3);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .btn-hex {
+            background: linear-gradient(180deg, #1e282d 0%, #111a21 100%);
+            border: 1px solid var(--hex-dark-gold);
+            color: var(--text-light);
+            padding: 15px 30px;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            display: block;
+            width: 100%;
+            margin-top: 30px;
+        }
+        .btn-hex:hover:not(:disabled) { border-color: var(--hex-gold); color: var(--hex-gold-hover); box-shadow: 0 0 15px rgba(200, 170, 110, 0.4); }
+        .btn-hex:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .progress-bar { width: 100%; height: 4px; background: var(--border); margin-bottom: 30px; position: relative; }
+        .progress-fill { height: 100%; background: var(--hex-blue); width: 0%; box-shadow: 0 0 10px var(--hex-blue); transition: width 0.3s; }
+
+        .q-title { font-size: 1.3em; font-weight: 500; color: var(--text-light); margin-bottom: 25px; line-height: 1.4; }
+
+        /* Options */
+        .options-grid { display: flex; flex-direction: column; gap: 15px; }
+        .option-btn {
+            background: rgba(30, 40, 45, 0.6);
+            border: 1px solid #2a3439;
+            color: var(--text-main);
+            padding: 15px 20px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .option-btn:hover { background: rgba(40, 50, 55, 0.8); border-left: 3px solid var(--hex-dark-gold); color: var(--text-light); }
+        .option-btn.selected { background: rgba(10, 200, 185, 0.1); border: 1px solid var(--hex-blue); border-left: 3px solid var(--hex-blue); color: var(--hex-blue); text-shadow: 0 0 5px rgba(10, 200, 185, 0.5); }
+
+        /* Match specific */
+        .match-row { display: flex; justify-content: space-between; align-items: center; background: rgba(30, 40, 45, 0.6); padding: 12px 20px; border: 1px solid #2a3439; margin-bottom: 10px; }
+        .match-select { background: #0a1428; border: 1px solid var(--hex-dark-gold); color: var(--text-light); padding: 8px; font-family: 'Roboto', sans-serif; outline: none; }
+
+        .explanation { margin-top: 25px; padding: 15px; background: rgba(0, 0, 0, 0.3); border-left: 4px solid var(--hex-dark-gold); display: none; }
+        .explanation.success { border-left-color: #27ae60; color: #2ecc71; }
+        .explanation.error { border-left-color: #c0392b; color: #e74c3c; }
+
+        #result-screen { text-align: center; }
+        .score { font-family: 'Cinzel', serif; font-size: 4rem; color: var(--hex-gold); margin: 20px 0; text-shadow: 0 0 20px rgba(200, 170, 110, 0.5); }
+
+        .back-link { position: absolute; top: 15px; left: 15px; color: var(--text-main); text-decoration: none; font-size: 0.9em; font-family: 'Cinzel', serif; border-bottom: 1px solid transparent; transition: 0.2s; }
+        .back-link:hover { color: var(--hex-gold); border-bottom-color: var(--hex-gold); }
+    </style>
+</head>
+<body>
+    <div class="hud-container">
+        <a href="../../index.html" class="back-link">← Retour au Hub</a>
+        <h1>BZH PW - Mega Quiz</h1>
+
+        <div id="start-screen" style="text-align: center;">
+            <p style="margin-bottom: 30px; font-size: 1.1rem; line-height: 1.6;">Invocateur, testez vos connaissances sur l'équipe.<br>10 questions seront tirées au sort parmi 200 mystères.</p>
+            <button class="btn-hex" onclick="startQuiz()">Lancer la partie</button>
+        </div>
+
+        <div id="quiz-screen" style="display: none;">
+            <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+            <div id="q-counter" style="color: var(--hex-dark-gold); font-family: 'Cinzel', serif; margin-bottom: 10px;">Question 1/10</div>
+            <div id="question-container"></div>
+            <button class="btn-hex" id="next-btn" onclick="checkAnswer()" disabled>Verrouiller la réponse</button>
+        </div>
+
+        <div id="result-screen" style="display: none;">
+            <h2 style="font-family: 'Cinzel', serif; color: var(--text-light); font-size: 2rem; margin-bottom: 0;">Résultat Final</h2>
+            <div class="score" id="final-score">0/10</div>
+            <div id="error-rate" style="margin-bottom: 30px; color: #e74c3c;"></div>
+            <p>Seuls les vrais connaissent l'intégralité des faiblesses de leurs alliés.</p>
+            <button class="btn-hex" onclick="location.reload()">Rejouer</button>
+        </div>
+    </div>
+
+    <script>
+        let questionPool = [];
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+
+        fetch('questions.json')
+            .then(res => res.json())
+            .then(data => { questionPool = data; });
+
+        function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+
+        function startQuiz() {
+            if(questionPool.length === 0) { alert("Le chargement des questions est en cours, réessayez dans un instant."); return; }
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+
+            currentQuestions = shuffle([...questionPool]).slice(0, 10);
+            currentIndex = 0;
+            score = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const container = document.getElementById('question-container');
+            const q = currentQuestions[currentIndex];
+            const qNum = currentIndex + 1;
+
+            document.getElementById('q-counter').innerText = `Question ${qNum} sur 10`;
+            document.getElementById('progress').style.width = `${((qNum - 1) / 10) * 100}%`;
+
+            const btn = document.getElementById('next-btn');
+            btn.innerText = "Verrouiller la réponse";
+            btn.onclick = checkAnswer;
+            btn.disabled = true;
+
+            let html = `<div class="q-title">${q.question}</div>`;
+
+            if (q.type === 'radio') {
+                html += `<div class="options-grid">`;
+                q.options.forEach(opt => {
+                    html += `<button class="option-btn" onclick="selectRadio(this, '${opt.replace(/'/g, "\'")}')">${opt}</button>`;
+                });
+                html += `</div>`;
+            } else if (q.type === 'match') {
+                const rightOptions = shuffle(q.pairs.map(p => p.right));
+                q.pairs.forEach((pair, idx) => {
+                    html += `<div class="match-row">
+                        <span style="font-weight: 500;">${pair.left}</span>
+                        <select class="match-select" onchange="checkMatchComplete()" id="match-${idx}">
+                            <option value="">-- Assigner --</option>`;
+                    rightOptions.forEach(opt => { html += `<option value="${opt.replace(/'/g, "\'")}">${opt}</option>`; });
+                    html += `</select></div>`;
+                });
+            }
+
+            html += `<div class="explanation" id="explanation"></div>`;
+            container.innerHTML = html;
+        }
+
+        function selectRadio(btn, value) {
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            document.getElementById('next-btn').disabled = false;
+            btn.dataset.value = value;
+        }
+
+        function checkMatchComplete() {
+            let allFilled = true;
+            document.querySelectorAll('.match-select').forEach(s => { if(s.value === "") allFilled = false; });
+            document.getElementById('next-btn').disabled = !allFilled;
+        }
+
+        function checkAnswer() {
+            const q = currentQuestions[currentIndex];
+            let isCorrect = false;
+
+            if (q.type === 'radio') {
+                const selected = document.querySelector('.option-btn.selected');
+                isCorrect = (selected.dataset.value === q.answer);
+            } else if (q.type === 'match') {
+                isCorrect = true;
+                q.pairs.forEach((pair, idx) => {
+                    if (document.getElementById(`match-${idx}`).value !== pair.right) isCorrect = false;
+                });
+            }
+
+            const expDiv = document.getElementById('explanation');
+            if (isCorrect) {
+                score++;
+                expDiv.innerHTML = `<strong>Victoire !</strong> ${q.explanation}`;
+                expDiv.className = 'explanation success';
+            } else {
+                expDiv.innerHTML = `<strong>Échec.</strong> La réponse reste scellée dans les archives.`;
+                expDiv.className = 'explanation error';
+            }
+            expDiv.style.display = 'block';
+
+            if(q.type === 'radio') {
+                document.querySelectorAll('.option-btn').forEach(b => { b.onclick = null; b.style.cursor = 'default'; });
+            } else {
+                document.querySelectorAll('.match-select').forEach(s => s.disabled = true);
+            }
+
+            const btn = document.getElementById('next-btn');
+            btn.innerText = "Continuer";
+            btn.onclick = goNext;
+        }
+
+        function goNext() {
+            currentIndex++;
+            if (currentIndex < currentQuestions.length) showQuestion();
+            else showResult();
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            document.getElementById('final-score').innerText = `${score}/10`;
+            document.getElementById('error-rate').innerText = `Taux d'erreur : ${((10 - score) / 10) * 100}%`;
+            document.getElementById('progress').style.width = '100%';
+        }
+    </script>
+</body>
+</html>
