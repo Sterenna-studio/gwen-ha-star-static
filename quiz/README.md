@@ -2,9 +2,17 @@
 
 Sous-projet autonome regroupé dans `gwen-ha-star-static/quiz`. Il réunit le hub, les modules jouables, leurs données sources et les outils qui régénèrent le catalogue.
 
+## Emplacement canonique
+
+- **URL publique unique** : `https://nitro.sterenna.fr/quiz/`
+- **Dossier du dépôt** : `gwen-ha-star-static/quiz/`
+- **Dossier local de référence** : `C:\DEV\repos\gwen-ha-star-static\quiz`
+
+Tous les nouveaux quizz, leurs données, assets, scripts et documentations doivent être ajoutés sous ce dossier. Les anciens emplacements (`/quizz/`, `lab.sterenna.fr/quiz/` ou dépôts/copies de migration) ne sont plus des destinations de publication.
+
 ## Modules
 
-- **Carré ou Rond ?** : test de profil gamer, 30 questions et 5 axes équilibrés.
+- **Carré ou Rond ?** : test de profil gamer, avec sa V0.1 jouable et les données de migration V0.2.
 - **Live Data Quizz** : partie LoL générée depuis `data/players.json` et `data/questions-static.json`.
 - **Mega Quizz LoL** : 10 questions tirées d'un pool consolidé de 216 entrées.
 - **Datadock Stats** : association des joueurs à leurs statistiques, alimentée par la même base joueurs.
@@ -33,17 +41,24 @@ Servez ensuite la racine de Gwen Ha Star avec n'importe quel serveur HTTP statiq
 python -m http.server 8080
 ```
 
+En développement local, le hub est alors accessible sous `/quiz/`. En production, ce même dossier est publié sous `https://nitro.sterenna.fr/quiz/`.
+
 ## Ajouter un quizz
 
-1. Créer `quizzes/mon-quizz/index.html`.
-2. Ajouter `quizzes/mon-quizz/quiz.json` avec les champs `id`, `title`, `description`, `theme`, `date`, `order` et `status`.
-3. Lancer `npm --prefix quiz run build:manifest` depuis la racine du dépôt.
-4. Lancer `npm --prefix quiz run check` avant le commit.
+1. Créer `quiz/quizzes/mon-quizz/index.html` depuis la racine du dépôt.
+2. Ajouter `quiz/quizzes/mon-quizz/quiz.json` avec les champs `id`, `title`, `description`, `theme`, `date`, `order` et `status`.
+3. Conserver les données et assets spécifiques dans `quiz/quizzes/mon-quizz/` ou, pour les données réellement partagées, dans `quiz/data/`.
+4. Lancer `npm --prefix quiz run build:manifest` depuis la racine du dépôt.
+5. Lancer `npm --prefix quiz run check` avant le commit.
 
 Les données éditoriales doivent rester hors du HTML quand elles sont volumineuses ou partagées. Les fichiers générés restent versionnés pour permettre un déploiement statique simple.
 
 ## Déploiement
 
-Gwen Ha Star publie ce sous-projet à l'adresse `/quiz/`. Tous les chemins restent relatifs à ce dossier afin que le hub et les modules soient servis par le même déploiement statique.
+Le workflow principal de Gwen Ha Star déploie le dossier `quiz/` avec le reste du site vers `~/nitro/quiz/`. L'adresse publique canonique est donc :
+
+`https://nitro.sterenna.fr/quiz/`
+
+Les chemins internes restent relatifs à `quiz/` afin que le hub et les modules fonctionnent également en développement local. Aucun second déploiement des quizz n'est à maintenir ailleurs.
 
 Voir [docs/MIGRATION.md](docs/MIGRATION.md) pour la provenance et les décisions de consolidation.
