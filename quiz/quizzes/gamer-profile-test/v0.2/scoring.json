@@ -1,0 +1,23 @@
+{
+  "primary_unit": "round_points",
+  "answer_points": { "a": 0, "b": 1, "c": 2 },
+  "answer_rule": "A = 0 point Rond, B = 1, C = 2.",
+  "compatibility_rule": "Pour les 30 questions V0.1 existantes, round_points = 2 - carre_points.",
+  "base_question_count": 35,
+  "base_max_points": 70,
+  "context_bonus_max_points": 2,
+  "effective_max_points": 72,
+  "global_formula": "sum(round_points for selected answers) + applicable_context_bonuses",
+  "axis_formula": "sum(round_points on axis) / (questions_in_axis * 2) * 100",
+  "square_percent_formula": "100 - round_percent",
+  "result_intervals": [
+    { "min": 0, "max": 14, "level": "très Carré" },
+    { "min": 15, "max": 28, "level": "Carré" },
+    { "min": 29, "max": 42, "level": "Rond-Carré" },
+    { "min": 43, "max": 56, "level": "Rond" },
+    { "min": 57, "max": 72, "level": "très Rond" }
+  ],
+  "display_template": "{name}, vous avez {points} points : vous êtes {level}.",
+  "bonus_policy": "Les bonus contextuels sont automatiques lorsque leur condition de profil et/ou de réponse est remplie. Ils doivent être détaillés dans le résultat.",
+  "result_breakdown": ["base_points", "context_bonus_points", "applied_bonus_labels", "total_points", "axis_percentages"]
+}
