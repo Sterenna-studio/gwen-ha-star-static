@@ -166,7 +166,7 @@ gwen-ha-star-static/
 | `/docs/space-background-ships.md` | Technique | Guide vaisseaux, éléments, presets et agent IA |
 | `/TCG/` | Connecté | App TCG, selon déploiement actif |
 | `/jukebox/` | Public / intégré | Lecteur musical et Chronicles FM |
-| `https://lab.sterenna.fr/quiz/` | Public / externe | Hub Quizz, maintenu dans le dépôt dédié `Sterenna-studio/quizz` |
+| `https://lab.sterenna.fr/quiz/` | Public / externe | Hub Quizz, maintenu dans le dépôt local dédié `C:\DEV\repos\quizz` |
 | `/shared/` | Technique | Modules communs Nitro |
 | `/versions/themes/` | Archive | Ancienne version thème UI |
 | `/versions/background-presets/` | Archive | Ancienne version avec presets publics du fond spatial |
