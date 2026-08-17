@@ -45,6 +45,9 @@ body {
 }
 
 .logo span { margin-left: 0.45rem; color: var(--primary); }
+.navbar-meta { display: flex; align-items: center; gap: 1rem; }
+.admin-link { color: var(--accent); font-size: .86rem; font-weight: 800; text-decoration: none; }
+.admin-link:hover { text-decoration: underline; }
 .module-count { color: var(--muted); font-size: 0.9rem; }
 
 .container {

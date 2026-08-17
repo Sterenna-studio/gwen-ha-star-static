@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "default_version": "0.1",
+  "versions": [
+    {
+      "id": "0.1",
+      "label": "V0.1 · originale",
+      "description": "30 questions variées, score progressif et bonus animaux.",
+      "question_count": 30,
+      "duration": "≈ 5 minutes",
+      "recommended": true,
+      "profile_scale": "carre_percent"
+    },
+    {
+      "id": "0.2",
+      "label": "V0.2 · étendue",
+      "description": "35 questions, dont cinq situations supplémentaires. Conservée pour comparer les résultats.",
+      "question_count": 35,
+      "duration": "≈ 6 minutes",
+      "recommended": false,
+      "profile_scale": "round_points"
+    }
+  ]
+}

@@ -19,6 +19,8 @@ Tous les nouveaux quizz, leurs données, assets, scripts et documentations doive
 
 Le dossier vide historique `bzh-pw-lol-2` a été retiré. Chaque module publiable possède désormais un fichier `quiz.json`; `data/quizzes.json` est généré automatiquement à partir de ces métadonnées. Les modules qui utilisent une donnée partagée la déclarent dans `data_sources` : le hub peut ainsi regrouper automatiquement les quiz liés à `data/players.json`.
 
+Le test Gamer Profile garde la V0.1 comme choix recommandé et rend la V0.2 étendue jouable depuis le même écran. Sa page finale produit une carte PNG partageable. Le pseudo et les scores sont enregistrés dans Supabase pour les statistiques globales, sans âge exact, genre ni liste d’animaux. Le tableau de bord `/quiz/admin/` est réservé aux superusers.
+
 ## Développement
 
 Le projet ne nécessite aucune dépendance tierce. Depuis la racine de Gwen Ha Star :

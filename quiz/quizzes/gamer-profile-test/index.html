@@ -6,14 +6,14 @@
   <meta name="description" content="Carré ou Rond ? Un test humoristique sur tes habitudes de gamer et ton chaos numérique.">
   <title>Carré ou Rond ? — Profil Gamer</title>
   <link rel="stylesheet" href="../../css/accessibility.css?v=20260816-v1">
-  <link rel="stylesheet" href="styles.css?v=20260816-v2">
-  <link rel="stylesheet" href="score.css?v=20260817-v1">
+  <link rel="stylesheet" href="styles.css?v=20260817-v3">
+  <link rel="stylesheet" href="score.css?v=20260817-v2">
 </head>
 <body>
   <div class="page-shell">
     <header class="topbar">
       <a class="back-link" href="../../index.html" aria-label="Retour à la liste des quizz">← Tous les quizz</a>
-      <span class="brand">STERENNA · PLAYER LAB</span>
+      <span class="topbar-links"><a class="admin-link" href="../../admin/">Stats admin</a><span class="brand">STERENNA · PLAYER LAB</span></span>
     </header>
 
     <main class="test-card">
@@ -21,6 +21,11 @@
         <p class="eyebrow">// TEST DE PROFIL GAMER</p>
         <h1 id="intro-title">Carré <span>ou</span> Rond&nbsp;?</h1>
         <p class="lead">Trente situations pour mesurer ton organisation, ton sens de l’anticipation et ton talent pour survivre dans un chaos parfaitement fonctionnel.</p>
+        <div class="version-picker">
+          <label for="version-select">Version du test</label>
+          <select id="version-select" disabled><option>Chargement…</option></select>
+          <p id="version-description">Choisis la version avant de commencer.</p>
+        </div>
         <div class="intro-facts" aria-label="Informations sur le test">
           <span>30 questions</span>
           <span>5 axes</span>
@@ -65,6 +70,7 @@
         <p class="result-tagline" id="result-tagline"></p>
         <p class="result-description" id="result-description"></p>
         <blockquote id="result-quote"></blockquote>
+        <p class="result-insight" id="result-insight"></p>
         <div class="score-balance" aria-label="Répartition Carré et Rond">
           <span><strong id="balance-carre">0 %</strong> Carré</span>
           <span><strong id="balance-rond">0 %</strong> Rond</span>
@@ -73,11 +79,16 @@
 
         <section class="axis-section" aria-labelledby="axis-title">
           <h3 id="axis-title">Ton tableau de bord</h3>
+          <div class="radar-card">
+            <canvas id="result-radar" aria-label="Graphe radar des cinq statistiques du profil"></canvas>
+          </div>
           <div class="axis-grid" id="axis-grid"></div>
         </section>
 
+        <p class="save-status" id="save-status" role="status"></p>
         <div class="result-actions">
-          <button class="primary-button" id="share-button" type="button">Partager mon profil</button>
+          <button class="primary-button" id="share-button" type="button">Partager l’image</button>
+          <button class="secondary-button" id="download-button" type="button">Télécharger le PNG</button>
           <button class="secondary-button" id="restart-button" type="button">Recommencer</button>
         </div>
         <p class="share-status" id="share-status" role="status"></p>
@@ -89,6 +100,6 @@
   </div>
 
   <noscript>Ce quizz nécessite JavaScript pour calculer ton profil.</noscript>
-  <script type="module" src="app.js?v=20260817-v1"></script>
+  <script type="module" src="app.js?v=20260817-v2"></script>
 </body>
 </html>

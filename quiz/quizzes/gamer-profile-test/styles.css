@@ -27,7 +27,7 @@ body {
     var(--bg);
 }
 
-button, input { font: inherit; }
+button, input, select { font: inherit; }
 button { color: inherit; }
 
 .page-shell {
@@ -51,6 +51,9 @@ button { color: inherit; }
 .back-link { color: var(--round); text-decoration: none; }
 .back-link:hover { text-decoration: underline; }
 .brand { color: var(--muted); text-align: right; }
+.topbar-links { display: flex; align-items: center; gap: 16px; }
+.admin-link { color: var(--square); text-decoration: none; }
+.admin-link:hover { text-decoration: underline; }
 
 .test-card {
   border: 1px solid var(--line);
@@ -103,6 +106,22 @@ h1 span {
   gap: 8px;
   margin-bottom: 24px;
 }
+
+.version-picker {
+  display: grid;
+  gap: 8px;
+  max-width: 610px;
+  margin: 0 auto 22px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel-soft);
+  text-align: left;
+}
+
+.version-picker label { color: var(--square); font-size: .82rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.version-picker select { min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; color: var(--text); background: #0c0f18; }
+.version-picker p { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.5; }
 
 .intro-facts span {
   padding: 7px 11px;
@@ -255,6 +274,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .result-screen h2 { margin-bottom: 10px; font-size: clamp(2rem, 6vw, 3.8rem); line-height: 1; }
 .result-tagline { color: var(--square); font-size: 1.05rem; font-weight: 800; }
 .result-description { max-width: 650px; margin: 0 auto 18px; color: #d7dbea; line-height: 1.65; }
+.result-insight { max-width: 720px; margin: 0 auto 24px; padding: 17px 19px; border-left: 4px solid var(--round); border-radius: 8px; color: var(--text); background: rgba(var(--round-rgb), .08); font-size: 1.04rem; font-weight: 700; line-height: 1.6; text-align: left; }
 blockquote { max-width: 560px; margin: 0 auto 24px; color: var(--muted); font-style: italic; }
 
 .score-balance {
@@ -271,6 +291,8 @@ blockquote { max-width: 560px; margin: 0 auto 24px; color: var(--muted); font-st
 
 .axis-section { margin-top: 38px; text-align: left; }
 .axis-section h3 { font-size: 1.1rem; }
+.radar-card { margin: 0 0 16px; padding: 10px; border: 1px solid var(--line); border-radius: 16px; background: #0c0f18; }
+.radar-card canvas { display: block; width: 100%; height: auto; }
 .axis-grid { display: grid; gap: 10px; }
 
 .axis-card {
@@ -289,6 +311,9 @@ blockquote { max-width: 560px; margin: 0 auto 24px; color: var(--muted); font-st
 
 .result-actions { justify-content: center; margin-top: 28px; }
 .share-status { min-height: 1.4em; margin: 14px 0 0; color: var(--round); font-size: 0.82rem; }
+.save-status { min-height: 1.5em; margin: 20px 0 0; color: var(--muted); font-size: .84rem; }
+.save-status[data-state="saved"] { color: var(--round); }
+.save-status[data-state="error"] { color: var(--danger); }
 .share-link { width: 100%; margin-top: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--text); background: #080a10; }
 
 footer { padding: 18px 8px 0; color: var(--muted); font-size: 0.72rem; text-align: center; }
@@ -302,6 +327,7 @@ noscript { display: block; margin: 20px; color: var(--danger); text-align: cente
 
 @media (max-width: 520px) {
   .brand { display: none; }
+  .topbar-links { gap: 8px; }
   .question-actions, .result-actions { flex-direction: column-reverse; }
   .question-actions button, .result-actions button { width: 100%; }
   .score-balance { gap: 15px; }

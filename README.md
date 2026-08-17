@@ -168,6 +168,7 @@ gwen-ha-star-static/
 | `/TCG/` | Connecté | App TCG, selon déploiement actif |
 | `/jukebox/` | Public / intégré | Lecteur musical et Chronicles FM |
 | `/quiz/` | Public / intégré | Hub Quizz et ses données, regroupés dans `quiz/` |
+| `/quiz/admin/` | Superuser | Statistiques agrégées des résultats du Gamer Profile Test |
 | `/shared/` | Technique | Modules communs Nitro |
 | `/versions/themes/` | Archive | Ancienne version thème UI |
 | `/versions/background-presets/` | Archive | Ancienne version avec presets publics du fond spatial |
