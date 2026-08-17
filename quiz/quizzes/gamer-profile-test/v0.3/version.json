@@ -1,0 +1,15 @@
+{
+  "id": "0.3",
+  "label": "V0.3 · quatre nuances",
+  "status": "data_ready",
+  "description": "40 questions équilibrées, quatre réponses par question et barème 0 / 0,5 / 1 / 2 points Rond.",
+  "question_count": 40,
+  "questions_per_axis": 8,
+  "answer_count_per_question": 4,
+  "duration": "≈ 7 minutes",
+  "profile_scale": "round_points",
+  "recommended": false,
+  "inherits": ["0.1", "0.2"],
+  "ui_integration": "pending",
+  "note": "Les données sont prêtes et validables sans remplacer les versions jouables existantes."
+}
