@@ -1,0 +1,20 @@
+{
+  "schema_version": 3,
+  "primary_unit": "round_points",
+  "answer_scale": [0, 0.5, 1, 2],
+  "answer_rule": "En général : 0 = très Carré, 0.5 = plutôt Carré, 1 = intermédiaire/pragmatique, 2 = très Rond.",
+  "question_count": 40,
+  "questions_per_axis": 8,
+  "base_max_points": 80,
+  "context_bonus_max_points": 2,
+  "effective_max_points": 82,
+  "global_formula": "sum(round_points for selected answers) + applicable_context_bonuses",
+  "axis_formula": "sum(round_points on axis) / (questions_in_axis * 2) * 100",
+  "square_percent_formula": "100 - round_percent",
+  "answer_order": "randomized",
+  "notes": [
+    "Le palier 0.5 ajoute de la nuance du côté Carré sans créer un simple pas régulier de 0.5 point.",
+    "Les cinq axes sont équilibrés à huit questions chacun afin que le score brut ne surpondère aucun axe.",
+    "Les bonus animaux V0.2 restent applicables et sont séparés du score de base dans le résultat."
+  ]
+}

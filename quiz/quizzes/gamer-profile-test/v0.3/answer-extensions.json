@@ -1,0 +1,146 @@
+{
+  "schema_version": 3,
+  "strategy": "Ajouter une réponse plutôt Carrée à 0,5 point Rond sans modifier les trois réponses historiques.",
+  "extensions": [
+    {
+      "question_id": 1,
+      "answer": { "id": "d", "behavior": "Les catégories principales sont rangées, mais je garde une zone fourre-tout pour ce que je viens de ramasser.", "quote": "« Le coffre est propre. Mon inventaire de terrain, un peu moins. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 2,
+      "answer": { "id": "d", "behavior": "La manette est chargée et je prends le câble habituel, sans prévoir tout un kit de secours.", "quote": "« J’ai la manette et son câble, ça devrait largement suffire. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 3,
+      "answer": { "id": "d", "behavior": "Je nettoie les ventilateurs de temps en temps, avant que la poussière ne devienne vraiment visible.", "quote": "« Ce n’est pas au calendrier, mais je ne laisse pas non plus pousser une moquette dedans. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 4,
+      "answer": { "id": "d", "behavior": "Le bureau reste globalement propre, avec un petit coin temporaire pour les fichiers en cours.", "quote": "« Tout est rangé… sauf ces quatre trucs, je m’en occupe après. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 5,
+      "answer": { "id": "d", "behavior": "Mes bibliothèques principales ont une logique claire, même s’il existe quelques installations historiques ailleurs.", "quote": "« Le gros est bien rangé. Ce vieux SteamLibrary, on n’en parle pas. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 6,
+      "answer": { "id": "d", "behavior": "Je garde le même pseudo partout dès que possible, avec une variante minimale quand il est déjà pris.", "quote": "« Même pseudo ; au pire j’ajoute un petit suffixe et on passe à autre chose. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 7,
+      "answer": { "id": "d", "behavior": "La connexion est normalement rapide, même si je dois parfois retrouver mon téléphone ou confirmer un appareil.", "quote": "« Le mot de passe est bon. Maintenant, où est mon téléphone pour le 2FA ? »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 8,
+      "answer": { "id": "d", "behavior": "Les comptes importants ont des mots de passe uniques et bien gérés ; les petits comptes sont un peu moins disciplinés.", "quote": "« Banque, mail, Steam : carrés. Le vieux forum de 2014… moins. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 9,
+      "answer": { "id": "d", "behavior": "Les câbles sont séparés par grandes familles dans quelques boîtes ou pochettes, sans aller jusqu’aux étiquettes.", "quote": "« USB ici, vidéo là. Après, dans la boîte USB, c’est chacun pour soi. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 10,
+      "answer": { "id": "d", "behavior": "Les manettes ont une place habituelle et je les recharge généralement quand j’y pense après la session.", "quote": "« Elle est à côté du dock. Bon… autant la poser dessus. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 11,
+      "answer": { "id": "d", "behavior": "J’ai presque toujours un câble ou une solution de recharge à portée, même sans batterie de secours dédiée.", "quote": "« Pas de piles de rechange, mais j’ai un câble assez long. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 12,
+      "answer": { "id": "d", "behavior": "Le cloud s’occupe du quotidien et je fais une copie supplémentaire pour les sauvegardes vraiment importantes.", "quote": "« Celle de 300 heures, oui, j’en ai une copie ailleurs. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 13,
+      "answer": { "id": "d", "behavior": "Je laisse les téléchargements récents s’accumuler un peu, puis je fais un tri avant que le dossier ne devienne pénible à utiliser.", "quote": "« Je le retrouve encore sans recherche : on n’a pas dépassé le seuil critique. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 14,
+      "answer": { "id": "d", "behavior": "Je range ou renomme les installateurs que je veux conserver et je supprime les autres après usage.", "quote": "« Celui-là mérite un nom propre. Le reste peut partir après l’installation. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 15,
+      "answer": { "id": "d", "behavior": "Je laisse passer le moment gênant, mais je fais généralement la mise à jour dans les jours qui suivent.", "quote": "« Pas pendant la partie. Ce soir en éteignant, oui. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 16,
+      "answer": { "id": "d", "behavior": "Je vérifie le jeu un peu avant la soirée, sans forcément le lancer plusieurs heures à l’avance.", "quote": "« Il est 20 h 30, je regarde juste s’il y a une mise à jour. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 17,
+      "answer": { "id": "d", "behavior": "Mon casque et mon micro sont configurés ; je fais juste un test rapide si j’ai changé de périphérique récemment.", "quote": "« Test micro une seconde… parfait, on peut lancer. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 18,
+      "answer": { "id": "d", "behavior": "Le bureau est fonctionnel et plutôt dégagé, même si quelques objets permanents vivent autour du clavier.", "quote": "« Il y a de la vie, mais j’ai encore toute ma zone de souris. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 19,
+      "answer": { "id": "d", "behavior": "La boisson reste dans une zone stable et dégagée, à portée mais pas collée au clavier.", "quote": "« Elle est à côté, mais il faudrait vraiment un mouvement très créatif pour la renverser. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 20,
+      "answer": { "id": "d", "behavior": "Je peux manger devant le PC, mais l’assiette reste sur le côté et je nettoie quand il y a réellement des miettes.", "quote": "« Je mange là, pas directement au-dessus du clavier. On garde un minimum de civilisation. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 21,
+      "answer": { "id": "d", "behavior": "Les câbles sont regroupés et suivent globalement le même chemin, sans cable-management millimétré.", "quote": "« Ce n’est pas une pub de setup, mais je peux retirer l’écran sans tout arracher. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 22,
+      "answer": { "id": "d", "behavior": "Je commence à surveiller sérieusement l’espace libre autour de 80–85 % et je nettoie avant l’urgence.", "quote": "« Il reste assez de place, mais je vais quand même faire le ménage ce week-end. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 23,
+      "answer": { "id": "d", "behavior": "Je passe par la désinstallation normale et je supprime les vieux mods ou dossiers résiduels seulement quand ils sont évidents.", "quote": "« Le launcher désinstalle ; moi je vérifie juste qu’il n’a pas laissé 20 Go derrière. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 24,
+      "answer": { "id": "d", "behavior": "J’utilise un gestionnaire de mods et je garde une base saine, même si je teste parfois des choses sans préparer un plan de retour parfait.", "quote": "« J’ai le mod manager. Pour les trois nouveautés de ce soir… on verra. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 25,
+      "answer": { "id": "d", "behavior": "Je fais une vérification rapide des températures, ventilateurs ou processus avant de décider si le bruit mérite plus d’attention.", "quote": "« Les températures sont normales. Je garde juste une oreille dessus. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 26,
+      "answer": { "id": "d", "behavior": "Je conserve surtout les boîtes du matériel actuel et les petits accessoires difficiles à remplacer, puis je fais du tri avec le temps.", "quote": "« La boîte du GPU actuel, oui. Celle de 2016 peut enfin partir. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 27,
+      "answer": { "id": "d", "behavior": "Le démarrage reste raisonnablement propre et je retire les logiciels inutiles quand j’en remarque un de trop.", "quote": "« Pourquoi Teams démarre encore ? Bon, celui-là dégage. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 28,
+      "answer": { "id": "d", "behavior": "J’utilise favoris ou liste de lecture pour ce que je veux garder, tout en laissant quelques onglets temporaires ouverts plusieurs jours.", "quote": "« Celui-là est vraiment pour plus tard. Les six autres aussi… mais eux depuis mardi seulement. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 29,
+      "answer": { "id": "d", "behavior": "Je mets presque toujours le jeu en wishlist et je garde parfois un lien ou une note quand je veux vraiment le surveiller.", "quote": "« Wishlist, et celui-là je le garde aussi sous le coude pour les soldes. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 30,
+      "answer": { "id": "d", "behavior": "Je connais les composants principaux et je peux retrouver rapidement les références exactes si nécessaire.", "quote": "« Je connais CPU, GPU et RAM. Pour le modèle exact du SSD, donne-moi trente secondes. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 31,
+      "answer": { "id": "d", "behavior": "Les favoris importants sont rangés dans quelques dossiers clairs, avec une petite zone non triée pour les liens récents.", "quote": "« Tout ce qui compte est classé. Le dossier “À voir” peut attendre un peu. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 32,
+      "answer": { "id": "d", "behavior": "Je recharge généralement avant d’atteindre la zone rouge, même si je ne surveille pas précisément le pourcentage toute la journée.", "quote": "« 24 %, je le branche pendant que je suis posé et c’est réglé. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 33,
+      "answer": { "id": "d", "behavior": "Les photos sont synchronisées automatiquement et je crée des albums ou dossiers pour les périodes importantes, sans tout classer au jour près.", "quote": "« Tout est sauvegardé. Pour retrouver juin, j’ai au moins un album Été. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 34,
+      "answer": { "id": "d", "behavior": "J’ai deux ou trois adresses aux rôles assez clairs, plus éventuellement une vieille adresse qui survit encore pour quelques comptes.", "quote": "« Perso, boulot, inscriptions… et une relique que je garde parce que deux comptes y sont encore liés. »", "carre_points": 1.5, "round_points": 0.5 }
+    },
+    {
+      "question_id": 35,
+      "answer": { "id": "d", "behavior": "Je planifie les routes et les zones principales, puis je laisse les détails et les petits bâtiments pousser plus librement autour.", "quote": "« Le centre et les routes sont prévus. Pour les jardins, on improvisera en construisant. »", "carre_points": 1.5, "round_points": 0.5 }
+    }
+  ]
+}

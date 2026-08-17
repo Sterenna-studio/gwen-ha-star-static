@@ -1,0 +1,54 @@
+{
+  "schema_version": 3,
+  "score_unit": "round_points",
+  "display_template": "{name}, tu as {points} points : tu es {level}.",
+  "base_max_points": 80,
+  "context_bonus_max_points": 2,
+  "profiles": [
+    {
+      "min": 0,
+      "max": 16,
+      "level": "Très Carré",
+      "name": "Le Sysadmin de la Guilde",
+      "tagline": "Tout est prêt avant même que les autres aient trouvé le lobby.",
+      "description": "Ton setup, tes comptes et tes habitudes suivent une logique claire. Tu anticipes les problèmes et sais généralement où sont les choses — y compris celles des autres.",
+      "quote": "« Ne vendez rien, je vais faire l’inventaire. »"
+    },
+    {
+      "min": 16.5,
+      "max": 32.5,
+      "level": "Carré",
+      "name": "Le Quartier-Maître",
+      "tagline": "Quand le groupe a besoin de quelque chose, on te regarde.",
+      "description": "Tu es plutôt organisé et prévoyant sans transformer chaque session en procédure. Il reste quelques zones de chaos, mais elles sont sous contrôle.",
+      "quote": "« Donnez-moi les ressources rares, je m’en occupe. »"
+    },
+    {
+      "min": 33,
+      "max": 49,
+      "level": "Rond-Carré",
+      "name": "L’Équilibriste Numérique",
+      "tagline": "Assez rangé pour fonctionner, assez chaotique pour rester vivant.",
+      "description": "Tu organises ce qui compte vraiment et laisses le reste suivre son cours. Certains dossiers sont impeccables ; d’autres sont devenus des zones archéologiques.",
+      "quote": "« Je sais où c’est. Enfin… à peu près. »"
+    },
+    {
+      "min": 49.5,
+      "max": 65.5,
+      "level": "Rond",
+      "name": "L’Improvisateur de LAN",
+      "tagline": "Tu n’as peut-être pas le câble, mais tu trouveras une solution.",
+      "description": "Tu prépares peu, improvises beaucoup et comptes volontiers sur ta mémoire, ton instinct ou l’écosystème du groupe. Cela crée parfois du retard, mais aussi de très bonnes anecdotes.",
+      "quote": "« Quelqu’un a un USB-C ? »"
+    },
+    {
+      "min": 66,
+      "max": 82,
+      "level": "Très Rond",
+      "name": "Le Gobelin du Setup",
+      "tagline": "Le chaos n’est pas un problème si tu sais vivre dedans.",
+      "description": "Ton environnement numérique ressemble parfois à une quête secondaire. Tu avances à l’instinct et retrouves souvent l’objet ou le compte recherché exactement au moment où tout le monde avait cessé d’y croire.",
+      "quote": "« Ne rangez rien, sinon je ne retrouverai plus rien. »"
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "schema_version": 3,
+  "questions": [
+    {
+      "id": 36,
+      "title": "📲 Tu changes de téléphone ou de PC",
+      "axis": "anticipation",
+      "answers": [
+        {
+          "id": "a",
+          "behavior": "La migration est préparée : sauvegardes, comptes, codes 2FA et fichiers importants sont vérifiés avant le changement.",
+          "quote": "« Je peux éteindre l’ancien appareil, j’ai vérifié la checklist. »",
+          "carre_points": 2,
+          "round_points": 0
+        },
+        {
+          "id": "d",
+          "behavior": "J’utilise l’outil de migration puis je vérifie les quelques applications, comptes et dossiers vraiment importants.",
+          "quote": "« Normalement tout a suivi. Je vérifie juste les authentificateurs et les photos. »",
+          "carre_points": 1.5,
+          "round_points": 0.5
+        },
+        {
+          "id": "b",
+          "behavior": "Je transfère l’essentiel et je découvre les oublis au fur et à mesure des jours suivants.",
+          "quote": "« Ah oui… mes sauvegardes de ce logiciel étaient sur l’autre PC. »",
+          "carre_points": 1,
+          "round_points": 1
+        },
+        {
+          "id": "c",
+          "behavior": "L’ancien appareil reste accessible pendant des mois parce qu’il contient probablement encore quelque chose d’important.",
+          "quote": "« Ne le formate surtout pas, j’ai sûrement un fichier dessus quelque part. »",
+          "carre_points": 0,
+          "round_points": 2
+        }
+      ],
+      "image": { "asset": null, "prompt_hint": "Ancien et nouvel ordinateur ou téléphone côte à côte pendant une migration, de la checklist propre au vieux PC conservé comme archive vivante." }
+    },
+    {
+      "id": 37,
+      "title": "🧪 Quelque chose ne marche plus sur ton PC",
+      "axis": "maintenance",
+      "answers": [
+        {
+          "id": "a",
+          "behavior": "Je reproduis le problème, lis le message d’erreur et change une seule chose à la fois pour identifier la cause.",
+          "quote": "« Attends, on ne touche plus à rien : je veux savoir exactement ce qui casse. »",
+          "carre_points": 2,
+          "round_points": 0
+        },
+        {
+          "id": "d",
+          "behavior": "Je commence par les vérifications simples, puis je cherche précisément le symptôme si le redémarrage ne suffit pas.",
+          "quote": "« Je redémarre une fois, après je regarde les logs. »",
+          "carre_points": 1.5,
+          "round_points": 0.5
+        },
+        {
+          "id": "b",
+          "behavior": "J’essaie quelques solutions connues ou trouvées en ligne jusqu’à ce que le problème disparaisse.",
+          "quote": "« J’ai trois pistes, on va voir laquelle marche. »",
+          "carre_points": 1,
+          "round_points": 1
+        },
+        {
+          "id": "c",
+          "behavior": "Je change plusieurs paramètres, redémarre deux fois et considère l’affaire classée dès que ça remarche.",
+          "quote": "« J’ai changé sept trucs et maintenant ça marche. Surtout, ne touche plus à rien. »",
+          "carre_points": 0,
+          "round_points": 2
+        }
+      ],
+      "image": { "asset": null, "prompt_hint": "Diagnostic PC allant d’une recherche méthodique avec logs à plusieurs réglages modifiés au hasard avant un succès miraculeux." }
+    },
+    {
+      "id": 38,
+      "title": "🔩 Tu démontes une manette ou un appareil : les vis…",
+      "axis": "maintenance",
+      "answers": [
+        {
+          "id": "a",
+          "behavior": "Elles sont séparées par étape ou emplacement, et je peux même prendre une photo avant chaque couche.",
+          "quote": "« Les quatre petites vont avec la coque, les deux longues avec la carte. »",
+          "carre_points": 2,
+          "round_points": 0
+        },
+        {
+          "id": "d",
+          "behavior": "Tout va dans une petite coupelle ou une zone dédiée pour éviter qu’une vis parte vivre sous le bureau.",
+          "quote": "« Elles ne sont pas triées, mais au moins elles sont toutes là. »",
+          "carre_points": 1.5,
+          "round_points": 0.5
+        },
+        {
+          "id": "b",
+          "behavior": "Je les pose à côté dans l’ordre approximatif du démontage et je compte sur ma mémoire au remontage.",
+          "quote": "« Celle-ci était à gauche… je crois. »",
+          "carre_points": 1,
+          "round_points": 1
+        },
+        {
+          "id": "c",
+          "behavior": "Je remonte jusqu’à ce que tout tienne ; les éventuelles pièces restantes deviennent un sujet pour plus tard.",
+          "quote": "« Il reste deux vis, mais tout fonctionne. Gain de poids. »",
+          "carre_points": 0,
+          "round_points": 2
+        }
+      ],
+      "image": { "asset": null, "prompt_hint": "Manette démontée avec vis soit rangées sur tapis magnétique, soit regroupées dans une coupelle, soit dispersées avec deux vis restantes." }
+    },
+    {
+      "id": 39,
+      "title": "💬 Tes serveurs Discord",
+      "axis": "setup",
+      "answers": [
+        {
+          "id": "a",
+          "behavior": "Les serveurs importants sont rangés en dossiers et les notifications sont réglées selon leur utilité.",
+          "quote": "« Jeux ici, projets là, et ce serveur ne me notifie que sur les mentions. »",
+          "carre_points": 2,
+          "round_points": 0
+        },
+        {
+          "id": "d",
+          "behavior": "J’ai organisé les serveurs principaux et coupé les plus bruyants ; le reste peut encore flotter dans la barre latérale.",
+          "quote": "« Les dix que j’utilise sont propres. Le reste… c’est les archives. »",
+          "carre_points": 1.5,
+          "round_points": 0.5
+        },
+        {
+          "id": "b",
+          "behavior": "Je retrouve surtout les serveurs par leur icône, la recherche ou les mentions récentes.",
+          "quote": "« Attends, je sais qu’il est quelque part un peu plus bas. »",
+          "carre_points": 1,
+          "round_points": 1
+        },
+        {
+          "id": "c",
+          "behavior": "La colonne de gauche est une frise historique de communautés rejointes depuis des années.",
+          "quote": "« Je sais que le serveur est quelque part entre les 67 icônes à gauche. »",
+          "carre_points": 0,
+          "round_points": 2
+        }
+      ],
+      "image": { "asset": null, "prompt_hint": "Barre latérale Discord allant de quelques dossiers propres à une très longue colonne d’icônes et de badges rouges." }
+    },
+    {
+      "id": 40,
+      "title": "🔌 Les chargeurs chez toi",
+      "axis": "setup",
+      "answers": [
+        {
+          "id": "a",
+          "behavior": "Les appareils principaux ont un emplacement de charge clair, avec les bons câbles disponibles là où ils servent.",
+          "quote": "« Téléphone sur le bureau, manette sur le dock, batterie externe dans le sac. »",
+          "carre_points": 2,
+          "round_points": 0
+        },
+        {
+          "id": "d",
+          "behavior": "J’ai deux ou trois points de charge fiables et un câble de secours que j’essaie de remettre à sa place.",
+          "quote": "« Il y en a un au bureau et un dans le salon, normalement ça couvre tout. »",
+          "carre_points": 1.5,
+          "round_points": 0.5
+        },
+        {
+          "id": "b",
+          "behavior": "Quelques câbles circulent entre les pièces selon l’appareil qui en a besoin au moment présent.",
+          "quote": "« Prends celui du canapé, mais remets-le après. »",
+          "carre_points": 1,
+          "round_points": 1
+        },
+        {
+          "id": "c",
+          "behavior": "Il existe un chargeur particulièrement fiable dont la localisation devient régulièrement une enquête collective.",
+          "quote": "« Quelqu’un a vu LE câble USB-C qui marche bien ? »",
+          "carre_points": 0,
+          "round_points": 2
+        }
+      ],
+      "image": { "asset": null, "prompt_hint": "Maison avec plusieurs zones de charge, de stations dédiées à un unique câble USB-C recherché par tout le monde." }
+    }
+  ]
+}
