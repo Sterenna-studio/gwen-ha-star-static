@@ -14,6 +14,14 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    # Les sous-actions github/codeql-action/* partagent obligatoirement le même
+    # SHA : une PR par sous-action casse la parité de version et fait échouer
+    # l'analyse ("Loaded a configuration file for version X, but running Y").
+    # Le groupe force dependabot à les bumper ensemble dans une seule PR.
+    groups:
+      codeql-action:
+        patterns:
+          - "github/codeql-action*"
     labels:
       - "dependencies"
       - "security"
