@@ -1,26 +1,29 @@
 # Nested Worlds
 
-Générateur de planètes procédurales, issu de l’axe visuel de `nested-loops` : les cycles deviennent surface, atmosphère et phénomènes orbitaux.
+Observatoire de planètes procédurales statique : une seed construit toujours le même monde. Le projet ne dépend ni de Supabase, ni d’API, ni de compte.
 
-## Architecture
+## Systèmes
 
 ```text
-assets/css/main.css        interface
-src/app.js                 orchestration et événements
-src/core/planet-generator  seed -> données déterministes
-src/render/planet-renderer rendu Canvas isolé
+src/core/planet-generator.js  seed -> données de planète
+src/core/discovery-engine.js  conditions -> découverte
+src/data/content.js           biomes, espèces, anomalies
+src/render/planet-renderer.js Canvas isolé
+src/storage/codex-repository  codex localStorage
+src/app.js                    orchestration
 ```
 
-Aucun CSS ou JavaScript applicatif n’est inline. Le générateur est indépendant du DOM et le renderer ne décide pas des règles de jeu.
+## Découverte
 
-## Contrat
+Le moteur analyse le type de monde et la température. Chaque famille possède actuellement une espèce avec une plage climatique. Les anneaux ou plusieurs lunes peuvent aussi révéler une anomalie. Une découverte reçoit un identifiant déterministe (`seed:type:contenu`) puis est enregistrée une seule fois dans le codex local.
 
-Une seed produit `type`, `palette`, `bands`, `moons`, `rings`, `rotation`, `phase` et une fenêtre de biosignal. La même URL `?seed=` doit produire le même monde.
+## Principes
 
-## Roadmap
+- La seed reste la source de vérité du monde.
+- Les données éditoriales sont séparées du renderer.
+- Le moteur de règles ne touche pas au DOM ni au Canvas.
+- `localStorage` conserve les découvertes sans infrastructure.
 
-- Déplacer familles, espèces et anomalies dans `src/data/`.
-- Créer un moteur de découverte dans `src/core/`.
-- Ajouter couches scanner/thermique sous `src/render/layers/`.
-- Créer un repository de codex local, puis un adaptateur Supabase.
-- Ajouter captures, audio et atlas communautaire.
+## Suite
+
+Ajouter plusieurs espèces par biome, un vrai écran Codex, des couches de rendu spécifiques à chaque famille, puis export d’une fiche ou capture PNG.

@@ -1,0 +1,3 @@
+import{BIOMES,SPECIES,ANOMALIES}from'../data/content.js';
+export function analyse(planet,temperature){const species=SPECIES.find(s=>s.type===planet.type&&temperature>=s.min&&temperature<=s.max);const anomaly=(planet.rings||planet.moons>=2)&&Math.abs(temperature)%17<2?ANOMALIES[planet.seed.length%ANOMALIES.length]:null;return{biome:BIOMES[planet.type],species,anomaly,active:species||anomaly};}
+export function discoveryId(planet,analysis){return analysis.species?`${planet.seed}:species:${analysis.species.id}`:analysis.anomaly?`${planet.seed}:anomaly:${analysis.anomaly}`:null;}
