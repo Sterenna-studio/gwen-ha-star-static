@@ -1,2 +1,2 @@
-export function orbitPosition(orbit,time,scale=1){const angle=orbit.phase+time*orbit.speed*.0002;return{x:Math.cos(angle)*orbit.radius*scale,z:Math.sin(angle)*orbit.radius*scale,angle}}
-export function childPosition(parent,orbit,time,scale=1){const point=orbitPosition(orbit,time,scale);return{x:parent.x+point.x,z:parent.z+point.z}}
+export function orbitPosition(orbit,time,scale=1){const angle=orbit.phase+time*orbit.speed*.0002;const tilt=(orbit.phase%1.2)-.6;return{x:Math.cos(angle)*orbit.radius*scale,y:Math.sin(angle*2+orbit.phase)*orbit.radius*.12+Math.sin(angle)*tilt,z:Math.sin(angle)*orbit.radius*scale,angle,tilt}}
+export function childPosition(parent,orbit,time,scale=1){const point=orbitPosition(orbit,time,scale);return{x:parent.x+point.x,y:parent.y+point.y,z:parent.z+point.z}}
