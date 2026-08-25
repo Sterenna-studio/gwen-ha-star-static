@@ -1,0 +1,3 @@
+export function hashString(value){let hash=1779033703^value.length;for(let i=0;i<value.length;i+=1)hash=Math.imul(hash^value.charCodeAt(i),3432918353);return(hash^(hash>>>16))>>>0}
+export function createRandom(seed){let state=seed;return()=>{state|=0;state=state+0x6D2B79F5|0;let value=Math.imul(state^state>>>15,1|state);value=value+Math.imul(value^value>>>7,61|value)^value;return((value^value>>>14)>>>0)/4294967296}}
+export function pick(random,values){return values[Math.floor(random()*values.length)]}
