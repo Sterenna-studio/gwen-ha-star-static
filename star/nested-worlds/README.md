@@ -1,29 +1,19 @@
 # Nested Worlds
 
-Observatoire de planètes procédurales statique : une seed construit toujours le même monde. Le projet ne dépend ni de Supabase, ni d’API, ni de compte.
+Observatoire procédural local. Une seed crée toujours le même monde et, désormais, le même **système orbital**.
 
-## Systèmes
+## Nested Loops comme générateur
+
+La seed produit un arbre de boucles : une boucle principale devient une orbite planétaire ; ses sous-boucles deviennent des lunes ; une boucle fragmentée devient une ceinture d’astéroïdes. Rayon, vitesse, phase et poids sont donc des paramètres communs à la géométrie, au mouvement et à la narration du système.
 
 ```text
-src/core/planet-generator.js  seed -> données de planète
-src/core/discovery-engine.js  conditions -> découverte
-src/data/content.js           biomes, espèces, anomalies
-src/render/planet-renderer.js Canvas isolé
-src/storage/codex-repository  codex localStorage
-src/app.js                    orchestration
+seed -> LoopTree -> SystemModel -> renderer
 ```
 
-## Découverte
+## Modules système
 
-Le moteur analyse le type de monde et la température. Chaque famille possède actuellement une espèce avec une plage climatique. Les anneaux ou plusieurs lunes peuvent aussi révéler une anomalie. Une découverte reçoit un identifiant déterministe (`seed:type:contenu`) puis est enregistrée une seule fois dans le codex local.
+- `loop-tree-generator.js` : génère les boucles hiérarchiques déterministes.
+- `system-generator.js` : convertit les boucles en étoile, planètes, lunes, anneaux et ceintures.
+- `orbital-math.js` : fournit les positions dans le temps pour tout renderer.
 
-## Principes
-
-- La seed reste la source de vérité du monde.
-- Les données éditoriales sont séparées du renderer.
-- Le moteur de règles ne touche pas au DOM ni au Canvas.
-- `localStorage` conserve les découvertes sans infrastructure.
-
-## Suite
-
-Ajouter plusieurs espèces par biome, un vrai écran Codex, des couches de rendu spécifiques à chaque famille, puis export d’une fiche ou capture PNG.
+Le renderer actuel reste une vue de planète. La prochaine étape est une scène WebGL/Three.js légère qui affichera le `SystemModel` sous forme de mini-planètes 3D, sans modifier le générateur.
