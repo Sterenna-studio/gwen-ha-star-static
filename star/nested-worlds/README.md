@@ -1,19 +1,17 @@
 # Nested Worlds
 
-Observatoire procédural local. Une seed crée toujours le même monde et, désormais, le même **système orbital**.
+Observatoire procédural local : une seed crée un système orbital reproductible et désormais rendu en mini-planètes 3D.
 
-## Nested Loops comme générateur
-
-La seed produit un arbre de boucles : une boucle principale devient une orbite planétaire ; ses sous-boucles deviennent des lunes ; une boucle fragmentée devient une ceinture d’astéroïdes. Rayon, vitesse, phase et poids sont donc des paramètres communs à la géométrie, au mouvement et à la narration du système.
+## Pipeline
 
 ```text
-seed -> LoopTree -> SystemModel -> renderer
+seed -> LoopTree -> SystemModel -> System3DRenderer
 ```
 
-## Modules système
+Les boucles principales deviennent des orbites de planètes ; les sous-boucles deviennent des lunes ; les boucles fragmentées deviennent des ceintures d’astéroïdes. Rayon, phase, vitesse et poids restent communs au modèle et au mouvement.
 
-- `loop-tree-generator.js` : génère les boucles hiérarchiques déterministes.
-- `system-generator.js` : convertit les boucles en étoile, planètes, lunes, anneaux et ceintures.
-- `orbital-math.js` : fournit les positions dans le temps pour tout renderer.
+## Rendu 3D
 
-Le renderer actuel reste une vue de planète. La prochaine étape est une scène WebGL/Three.js légère qui affichera le `SystemModel` sous forme de mini-planètes 3D, sans modifier le générateur.
+`src/render/system-3d-renderer.js` utilise Three.js chargé comme module ES afin de rendre une étoile, les orbites, sphères planétaires, lunes, anneaux et débris. Le générateur reste indépendant de Three.js : un autre renderer peut utiliser le même `SystemModel`.
+
+Le Codex et les découvertes restent locaux (`localStorage`) ; aucune API ni backend n’est requis.
