@@ -8,7 +8,10 @@ Chaque objet est une conséquence d’une boucle hiérarchique, pas un décor aj
 
 ```text
 seed -> LoopTree -> SystemModel -> System3DRenderer
+                                 -> System2DPlan
 ```
+
+Le même `SystemModel` alimente aussi un plan orbital 2D simplifié (vue de dessus, `System2DPlan`), affiché sur le flanc en complément de la génération 3D réelle au centre.
 
 Une boucle porte désormais : `radius`, `frequency`, `phase`, `amplitude`, `tilt`, `eccentricity`, `wobble`, `subdivisions`, `resonance` et `children`.
 
