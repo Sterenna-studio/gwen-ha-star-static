@@ -11,7 +11,7 @@ seed -> LoopTree -> SystemModel -> System3DRenderer
                                  -> System2DPlan
 ```
 
-Le même `SystemModel` alimente aussi un plan orbital 2D simplifié (vue de dessus, `System2DPlan`), affiché sur le flanc en complément de la génération 3D réelle au centre.
+Le même `SystemModel` alimente aussi un plan orbital 2D simplifié (`System2DPlan`), affiché sur le flanc en complément de la génération 3D réelle au centre. Il reprend la logique de projection à la Nested Loops (`rotate3` + division perspective sur l'axe de profondeur) plutôt qu'une simple vue de dessus : chaque orbite garde son inclinaison (`orbit.tilt`) et le plan entier est observé sous un angle oblique fixe, donc rien n'est aplati dans un seul plan XY.
 
 Une boucle porte désormais : `radius`, `frequency`, `phase`, `amplitude`, `tilt`, `eccentricity`, `wobble`, `subdivisions`, `resonance` et `children`.
 
