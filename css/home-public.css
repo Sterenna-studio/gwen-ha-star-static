@@ -101,6 +101,93 @@
   background: var(--c-border);
 }
 
+/* ── POKÉGANG · BANNIÈRE DÉDIÉE ── */
+.pokegang-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  max-width: 1100px;
+  margin: 0 auto var(--space-12);
+  padding: var(--space-6) var(--space-8);
+  background: linear-gradient(120deg, rgba(255, 45, 85, .12), rgba(255, 170, 0, .05));
+  border: 1px solid var(--c-red-d);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+  transition: transform 200ms, box-shadow 200ms, border-color 200ms;
+}
+.pokegang-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 12% 50%, rgba(255, 45, 85, .18), transparent 60%);
+  pointer-events: none;
+}
+.pokegang-banner:hover {
+  transform: translateY(-2px);
+  border-color: var(--c-red);
+  box-shadow: var(--glow-red);
+}
+.pokegang-banner-icon {
+  font-size: 3rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.pokegang-banner-body { flex: 1; min-width: 0; }
+.pokegang-banner-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .2em;
+  color: var(--c-red);
+  margin: 0 0 var(--space-2);
+}
+.pokegang-banner-title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--c-text);
+  margin: 0 0 var(--space-2);
+}
+.pokegang-banner-desc {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .04em;
+  color: var(--c-text-muted);
+  line-height: 1.6;
+  max-width: 60ch;
+}
+.pokegang-banner-cta {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  color: var(--c-red);
+  border: 1px solid var(--c-red-d);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  transition: background 200ms, color 200ms;
+}
+.pokegang-banner:hover .pokegang-banner-cta {
+  background: var(--c-red);
+  color: var(--c-bg);
+}
+@media (max-width: 640px) {
+  .pokegang-banner {
+    flex-direction: column;
+    text-align: center;
+    margin-left: var(--space-4);
+    margin-right: var(--space-4);
+    padding: var(--space-6) var(--space-5);
+  }
+  .pokegang-banner-eyebrow { justify-content: center; }
+}
+
 /* ── ACCÈS DIRECT / TOOL CARDS ── */
 .tools-grid {
   display: grid;
