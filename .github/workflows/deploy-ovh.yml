@@ -122,6 +122,9 @@ jobs:
             "/shared/supabase-client.js"
             "/jukebox/chronicles-fm.json"
             "/data/3615-feed.json"
+            "/robots.txt"
+            "/sitemap.xml"
+            "/shared/images/og-cover.png"
             "/data/lemegeton-state.json"
           )
 

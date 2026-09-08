@@ -1,0 +1,23 @@
+# Gwen Ha Star — nitro.sterenna.fr
+# Espaces membres et consoles admin exclus de l'indexation.
+
+User-agent: *
+Allow: /
+
+# Authentification et espace personnel
+Disallow: /login.html
+Disallow: /profil.html
+Disallow: /reset.html
+
+# Cockpit membre et consoles d'administration
+Disallow: /star/admin/
+Disallow: /admin-dashboard.html
+Disallow: /admin-audio.html
+Disallow: /quiz/admin/
+
+# Artefacts techniques
+Disallow: /versions/
+Disallow: /prod/
+Disallow: /mockups/
+
+Sitemap: https://nitro.sterenna.fr/sitemap.xml
