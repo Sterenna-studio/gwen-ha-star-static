@@ -2,6 +2,8 @@
 
 > Hub public de **Sterenna EI** et portail d'identité du réseau Nitro / Chronicles.
 
+Contrats publics/privés Supabase et ordre de publication : [docs/PUBLIC_PROFILES.md](docs/PUBLIC_PROFILES.md).
+
 ---
 
 ## Version actuelle

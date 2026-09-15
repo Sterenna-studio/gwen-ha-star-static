@@ -220,19 +220,8 @@
   }
 
   async function loadProfile() {
-    let query = supabase
-      .from('profiles')
-      .select(`
-        id, username, avatar_url, bio, role, specialty, active_title,
-        chronicles, joined_at,
-        profile_titles ( title_slug, unlocked_at, titles:title_slug ( label_fr, rarity, slug ) ),
-        profile_roles  ( role_slug, agent_roles:role_slug ( label_fr, color, icon ) )
-      `)
-
-    if (profileId) query = query.eq('id', profileId)
-    else           query = query.eq('username', username)
-
-    const { data, error } = await query.maybeSingle()
+    const { loadPublicProfile } = await import('./shared/public-profile.js');
+    const { data, error } = await loadPublicProfile(supabase, { id: profileId, username });
 
     if (error || !data) {
       showNotFound('Agent introuvable.', 'Ce profil n\'existe pas ou n\'est pas accessible.')
@@ -327,7 +316,7 @@
       </div>
       <div class="stats-bar panel-boot" style="--panel-delay:160ms">
         <div class="stat">
-          <div class="stat-value">${p.chronicles ?? 0}</div>
+          <div class="stat-value">—</div>
           <div class="stat-label">Chroniques</div>
         </div>
         <div class="stat">

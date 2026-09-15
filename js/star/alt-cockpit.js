@@ -40,7 +40,7 @@ function bindSignOut() {
 
 async function loadMembersCount() {
   try {
-    const { count } = await supabase.from('profiles').select('id', { count: 'exact', head: true });
+    const { count } = await supabase.from('public_profile_directory').select('id', { count: 'exact', head: true });
     fillField('members', count ?? '?');
   } catch {
     fillField('members', '?');

@@ -86,7 +86,7 @@ function bindHudColorSwatches() {
 async function loadMembers() {
   const el = document.getElementById('kpi-members');
   try {
-    const { count } = await supabase.from('profiles').select('id', { count: 'exact', head: true });
+    const { count } = await supabase.from('public_profile_directory').select('id', { count: 'exact', head: true });
     if (el) el.textContent = count ?? '?';
   } catch {
     if (el) el.textContent = '?';

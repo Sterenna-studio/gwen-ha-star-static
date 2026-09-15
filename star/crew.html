@@ -93,9 +93,7 @@
     <div class="crew-controls">
       <input class="crew-search" id="crew-search" type="search" placeholder="Rechercher un agent..." aria-label="Rechercher"/>
       <button class="filter-btn active" data-filter="all">TOUS</button>
-      <button class="filter-btn" data-filter="superuser">SUPERUSER</button>
-      <button class="filter-btn" data-filter="member">MEMBRE</button>
-      <button class="filter-btn" data-filter="guest">GUEST</button>
+      <button class="filter-btn" data-filter="bio">AVEC BIO</button>
       <span class="crew-count" id="crew-count"></span>
     </div>
 
@@ -134,7 +132,7 @@
       grid.style.display  = '';
       grid.innerHTML = list.map(m => {
         const name      = m.username ?? 'AGENT';
-        const role      = m.role ?? 'guest';
+        const role      = 'member'; // Public membership is not an authorization role.
         const title     = m.active_title ?? 'Recrue';
         const specialty = m.specialty ?? '';
         const av = m.avatar_url
@@ -154,7 +152,7 @@
     function applyFilters() {
       const q = document.getElementById('crew-search').value.toLowerCase().trim();
       let list = allMembers;
-      if (activeFilter !== 'all') list = list.filter(m => (m.role ?? 'guest') === activeFilter);
+      if (activeFilter === 'bio') list = list.filter(m => Boolean(m.bio));
       if (q) list = list.filter(m => (m.username ?? '').toLowerCase().includes(q) || (m.specialty ?? '').toLowerCase().includes(q));
       renderMembers(list);
     }
@@ -179,8 +177,8 @@
 
       // Load members
       const { data, error } = await supabase
-        .from('profiles')
-        .select('id,username,avatar_url,role,active_title,specialty')
+        .from('public_profile_directory')
+        .select('id,username,avatar_url,active_title,specialty,bio')
         .order('created_at', { ascending: true });
 
       document.getElementById('crew-skeleton').style.display = 'none';

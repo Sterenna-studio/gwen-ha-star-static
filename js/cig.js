@@ -3,6 +3,7 @@
  * Extrait de cig.html + fillGIGCard()
  */
 import { supabase, getSession, signOut } from './supabase.js';
+import { loadPublicProfile } from '../shared/public-profile.js';
 
 // ── RARITY CONFIG ──────────────────────────────────────────────────────────────
 const RARITY_COLORS = {
@@ -108,7 +109,7 @@ async function loadLeaderboard(myId) {
   listEl.innerHTML = Array.from({length:5}, () => '<div class="skel lb-skel-row"></div>').join('');
   try {
     const { data, error } = await supabase
-      .from('profiles')
+      .from('public_chronicles_leaderboard')
       .select('id, username, avatar_url, active_title, chronicles')
       .not('chronicles', 'is', null)
       .order('chronicles', { ascending: false })
@@ -159,7 +160,7 @@ async function loadLeaderboard(myId) {
 // ── FILL CIG ───────────────────────────────────────────────────────────────────
 function fillCIG(profile, joinedTitles, user, readOnly) {
   const username    = profile.username    ?? user.email?.split('@')[0] ?? 'AGENT';
-  const role        = profile.role        ?? 'guest';
+  const role        = readOnly ? 'member' : (profile.role ?? 'guest');
   const activeTitle = profile.active_title ?? 'Recrue';
   const specialty   = profile.specialty   ?? '';
 
@@ -171,7 +172,7 @@ function fillCIG(profile, joinedTitles, user, readOnly) {
   $('cig-bio').textContent      = profile.bio ?? '';
   $('cig-email').textContent    = readOnly ? '—' : (user.email ?? '—');
   $('cig-joined').textContent   = formatDate(profile.joined_at ?? profile.created_at);
-  $('cig-lang').textContent     = (profile.lang ?? 'fr').toUpperCase();
+  $('cig-lang').textContent     = readOnly ? '—' : (profile.lang ?? 'fr').toUpperCase();
 
   const activeTitleObj = [...ownedMap.values()].find(t =>
     (t.label_fr ?? t.label ?? t.slug ?? '').toLowerCase() === activeTitle.toLowerCase()
@@ -201,7 +202,7 @@ function fillCIG(profile, joinedTitles, user, readOnly) {
   $('cig-role-badge').textContent  = role.toUpperCase();
 
   const chrVal = $('chr-val');
-  if (chrVal) chrVal.textContent = (profile.chronicles ?? 0).toLocaleString('fr-FR') + ' C';
+  if (chrVal) chrVal.textContent = readOnly ? '—' : (profile.chronicles ?? 0).toLocaleString('fr-FR') + ' C';
 
   if (profile.avatar_url) {
     const img = $('cig-avatar-img');
@@ -227,6 +228,7 @@ function fillCIG(profile, joinedTitles, user, readOnly) {
 
   // ── GIG ID CARD ──────────────────────────────────────────────────────────────
   fillGIGCard(profile, username, activeTitleDisplay, activeTitleRarity);
+  if (readOnly && $('gig-card-chr')) $('gig-card-chr').textContent = '—';
 
   // ── Titres ───────────────────────────────────────────────────────────────────
   const FALLBACK_CATALOG = [
@@ -369,19 +371,16 @@ async function init() {
   const readOnly  = !!(targetId && targetId !== myId);
   const profileId = targetId ?? myId;
 
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select(`
-      *,
-      profile_titles (
-        title_slug,
-        titles (*)
-      )
-    `)
-    .eq('id', profileId)
-    .single();
+  const { data: profile, error } = readOnly
+    ? await loadPublicProfile(supabase, { id: profileId })
+    : await supabase.from('profiles').select('*,profile_titles(title_slug,titles(*))').eq('id', myId).single();
 
-  if (error && error.code !== 'PGRST116') console.error(error);
+  if (error || !profile) {
+    hide('cig-skeleton');
+    show('cig-unauth');
+    console.warn('[CIG] Profil indisponible');
+    return;
+  }
 
   const joinedTitles = profile?.profile_titles ?? [];
   const user = readOnly ? { id: profileId, email: null } : session.user;

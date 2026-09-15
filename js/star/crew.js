@@ -44,7 +44,7 @@ async function _loadCrew() {
 
   try {
     const { data, error } = await supabase
-      .from('profiles')
+      .from('public_profile_directory')
       .select(`
         id, username, avatar_url, bio, active_title,
         specialty:specialty_id ( slug, label_fr, icon, color )

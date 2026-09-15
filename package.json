@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Hub statique Gwen Ha Star / Nitro — pas de build, JS/CSS/HTML servis tels quels.",
   "scripts": {
-    "test:app": "node --experimental-test-module-mocks --test test/probe-radio-site.test.js test/slot-machine-logic.test.js",
+    "test:app": "node --experimental-test-module-mocks --test test/probe-radio-site.test.js test/slot-machine-logic.test.js test/public-profiles.test.js",
     "test:quiz": "npm --prefix quiz test",
     "test": "npm run test:app && npm run test:quiz",
     "check:quiz": "npm --prefix quiz run check"
