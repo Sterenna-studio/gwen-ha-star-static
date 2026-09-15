@@ -1,10 +1,10 @@
 # Profils publics et privés
 
-État : adaptation préparée et testée localement ; migrations et publication restent
-en attente d’accord explicite sur les champs publics. Ne pas publier ces clients
-avant la création des contrats dans la base partagée.
+Périmètre public explicitement validé par l’utilisateur le 15 septembre 2026.
+Les contrats ont été créés avant la publication des clients ; l’Edge Function
+version 2 utilise uniquement les accès publics.
 
-Le projet Supabase partagé `gwen-ha-star` utilisera deux contrats en lecture seule :
+Le projet Supabase partagé `gwen-ha-star` utilise deux contrats en lecture seule :
 
 - `public_profile_directory` : pseudo, avatar/cadre, bio, spécialité, titres et dates
   publiques de la carte. Aucun email, rôle d’autorisation, langue, solde, identifiant
