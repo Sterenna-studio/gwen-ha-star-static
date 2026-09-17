@@ -5,6 +5,12 @@
 
 Options -Indexes
 
+# Legacy Nitro radio page only. Keep /radio/chronicles.mp3 on its existing
+# stream route and leave /star/ and the other static sections untouched.
+<IfModule mod_alias.c>
+  RedirectMatch 302 ^/radio/?$ https://korigan.sterenna.fr/radio
+</IfModule>
+
 # ── CHRONICLES FM : source playlist canonique WEB RADIO · YOUTUBE ──
 <IfModule mod_rewrite.c>
   RewriteEngine On
