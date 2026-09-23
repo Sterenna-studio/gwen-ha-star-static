@@ -74,6 +74,7 @@ jobs:
             --exclude='/LICENSE' \
             --exclude='/docs/' \
             --exclude='/arena/' \
+            --exclude='/timeline/' \
             --exclude='/skill-arena/' \
             --exclude='/dedale/' \
             --exclude='/clicker/' \
