@@ -219,14 +219,15 @@ sont donc partagés à travers l'écosystème.
 
 ## Ajouter un nouveau sous-projet
 
-### JV Timeline (préparation septembre 2026)
+### JV Timeline (publication septembre 2026)
 
-`Sterenna-studio/jv-timeline` est prévu comme application statique autonome
-sous `/timeline/`, déployée uniquement vers `~/nitro/timeline/`. L'exclusion
-`--exclude='/timeline/'` doit être publiée avant le premier déploiement de
-l'application. Le lien du hub est ajouté après vérification de l'URL publique.
-Le dépôt et la publication restent à créer ; les sources préparées sont dans
-`C:\DEV\repos\jv-timeline`.
+[`Sterenna-studio/jv-timeline`](https://github.com/Sterenna-studio/jv-timeline)
+est l'application statique autonome publiée sous
+[`/timeline/`](https://nitro.sterenna.fr/timeline/), déployée uniquement vers
+`~/nitro/timeline/`. L'exclusion `--exclude='/timeline/'` a été publiée via
+la PR #55 avant le premier déploiement de l'application. Le HTML et le JSON
+publics ont été vérifiés par SHA-256 avant l'ajout du lien sur le hub.
+Les sources locales actives sont dans `C:\DEV\repos\jv-timeline`.
 
 Les sous-projets ne sont plus synchronisés dans ce repo. Un nouveau projet
 déployé sous `nitro.sterenna.fr/<x>/` est géré par **son propre pipeline** vers
