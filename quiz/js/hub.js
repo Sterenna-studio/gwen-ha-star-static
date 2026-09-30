@@ -31,10 +31,17 @@ function createMeta(text, className = '') {
   return item;
 }
 
-function createCard(quiz) {
+function createCard(quiz, index) {
   const card = document.createElement('article');
   card.className = 'quiz-card';
-  card.style.setProperty('--card-accent', quiz.accent || '#72e7ef');
+
+  const line = document.createElement('span');
+  line.className = 'card-line';
+  line.setAttribute('aria-hidden', 'true');
+
+  const id = document.createElement('div');
+  id.className = 'card-id';
+  id.textContent = `// MODULE_${String(quiz.order || index + 1).padStart(2, '0')}`;
 
   const meta = document.createElement('div');
   meta.className = 'quiz-card-meta';
@@ -50,10 +57,15 @@ function createCard(quiz) {
   description.textContent = quiz.description;
   const link = document.createElement('a');
   link.href = quiz.path;
-  link.innerHTML = '<span>Lancer le quizz</span><span aria-hidden="true">→</span>';
   link.setAttribute('aria-label', `Lancer : ${quiz.title}`);
+  const label = document.createElement('span');
+  label.textContent = '> INITIALISER LA CONNEXION';
+  const arrow = document.createElement('span');
+  arrow.setAttribute('aria-hidden', 'true');
+  arrow.textContent = '→';
+  link.append(label, arrow);
 
-  card.append(meta, title, description, link);
+  card.append(line, id, meta, title, description, link);
   return card;
 }
 

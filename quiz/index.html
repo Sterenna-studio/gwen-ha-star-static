@@ -8,30 +8,36 @@
   <meta property="og:url" content="https://nitro.sterenna.fr/quiz/">
   <meta property="og:title" content="Sterenna — Quizz">
   <meta property="og:description" content="Tous les quizz Sterenna réunis dans un seul hub sur Nitro.">
+  <meta name="theme-color" content="#020810">
   <title>Sterenna — Quizz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/accessibility.css?v=20260816-v1">
-  <link rel="stylesheet" href="css/hub.css?v=20260817-v4">
+  <link rel="stylesheet" href="css/hub.css?v=20260930-v1">
 </head>
 <body>
+  <div class="scanlines" aria-hidden="true"></div>
   <header class="navbar">
     <a class="logo" href="./" aria-label="Accueil des quizz">STERENNA<span>QUIZZ</span></a>
-    <span class="navbar-meta"><a class="admin-link" href="admin/">Stats admin</a><span class="module-count" id="module-count" aria-live="polite">Chargement…</span></span>
+    <span class="navbar-meta"><a class="admin-link" href="admin/">Stats admin</a><span class="status-dot" aria-hidden="true"></span><span class="module-count" id="module-count" aria-live="polite">Chargement…</span></span>
   </header>
 
   <main class="container">
-    <header class="hub-header">
-      <p class="eyebrow">// PLAYER LAB · BASE UNIFIÉE</p>
-      <h1>Tous les quizz.<br><span>Un seul endroit.</span></h1>
-      <p>Choisis une expérience, réponds à ton rythme et retrouve toujours le même chemin clair pour revenir au hub.</p>
-    </header>
+    <div class="terminal-header"><span class="term-line">root@sterenna:~/quiz$ <span class="blink" aria-hidden="true">_</span></span></div>
+    <section class="terminal-block" aria-label="Informations du catalogue">
+      <p class="term-output">&gt; Catalogue <strong>data/quizzes.json</strong> chargé au démarrage.</p>
+      <p class="term-output">&gt; Parcours accessibles sans compte; ta progression reste dans cette session.</p>
+      <p class="term-output">&gt; Sélectionne un module pour initialiser la connexion.</p>
+    </section>
 
     <section class="toolbar" aria-label="Filtrer les quizz">
-      <label class="search-field">
-        <span>Rechercher</span>
+      <label class="search-field" for="quiz-search">
+        <span>Rechercher un module</span>
         <input id="quiz-search" type="search" placeholder="Titre, thème…" autocomplete="off">
       </label>
-      <label class="filter-field">
-        <span>Thème</span>
+      <label class="filter-field" for="theme-filter">
+        <span>Filtrer par thème</span>
         <select id="theme-filter">
           <option value="">Tous les thèmes</option>
         </select>
@@ -40,11 +46,11 @@
 
     <section aria-labelledby="catalog-title">
       <div class="section-heading">
-        <h2 id="catalog-title">Catalogue</h2>
-        <span id="result-count"></span>
+        <h1 id="catalog-title">Modules disponibles</h1>
+        <span id="result-count" aria-live="polite"></span>
       </div>
       <div class="quiz-sections" id="quiz-sections" aria-live="polite" aria-busy="true">
-        <div class="loading">Chargement du catalogue…</div>
+        <div class="loading">&gt; DÉCRYPTAGE EN COURS…<span class="blink" aria-hidden="true">_</span></div>
       </div>
       <p class="empty-state" id="empty-state" hidden>Aucun quizz ne correspond à cette recherche.</p>
       <p class="error-state" id="error-state" role="alert" hidden>Le catalogue n’a pas pu être chargé.</p>
@@ -56,6 +62,6 @@
     <span>Données versionnées · aucun compte requis</span>
   </footer>
 
-  <script type="module" src="js/hub.js?v=20260816-v3"></script>
+  <script type="module" src="js/hub.js?v=20260930-v1"></script>
 </body>
 </html>
