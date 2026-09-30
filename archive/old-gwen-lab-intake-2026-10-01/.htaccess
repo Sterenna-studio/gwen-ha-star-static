@@ -1,0 +1,23 @@
+# /lab/.htaccess — no rewrite for shared, fallback only for clicker
+RewriteEngine On
+RewriteBase /lab/
+
+# Never rewrite shared modules/libs
+RewriteRule ^shared/ - [L]
+
+# Serve existing files/directories as is
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# SPA fallback only for /lab/clicker/
+RewriteCond %{REQUEST_URI} ^/lab/clicker/ [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ /lab/clicker/index.html [L]
+
+# MIME types (safety)
+AddType application/javascript .js .mjs
+AddType text/css .css
+AddType application/json .json
+AddType application/wasm .wasm

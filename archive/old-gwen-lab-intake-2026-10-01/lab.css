@@ -1,0 +1,812 @@
+body {
+margin: 0;
+font-family: 'Share Tech Mono', monospace;
+background: radial-gradient(circle at 50% 50%, #0b0f14, #050510, #000);
+color: #e6f1ff;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+overflow-x: hidden;
+transition: all 0.3s ease;
+}
+
+/* === GESTION MASQUAGE/AFFICHAGE === */
+#main-content {
+width: 100%;
+display: flex;
+flex-direction: column;
+align-items: center;
+transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Classe pour masquer le contenu principal quand CIG ouverte */
+#main-content.hidden-for-cig {
+opacity: 0;
+visibility: hidden;
+pointer-events: none;
+}
+
+/* Effets d'alarme pour le bouton mystérieux */
+body.alarm-level-1 { background: radial-gradient(circle at 50% 50%, #1a0f14, #050510, #000); }
+body.alarm-level-2 { background: radial-gradient(circle at 50% 50%, #2a0f14, #100510, #000); }
+body.alarm-level-3 { background: radial-gradient(circle at 50% 50%, #3a0f14, #200510, #000); }
+body.alarm-level-4 { background: radial-gradient(circle at 50% 50%, #4a0f14, #300510, #000); }
+body.alarm-level-5 {
+background: radial-gradient(circle at 50% 50%, #8a0f14, #500510, #200000);
+animation: redPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes redPulse {
+from { filter: hue-rotate(0deg); }
+to { filter: hue-rotate(20deg); }
+}
+
+.overlay {
+position: fixed;
+inset: 0;
+background: url('/lab/shared/icons/overlay_triskel.png') repeat;
+opacity: 0.08;
+animation: drift 60s linear infinite;
+z-index: 0;
+}
+
+@keyframes drift {
+from { background-position: 0 0; }
+to { background-position: 1000px 500px; }
+}
+
+header { text-align: center; margin: 2rem 0; z-index: 1; position: relative; }
+h1 { font-size: 3rem; color: #0ff; text-shadow: 0 0 5px #0ff, 0 0 20px #00f; }
+.glitch { animation: glitch 1s infinite; color: #f0f; }
+@keyframes glitch {
+0% { text-shadow: 2px 0 red, -2px 0 blue; }
+50% { text-shadow: -2px 0 red, 2px 0 blue; }
+100% { text-shadow: 2px 0 red, -2px 0 blue; }
+}
+
+/* === CIG (Carte d'Identité Galactique) - FACE UNIQUE === */
+.cig-container {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.95);
+backdrop-filter: blur(15px);
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 1000;
+animation: cigAppear 0.5s ease-out;
+}
+
+@keyframes cigAppear {
+from { opacity: 0; transform: scale(0.8); }
+to { opacity: 1; transform: scale(1); }
+}
+
+.cig-wrapper {
+display: flex;
+justify-content: center;
+align-items: center;
+position: relative;
+}
+
+/* CIG REDIMENSIONNÉE pour contenir plus d'infos */
+.cig-card {
+width: 450px;
+height: 320px;
+position: relative;
+animation: cigFloat 4s ease-in-out infinite;
+}
+
+@keyframes cigFloat {
+0%, 100% { transform: translateY(0px) rotateX(2deg); }
+50% { transform: translateY(-8px) rotateX(-2deg); }
+}
+
+/* FACE UNIQUE avec toutes les infos */
+.cig-face {
+position: relative;
+width: 100%;
+height: 100%;
+border-radius: 15px;
+padding: 20px;
+box-sizing: border-box;
+border: 2px solid #0ff;
+background: linear-gradient(135deg,
+rgba(0, 255, 255, 0.1) 0%,
+rgba(0, 100, 150, 0.15) 50%,
+rgba(0, 255, 255, 0.1) 100%);
+box-shadow:
+0 0 30px rgba(0, 255, 255, 0.4),
+inset 0 0 30px rgba(0, 255, 255, 0.1);
+backdrop-filter: blur(10px);
+animation: cigGlow 3s ease-in-out infinite alternate;
+display: flex;
+flex-direction: column;
+}
+
+@keyframes cigGlow {
+from { box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.1); }
+to { box-shadow: 0 0 40px rgba(0, 255, 255, 0.6), inset 0 0 40px rgba(0, 255, 255, 0.2); }
+}
+
+.cig-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 15px;
+border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+padding-bottom: 8px;
+}
+
+.cig-title {
+font-size: 0.9em;
+font-weight: bold;
+color: #0ff;
+text-shadow: 0 0 5px #0ff;
+letter-spacing: 2px;
+}
+
+.edit-btn {
+background: rgba(0, 255, 255, 0.2);
+border: 1px solid #0ff;
+color: #0ff;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+cursor: pointer;
+font-size: 14px;
+transition: all 0.3s;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.edit-btn:hover {
+background: rgba(0, 255, 255, 0.4);
+box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+transform: scale(1.1);
+}
+
+/* SECTION PROFIL COMPACT */
+.cig-profile-section {
+display: flex;
+align-items: center;
+gap: 15px;
+margin-bottom: 15px;
+padding: 10px;
+background: rgba(0, 255, 255, 0.05);
+border-radius: 10px;
+border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.cig-avatar {
+font-size: 2.5em;
+filter: drop-shadow(0 0 10px #0ff);
+flex-shrink: 0;
+}
+
+.cig-profile-info {
+flex-grow: 1;
+}
+
+.cig-username {
+font-size: 1.2em;
+color: #fff;
+margin: 0 0 5px 0;
+text-shadow: 0 0 5px #0ff;
+font-weight: bold;
+}
+
+.cig-bio {
+font-size: 0.85em;
+color: #ccc;
+margin: 0;
+font-style: italic;
+line-height: 1.2;
+max-height: 40px;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+/* STATISTIQUES COMPACTES EN GRILLE */
+.cig-stats {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 8px;
+margin-bottom: 10px;
+}
+
+.stat-item {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 6px 10px;
+background: rgba(0, 255, 255, 0.08);
+border-radius: 6px;
+border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.stat-icon {
+font-size: 1.2em;
+width: 20px;
+text-align: center;
+color: #0ff;
+}
+
+.stat-label {
+flex-grow: 1;
+color: #0ff;
+font-weight: bold;
+font-size: 0.8em;
+}
+
+.stat-value {
+color: #fff;
+font-weight: bold;
+text-shadow: 0 0 3px #0ff;
+font-size: 0.9em;
+}
+
+/* FOOTER CIG */
+.cig-footer {
+margin-top: auto;
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-size: 0.75em;
+color: #666;
+border-top: 1px solid rgba(0, 255, 255, 0.3);
+padding-top: 8px;
+}
+
+.cig-id {
+color: #0ff;
+font-family: monospace;
+}
+
+.cig-qr {
+font-family: monospace;
+font-size: 0.6em;
+line-height: 0.8;
+color: #0ff;
+opacity: 0.7;
+text-align: right;
+}
+
+.close-cig-btn {
+position: absolute;
+top: 20px;
+right: 20px;
+background: rgba(255, 0, 0, 0.2);
+border: 2px solid #f00;
+color: #f00;
+width: 40px;
+height: 40px;
+border-radius: 50%;
+cursor: pointer;
+font-size: 20px;
+font-weight: bold;
+transition: all 0.3s;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.close-cig-btn:hover {
+background: rgba(255, 0, 0, 0.4);
+box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+transform: scale(1.1);
+}
+
+/* === Modal Mystérieux Voyageur === */
+.traveler-modal {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.95);
+backdrop-filter: blur(15px);
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 1001;
+animation: mysticalAppear 1s ease-out;
+}
+
+@keyframes mysticalAppear {
+from {
+opacity: 0;
+transform: scale(0.8) rotateY(180deg);
+filter: hue-rotate(360deg);
+}
+to {
+opacity: 1;
+transform: scale(1) rotateY(0deg);
+filter: hue-rotate(0deg);
+}
+}
+
+.traveler-content {
+background: linear-gradient(135deg,
+rgba(100, 50, 0, 0.3) 0%,
+rgba(150, 75, 25, 0.2) 50%,
+rgba(200, 100, 50, 0.1) 100%);
+border: 3px solid;
+border-image: linear-gradient(45deg, #ffd700, #ff8c00, #ffd700) 1;
+border-radius: 20px;
+padding: 2rem;
+max-width: 500px;
+text-align: center;
+box-shadow:
+0 0 40px rgba(255, 215, 0, 0.3),
+inset 0 0 20px rgba(255, 140, 0, 0.1);
+animation: ancientGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes ancientGlow {
+from {
+box-shadow: 0 0 30px rgba(255, 215, 0, 0.2), inset 0 0 15px rgba(255, 140, 0, 0.1);
+transform: translateY(0px);
+}
+to {
+box-shadow: 0 0 50px rgba(255, 215, 0, 0.4), inset 0 0 25px rgba(255, 140, 0, 0.2);
+transform: translateY(-5px);
+}
+}
+
+.traveler-avatar {
+font-size: 4em;
+margin-bottom: 1rem;
+filter: drop-shadow(0 0 15px #ffd700);
+animation: swordGlow 3s ease-in-out infinite;
+}
+
+@keyframes swordGlow {
+0%, 100% { transform: scale(1) rotate(0deg); }
+50% { transform: scale(1.1) rotate(5deg); }
+}
+
+.traveler-name {
+color: #ffd700;
+font-size: 1.8em;
+margin: 1rem 0;
+text-shadow: 0 0 10px #ff8c00;
+font-weight: bold;
+letter-spacing: 2px;
+}
+
+.traveler-dialogue {
+background: rgba(0, 0, 0, 0.6);
+border: 1px solid #ffd700;
+border-radius: 10px;
+padding: 1.5rem;
+margin: 1rem 0;
+color: #fff;
+line-height: 1.6;
+font-size: 1.1em;
+box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.1);
+}
+
+.traveler-actions {
+display: flex;
+gap: 1rem;
+margin-top: 1.5rem;
+flex-wrap: wrap;
+justify-content: center;
+}
+
+.traveler-btn {
+background: linear-gradient(135deg, #ffd700, #ff8c00);
+color: #000;
+border: none;
+padding: 0.8rem 1.5rem;
+border-radius: 8px;
+cursor: pointer;
+font-family: inherit;
+font-weight: bold;
+font-size: 1em;
+transition: all 0.3s;
+min-width: 120px;
+}
+
+.traveler-btn:hover {
+transform: scale(1.05);
+box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+background: linear-gradient(135deg, #fff700, #ffa500);
+}
+
+.traveler-btn.danger {
+background: linear-gradient(135deg, #ff4444, #cc0000);
+color: #fff;
+}
+
+.traveler-btn.danger:hover {
+background: linear-gradient(135deg, #ff6666, #ee0000);
+}
+
+/* Bouton Mystérieux et styles originaux... */
+.card.mystery {
+position: relative;
+overflow: visible;
+cursor: pointer;
+}
+
+.card.mystery.activated {
+animation: mysteriousGlow 2s ease-in-out infinite;
+border-color: #f00;
+box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+}
+
+@keyframes mysteriousGlow {
+0%, 100% {
+box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+transform: scale(1);
+}
+50% {
+box-shadow: 0 0 40px rgba(255, 0, 0, 0.7);
+transform: scale(1.02);
+}
+}
+
+.visual.mysterious {
+background-image: url('/lab/shared/icons/mystery.png');
+animation: mysteriousPulse 3s ease-in-out infinite;
+}
+
+@keyframes mysteriousPulse {
+0%, 100% { filter: drop-shadow(0 0 5px #f00); }
+50% { filter: drop-shadow(0 0 15px #f00) brightness(1.2); }
+}
+
+.mystery-overlay {
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: repeating-linear-gradient(
+45deg,
+rgba(255, 0, 0, 0.1),
+rgba(255, 0, 0, 0.1) 10px,
+rgba(0, 0, 0, 0.3) 10px,
+rgba(0, 0, 0, 0.3) 20px
+);
+border-radius: 16px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+transition: all 0.5s ease;
+}
+
+.mystery-overlay.unlocking {
+animation: pixelDisintegrate 2s ease-out forwards;
+}
+
+@keyframes pixelDisintegrate {
+0% { opacity: 1; transform: scale(1); }
+50% {
+opacity: 0.7;
+transform: scale(1.1);
+filter: blur(2px);
+}
+100% {
+opacity: 0;
+transform: scale(1.5);
+filter: blur(10px);
+}
+}
+
+.confidential-stamp {
+color: #f00;
+font-size: 1.2em;
+font-weight: bold;
+text-shadow: 0 0 10px #f00;
+margin-bottom: 0.5rem;
+letter-spacing: 3px;
+animation: stampPulse 2s ease-in-out infinite;
+}
+
+@keyframes stampPulse {
+0%, 100% { opacity: 0.8; }
+50% { opacity: 1; }
+}
+
+.classification-level {
+color: #ff6666;
+font-size: 0.8em;
+margin-bottom: 1rem;
+letter-spacing: 2px;
+}
+
+.mystery-glitch {
+color: #f00;
+font-size: 1.5em;
+font-weight: bold;
+animation: dataGlitch 1s infinite;
+}
+
+@keyframes dataGlitch {
+0% { text-shadow: 0 0 5px #f00; }
+25% { text-shadow: -2px 0 #f00, 2px 0 #0ff; }
+50% { text-shadow: 2px 0 #f00, -2px 0 #0ff; }
+75% { text-shadow: 0 0 10px #f00; }
+100% { text-shadow: 0 0 5px #f00; }
+}
+
+.mystery-counter {
+position: absolute;
+bottom: 10px;
+right: 10px;
+background: rgba(255, 0, 0, 0.8);
+color: #fff;
+padding: 0.3rem 0.6rem;
+border-radius: 15px;
+font-size: 0.8em;
+font-weight: bold;
+border: 1px solid #fff;
+}
+
+/* Styles du leaderboard */
+#leaderboard-section {
+width: 90%;
+max-width: 800px;
+margin: 2rem 0;
+z-index: 1;
+}
+
+.leaderboard-header-controls {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 1rem;
+}
+
+.leaderboard-header-controls h2 {
+color: #0ff;
+font-size: 1.8rem;
+margin: 0;
+text-shadow: 0 0 10px #0ff;
+}
+
+.collapse-btn {
+background: rgba(0, 255, 255, 0.1);
+color: #0ff;
+border: 1px solid #0ff;
+padding: 0.5rem 1rem;
+border-radius: 6px;
+cursor: pointer;
+font-family: inherit;
+font-size: 0.9rem;
+transition: all 0.3s;
+}
+
+.collapse-btn:hover {
+background: rgba(0, 255, 255, 0.2);
+box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.leaderboard-container {
+background: rgba(20, 20, 40, 0.9);
+border: 2px solid #0ff;
+border-radius: 16px;
+padding: 1.5rem;
+box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+transition: all 0.3s ease;
+}
+
+.leaderboard-container.collapsed {
+max-height: 60px;
+overflow: hidden;
+padding: 1rem 1.5rem;
+}
+
+.leaderboard-container.collapsed .leaderboard-sort-controls,
+.leaderboard-container.collapsed .leaderboard-table-header,
+.leaderboard-container.collapsed .leaderboard-list,
+.leaderboard-container.collapsed .refresh-btn {
+display: none;
+}
+
+.leaderboard-sort-controls {
+display: flex;
+gap: 0.5rem;
+margin-bottom: 1rem;
+justify-content: center;
+}
+
+.sort-btn {
+background: rgba(0, 255, 255, 0.1);
+color: #0ff;
+border: 1px solid #0ff;
+padding: 0.5rem 1rem;
+border-radius: 6px;
+cursor: pointer;
+font-family: inherit;
+font-size: 0.9rem;
+transition: all 0.3s;
+}
+
+.sort-btn:hover, .sort-btn.active {
+background: rgba(0, 255, 255, 0.3);
+box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+transform: scale(1.05);
+}
+
+.leaderboard-table-header {
+display: grid;
+grid-template-columns: 100px 1fr 120px;
+gap: 1rem;
+padding: 0.8rem;
+background: rgba(0, 255, 255, 0.1);
+border-radius: 8px;
+font-weight: bold;
+color: #0ff;
+margin-bottom: 1rem;
+}
+
+.leaderboard-list {
+max-height: 400px;
+overflow-y: auto;
+margin-bottom: 1rem;
+}
+
+.leaderboard-item {
+display: grid;
+grid-template-columns: 100px 1fr 120px;
+gap: 1rem;
+padding: 0.8rem;
+border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+transition: all 0.3s;
+border-radius: 4px;
+margin-bottom: 2px;
+cursor: pointer;
+}
+
+.leaderboard-item:hover {
+background: rgba(0, 255, 255, 0.1);
+transform: scale(1.01);
+}
+
+.leaderboard-item.current-user {
+background: linear-gradient(135deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.1));
+border: 2px solid #f0f;
+box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+transform: scale(1.02);
+font-weight: bold;
+}
+
+.rank {
+font-weight: bold;
+text-align: center;
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+}
+
+.rank.first { color: #ffd700; font-size: 1.2em; }
+.rank.second { color: #c0c0c0; font-size: 1.1em; }
+.rank.third { color: #cd7f32; font-size: 1.1em; }
+
+.current-indicator {
+position: absolute;
+top: -5px;
+right: -5px;
+color: #f0f;
+font-size: 1.5em;
+animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+0%, 100% { opacity: 0.7; transform: scale(1); }
+50% { opacity: 1; transform: scale(1.2); }
+}
+
+.username {
+color: #e6f1ff;
+font-weight: 500;
+display: flex;
+align-items: center;
+}
+
+.current-user .username {
+color: #f0f;
+text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+}
+
+.value {
+text-align: right;
+color: #ffd700;
+font-weight: bold;
+display: flex;
+align-items: center;
+justify-content: flex-end;
+}
+
+.refresh-btn {
+background: linear-gradient(135deg, #0ff, #00f);
+color: #000;
+border: none;
+padding: 0.8rem 1.5rem;
+border-radius: 8px;
+cursor: pointer;
+font-family: inherit;
+font-weight: bold;
+transition: all 0.3s;
+width: 100%;
+}
+
+.refresh-btn:hover {
+transform: scale(1.02);
+box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+.refresh-btn:disabled {
+opacity: 0.6;
+cursor: not-allowed;
+}
+
+/* Styles originaux du lab */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; width: 90%; max-width: 1100px; z-index: 1; }
+.card { background: rgba(20, 20, 40, 0.85); border: 1px solid #333; padding: 1.5rem; text-align: center; border-radius: 16px; transition: 0.3s; text-decoration: none; color: inherit; position: relative; overflow: hidden; }
+.card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 0 20px #0ff, 0 0 40px #00f inset; }
+.card.locked { filter: grayscale(100%) brightness(70%); cursor: not-allowed; }
+.card.locked:hover { box-shadow: 0 0 10px #f00 inset; }
+.visual { height: 120px; margin-bottom: 1rem; background-size: contain; background-repeat: no-repeat; background-position: center; filter: drop-shadow(0 0 5px #0ff); animation: float 6s ease-in-out infinite; }
+.visual.hologram { background-image: url('/lab/shared/icons/card_holo.png'); }
+.visual.gear { background-image: url('/lab/shared/icons/gear.png'); animation: spin 10s linear infinite; }
+.visual.portal { background-image: url('/lab/shared/icons/portal.png'); }
+.visual.juke { background-image: url('/lab/shared/icons/crt.png'); }
+.visual.plant { background-image: url('/lab/shared/icons/overlay_triskel.png'); }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+footer { margin: 2rem 0; z-index: 1; }
+
+/* Responsive */
+@media (max-width: 768px) {
+.leaderboard-header-controls {
+flex-direction: column;
+gap: 1rem;
+}
+
+.leaderboard-table-header,
+.leaderboard-item {
+grid-template-columns: 80px 1fr 100px;
+font-size: 0.9em;
+}
+
+.leaderboard-sort-controls {
+flex-direction: column;
+align-items: center;
+}
+
+.cig-card {
+width: 350px;
+height: 280px;
+}
+
+.cig-face {
+padding: 15px;
+}
+
+.traveler-content {
+margin: 1rem;
+padding: 1.5rem;
+}
+
+.cig-stats {
+grid-template-columns: 1fr;
+}
+
+.cig-profile-section {
+flex-direction: column;
+text-align: center;
+gap: 10px;
+}
+}
