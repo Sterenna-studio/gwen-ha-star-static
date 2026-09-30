@@ -1,0 +1,26 @@
+[
+    {
+        "id": "effect-none",
+        "label": "Classique sombre"
+    },
+    {
+        "id": "effect-calc",
+        "label": "Calculs \/ Tech"
+    },
+    {
+        "id": "effect-bicolor",
+        "label": "Bicolore"
+    },
+    {
+        "id": "effect-grid",
+        "label": "Grille data"
+    },
+    {
+        "id": "effect-metal",
+        "label": "Métal steampunk"
+    },
+    {
+        "id": "effect-logo",
+        "label": "Logo BZH (css\/bzh_logo.png)"
+    }
+]
