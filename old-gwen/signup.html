@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Créer un compte STERENNA</title>
+  <link rel="stylesheet" href="shared/cyberpunk.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Créer un compte</h1>
+    <div class="card">
+      <label>Email :</label><br>
+      <input type="email" id="email"><br>
+      <label>Mot de passe :</label><br>
+      <input type="password" id="password"><br>
+      <button onclick="signup()">Créer mon compte</button>
+      <p id="status"></p>
+      <p><a href="login.html" style="color:#0ff">Déjà un compte ? Connexion</a></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './shared/supabaseClient.js';
+
+    const status = document.getElementById('status');
+
+    // Vérifier si déjà connecté
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      window.location.href = 'profil.html';
+    }
+
+    async function signup() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const { data, error } = await supabase.auth.signUp({ email, password });
+
+      if (error) {
+        status.innerText = error.message;
+      } else if (data.session) {
+        status.innerText = 'Compte créé, redirection...';
+        window.location.href = 'profil.html';
+      } else {
+        status.innerText = 'Compte créé !';
+      }
+    }
+
+    window.signup = signup;
+  </script>
+</body>
+</html>

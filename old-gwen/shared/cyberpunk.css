@@ -1,0 +1,111 @@
+
+/* === Global Reset & Base === */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Courier New', monospace;
+  background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+  color: #0ff;
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Card */
+.card {
+  background: #1b1b1b;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #0ff9;
+  box-shadow: 0 0 15px #0ff6, 0 0 5px #0ff9;
+  margin-top: 1rem;
+}
+
+/* Titles */
+h1 {
+  color: #00faff;
+  text-shadow: 0 0 5px #00faff;
+  margin-bottom: 1rem;
+}
+
+/* Inputs & Textareas */
+input, textarea {
+  width: 100%;
+  padding: 0.7rem;
+  margin: 0.5rem 0 1rem;
+  border: none;
+  border-radius: 8px;
+  background: #1e1e1e;
+  color: #0ff;
+  font-size: 1rem;
+  box-shadow: inset 0 0 5px #0ff5;
+  font-family: monospace;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Buttons */
+button {
+  background: #0ff;
+  color: #000;
+  font-weight: bold;
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+button:hover {
+  background: #00faff;
+  box-shadow: 0 0 10px #00faff;
+}
+
+/* Avatar */
+#avatar-preview img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  border: 2px solid #0ff;
+  box-shadow: 0 0 10px #0ff8;
+}
+
+/* Status message */
+#status {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #0ff;
+}
+
+/* Links */
+a {
+  color: #0ff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #fff;
+  text-shadow: 0 0 5px #0ff;
+}

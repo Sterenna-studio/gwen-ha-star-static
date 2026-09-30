@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Modifier mon profil STERENNA</title>
+  <link rel="stylesheet" href="shared/cyberpunk.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Modifier mon profil</h1>
+    <div id="form-container" class="card" style="display: none;">
+      <label>Pseudo :</label>
+      <input type="text" id="username" placeholder="NeoUser42">
+      <label>Bio :</label>
+      <textarea id="bio" placeholder="Je suis un explorateur des néo-données..."></textarea>
+      <button id="save-btn">Sauvegarder</button>
+      <p id="status"></p>
+      <p><a href="index.html" style="color:#0ff">← Retour au Lab</a></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './shared/supabaseClient.js';
+    import { requireLogin } from './shared/auth.js';
+
+    async function main() {
+      const user = await requireLogin();
+      if (!user) return;
+
+      const form = document.getElementById('form-container');
+      const status = document.getElementById('status');
+
+      // Charger le profil existant
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      form.style.display = 'block';
+
+      if (profile) {
+        document.getElementById('username').value = profile.username;
+        document.getElementById('bio').value = profile.bio;
+      }
+
+      document.getElementById('save-btn').onclick = async () => {
+        const username = document.getElementById('username').value;
+        const bio = document.getElementById('bio').value;
+        const payload = { username, bio };
+
+        const { error } = profile
+          ? await supabase.from('profiles').update(payload).eq('id', user.id)
+          : await supabase.from('profiles').insert({ id: user.id, ...payload });
+
+        status.innerText = error ? error.message : 'Profil mis à jour !';
+      };
+    }
+
+    main();
+  </script>
+</body>
+</html>

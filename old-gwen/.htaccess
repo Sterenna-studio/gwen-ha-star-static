@@ -1,0 +1,4 @@
+Options -Indexes
+AddType application/javascript .js .mjs
+AddType text/css .css
+AddType application/json .json

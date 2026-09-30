@@ -134,6 +134,18 @@ jobs:
             "/quiz/data/quizzes.json"
             "/quiz/data/players.json"
             "/quiz/quizzes/gamer-profile-test/index.html"
+            "/old-gwen/"
+            "/old-gwen/lab.css"
+            "/old-gwen/lab.js"
+            "/old-gwen/shared/lab_auth.js"
+            "/old-gwen/shared/supabaseClient.js"
+            "/old-gwen/shared/icons/portal.png"
+            "/old-gwen/shared/icons/card_holo.png"
+            "/old-gwen/shared/icons/crt.png"
+            "/old-gwen/shared/icons/gear.png"
+            "/old-gwen/shared/icons/mystery.png"
+            "/old-gwen/shared/icons/overlay_triskel.png"
+            "/old-gwen/login.html"
           )
 
           for path in "${paths[@]}"; do

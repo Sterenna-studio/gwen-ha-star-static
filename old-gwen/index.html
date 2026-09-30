@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gwen Ha Star · ancienne version</title>
+  <link rel="stylesheet" href="lab.css">
+  <script type="module" src="/old-gwen/shared/lab_auth.js"></script>
+</head>
+<body>
+  <!-- Wrapper pour tout le contenu principal -->
+  <div id="main-content">
+    <div class="overlay"></div>
+    <header>
+      <h1>BZH Chronicles <span class="glitch">Lab</span></h1>
+      <p id="user-status">Chargement...</p>
+      <button id="auth-btn"></button>
+    </header>
+
+    <!-- Section Leaderboard Améliorée -->
+    <section id="leaderboard-section">
+      <div class="leaderboard-header-controls">
+        <h2>🏆 Classement des joueurs</h2>
+        <button id="collapse-leaderboard" class="collapse-btn">🔼 Réduire</button>
+      </div>
+
+      <div class="leaderboard-container">
+        <!-- Contrôles de tri -->
+        <div class="leaderboard-sort-controls">
+          <button id="sort-gold" class="sort-btn active">💰 Gold</button>
+          <button id="sort-cards" class="sort-btn">📇 Cartes</button>
+        </div>
+
+        <div class="leaderboard-table-header">
+          <div>Rang</div>
+          <div>Joueur</div>
+          <div id="value-header">Gold</div>
+        </div>
+
+        <div id="leaderboard-list" class="leaderboard-list">
+          <!-- Les entrées du leaderboard seront générées ici -->
+        </div>
+
+        <button id="refresh-leaderboard" class="refresh-btn">🔄 Actualiser</button>
+      </div>
+    </section>
+
+    <main class="grid">
+      <a href="https://nitro.sterenna.fr/TCG/" class="card tcg locked">
+        <div class="visual hologram"></div>
+        <h2>BZH Card Game</h2>
+        <p>Ouvre des packs et libère la puissance des Chroniques.</p>
+      </a>
+
+      <a href="https://nitro.sterenna.fr/clicker/" class="card clicker locked">
+        <div class="visual gear"></div>
+        <h2>Steam Clicker</h2>
+        <p>Forger, assembler, presser : la vapeur est ta force.</p>
+      </a>
+
+      <a href="https://nitro.sterenna.fr/arena/games/lab-roguelite/" class="card rogue locked">
+        <div class="visual portal"></div>
+        <h2>Rogue Cells</h2>
+        <p>Descends dans les abysses fractales de l'éther.</p>
+      </a>
+
+      <a href="https://nitro.sterenna.fr/arena/games/lab-garden/" class="card garden locked">
+        <div class="visual plant"></div>
+        <h2>Le Jardin</h2>
+        <p>Un petit coin de paradis dans les chronicles</p>
+      </a>
+
+      <a href="https://nitro.sterenna.fr/jukebox/" class="card jukebox locked">
+        <div class="visual juke"></div>
+        <h2>Le Jukebox</h2>
+        <p>Venez groover grâce aux enceintes du Gwen Ha Star</p>
+      </a>
+
+      <div id="mystery-card" class="card mystery locked">
+        <div class="visual mysterious"></div>
+        <div class="mystery-overlay">
+          <div class="confidential-stamp">CONFIDENTIEL</div>
+          <div class="classification-level">NIVEAU OMEGA</div>
+          <div class="mystery-glitch">████████</div>
+        </div>
+        <h2 id="mystery-title">Module X</h2>
+        <p id="mystery-description">Contenu expérimental en développement.</p>
+        <div class="mystery-counter" id="click-counter" style="display: none;">
+          <span id="click-count">0</span>/10
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <a href="https://sterenna.fr/">← Retour à Sterenna.fr</a>
+    </footer>
+  </div>
+
+  <!-- CIG (Carte d'Identité Galactique) - FACE UNIQUE -->
+  <div id="cig-container" class="cig-container" style="display: none;">
+    <div class="cig-wrapper">
+      <!-- CIG sans flèches - toutes les infos sur une seule face -->
+      <div id="cig-card" class="cig-card">
+        <div class="cig-face">
+          <!-- En-tête -->
+          <div class="cig-header">
+            <div class="cig-title">CIG • STERENNA</div>
+            <button id="edit-profile-btn" class="edit-btn" title="Modifier le profil">✏️</button>
+          </div>
+
+          <!-- Section profil compacte -->
+          <div class="cig-profile-section">
+            <div class="cig-avatar">👤</div>
+            <div class="cig-profile-info">
+              <h3 id="cig-username" class="cig-username">Pseudo</h3>
+              <p id="cig-bio" class="cig-bio">Bio du joueur</p>
+            </div>
+          </div>
+
+          <!-- Statistiques en grille -->
+          <div class="cig-stats">
+            <div class="stat-item">
+              <span class="stat-icon">🪙</span>
+              <span class="stat-label">Gold</span>
+              <span id="cig-gold" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">📦</span>
+              <span class="stat-label">Packs</span>
+              <span id="cig-packs" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">📇</span>
+              <span class="stat-label">Cartes</span>
+              <span id="cig-cards" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">⭐</span>
+              <span class="stat-label">Rang</span>
+              <span id="cig-rank" class="stat-value">-</span>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="cig-footer">
+            <div class="cig-id">GALACTIC ID</div>
+            <div class="cig-qr">▣▣▣<br>▣▣▣<br>▣▣▣</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="close-cig" class="close-cig-btn">×</button>
+  </div>
+
+  <!-- Modal Mystérieux Voyageur -->
+  <div id="traveler-modal" class="traveler-modal" style="display: none;">
+    <div class="traveler-content">
+      <div class="traveler-avatar">⚔️🧙‍♂️</div>
+      <h2 class="traveler-name">Mystérieux Voyageur</h2>
+      <div id="traveler-dialogue" class="traveler-dialogue">
+        <!-- Le dialogue sera généré dynamiquement -->
+      </div>
+      <div id="traveler-actions" class="traveler-actions">
+        <!-- Les boutons d'action seront générés dynamiquement -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="lab.js"></script>
+</body>
+</html>
