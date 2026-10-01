@@ -5,9 +5,10 @@ const PRESETS={
  armorica:{stars:1.05,nebula:.65,planets:.55,asteroids:.25,satellites:.35,crashes:.08,shake:.25,ships:1.1,speed:.9,stroke:'#00ffe7',accent:'#39ff14',flame:'#ffaa00'},
  contrebande:{stars:1.25,nebula:.9,planets:.25,asteroids:.75,satellites:.15,crashes:.18,shake:.35,ships:1.7,speed:1.25,stroke:'#bf5fff',accent:'#00ffe7',flame:'#ff2d55'},
  code:{stars:1.55,nebula:1.35,planets:.15,asteroids:1.25,satellites:.75,crashes:.5,shake:.85,ships:1.45,speed:1.55,stroke:'#39ff14',accent:'#ff2d55',flame:'#00ffe7'},
- ruines:{stars:.85,nebula:.35,planets:.8,asteroids:1.5,satellites:.55,crashes:.12,shake:.25,ships:.45,speed:.65,stroke:'#ffaa00',accent:'#8b5cf6',flame:'#ff2d55'}
+ ruines:{stars:.85,nebula:.35,planets:.8,asteroids:1.5,satellites:.55,crashes:.12,shake:.25,ships:.45,speed:.65,stroke:'#ffaa00',accent:'#8b5cf6',flame:'#ff2d55'},
+ halloween:{stars:1.15,nebula:1.25,planets:1.4,asteroids:.32,satellites:.08,crashes:.20,shake:.18,ships:1.05,speed:.78,stroke:'#ff6b00',accent:'#b88cff',flame:'#7affd7'}
 };
-const LABELS={live:'LIVE ADMIN',default:'DÉFAUT',armorica:'PATROUILLE ARMORICA',contrebande:'TRAFIC CONTREBANDE',code:'TEMPÊTE DU CODE',ruines:'RUINES ORBITALES'};
+const LABELS={live:'LIVE ADMIN',default:'DÉFAUT',armorica:'PATROUILLE ARMORICA',contrebande:'TRAFIC CONTREBANDE',code:'TEMPÊTE DU CODE',ruines:'RUINES ORBITALES',halloween:'☠ HALLOWEEN ORBITAL'};
 if(document.querySelector('.hub-hero')) bootPresetSwitcher();
 function bootPresetSwitcher(){
  const saved=localStorage.getItem('spaceBgPreset')||'live';
@@ -19,9 +20,11 @@ function renderSwitch(active){
  const box=document.createElement('div');box.className='space-preset-switch';
  box.innerHTML='<span>BACKGROUND</span><select aria-label="Preset background">'+Object.keys(LABELS).map(k=>'<option value="'+k+'" '+(k===active?'selected':'')+'>'+LABELS[k]+'</option>').join('')+'</select>';
  document.body.appendChild(box);
+ if(active==='halloween') addHalloweenAmbience();
  const style=document.createElement('style');style.textContent='.space-preset-switch{position:fixed;right:14px;bottom:14px;z-index:20;display:flex;gap:8px;align-items:center;padding:8px 10px;border:1px solid color-mix(in oklch,var(--c-primary) 35%,var(--c-border));border-radius:999px;background:rgba(4,10,18,.76);backdrop-filter:blur(10px);font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;color:var(--c-primary)}.space-preset-switch select{max-width:190px;border:0;background:transparent;color:var(--c-text);font:inherit;outline:0}.space-local-preset #space-bg-canvas,.space-local-preset #space-ships-library-overlay,.space-local-preset #ship-canvas{display:none!important}@media(max-width:640px){.space-preset-switch{left:12px;right:12px;justify-content:space-between}.space-preset-switch select{max-width:58vw}}';document.head.appendChild(style);
  box.querySelector('select').onchange=e=>{localStorage.setItem('spaceBgPreset',e.target.value);location.reload()};
 }
+function addHalloweenAmbience(){if(document.querySelector('.space-halloween-vignette'))return;const v=document.createElement('div');v.className='space-halloween-vignette';document.body.appendChild(v);const m=document.createElement('div');m.className='space-halloween-moon';m.setAttribute('aria-hidden','true');document.body.appendChild(m);const b=document.createElement('div');b.className='space-bats';b.setAttribute('aria-hidden','true');b.innerHTML='<span>🦇</span><span>🦇</span><span>🦇</span><span>🦇</span><span>🦇</span><span>🦇</span>';document.body.appendChild(b)}
 function configFor(key){if(key==='custom'){try{return {...DEFAULT,...JSON.parse(localStorage.getItem('spaceBgCustomConfig')||'{}')}}catch{return DEFAULT}}return {...DEFAULT,...(PRESETS[key]||{})}}
 function runLocalPreset(key){document.body.classList.add('space-local-preset');const cfg=configFor(key);const cv=document.createElement('canvas');cv.id='space-user-preset-canvas';cv.setAttribute('aria-hidden','true');Object.assign(cv.style,{position:'fixed',inset:'0',width:'100vw',height:'100vh',pointerEvents:'none',zIndex:'1',opacity:'.76',mixBlendMode:'screen'});document.body.prepend(cv);const ctx=cv.getContext('2d'),rnd=(a,b)=>a+Math.random()*(b-a),pick=a=>a[Math.floor(Math.random()*a.length)];let W=0,H=0,D=1,last=performance.now(),nextShip=0,nextRock=0,nextSat=0,nextCrash=0,stars=[],ships=[],rocks=[],sats=[],parts=[],planets=[];
  function resize(){D=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*D|0;cv.height=H*D|0;ctx.setTransform(D,0,0,D,0,0);stars=Array.from({length:Math.floor(Math.min(280,Math.max(45,W*H/10500*cfg.stars)))},()=>({x:Math.random()*W,y:Math.random()*H,z:rnd(.25,1),r:rnd(.35,1.5),a:rnd(.12,.58),d:rnd(2,16)}));planets=Array.from({length:Math.floor(cfg.planets*4)},()=>({x:rnd(W*.05,W*.95),y:rnd(H*.02,H*.5),r:rnd(18,64),c:pick(['#00d4ff','#8b5cf6','#00ff9d','#f59e0b']),ring:Math.random()>.45,d:rnd(.5,2)}))}
