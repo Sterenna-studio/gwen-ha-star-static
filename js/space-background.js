@@ -12,6 +12,7 @@ const DEFAULTS = {
   nebula: 0.7,
   shake: 0,
   trafficMode: 'balanced',
+  style: 'default',
 };
 
 const HUB_VERSIONS = [
@@ -96,6 +97,24 @@ async function boot() {
     { name:'carrier', w:1, size:1.25, speed:[70,110], stroke:'#ffaa00', accent:'#ff2d55', flame:'#ffaa00' },
   ];
   const weighted = shipTypes.flatMap(t => Array(t.w).fill(t));
+  const halloween = cfg.style === 'halloween';
+  if (halloween) {
+    document.body.classList.add('space-halloween-live');
+    installHalloweenAmbience();
+  }
+
+  function installHalloweenAmbience() {
+    if (document.getElementById('space-halloween-ambience')) return;
+    const layer = document.createElement('div');
+    layer.id = 'space-halloween-ambience';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.innerHTML = '<span class="space-halloween-bat b1">🦇</span><span class="space-halloween-bat b2">🦇</span><span class="space-halloween-bat b3">🦇</span><span class="space-halloween-bat b4">🦇</span>';
+    const style = document.createElement('style');
+    style.id = 'space-halloween-live-style';
+    style.textContent = '#space-halloween-ambience{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden;background:radial-gradient(circle at 50% 100%,rgba(91,32,128,.18),transparent 46%),linear-gradient(to bottom,rgba(9,3,16,.12),rgba(9,3,16,.42))}.space-halloween-bat{position:absolute;font-size:clamp(16px,2vw,30px);opacity:.42;animation:spaceHalloweenBat 18s linear infinite}.space-halloween-bat.b1{left:6%;top:16%}.space-halloween-bat.b2{left:30%;top:9%;animation-delay:-5s}.space-halloween-bat.b3{left:62%;top:23%;animation-delay:-9s}.space-halloween-bat.b4{left:84%;top:13%;animation-delay:-13s}@keyframes spaceHalloweenBat{0%{transform:translateX(-8vw);opacity:0}15%{opacity:.42}50%{transform:translate(10vw,3vh)}85%{opacity:.42}100%{transform:translateX(118vw);opacity:0}}';
+    document.head.appendChild(style);
+    document.body.appendChild(layer);
+  }
 
   function resize() {
     DPR = Math.min(devicePixelRatio || 1, 2);
@@ -114,7 +133,7 @@ async function boot() {
 
   function buildPlanets() {
     const count = Math.floor(cfg.planets * 3);
-    planets = Array.from({ length: count }, (_, i) => ({ x:rnd(W*.1,W*.95), y:rnd(H*.02,H*.42), r:rnd(18,58), hue:pick(['#00d4ff','#8b5cf6','#00ff9d','#f59e0b']), ring:Math.random()>.5, drift:rnd(.8,3), phase:i }));
+    planets = Array.from({ length: count }, (_, i) => ({ x:rnd(W*.1,W*.95), y:rnd(H*.02,H*.42), r:rnd(18,58), hue:halloween?pick(['#ff7a00','#ff9f1c','#d85b00']):pick(['#00d4ff','#8b5cf6','#00ff9d','#f59e0b']), ring:halloween?false:Math.random()>.5, drift:rnd(.8,3), phase:i }));
   }
 
   function spawnShip(forceLarge=false) {
@@ -156,13 +175,22 @@ async function boot() {
     ctx.translate(s.x, s.y);
     ctx.rotate(s.roll + Math.sin(s.life*1.7)*.012);
     ctx.scale(s.dir*s.scale, s.scale);
-    ctx.strokeStyle = s.type.stroke; ctx.fillStyle = s.type.stroke + '18'; ctx.lineWidth = 1.25; ctx.shadowBlur = 16; ctx.shadowColor = s.type.stroke;
+    const stroke = halloween ? '#ff7a00' : s.type.stroke;
+    const accent = halloween ? '#b88cff' : s.type.accent;
+    const flame = halloween ? '#7affd7' : s.type.flame;
+    ctx.strokeStyle = stroke; ctx.fillStyle = halloween ? 'rgba(238,244,255,.22)' : s.type.stroke + '18'; ctx.lineWidth = 1.25; ctx.shadowBlur = 16; ctx.shadowColor = stroke;
     ctx.beginPath();
     ctx.moveTo(42,0); ctx.lineTo(8,-14); ctx.lineTo(-36,-10); ctx.lineTo(-48,0); ctx.lineTo(-36,10); ctx.lineTo(8,14); ctx.closePath();
     ctx.fill(); ctx.stroke();
-    ctx.strokeStyle = s.type.accent;
-    ctx.beginPath(); ctx.moveTo(5,-12); ctx.lineTo(-22,-28); ctx.lineTo(-34,-10); ctx.moveTo(5,12); ctx.lineTo(-22,28); ctx.lineTo(-34,10); ctx.stroke();
-    ctx.strokeStyle = s.type.flame; ctx.shadowColor = s.type.flame; ctx.shadowBlur = 22;
+    ctx.strokeStyle = accent;
+    if (halloween) {
+      ctx.beginPath(); ctx.moveTo(-30,7); ctx.lineTo(-36,20); ctx.lineTo(-25,12); ctx.lineTo(-18,22); ctx.lineTo(-10,12); ctx.stroke();
+      ctx.fillStyle = '#171022'; ctx.shadowColor = '#fff2b8'; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.ellipse(-7,-3,3.8,5.8,0,0,Math.PI*2); ctx.ellipse(7,-3,3.8,5.8,0,0,Math.PI*2); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.moveTo(5,-12); ctx.lineTo(-22,-28); ctx.lineTo(-34,-10); ctx.moveTo(5,12); ctx.lineTo(-22,28); ctx.lineTo(-34,10); ctx.stroke();
+    }
+    ctx.strokeStyle = flame; ctx.shadowColor = flame; ctx.shadowBlur = 22;
     ctx.beginPath(); ctx.moveTo(-44,-4); ctx.lineTo(-70-rnd(0,18),0); ctx.lineTo(-44,4); ctx.stroke();
     ctx.restore();
   }
@@ -196,8 +224,8 @@ async function boot() {
   function drawSpace(dt) {
     ctx.save();
     stars.forEach(st => { st.x -= st.drift*st.z*dt; if(st.x < -8){ st.x = W+8; st.y = Math.random()*H; } ctx.globalAlpha=st.a; ctx.fillStyle=st.z>.75?'#b8ffc0':'#00ffe7'; ctx.fillRect(st.x,st.y,st.r,st.r); });
-    planets.forEach(p => { p.x -= p.drift*dt; if(p.x < -p.r*2) p.x = W+p.r*2; ctx.globalAlpha=.1+.16*cfg.planets; ctx.fillStyle=p.hue; ctx.shadowBlur=28; ctx.shadowColor=p.hue; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); if(p.ring){ ctx.strokeStyle=p.hue; ctx.beginPath(); ctx.ellipse(p.x,p.y,p.r*1.6,p.r*.35,.25,0,Math.PI*2); ctx.stroke(); } });
-    const g=ctx.createRadialGradient(W*.72,H*.18,0,W*.72,H*.18,Math.max(W,H)*.55); g.addColorStop(0,`rgba(0,255,231,${.055*cfg.nebula})`); g.addColorStop(.45,`rgba(57,255,20,${.025*cfg.nebula})`); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); ctx.restore();
+    planets.forEach(p => { p.x -= p.drift*dt; if(p.x < -p.r*2) p.x = W+p.r*2; ctx.save(); ctx.globalAlpha=.1+.16*cfg.planets; ctx.fillStyle=p.hue; ctx.shadowBlur=28; ctx.shadowColor=p.hue; if(!halloween){ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); if(p.ring){ ctx.strokeStyle=p.hue; ctx.beginPath(); ctx.ellipse(p.x,p.y,p.r*1.6,p.r*.35,.25,0,Math.PI*2); ctx.stroke(); }}else{ctx.translate(p.x,p.y); for(let i=-2;i<=2;i++){ctx.fillStyle=i%2?'#e65f00':'#ff7a00';ctx.beginPath();ctx.ellipse(i*p.r*.24,0,p.r*.34,p.r*.9,0,0,Math.PI*2);ctx.fill();}ctx.fillStyle='#6e3f1f';ctx.fillRect(-p.r*.08,-p.r*.95,p.r*.16,p.r*.28);ctx.fillStyle='#171022';ctx.beginPath();ctx.moveTo(-p.r*.4,-p.r*.12);ctx.lineTo(-p.r*.12,-p.r*.24);ctx.lineTo(-p.r*.03,-p.r*.02);ctx.lineTo(-p.r*.16,p.r*.1);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(p.r*.4,-p.r*.12);ctx.lineTo(p.r*.12,-p.r*.24);ctx.lineTo(p.r*.03,-p.r*.02);ctx.lineTo(p.r*.16,p.r*.1);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(-p.r*.22,p.r*.25);ctx.lineTo(-p.r*.1,p.r*.12);ctx.lineTo(0,p.r*.3);ctx.lineTo(p.r*.1,p.r*.12);ctx.lineTo(p.r*.22,p.r*.25);ctx.lineTo(0,p.r*.42);ctx.closePath();ctx.fill();}ctx.restore(); });
+    const g=ctx.createRadialGradient(W*.72,H*.18,0,W*.72,H*.18,Math.max(W,H)*.55); g.addColorStop(0,halloween?`rgba(255,107,0,${.08*cfg.nebula})`:`rgba(0,255,231,${.055*cfg.nebula})`); g.addColorStop(.45,halloween?`rgba(91,32,128,${.06*cfg.nebula})`:`rgba(57,255,20,${.025*cfg.nebula})`); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); if(halloween){ctx.globalAlpha=.55;ctx.fillStyle='#fff6c7';ctx.shadowColor='#ff6b00';ctx.shadowBlur=28;ctx.beginPath();ctx.arc(W*.86,H*.12,Math.min(W,H)*.065,0,Math.PI*2);ctx.fill();} ctx.restore();
   }
   function drawRocks(){ rocks.forEach(r=>{ ctx.save(); ctx.translate(r.x,r.y); ctx.rotate(r.rot); ctx.globalAlpha=r.a; ctx.strokeStyle='#8b5cf6'; ctx.fillStyle='rgba(139,92,246,.12)'; ctx.beginPath(); for(let i=0;i<7;i++){ const a=i/7*Math.PI*2, rr=r.r*rnd(.65,1.2); i?ctx.lineTo(Math.cos(a)*rr,Math.sin(a)*rr):ctx.moveTo(Math.cos(a)*rr,Math.sin(a)*rr); } ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore(); }); }
   function drawSatellites(){ satellites.forEach(s=>{ ctx.save(); ctx.translate(s.x,s.y); ctx.scale(s.s,s.s); ctx.globalAlpha=.6; ctx.strokeStyle='#00d4ff'; ctx.fillStyle='rgba(0,212,255,.12)'; ctx.strokeRect(-10,-5,20,10); ctx.strokeRect(-32,-3,18,6); ctx.strokeRect(14,-3,18,6); ctx.beginPath(); ctx.moveTo(0,5); ctx.lineTo(0,20); ctx.stroke(); ctx.restore(); }); }

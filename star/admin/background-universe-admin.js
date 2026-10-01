@@ -5,6 +5,7 @@ const PRESETS={
  contrebande:{label:'TRAFIC CONTREBANDE',desc:'Plus dense, néons violets/rouges, trafic nerveux.',config:{stars:1.25,nebula:.9,planets:.25,asteroids:.75,satellites:.15,crashes:.18,shake:.35,ships:1.7,speed:1.25}},
  code:{label:'TEMPÊTE DU CODE',desc:'Dramatique, crashs, activité forte et sensation d’attaque.',config:{stars:1.55,nebula:1.35,planets:.15,asteroids:1.25,satellites:.75,crashes:.5,shake:.85,ships:1.45,speed:1.55}},
  ruines:{label:'RUINES ORBITALES',desc:'Lent, ancien, chargé en planètes et astéroïdes.',config:{stars:.85,nebula:.35,planets:.8,asteroids:1.5,satellites:.55,crashes:.12,shake:.25,ships:.45,speed:.65}},
+ halloween:{label:'☠ HALLOWEEN ORBITAL',desc:'Vaisseaux fantômes, planètes citrouilles, lune et ambiance violette/orange.',config:{style:'halloween',stars:1.15,nebula:1.25,planets:1.4,asteroids:.32,satellites:.08,crashes:.20,shake:.18,ships:1.05,speed:.78,stroke:'#ff6b00',accent:'#b88cff',flame:'#7affd7'}},
  default:{label:'SET DÉFAUT',desc:'Valeur stable, lisible, proche config historique.',config:{stars:1,nebula:.7,planets:.35,asteroids:.55,satellites:.25,crashes:.12,shake:.35,ships:1,speed:1,shipMax:6}}
 };
 
