@@ -98,7 +98,23 @@ async function boot() {
   ];
   const weighted = shipTypes.flatMap(t => Array(t.w).fill(t));
   const halloween = cfg.style === 'halloween';
-  if (halloween) document.body.classList.add('space-halloween-live');
+  if (halloween) {
+    document.body.classList.add('space-halloween-live');
+    installHalloweenAmbience();
+  }
+
+  function installHalloweenAmbience() {
+    if (document.getElementById('space-halloween-ambience')) return;
+    const layer = document.createElement('div');
+    layer.id = 'space-halloween-ambience';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.innerHTML = '<span class="space-halloween-bat b1">🦇</span><span class="space-halloween-bat b2">🦇</span><span class="space-halloween-bat b3">🦇</span><span class="space-halloween-bat b4">🦇</span>';
+    const style = document.createElement('style');
+    style.id = 'space-halloween-live-style';
+    style.textContent = '#space-halloween-ambience{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden;background:radial-gradient(circle at 50% 100%,rgba(91,32,128,.18),transparent 46%),linear-gradient(to bottom,rgba(9,3,16,.12),rgba(9,3,16,.42))}.space-halloween-bat{position:absolute;font-size:clamp(16px,2vw,30px);opacity:.42;animation:spaceHalloweenBat 18s linear infinite}.space-halloween-bat.b1{left:6%;top:16%}.space-halloween-bat.b2{left:30%;top:9%;animation-delay:-5s}.space-halloween-bat.b3{left:62%;top:23%;animation-delay:-9s}.space-halloween-bat.b4{left:84%;top:13%;animation-delay:-13s}@keyframes spaceHalloweenBat{0%{transform:translateX(-8vw);opacity:0}15%{opacity:.42}50%{transform:translate(10vw,3vh)}85%{opacity:.42}100%{transform:translateX(118vw);opacity:0}}';
+    document.head.appendChild(style);
+    document.body.appendChild(layer);
+  }
 
   function resize() {
     DPR = Math.min(devicePixelRatio || 1, 2);
